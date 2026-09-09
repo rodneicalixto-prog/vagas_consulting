@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          mfa_ativo: boolean
+          nome_exibicao: string | null
+          perfil: Database["public"]["Enums"]["admin_perfil"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          mfa_ativo?: boolean
+          nome_exibicao?: string | null
+          perfil: Database["public"]["Enums"]["admin_perfil"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          mfa_ativo?: boolean
+          nome_exibicao?: string | null
+          perfil?: Database["public"]["Enums"]["admin_perfil"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      application_notes: {
+        Row: {
+          application_id: string
+          autor_id: string
+          created_at: string
+          id: string
+          nota: string
+        }
+        Insert: {
+          application_id: string
+          autor_id: string
+          created_at?: string
+          id?: string
+          nota: string
+        }
+        Update: {
+          application_id?: string
+          autor_id?: string
+          created_at?: string
+          id?: string
+          nota?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_notes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           candidate_id: string
@@ -95,8 +151,11 @@ export type Database = {
         Row: {
           cnpj: string | null
           created_at: string
+          decidido_em: string | null
+          decidido_por: string | null
           endereco: string | null
           id: string
+          motivo_decisao: string | null
           nome_fantasia: string | null
           razao_social: string
           segmento: string | null
@@ -107,8 +166,11 @@ export type Database = {
         Insert: {
           cnpj?: string | null
           created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
           endereco?: string | null
           id?: string
+          motivo_decisao?: string | null
           nome_fantasia?: string | null
           razao_social: string
           segmento?: string | null
@@ -119,8 +181,11 @@ export type Database = {
         Update: {
           cnpj?: string | null
           created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
           endereco?: string | null
           id?: string
+          motivo_decisao?: string | null
           nome_fantasia?: string | null
           razao_social?: string
           segmento?: string | null
@@ -243,11 +308,14 @@ export type Database = {
         Row: {
           company_id: string
           created_at: string
+          decidido_em: string | null
+          decidido_por: string | null
           descricao: string | null
           id: string
           local: string | null
           modalidade: Database["public"]["Enums"]["modalidade_vaga"]
           modelo_trabalho: Database["public"]["Enums"]["modelo_trabalho"] | null
+          motivo_decisao: string | null
           publicada_em: string | null
           regras: Json
           remuneracao_texto: string | null
@@ -260,6 +328,8 @@ export type Database = {
         Insert: {
           company_id: string
           created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
           descricao?: string | null
           id?: string
           local?: string | null
@@ -267,6 +337,7 @@ export type Database = {
           modelo_trabalho?:
             | Database["public"]["Enums"]["modelo_trabalho"]
             | null
+          motivo_decisao?: string | null
           publicada_em?: string | null
           regras?: Json
           remuneracao_texto?: string | null
@@ -279,6 +350,8 @@ export type Database = {
         Update: {
           company_id?: string
           created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
           descricao?: string | null
           id?: string
           local?: string | null
@@ -286,6 +359,7 @@ export type Database = {
           modelo_trabalho?:
             | Database["public"]["Enums"]["modelo_trabalho"]
             | null
+          motivo_decisao?: string | null
           publicada_em?: string | null
           regras?: Json
           remuneracao_texto?: string | null
@@ -353,6 +427,42 @@ export type Database = {
           },
         ]
       }
+      privacy_requests: {
+        Row: {
+          atendido_em: string | null
+          atendido_por: string | null
+          created_at: string
+          id: string
+          origem: string | null
+          resposta: string | null
+          status: Database["public"]["Enums"]["status_solicitacao_lgpd"]
+          tipo: Database["public"]["Enums"]["tipo_solicitacao_lgpd"]
+          user_id: string
+        }
+        Insert: {
+          atendido_em?: string | null
+          atendido_por?: string | null
+          created_at?: string
+          id?: string
+          origem?: string | null
+          resposta?: string | null
+          status?: Database["public"]["Enums"]["status_solicitacao_lgpd"]
+          tipo: Database["public"]["Enums"]["tipo_solicitacao_lgpd"]
+          user_id: string
+        }
+        Update: {
+          atendido_em?: string | null
+          atendido_por?: string | null
+          created_at?: string
+          id?: string
+          origem?: string | null
+          resposta?: string | null
+          status?: Database["public"]["Enums"]["status_solicitacao_lgpd"]
+          tipo?: Database["public"]["Enums"]["tipo_solicitacao_lgpd"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           cidade: string | null
@@ -401,6 +511,48 @@ export type Database = {
           telefone?: string | null
           titulo_profissional?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          alvo_id: string | null
+          alvo_tipo: string
+          created_at: string
+          denunciante_id: string | null
+          descricao: string | null
+          id: string
+          resolucao: string | null
+          resolvido_em: string | null
+          resolvido_por: string | null
+          status: Database["public"]["Enums"]["status_denuncia"]
+          tipo: Database["public"]["Enums"]["tipo_denuncia"]
+        }
+        Insert: {
+          alvo_id?: string | null
+          alvo_tipo: string
+          created_at?: string
+          denunciante_id?: string | null
+          descricao?: string | null
+          id?: string
+          resolucao?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          status?: Database["public"]["Enums"]["status_denuncia"]
+          tipo: Database["public"]["Enums"]["tipo_denuncia"]
+        }
+        Update: {
+          alvo_id?: string | null
+          alvo_tipo?: string
+          created_at?: string
+          denunciante_id?: string | null
+          descricao?: string | null
+          id?: string
+          resolucao?: string | null
+          resolvido_em?: string | null
+          resolvido_por?: string | null
+          status?: Database["public"]["Enums"]["status_denuncia"]
+          tipo?: Database["public"]["Enums"]["tipo_denuncia"]
         }
         Relationships: []
       }
@@ -462,6 +614,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      admin_perfil:
+        | "superadmin"
+        | "operacoes"
+        | "compliance"
+        | "suporte"
+        | "financeiro"
       modalidade_vaga: "efetiva" | "pj" | "temporaria"
       modelo_trabalho: "presencial" | "hibrido" | "remoto"
       status_candidatura:
@@ -484,6 +642,7 @@ export type Database = {
         | "concluido"
         | "cancelado"
         | "ocorrencia"
+      status_denuncia: "aberta" | "em_analise" | "resolvida" | "improcedente"
       status_empresa:
         | "rascunho"
         | "em_analise"
@@ -491,6 +650,11 @@ export type Database = {
         | "aprovada"
         | "suspensa"
         | "bloqueada"
+      status_solicitacao_lgpd:
+        | "aberta"
+        | "em_atendimento"
+        | "atendida"
+        | "recusada"
       status_vaga:
         | "rascunho"
         | "revisao"
@@ -500,6 +664,19 @@ export type Database = {
         | "encerrada"
         | "rejeitada"
         | "suspensa"
+      tipo_denuncia:
+        | "cobranca_indevida"
+        | "discriminacao"
+        | "assedio"
+        | "dado_falso"
+        | "outro"
+      tipo_solicitacao_lgpd:
+        | "acesso"
+        | "correcao"
+        | "exportacao"
+        | "revogacao"
+        | "eliminacao"
+        | "revisao_decisao"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -607,9 +784,33 @@ export type Enums<
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
 export const Constants = {
   public: {
     Enums: {
+      admin_perfil: [
+        "superadmin",
+        "operacoes",
+        "compliance",
+        "suporte",
+        "financeiro",
+      ],
       modalidade_vaga: ["efetiva", "pj", "temporaria"],
       modelo_trabalho: ["presencial", "hibrido", "remoto"],
       status_candidatura: [
@@ -634,6 +835,7 @@ export const Constants = {
         "cancelado",
         "ocorrencia",
       ],
+      status_denuncia: ["aberta", "em_analise", "resolvida", "improcedente"],
       status_empresa: [
         "rascunho",
         "em_analise",
@@ -641,6 +843,12 @@ export const Constants = {
         "aprovada",
         "suspensa",
         "bloqueada",
+      ],
+      status_solicitacao_lgpd: [
+        "aberta",
+        "em_atendimento",
+        "atendida",
+        "recusada",
       ],
       status_vaga: [
         "rascunho",
@@ -651,6 +859,21 @@ export const Constants = {
         "encerrada",
         "rejeitada",
         "suspensa",
+      ],
+      tipo_denuncia: [
+        "cobranca_indevida",
+        "discriminacao",
+        "assedio",
+        "dado_falso",
+        "outro",
+      ],
+      tipo_solicitacao_lgpd: [
+        "acesso",
+        "correcao",
+        "exportacao",
+        "revogacao",
+        "eliminacao",
+        "revisao_decisao",
       ],
     },
   },

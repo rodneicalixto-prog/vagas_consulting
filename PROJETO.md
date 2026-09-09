@@ -26,12 +26,14 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Documento de planejamento funcional/técnico | ✅ Recebido (`Planejamento_Aplicativo_de_Vagas.docx`, v1.0) |
 | Logo da marca | ✅ Recebida |
 | Protótipo visual do app do candidato (10 telas, MVP) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/d04929f9-7fcc-4f91-a8fa-4308140eede4) |
-| Protótipo do portal da empresa | ⬜ Não iniciado |
-| Protótipo do painel administrativo | ⬜ Não iniciado |
+| Protótipo do portal da empresa (6 telas) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/188573ac-e75a-4ca3-8637-6252d7dee810) |
+| Protótipo do painel administrativo (7 telas) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222) |
 | Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
 | Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD), código no `main` |
-| Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados |
-| Deploy em produção | 🔴 **Fora do ar (500 em toda rota)** — variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` salva como tipo "Secret" na Vercel em vez de "Config". Correção pendente do lado do painel, não do código. Ver `CLAUDE.md` seção "BLOQUEADOR ATIVO" para o passo a passo exato. |
+| Portal da empresa (`/portal`) | ✅ Codado e conectado ao Supabase real: login, dashboard, solicitar vaga, lista de solicitações, pipeline de candidatos (kanban + notas internas), candidatos (agregado), temporários (leitura). Empresa nunca publica sozinha — só solicita. |
+| Painel administrativo (`/admin`) | ✅ Codado e conectado ao Supabase real (via service role, restrito a `admin_users`): visão geral, moderação de empresas, cadastro/publicação de vagas, LGPD, auditoria, acesso e permissões (convite de novo admin). |
+| Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados + migration `0004` (admin_users, privacy_requests, reports, application_notes, RLS de `jobs` corrigida para impedir autopublicação pela empresa) |
+| Deploy em produção | 🔴 **Fora do ar (500 em toda rota)** — variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` salva como tipo "Secret" na Vercel em vez de "Config". Correção pendente do lado do painel, não do código. Ver `CLAUDE.md` seção "BLOQUEADOR ATIVO" para o passo a passo exato. Rodnei está corrigindo isso em paralelo. |
 
 ## 2.1 Infraestrutura
 
@@ -179,6 +181,45 @@ sessões futuras.
     (não código) pra o deploy voltar a funcionar. Qualquer sessão futura
     (Claude ou outra ferramenta) deve começar por aí antes de investigar
     qualquer outra coisa.
+12. **Protótipos visuais do portal da empresa e do painel admin** —
+    publicados como Claude Design canvas (Artifacts), mesmo padrão visual
+    do protótipo do candidato. Nessa etapa foi fechada a decisão de
+    produto do item 2/4 da seção 7: empresa não publica vaga, só solicita.
+13. **Portal da empresa e painel admin codados de verdade** (não é mais só
+    protótipo visual) — migration `0004_portal_empresa_e_painel_admin.sql`
+    aplicada no projeto Supabase real (`tfipbxjslpxbaybpxsql`) via
+    `apply_migration`: corrige RLS de `jobs` (empresa só grava
+    `rascunho`/`revisao`, nunca `publicada`), adiciona `admin_users`
+    (enum `admin_perfil`: superadmin/operações/compliance/suporte/
+    financeiro), `privacy_requests` (LGPD), `reports` (denúncias),
+    `application_notes` (notas internas do pipeline), e colunas
+    `motivo_decisao`/`decidido_por`/`decidido_em` em `jobs` e `companies`.
+    `get_advisors(security)` depois da migration: só o mesmo aviso INFO
+    de sempre (`audit_log` sem policy, esperado).
+    - Rotas novas: `/portal/login`, `/portal/dashboard`,
+      `/portal/vagas` (+ `/nova` e `/[id]` com pipeline kanban e notas
+      internas), `/portal/candidatos`, `/portal/temporarios`;
+      `/admin/login`, `/admin` (visão geral), `/admin/empresas`
+      (moderação), `/admin/vagas` (cadastro/publicação), `/admin/lgpd`,
+      `/admin/auditoria`, `/admin/acesso` (perfis + convite de admin).
+    - Novo `src/lib/supabase/admin.ts`: cliente server-only com a
+      `SUPABASE_SERVICE_ROLE_KEY` (ignora RLS), usado só depois de
+      confirmar (com o cliente normal, respeitando RLS) que o usuário
+      logado está em `admin_users`. Precisa de
+      `SUPABASE_SERVICE_ROLE_KEY` no `.env.local` e na Vercel — **ainda
+      não confirmado se está configurada na Vercel** (só
+      `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` foram
+      mencionadas até aqui). Conferir antes de testar `/admin` em produção.
+    - `middleware.ts` (`src/lib/supabase/middleware.ts`) atualizado para
+      redirecionar `/portal/*` e `/admin/*` para seus próprios `/login`
+      (antes só existia `/login` do candidato).
+    - **Ainda não há usuário de teste** em `company_members` nem em
+      `admin_users` — precisa criar um usuário real (Supabase Auth) e
+      inserir manualmente nessas tabelas antes de testar os logins do
+      portal/admin ponta a ponta.
+    - Build (`npm run build`) e lint (`npm run lint`) limpos. Não testado
+      com navegador neste ambiente pelo mesmo motivo do item 9 (bloqueio
+      de rede pra `supabase.co`).
 
 ## 3. Escopo do MVP (do documento, seção 3)
 
@@ -233,9 +274,18 @@ Estas perguntas do próprio documento ainda não têm resposta registrada e
 bloqueiam decisões de produto/arquitetura importantes:
 
 1. Nome definitivo e área geográfica inicial do produto.
-2. Marketplace aberto ou operado por uma agência/empresa específica?
+2. ~~Marketplace aberto ou operado por uma agência/empresa específica?~~ →
+   **Decidido:** operado pela Vagas Consulting. A empresa cliente não
+   publica vaga diretamente — envia uma solicitação/briefing, e é a
+   equipe interna (perfil Operações, painel `/admin`) quem cadastra e
+   publica de fato. Implementado no schema (RLS de `jobs` impede a
+   empresa de setar `status = publicada`) e no código (`/portal/vagas/nova`
+   grava `status = revisao`; `/admin/vagas` decide publicar/rejeitar/pedir
+   correção via service role).
 3. Quem é o empregador/contratante/intermediador em cada modalidade?
-4. Empresas publicam direto ou toda vaga passa por moderação?
+4. ~~Empresas publicam direto ou toda vaga passa por moderação?~~ →
+   **Decidido (decorre do item 2):** nenhuma vaga é publicada diretamente
+   pela empresa.
 5. O candidato paga algo? (recomendação do documento: não cobrar)
 6. Pagamento de temporários dentro da plataforma — quem calcula/aprova?
 7. Quais dados/documentos são realmente necessários em cada etapa?
@@ -245,14 +295,26 @@ bloqueiam decisões de produto/arquitetura importantes:
 
 ## 8. Próximas fases propostas
 
-1. Prototipar portal da empresa e painel admin (mesmo padrão visual).
-2. Definir stack final e criar repositório de código.
-3. Modelar banco de dados (entidades da seção 7.3 do documento original).
-4. Montar infraestrutura (deploy, domínio, ambientes).
-5. Construir o MVP por fase (Descoberta → Design → Construção → Piloto →
+1. ~~Prototipar portal da empresa e painel admin (mesmo padrão visual).~~ ✅
+2. ~~Definir stack final e criar repositório de código.~~ ✅ (Next.js +
+   Supabase + Vercel, repo já existente antes desta fase)
+3. ~~Modelar banco de dados~~ ✅ — schema cobre candidato, empresa, vagas
+   (com fluxo solicitação → cadastro pela Vagas Consulting), pipeline,
+   temporários, mensagens, LGPD, denúncias e auditoria.
+4. Corrigir o bloqueador da Vercel (seção "BLOQUEADOR ATIVO" do
+   `CLAUDE.md`) — em andamento pelo Rodnei, em paralelo ao item 5.
+5. Criar usuário de teste em `company_members` (portal) e em
+   `admin_users` (painel admin) para validar os logins ponta a ponta —
+   não existe nenhum ainda.
+6. Confirmar se `SUPABASE_SERVICE_ROLE_KEY` está configurada na Vercel
+   (necessária para todas as rotas `/admin/*`, que usam
+   `src/lib/supabase/admin.ts`).
+7. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
    Lançamento, conforme seção 14 do documento original).
 
 ## Referências
 
 - `Planejamento_Aplicativo_de_Vagas.docx` (documento fonte, v1.0)
 - Protótipo do app do candidato: https://claude.ai/code/artifact/d04929f9-7fcc-4f91-a8fa-4308140eede4
+- Protótipo do portal da empresa: https://claude.ai/code/artifact/188573ac-e75a-4ca3-8637-6252d7dee810
+- Protótipo do painel administrativo: https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222
