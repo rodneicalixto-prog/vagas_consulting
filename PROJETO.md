@@ -28,23 +28,97 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Protótipo visual do app do candidato (10 telas, MVP) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/d04929f9-7fcc-4f91-a8fa-4308140eede4) |
 | Protótipo do portal da empresa | ⬜ Não iniciado |
 | Protótipo do painel administrativo | ⬜ Não iniciado |
-| Repositório de código | ✅ Criado — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
-| Scaffold Next.js do app do candidato | ✅ Pronto localmente — aguardando autorização de commit/push |
-| Infraestrutura (deploy, domínio, banco) | 🔶 Em andamento — projeto Supabase criado |
+| Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
+| Scaffold Next.js do app do candidato | ✅ No ar em produção na Vercel (dados ainda mockados) |
+| Banco de dados (Supabase) | ✅ Schema inicial criado (10 tabelas, RLS habilitado) — código do app ainda não conectado |
+| Variáveis de ambiente na Vercel | ✅ Configuradas pelo Rodnei direto no painel (não verificado pelo Claude — ver seção 2.2) |
 
 ## 2.1 Infraestrutura
 
 | Item | Referência |
 |---|---|
-| Repositório GitHub | [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
-| Projeto Supabase (URL) | `https://tfipbxjslpxbaybpxsql.supabase.co` |
-| Deploy (Vercel) | ⬜ Não criado — a fazer sem domínio próprio por enquanto (subdomínio `*.vercel.app`) |
-| Domínio próprio | ⬜ Ainda não definido |
+| Repositório GitHub | [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting), branch `main` |
+| Deploy Vercel (produção) | https://vagas-consulting-6vyiuf4kq-rodnei-calixto-s-projects.vercel.app |
+| Domínios Vercel do projeto | `vagas-consulting-umber.vercel.app`, `vagas-consulting-rodnei-calixto-s-projects.vercel.app`, `vagas-consulting-git-main-rodnei-calixto-s-projects.vercel.app` |
+| Projeto Vercel | `vagas-consulting` (id `prj_useLOGXbwEN5pIjnkp4fyO0J8j4A`), team `rodnei-calixto-s-projects` (id `team_xCWGuCpqFbPqf4VvIFxJXrJe`) |
+| Deploy automático | Sim — a cada push em `main` (projeto conectado ao repo GitHub) |
+| Projeto Supabase | Nome "Vagas Consulting", URL `https://tfipbxjslpxbaybpxsql.supabase.co`, ref `tfipbxjslpxbaybpxsql`, região `sa-east-1`, org Supabase `gjwkhxenjcftyoipzhrc` (nome "SOS MKT") |
+| Domínio próprio | ⬜ Ainda não definido/registrado |
 
 > Segurança: só a URL pública do projeto Supabase está registrada aqui.
 > Nenhuma chave de API, service role key ou connection string deve ir
 > neste arquivo — elas vão para `.env` (gitignored), conforme a regra de
 > segurança do `CLAUDE.md`.
+
+## 2.2 Log de passos realizados e acessos mapeados
+
+Registro cronológico das ações técnicas já feitas neste projeto e de como
+cada ferramenta/acesso foi resolvido — para não repetir investigação em
+sessões futuras.
+
+1. **Repositório GitHub criado** — `rodneicalixto-prog/vagas_consulting`,
+   clonado, `CLAUDE.md` e `PROJETO.md` adicionados, scaffold Next.js
+   completo commitado e enviado (push) pro branch `main`.
+2. **Scaffold Next.js construído** — 10 telas do fluxo do candidato
+   (login, termos/opt-in, onboarding, início, vagas, detalhe da vaga com
+   aba Regras, candidatura, processos, mensagens, perfil), responsivo
+   mobile/tablet/desktop, dados mockados em `src/lib/mock-data.ts`.
+   Testado com build + lint limpos e screenshots via Playwright headless.
+3. **Deploy na Vercel**:
+   - Tentativa 1 (MCP nativo `create_git_project`): falhou com 403 —
+     app da Vercel não tinha permissão instalada no repositório GitHub.
+   - Tentativa 2 (Composio → Vercel): conexão marcada `active`, mas toda
+     chamada (`VERCEL_GET_TEAMS`, `VERCEL_CREATE_NEW_DEPLOYMENT`) voltava
+     `403 invalidToken`. Testado 2x (conexão original + reconexão do
+     zero) — mesmo erro nas duas. **Composio→Vercel não funciona neste
+     ambiente**, não vale insistir de novo sem motivo novo.
+   - Solução que funcionou: Rodnei autorizou o app da Vercel direto no
+     GitHub (vercel.com/new → "Adjust GitHub App Permissions" → liberar
+     `vagas_consulting`). Depois disso a Vercel detectou o repo sozinha
+     ("New repository detected") e o Rodnei clicou "Import" no painel.
+     O projeto `vagas-consulting` passou a existir e o MCP nativo da
+     Vercel (`list_projects`, `list_deployments`) passou a enxergá-lo e
+     gerenciá-lo normalmente (deploy automático a cada push já ativo).
+   - **Limite conhecido**: o MCP nativo da Vercel não tem ferramenta para
+     ler/criar variáveis de ambiente — isso só dá pra fazer pelo painel
+     (Settings → Environment Variables) ou por outra via ainda não
+     testada. Rodnei configurou manualmente pelo painel.
+4. **Acesso ao Supabase do projeto Vagas Consulting**:
+   - MCP nativo `mcp__Supabase__list_projects` e o equivalente via
+     Composio (`SUPABASE_LIST_ALL_PROJECTS`) só enxergavam
+     `calixto testesProject` (org `rodneicalixto@hotmail.com's Org`,
+     id `jfpiyugtvtuihjuqweyc`) — o projeto Vagas Consulting não
+     aparecia, porque ele vive em outra organização Supabase
+     (`gjwkhxenjcftyoipzhrc`, "SOS MKT"), de conta diferente
+     (`rodnei@calixtosolucoes.com.br`).
+   - Solução: Rodnei convidou `rodneicalixto@hotmail.com` como membro
+     (papel Developer) da organização "SOS MKT" no Supabase e aceitou o
+     convite. **Mesmo depois do aceite confirmado no painel**,
+     `list_projects` continuou sem mostrar o projeto (provável
+     cache/atraso da listagem do lado da API, não investigado a fundo).
+   - **O que efetivamente resolveu**: chamar as ferramentas do MCP
+     passando o `project_id`/`ref` do Vagas Consulting
+     (`tfipbxjslpxbaybpxsql`) diretamente, mesmo sem ele aparecer no
+     `list_projects` — `get_project` e `list_tables` funcionaram
+     normalmente. **Lição para o futuro**: não confiar no
+     `list_projects` para decidir se há acesso a um projeto Supabase;
+     testar direto com o `ref`/`project_id` conhecido.
+5. **Schema inicial do banco criado** — migration
+   `supabase/migrations/0001_schema_inicial.sql` aplicada no projeto
+   Vagas Consulting via `apply_migration`. 10 tabelas, todas com RLS
+   habilitado: `profiles` (perfil do candidato), `companies`,
+   `company_members`, `jobs` (vagas, com campo `regras` jsonb pros
+   detalhes por modalidade), `applications` (candidaturas/pipeline),
+   `invites` (convites, principalmente temporárias), `temp_work`
+   (execução do trabalho temporário), `messages`, `consents` (LGPD),
+   `audit_log`. Cobre o backlog P0 (seção 5 abaixo). Policies de RLS:
+   candidato só vê/edita os próprios dados; empresa só vê/gerencia a
+   própria empresa e vagas; vagas publicadas são visíveis a qualquer
+   autenticado; `audit_log` sem policy nenhuma (só service role acessa,
+   confirmado via `get_advisors` — 1 aviso INFO esperado, não é problema).
+   Checado com `get_advisors(type: security)`: só esse aviso.
+   **Pendente**: código do app ainda não lê/grava nessas tabelas (segue
+   com mock data) — próximo passo é conectar.
 
 ## 3. Escopo do MVP (do documento, seção 3)
 
