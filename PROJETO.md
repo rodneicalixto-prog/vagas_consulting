@@ -33,7 +33,7 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Portal da empresa (`/portal`) | ✅ Codado e conectado ao Supabase real: login, dashboard, solicitar vaga, lista de solicitações, pipeline de candidatos (kanban + notas internas), candidatos (agregado), temporários (leitura). Empresa nunca publica sozinha — só solicita. |
 | Painel administrativo (`/admin`) | ✅ Codado e conectado ao Supabase real (via service role, restrito a `admin_users`): visão geral, moderação de empresas, cadastro/publicação de vagas, LGPD, auditoria, acesso e permissões (convite de novo admin). |
 | Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados + migration `0004` (admin_users, privacy_requests, reports, application_notes, RLS de `jobs` corrigida para impedir autopublicação pela empresa) |
-| Deploy em produção | 🔴 **Fora do ar (500 em toda rota)** — variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` salva como tipo "Secret" na Vercel em vez de "Config". Correção pendente do lado do painel, não do código. Ver `CLAUDE.md` seção "BLOQUEADOR ATIVO" para o passo a passo exato. Rodnei está corrigindo isso em paralelo. |
+| Deploy em produção | ✅ **No ar** — https://vagas-consulting-umber.vercel.app responde 200 em `/`, `/login`, `/portal/login` e `/admin/login`. Bloqueador corrigido em 09/09/2026 via Vercel CLI (causa real: `NEXT_PUBLIC_SUPABASE_ANON_KEY` tinha sido apagada e nunca recriada — não era problema de tipo Secret/Config como se pensava). Ver `CLAUDE.md`. |
 
 ## 2.1 Infraestrutura
 
@@ -220,6 +220,26 @@ sessões futuras.
     - Build (`npm run build`) e lint (`npm run lint`) limpos. Não testado
       com navegador neste ambiente pelo mesmo motivo do item 9 (bloqueio
       de rede pra `supabase.co`).
+14. **Bloqueador da Vercel corrigido de verdade** — causa raiz real era
+    diferente do que o item 10 registrou: `vercel env ls` mostrou que
+    `NEXT_PUBLIC_SUPABASE_ANON_KEY` não estava com tipo errado, ela
+    simplesmente **não existia mais** (apagada numa tentativa anterior e
+    nunca recriada). `SUPABASE_SERVICE_ROLE_KEY` já estava configurada
+    (criada por conta própria do Rodnei antes desta sessão). Corrigido
+    via **Vercel CLI com token pessoal** (`vercel link` +
+    `vercel env add ... --no-sensitive` nos três ambientes +
+    `vercel deploy --prod`) — caminho que funciona quando MCP nativo (sem
+    tool de env vars) e Composio→Vercel (403 invalidToken confirmado de
+    novo nesse projeto) não servem. Validado com `web_fetch_vercel_url`
+    (200 em `/`, `/login`, `/portal/login`, `/admin/login`) e
+    `get_runtime_logs` sem erros no deploy novo. Token pessoal foi de uso
+    único, descartado após o uso. Detalhes técnicos em `CLAUDE.md`.
+15. **Ainda pendente**: criar usuário de teste real (Supabase Auth) para
+    `priscilla.klein@gmail.com` e `rodnei@calixtosolucoes.com.br` — combinado
+    fazer isso via `npm run dev` local + tela "Criar conta", já que criar
+    direto em `auth.users` via SQL é arriscado. Depois disso, inserir os
+    dois em `admin_users` (perfil `superadmin`) e o Rodnei também em
+    `company_members` da empresa "Grupo Altavia" pra testar o portal.
 
 ## 3. Escopo do MVP (do documento, seção 3)
 

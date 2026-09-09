@@ -52,6 +52,14 @@ funciona, pra não perder tempo tentando de novo o que já falhou:
 - **Limite conhecido da Vercel**: o MCP nativo não tem ferramenta pra
   ler/criar variáveis de ambiente — isso só dá pra fazer pelo painel
   (Settings → Environment Variables) por enquanto.
+- **Reconfirmado em 09/09/2026**: com a conexão Composio→Vercel já
+  reconectada do zero nesse mesmo dia (`vercel_itself-bundy`, `ACTIVE`),
+  `VERCEL_FILTER_PROJECT_ENVS` no projeto `vagas-consulting` ainda
+  retorna `403 invalidToken`. Confirma que o problema não é a conexão
+  estar velha/expirada — é algo na integração Composio↔Vercel em si
+  (ou permissão do token OAuth) que não dá acesso de management API a
+  esse projeto. **Não vale testar de novo sem uma mudança real do lado
+  do Composio ou da Vercel** (ex.: reautorizar com escopo diferente).
 - **Supabase — RESOLVIDO, com pegadinha.** O projeto "Vagas Consulting"
   (ref `tfipbxjslpxbaybpxsql`) está numa organização Supabase diferente
   da conta que os MCPs usam por padrão (org `jfpiyugtvtuihjuqweyc`,
@@ -65,53 +73,40 @@ funciona, pra não perder tempo tentando de novo o que já falhou:
 - Repo GitHub numérico (`id` da API, usado em `gitSource.repoId` da
   Vercel): `1362784831` (`rodneicalixto-prog/vagas_consulting`).
 
-## 🔴 BLOQUEADOR ATIVO — app em produção fora do ar (500 em toda rota)
+## ✅ Bloqueador da Vercel — RESOLVIDO em 09/09/2026
 
-Deploy atual (`https://vagas-consulting-umber.vercel.app`) retorna 500 em
-**todas** as rotas, inclusive `/` e `/login`. Causa raiz confirmada nos
-runtime logs da Vercel:
+O app ficou fora do ar (500 em toda rota) por causa da variável
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` na Vercel. **Causa raiz real** (diferente
+do que se pensava inicialmente): a variável não estava com tipo "Secret"
+— ela tinha sido **apagada** numa tentativa de correção anterior e nunca
+recriada (`vercel env ls` mostrava só `NEXT_PUBLIC_SUPABASE_URL` e
+`SUPABASE_SERVICE_ROLE_KEY`, sem a anon key).
 
+**Como foi corrigido**: nem painel manual nem MCP — usando o **Vercel CLI
+autenticado por token pessoal** (`vercel login` via token, não precisa de
+navegador):
+
+```bash
+vercel link --yes --project=vagas-consulting --scope=rodnei-calixto-s-projects --token=$TOKEN
+vercel env ls --token=$TOKEN                     # diagnosticar antes de mexer
+printf '%s' "$ANON_KEY" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --no-sensitive --token=$TOKEN
+# repetir para preview e development
+vercel deploy --prod --token=$TOKEN
 ```
-Error running the exported Web Handler: Error: Your project's URL and Key
-are required to create a Supabase client!
-```
 
-O erro acontece dentro do **middleware/proxy** (`src/proxy.ts` →
-`src/lib/supabase/middleware.ts`), que roda em toda request antes de
-qualquer página — por isso o site inteiro cai, não só o login.
+`--no-sensitive` é a flag que corresponde ao "Config" do painel (permite
+o Next.js inlinar a variável `NEXT_PUBLIC_*` no bundle do browser durante
+o build). Token pessoal gerado em vercel.com/account/tokens, usado uma
+única vez e descartado depois — nunca comitado, nunca salvo em memória
+de longo prazo.
 
-**Causa raiz real**: a variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` no painel
-da Vercel (Settings → Environment Variables) foi salva com **Type =
-"Secret"**. Variáveis tipo Secret não ficam disponíveis pro Next.js
-inlinar no bundle do navegador durante o build — por isso o valor chega
-vazio em runtime mesmo com o nome e valor certos. O Vercel mostra o aviso
-"Remove the public framework prefix to keep this value private... If
-that's safe, change the variable to Config" nessa variável.
-
-**Não dá pra converter Secret → Config depois de salva** (Vercel bloqueia
-essa opção). A correção pendente é:
-
-1. Apagar a variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` inteira.
-2. Recriá-la do zero: nome `NEXT_PUBLIC_SUPABASE_ANON_KEY`, colar o
-   mesmo valor (está em `.env.local` local, e foi passado no chat), e
-   **marcar Type = "Config"** (não "Secret") antes de salvar.
-3. Conferir se `NEXT_PUBLIC_SUPABASE_URL` também não está como Secret
-   (se estiver, mesma correção).
-4. Redeploy do deployment de produção mais recente (menu "..." → 
-   Redeploy).
-5. Validar: `mcp__Vercel__web_fetch_vercel_url` em
-   `https://vagas-consulting-umber.vercel.app/login` deve responder
-   `200`, não `500`. Também checar `mcp__Vercel__get_runtime_logs`
-   (filtro `level: ["error"]`) pra confirmar que o erro sumiu.
-
-**Tentativas já feitas e descartadas** (não repetir): redeploy comum (2x,
-inclusive sem cache) não resolveu porque o problema não é cache — é o
-tipo da variável em si, que já nasce errada em todo build. Reconectar
-Composio/Vercel não é relevante aqui (isso já foi resolvido antes, ver
-acima).
-
-Nenhum código do app precisa mudar pra isso — é 100% configuração no
-painel da Vercel.
+**Lição para o futuro**: o MCP nativo da Vercel não tem tool de env vars
+e o Composio→Vercel dá `403 invalidToken` nesse projeto mesmo com conexão
+`ACTIVE` (reconfirmado, ver acima) — **o Vercel CLI local com token
+pessoal é o caminho que funciona** quando é preciso mexer em env vars
+sem o painel. Validado com `web_fetch_vercel_url` (200 em `/login`,
+`/portal/login`, `/admin/login`) e `get_runtime_logs` (sem erros no
+deploy novo).
 
 ## Disciplina de registro
 
