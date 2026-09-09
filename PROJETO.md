@@ -6,18 +6,61 @@ produzido, e serve de referência única para as próximas fases técnicas.
 
 ## 1. Visão
 
-Plataforma de recrutamento com três ambientes conectados:
+Plataforma proprietária de recrutamento operada exclusivamente pela equipe
+da Vagas Consulting. O produto possui dois ambientes:
 
-- **App do candidato** — busca, candidatura, acompanhamento de processos,
+- **App do candidato:** busca, candidatura, acompanhamento de processos,
   trabalhos temporários, mensagens, perfil e privacidade.
-- **Portal da empresa/recrutador** — cadastro, publicação de vagas,
-  pipeline de seleção, gestão de temporários.
-- **Painel administrativo** — moderação, LGPD, auditoria, permissões,
+- **Painel interno:** cadastro de empresas, cadastro e publicação de vagas,
+  gestão do pipeline de seleção, temporários, LGPD, auditoria, acessos e
   suporte.
+
+Empresas são registros de clientes ou contratantes mantidos pela equipe
+interna. Elas não criam contas, não acessam a plataforma, não se cadastram e
+não cadastram nem solicitam vagas. Todo o ciclo operacional é controlado pela
+Vagas Consulting.
 
 Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 **Temporária**, cada uma com campos obrigatórios e avisos próprios (aba
 "Regras da vaga").
+
+### 1.1 Premissas mandatórias de produto e acesso
+
+Estas premissas prevalecem sobre protótipos, implementações e registros
+históricos que descrevam um portal ou autosserviço de empresas:
+
+1. A plataforma é de uso operacional próprio da Vagas Consulting.
+2. Não existe cadastro, login ou portal para empresas.
+3. Empresas existem apenas como entidades cadastrais vinculadas a vagas e
+   processos, sempre administradas pela equipe interna.
+4. Somente usuários internos autorizados podem criar ou alterar empresas e
+   criar, revisar, publicar, pausar ou encerrar vagas.
+5. O **superadministrador** possui controle total, inclusive sobre usuários,
+   papéis e permissões.
+6. **Administradores** executam as funções de gestão delegadas pelo
+   superadministrador e podem supervisionar operadores conforme sua alçada.
+7. **Operadores** executam apenas atividades operacionais explicitamente
+   autorizadas, sem poder elevar o próprio acesso nem administrar papéis.
+8. Autorização deve ser validada no servidor e no banco de dados. A ocultação
+   de telas ou botões não substitui controle de acesso.
+9. O painel interno e o app do candidato devem possuir login funcional,
+   recuperação de acesso e logout visível em todas as sessões autenticadas.
+10. Contas internas só podem ser criadas ou convidadas pelo
+    superadministrador. O fluxo de cadastro do candidato permanece separado do
+    controle de acesso da equipe interna.
+
+### 1.2 Hierarquia de acesso
+
+| Papel | Responsabilidade | Limites obrigatórios |
+|---|---|---|
+| Superadministrador | Controle integral da plataforma, usuários, papéis, permissões, empresas, vagas, processos, LGPD e auditoria | Papel reservado; nenhum outro usuário pode concedê-lo, alterá-lo ou removê-lo sem autorização equivalente |
+| Administrador | Gestão das áreas e operadores delegados pelo superadministrador | Não pode ampliar a própria alçada nem assumir funções não delegadas |
+| Operador | Execução de tarefas de recrutamento e atendimento autorizadas | Não gerencia papéis, permissões ou configurações críticas |
+| Candidato | Gestão do próprio perfil, consentimentos, candidaturas, mensagens e processos | Não acessa o painel interno nem dados de outros candidatos |
+
+O modelo de autorização deve separar o nível hierárquico das permissões
+funcionais. O papel define a posição do usuário na hierarquia; permissões
+explícitas definem quais operações ele pode executar.
 
 ## 2. Estado atual
 
@@ -30,10 +73,17 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Protótipo do painel administrativo (7 telas) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222) |
 | Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
 | Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD), código no `main` |
-| Portal da empresa (`/portal`) | ✅ Codado, conectado ao Supabase real e **testado ponta a ponta em produção** (login → dashboard mostrando as 4 vagas reais da "Grupo Altavia"): login, dashboard, solicitar vaga, lista de solicitações, pipeline de candidatos (kanban + notas internas), candidatos (agregado), temporários (leitura). Empresa nunca publica sozinha — só solicita. |
-| Painel administrativo (`/admin`) | ✅ Codado, conectado ao Supabase real (via service role, restrito a `admin_users`) e **testado em produção** (login como superadmin funcionando): visão geral, moderação de empresas, cadastro/publicação de vagas, LGPD, auditoria, acesso e permissões (convite de novo admin). |
+| Portal da empresa (`/portal`) | ⚠️ Implementação legada, incompatível com as premissas atuais e marcada para descontinuação. Empresas não terão conta nem acesso à plataforma. |
+| Painel administrativo (`/admin`) | ⚠️ Codado e conectado ao Supabase, mas ainda precisa absorver integralmente o cadastro de empresas e vagas, implementar a hierarquia entre superadministrador, administradores e operadores e oferecer logout visível. |
 | Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados + migration `0004` (admin_users, privacy_requests, reports, application_notes, RLS de `jobs` corrigida para impedir autopublicação pela empresa) |
 | Deploy em produção | ✅ **No ar** — https://vagas-consulting-umber.vercel.app responde 200 em `/`, `/login`, `/portal/login` e `/admin/login`. Bloqueador corrigido em 09/09/2026 via Vercel CLI (causa real: `NEXT_PUBLIC_SUPABASE_ANON_KEY` tinha sido apagada e nunca recriada — não era problema de tipo Secret/Config como se pensava). Ver `CLAUDE.md`. |
+
+> **Desalinhamento conhecido:** o portal da empresa e as permissões baseadas
+> em `company_members` pertencem a uma direção anterior do produto. Devem ser
+> descontinuados. O painel administrativo atual também precisa ser adaptado para
+> cadastrar diretamente empresas e vagas, aplicar a hierarquia definida acima e
+> disponibilizar logout visível. Os itens históricos abaixo registram o que foi
+> construído, mas não alteram as premissas mandatórias da seção 1.1.
 
 ## 2.1 Infraestrutura
 
@@ -273,13 +323,19 @@ sessões futuras.
     que faça subquery na própria tabela — sempre extrair para uma função
     `SECURITY DEFINER` (ou reescrever sem self-join) desde o início.
 
-## 3. Escopo do MVP (do documento, seção 3)
+## 3. Escopo do MVP (revisado)
 
-**Incluído:** login/perfis/currículo/busca/candidatura/convite/favoritos/
-alertas · cadastro e validação de empresas · publicação de vagas ·
-pipeline de seleção, mensagens, notificações · aceite/check-in/conclusão
-de temporários · painel admin, moderação, permissões, auditoria, LGPD e
-exportações essenciais.
+**Incluído:** login, logout, recuperação de acesso, perfis, currículo,
+busca, candidatura, convite, favoritos e alertas do candidato; cadastro
+interno de empresas; cadastro, publicação e gestão interna de vagas; pipeline
+de seleção, mensagens e notificações; aceite, check-in e conclusão de
+temporários; painel interno, hierarquia entre superadministrador,
+administradores e operadores, permissões, auditoria, LGPD e exportações
+essenciais.
+
+**Excluído por decisão de produto:** cadastro de empresas por representantes
+externos, login empresarial, portal da empresa, solicitação de vagas por
+empresas e qualquer forma de autopublicação de vaga.
 
 **Fora do MVP:** folha de pagamento, assinatura eletrônica com validade
 jurídica específica, emissão fiscal, ponto oficial, verificação de
@@ -289,7 +345,7 @@ antecedentes, planos pagos, matching avançado.
 
 | Camada | Recomendação |
 |---|---|
-| Interfaces | Web app responsiva, instalável como PWA no MVP; portal empresa/admin por papéis; apps nativos depois |
+| Interfaces | Web app responsiva para candidatos e painel interno responsivo com acesso hierárquico; apps nativos depois |
 | Backend | API modular (auth, vagas, candidaturas, mensagens, consentimentos, arquivos, notificações, auditoria) |
 | Banco | PostgreSQL com isolamento lógico por empresa; Supabase é opção, não decisão fechada |
 | Arquivos | Storage privado, URLs temporárias, varredura, política de retenção |
@@ -299,9 +355,10 @@ antecedentes, planos pagos, matching avançado.
 
 ## 5. Backlog priorizado (do documento, seção 13)
 
-**P0** — Identidade e acesso · Perfil e currículo · Empresas e validação ·
-Vagas e regras · Candidatura e pipeline · LGPD e preferências · Admin e
-auditoria.
+**P0** — Login, logout e recuperação de acesso · Hierarquia e permissões
+internas · Perfil e currículo · Cadastro interno de empresas · Vagas e
+regras · Candidatura e pipeline · LGPD e preferências · Painel interno e
+auditoria · Descontinuação do portal empresarial.
 
 **P1** — Mensagens e agenda · Temporários · Relatórios.
 
@@ -370,3 +427,24 @@ bloqueiam decisões de produto/arquitetura importantes:
 - Protótipo do app do candidato: https://claude.ai/code/artifact/d04929f9-7fcc-4f91-a8fa-4308140eede4
 - Protótipo do portal da empresa: https://claude.ai/code/artifact/188573ac-e75a-4ca3-8637-6252d7dee810
 - Protótipo do painel administrativo: https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222
+
+## 9. Regra de documentação no Obsidian
+
+Toda documentação Markdown criada ou alterada para este projeto deve ser
+salva ou sincronizada no cofre do Obsidian abaixo:
+
+```text
+C:\Users\USER\Desktop\Jarvis V8\obsidian-template
+```
+
+O repositório Git permanece como fonte versionada do projeto. A versão no
+Obsidian deve reproduzir o mesmo conteúdo, sem substituir o commit dos arquivos
+Markdown no repositório.
+
+Toda entrega que modificar documentação deve informar uma destas situações:
+
+1. **Sincronização concluída:** o arquivo foi salvo no cofre indicado e o
+   conteúdo foi conferido.
+2. **Sincronização pendente:** o ambiente não possui acesso ao caminho local do
+   Windows. Nesse caso, a alteração deve ser preservada no Git e a pendência
+   deve ser comunicada, sem registrar uma confirmação fictícia.
