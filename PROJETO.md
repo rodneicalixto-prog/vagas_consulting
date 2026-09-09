@@ -29,8 +29,8 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Protótipo do portal da empresa | ⬜ Não iniciado |
 | Protótipo do painel administrativo | ⬜ Não iniciado |
 | Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
-| Scaffold Next.js do app do candidato | ✅ No ar em produção na Vercel (dados ainda mockados) |
-| Banco de dados (Supabase) | ✅ Schema inicial criado (10 tabelas, RLS habilitado) — código do app ainda não conectado |
+| Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD) — aguardando push/deploy |
+| Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados |
 | Variáveis de ambiente na Vercel | ✅ Configuradas pelo Rodnei direto no painel (não verificado pelo Claude — ver seção 2.2) |
 
 ## 2.1 Infraestrutura
@@ -117,8 +117,34 @@ sessões futuras.
    autenticado; `audit_log` sem policy nenhuma (só service role acessa,
    confirmado via `get_advisors` — 1 aviso INFO esperado, não é problema).
    Checado com `get_advisors(type: security)`: só esse aviso.
-   **Pendente**: código do app ainda não lê/grava nessas tabelas (segue
-   com mock data) — próximo passo é conectar.
+6. **Coluna extra por pedido do Rodnei**: `profiles.historico_terceirizadoras`
+   (jsonb, migration `0002`) — pergunta obrigatória (mas não eliminatória)
+   no cadastro: se o candidato já trabalhou em Eros/Nyx/FG/Athenas
+   Terceirização, com ano/período e líder direto. UI implementada na
+   etapa de onboarding.
+7. **Dados de exemplo semeados** (migration `0003`): 1 empresa aprovada
+   ("Grupo Altavia", fictícia) + 4 vagas publicadas (uma de cada
+   modalidade/exemplo do protótipo original), pra o app não ficar vazio
+   em desenvolvimento.
+8. **Código do app conectado ao Supabase de verdade** — não usa mais
+   `src/lib/mock-data.ts` (arquivo ficou órfão no repo, não apagado sem
+   autorização do Rodnei). Implementado: login/cadastro real (Supabase
+   Auth, e-mail+senha, com `@supabase/ssr` + middleware/proxy de sessão),
+   grava consentimentos LGPD reais na tela de Termos, grava perfil real
+   no onboarding (incluindo a pergunta de terceirizadoras), lista vagas
+   publicadas reais, envia candidatura real (respeitando a constraint de
+   candidatura única por vaga), lista processos reais do candidato
+   logado, perfil lê/grava dados e consentimentos reais, logout real.
+9. **Limite de teste conhecido**: este ambiente de execução (onde o
+   Claude roda comandos) **bloqueia por política de rede qualquer
+   conexão direta a `supabase.co`** (confirmado: `403` no proxy de
+   egress, mesmo erro pra `curl` e para o próprio `next dev` rodando
+   aqui). Isso significa que o fluxo de cadastro/login real **não foi
+   testado ponta a ponta com navegador neste ambiente** — só validado
+   por build + lint limpos e revisão de código. A Vercel (produção) tem
+   rede normal; o teste real só é possível lá, testando manualmente ou
+   via `get_runtime_errors`/`get_runtime_logs` do MCP da Vercel depois
+   do deploy.
 
 ## 3. Escopo do MVP (do documento, seção 3)
 

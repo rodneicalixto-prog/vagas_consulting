@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, use, useTransition, useEffect } from "react";
 import Link from "next/link";
-import { vagas } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/client";
 import { BackHeader, Card, PrimaryButton } from "@/components/ui";
 import { IconBriefcase, IconCheck } from "@/components/icons";
-import { notFound } from "next/navigation";
+import { enviarCandidatura } from "./actions";
 
 const perguntas = [
-  "Você já atuou anteriormente na área correspondente a esta vaga?",
-  "Você tem disponibilidade para o modelo de trabalho informado?",
+  { id: "experiencia_area", texto: "Você já atuou anteriormente na área correspondente a esta vaga?" },
+  { id: "disponibilidade_modelo", texto: "Você tem disponibilidade para o modelo de trabalho informado?" },
 ];
+
+type VagaResumo = { id: string; titulo: string; empresa: string; local: string };
 
 export default function CandidaturaPage({
   params,
@@ -18,12 +20,45 @@ export default function CandidaturaPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const vaga = vagas.find((v) => v.id === id);
-  const [respostas, setRespostas] = useState<boolean[]>([true, true]);
+  const [vaga, setVaga] = useState<VagaResumo | null>(null);
+  const [respostas, setRespostas] = useState<Record<string, boolean>>({
+    experiencia_area: true,
+    disponibilidade_modelo: true,
+  });
   const [confirmado, setConfirmado] = useState(true);
   const [enviado, setEnviado] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
-  if (!vaga) notFound();
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("jobs")
+      .select("id, titulo, local, companies(nome_fantasia, razao_social)")
+      .eq("id", id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setVaga({
+            id: data.id,
+            titulo: data.titulo,
+            empresa: data.companies?.nome_fantasia ?? data.companies?.razao_social ?? "",
+            local: data.local ?? "",
+          });
+        }
+      });
+  }, [id]);
+
+  const onSubmit = () => {
+    startTransition(async () => {
+      const result = await enviarCandidatura(id, respostas);
+      if (result.error) {
+        setErro(result.error);
+      } else {
+        setEnviado(true);
+      }
+    });
+  };
 
   if (enviado) {
     return (
@@ -47,35 +82,37 @@ export default function CandidaturaPage({
 
   return (
     <div className="mx-auto flex max-w-xl flex-col">
-      <BackHeader title="Confirmar candidatura" backHref={`/vagas/${vaga.id}`} />
+      <BackHeader title="Confirmar candidatura" backHref={`/vagas/${id}`} />
 
       <div className="flex flex-col gap-4 px-5 pb-6 md:px-8">
-        <Card className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-navy-bg text-navy">
-            <IconBriefcase size={18} />
-          </div>
-          <div>
-            <h4 className="text-[13.5px] font-extrabold">{vaga.titulo}</h4>
-            <p className="text-[11.5px] text-text-2">
-              {vaga.empresa} · {vaga.local}
-            </p>
-          </div>
-        </Card>
+        {vaga && (
+          <Card className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-navy-bg text-navy">
+              <IconBriefcase size={18} />
+            </div>
+            <div>
+              <h4 className="text-[13.5px] font-extrabold">{vaga.titulo}</h4>
+              <p className="text-[11.5px] text-text-2">
+                {vaga.empresa} · {vaga.local}
+              </p>
+            </div>
+          </Card>
+        )}
 
         <div className="text-xs font-extrabold uppercase tracking-wide text-text-2">
           Perguntas eliminatórias
         </div>
-        {perguntas.map((q, i) => (
-          <Card key={q} className="flex flex-col gap-2.5">
-            <div className="text-[13px] font-bold leading-snug">{q}</div>
+        {perguntas.map((q) => (
+          <Card key={q.id} className="flex flex-col gap-2.5">
+            <div className="text-[13px] font-bold leading-snug">{q.texto}</div>
             <div className="flex gap-2.5">
               {["Sim", "Não"].map((opt) => {
-                const active = respostas[i] === (opt === "Sim");
+                const active = respostas[q.id] === (opt === "Sim");
                 return (
                   <button
                     key={opt}
                     onClick={() =>
-                      setRespostas((r) => r.map((v, idx) => (idx === i ? opt === "Sim" : v)))
+                      setRespostas((r) => ({ ...r, [q.id]: opt === "Sim" }))
                     }
                     className={`flex-1 rounded-[10px] border py-2.5 text-center text-[13px] font-bold ${
                       active ? "border-navy bg-navy text-white" : "border-border text-text-2"
@@ -121,8 +158,10 @@ export default function CandidaturaPage({
           </p>
         </button>
 
-        <PrimaryButton disabled={!confirmado} onClick={() => setEnviado(true)}>
-          Enviar candidatura
+        {erro && <p className="text-[12.5px] font-semibold text-danger">{erro}</p>}
+
+        <PrimaryButton disabled={!confirmado || pending} onClick={onSubmit}>
+          {pending ? "Enviando..." : "Enviar candidatura"}
         </PrimaryButton>
       </div>
     </div>

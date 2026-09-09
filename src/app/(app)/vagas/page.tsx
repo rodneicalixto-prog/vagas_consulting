@@ -1,11 +1,17 @@
 import Link from "next/link";
-import { vagas, modalidadeLabel, modalidadeTagClass } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import { modalidadeLabel, modalidadeTagClass } from "@/lib/format";
 import { Tag } from "@/components/ui";
 import { IconSearch, IconFilter, IconHeart } from "@/components/icons";
 
-const filtros = ["Modalidade", "São Paulo, SP", "Híbrido", "Faixa salarial"];
+export default async function VagasPage() {
+  const supabase = await createClient();
+  const { data: vagas } = await supabase
+    .from("jobs")
+    .select("id, titulo, local, modalidade, remuneracao_texto, companies(nome_fantasia, razao_social)")
+    .eq("status", "publicada")
+    .order("publicada_em", { ascending: false });
 
-export default function VagasPage() {
   return (
     <div className="flex flex-col gap-4 pb-8 pt-6 md:pt-8">
       <div className="flex flex-col gap-3 px-5 md:px-8">
@@ -24,40 +30,35 @@ export default function VagasPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto px-5 md:px-8">
-        {filtros.map((f, i) => (
-          <div
-            key={f}
-            className={`whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-bold ${
-              i === 0 ? "border-navy bg-navy text-white" : "border-border bg-surface text-text-2"
-            }`}
-          >
-            {f}
-          </div>
-        ))}
-      </div>
-
       <div className="flex flex-col gap-3 px-5 md:grid md:grid-cols-2 md:px-8 md:gap-4">
-        {vagas.map((v) => (
-          <Link
-            href={`/vagas/${v.id}`}
-            key={v.id}
-            className="flex flex-col gap-2 rounded-[15px] border border-border bg-surface p-[15px]"
-          >
-            <div className="flex items-start justify-between">
-              <Tag className={modalidadeTagClass[v.modalidade]}>
-                {modalidadeLabel[v.modalidade]}
-              </Tag>
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-bg">
-                <IconHeart className="text-text-2" />
-              </span>
-            </div>
-            <h4 className="text-[14.5px] font-extrabold">{v.titulo}</h4>
-            <div className="text-xs font-semibold text-text-2">{v.empresa}</div>
-            <div className="text-[11.5px] text-text-2">📍 {v.local}</div>
-            <div className="text-[12.5px] font-extrabold text-navy">{v.remuneracao}</div>
-          </Link>
-        ))}
+        {vagas && vagas.length > 0 ? (
+          vagas.map((v) => (
+            <Link
+              href={`/vagas/${v.id}`}
+              key={v.id}
+              className="flex flex-col gap-2 rounded-[15px] border border-border bg-surface p-[15px]"
+            >
+              <div className="flex items-start justify-between">
+                <Tag className={modalidadeTagClass[v.modalidade]}>
+                  {modalidadeLabel[v.modalidade]}
+                </Tag>
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-bg">
+                  <IconHeart className="text-text-2" />
+                </span>
+              </div>
+              <h4 className="text-[14.5px] font-extrabold">{v.titulo}</h4>
+              <div className="text-xs font-semibold text-text-2">
+                {v.companies?.nome_fantasia ?? v.companies?.razao_social}
+              </div>
+              <div className="text-[11.5px] text-text-2">📍 {v.local}</div>
+              {v.remuneracao_texto && (
+                <div className="text-[12.5px] font-extrabold text-navy">{v.remuneracao_texto}</div>
+              )}
+            </Link>
+          ))
+        ) : (
+          <p className="px-1 text-[12.5px] text-text-3">Nenhuma vaga publicada no momento.</p>
+        )}
       </div>
     </div>
   );

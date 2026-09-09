@@ -1,7 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { perfilAtual } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
 import {
   IconEdit,
   IconUser,
@@ -9,6 +6,8 @@ import {
   IconPreferences,
   IconDoc,
 } from "@/components/icons";
+import { ConsentToggle } from "./consent-toggle";
+import { signOut } from "./actions";
 
 const menu = [
   { label: "Dados pessoais", icon: IconUser },
@@ -17,27 +16,53 @@ const menu = [
   { label: "Documentos", icon: IconDoc },
 ];
 
-const canaisAlerta = [
-  { label: "Alertas de vagas — WhatsApp", ligado: true },
-  { label: "Alertas de vagas — E-mail", ligado: true },
-  { label: "Alertas de vagas — SMS", ligado: false },
-];
+function iniciais(nome: string) {
+  return nome
+    .split(" ")
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase();
+}
 
-export default function PerfilPage() {
-  const [toggles, setToggles] = useState(
-    Object.fromEntries(canaisAlerta.map((c) => [c.label, c.ligado])),
-  );
-  const [marketing, setMarketing] = useState(false);
+function ultimoEstado(
+  consents: { finalidade: string; canal: string | null; estado: string }[],
+  finalidade: string,
+  canal: string | null,
+) {
+  const row = consents.find((c) => c.finalidade === finalidade && c.canal === canal);
+  return row?.estado === "concedido";
+}
+
+export default async function PerfilPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [{ data: profile }, { data: consents }] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle(),
+    supabase
+      .from("consents")
+      .select("finalidade, canal, estado")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const nome = profile?.nome_completo ?? user!.email ?? "Candidato";
+  const consentsList = consents ?? [];
 
   return (
     <div className="flex flex-col gap-5 px-5 pb-8 pt-6 md:px-8 md:pt-8">
       <div className="flex items-center gap-3.5">
         <div className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-2xl bg-navy text-[19px] font-extrabold text-white">
-          {perfilAtual.iniciais}
+          {iniciais(nome)}
         </div>
         <div>
-          <h2 className="text-[17px] font-extrabold">{perfilAtual.nome}</h2>
-          <p className="text-xs font-semibold text-text-2">{perfilAtual.titulo}</p>
+          <h2 className="text-[17px] font-extrabold">{nome}</h2>
+          <p className="text-xs font-semibold text-text-2">
+            {profile?.titulo_profissional ?? user!.email}
+          </p>
         </div>
         <button className="ml-auto flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg border border-border bg-surface">
           <IconEdit />
@@ -65,48 +90,37 @@ export default function PerfilPage() {
           Privacidade e comunicações
         </div>
         <div className="rounded-2xl border border-border bg-surface px-3.5">
-          {canaisAlerta.map((c, i) => (
-            <button
-              key={c.label}
-              onClick={() => setToggles((t) => ({ ...t, [c.label]: !t[c.label] }))}
-              className={`flex w-full items-center justify-between py-[11px] text-left ${
-                i !== 0 ? "border-t border-border" : ""
-              }`}
-            >
-              <span className="text-[13px] font-bold">{c.label}</span>
-              <span
-                className={`relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors ${
-                  toggles[c.label] ? "bg-gold" : "bg-border"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition-all ${
-                    toggles[c.label] ? "left-[18px]" : "left-0.5"
-                  }`}
-                />
-              </span>
-            </button>
-          ))}
-          <button
-            onClick={() => setMarketing((m) => !m)}
-            className="flex w-full items-center justify-between border-t border-border py-[11px] text-left"
-          >
-            <span>
-              <span className="block text-[13px] font-bold">Marketing e novidades</span>
-              <span className="block text-[11px] text-text-3">Desmarcado por padrão</span>
-            </span>
-            <span
-              className={`relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors ${
-                marketing ? "bg-gold" : "bg-border"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition-all ${
-                  marketing ? "left-[18px]" : "left-0.5"
-                }`}
-              />
-            </span>
-          </button>
+          <ConsentToggle
+            finalidade="alertas_vagas"
+            canal="whatsapp"
+            label="Alertas de vagas — WhatsApp"
+            initialOn={ultimoEstado(consentsList, "alertas_vagas", "whatsapp")}
+          />
+          <div className="border-t border-border">
+            <ConsentToggle
+              finalidade="alertas_vagas"
+              canal="email"
+              label="Alertas de vagas — E-mail"
+              initialOn={ultimoEstado(consentsList, "alertas_vagas", "email")}
+            />
+          </div>
+          <div className="border-t border-border">
+            <ConsentToggle
+              finalidade="alertas_vagas"
+              canal="sms"
+              label="Alertas de vagas — SMS"
+              initialOn={ultimoEstado(consentsList, "alertas_vagas", "sms")}
+            />
+          </div>
+          <div className="border-t border-border">
+            <ConsentToggle
+              finalidade="marketing"
+              canal={null}
+              label="Marketing e novidades"
+              caption="Desmarcado por padrão"
+              initialOn={ultimoEstado(consentsList, "marketing", null)}
+            />
+          </div>
         </div>
       </div>
 
@@ -122,9 +136,11 @@ export default function PerfilPage() {
         </button>
       </div>
 
-      <button className="pb-2 pt-1 text-center text-[12.5px] font-extrabold text-text-3">
-        Sair da conta
-      </button>
+      <form action={signOut}>
+        <button className="w-full pb-2 pt-1 text-center text-[12.5px] font-extrabold text-text-3">
+          Sair da conta
+        </button>
+      </form>
     </div>
   );
 }

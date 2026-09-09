@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 import { IconShield } from "@/components/icons";
-import type { vagaRegras } from "@/lib/mock-data";
+
+export type Regras = {
+  resumo?: string;
+  dados?: { label: string; valor: string }[];
+  atividades?: string[];
+  etapas?: string;
+  aceite?: string;
+};
 
 export function VagaTabs({
+  descricao,
   regras,
 }: {
-  regras: (typeof vagaRegras)[string];
+  descricao: string | null;
+  regras: Regras;
 }) {
   const [tab, setTab] = useState<"detalhes" | "regras">("regras");
 
@@ -36,50 +45,62 @@ export function VagaTabs({
         {tab === "detalhes" ? (
           <div className="rounded-2xl border border-border bg-surface p-4">
             <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">Sobre a vaga</h4>
-            <p className="text-[12.5px] leading-relaxed text-text-2">{regras.resumo}</p>
+            <p className="text-[12.5px] leading-relaxed text-text-2">
+              {descricao || regras.resumo || "Sem descrição adicional."}
+            </p>
           </div>
         ) : (
           <>
-            <div className="rounded-2xl border border-border bg-surface p-4">
-              <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">Resumo</h4>
-              <p className="text-[12.5px] leading-relaxed text-text-2">{regras.resumo}</p>
-            </div>
+            {regras.resumo && (
+              <div className="rounded-2xl border border-border bg-surface p-4">
+                <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">Resumo</h4>
+                <p className="text-[12.5px] leading-relaxed text-text-2">{regras.resumo}</p>
+              </div>
+            )}
 
-            <div className="grid grid-cols-2 gap-2.5">
-              {regras.dados.map((d) => (
-                <div key={d.label} className="rounded-[10px] bg-bg px-2.5 py-2">
-                  <div className="text-[10.5px] font-bold uppercase tracking-wide text-text-3">
-                    {d.label}
+            {regras.dados && regras.dados.length > 0 && (
+              <div className="grid grid-cols-2 gap-2.5">
+                {regras.dados.map((d) => (
+                  <div key={d.label} className="rounded-[10px] bg-bg px-2.5 py-2">
+                    <div className="text-[10.5px] font-bold uppercase tracking-wide text-text-3">
+                      {d.label}
+                    </div>
+                    <div className="mt-0.5 text-[12.5px] font-extrabold">{d.valor}</div>
                   </div>
-                  <div className="mt-0.5 text-[12.5px] font-extrabold">{d.valor}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-4">
-              <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">
-                Atividades e requisitos
-              </h4>
-              <ul className="flex list-disc flex-col gap-1.5 pl-4 text-[12.5px] leading-relaxed text-text-2">
-                {regras.atividades.map((a) => (
-                  <li key={a}>{a}</li>
                 ))}
-              </ul>
-            </div>
+              </div>
+            )}
 
-            <div className="rounded-2xl border border-border bg-surface p-4">
-              <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">
-                Etapas e prazos
-              </h4>
-              <p className="text-[12.5px] leading-relaxed text-text-2">{regras.etapas}</p>
-            </div>
+            {regras.atividades && regras.atividades.length > 0 && (
+              <div className="rounded-2xl border border-border bg-surface p-4">
+                <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">
+                  Atividades e requisitos
+                </h4>
+                <ul className="flex list-disc flex-col gap-1.5 pl-4 text-[12.5px] leading-relaxed text-text-2">
+                  {regras.atividades.map((a) => (
+                    <li key={a}>{a}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            <div className="rounded-2xl border border-border bg-surface p-4">
-              <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">
-                Aceite, cancelamento e substituição
-              </h4>
-              <p className="text-[12.5px] leading-relaxed text-text-2">{regras.aceite}</p>
-            </div>
+            {regras.etapas && (
+              <div className="rounded-2xl border border-border bg-surface p-4">
+                <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">
+                  Etapas e prazos
+                </h4>
+                <p className="text-[12.5px] leading-relaxed text-text-2">{regras.etapas}</p>
+              </div>
+            )}
+
+            {regras.aceite && (
+              <div className="rounded-2xl border border-border bg-surface p-4">
+                <h4 className="mb-1.5 text-[12.5px] font-extrabold text-navy">
+                  Aceite, cancelamento e substituição
+                </h4>
+                <p className="text-[12.5px] leading-relaxed text-text-2">{regras.aceite}</p>
+              </div>
+            )}
 
             <div className="flex gap-2.5 rounded-2xl border border-[#ecd3ca] bg-danger-bg p-4">
               <IconShield size={18} className="mt-0.5 shrink-0 text-danger" />
