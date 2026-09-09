@@ -19,18 +19,12 @@ export async function portalLogin(
     return { error: "E-mail ou senha incorretos." };
   }
 
-  const { data: membership, error: membershipError } = await supabase
+  const { data: membership } = await supabase
     .from("company_members")
     .select("company_id")
     .eq("user_id", data.user.id)
     .limit(1)
     .maybeSingle();
-
-  console.log("[portalLogin debug]", {
-    userId: data.user.id,
-    membership,
-    membershipError,
-  });
 
   if (!membership) {
     await supabase.auth.signOut();

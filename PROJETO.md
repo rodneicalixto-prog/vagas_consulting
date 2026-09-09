@@ -234,12 +234,44 @@ sessões futuras.
     (200 em `/`, `/login`, `/portal/login`, `/admin/login`) e
     `get_runtime_logs` sem erros no deploy novo. Token pessoal foi de uso
     único, descartado após o uso. Detalhes técnicos em `CLAUDE.md`.
-15. **Ainda pendente**: criar usuário de teste real (Supabase Auth) para
-    `priscilla.klein@gmail.com` e `rodnei@calixtosolucoes.com.br` — combinado
-    fazer isso via `npm run dev` local + tela "Criar conta", já que criar
-    direto em `auth.users` via SQL é arriscado. Depois disso, inserir os
-    dois em `admin_users` (perfil `superadmin`) e o Rodnei também em
-    `company_members` da empresa "Grupo Altavia" pra testar o portal.
+15. **Usuário de teste criado e promovido** — `rodnei@calixtosolucoes.com.br`
+    cadastrado via "Criar conta" no site publicado (precisou primeiro
+    desligar "Confirm email" em Authentication → Sign In/Providers →
+    Email no Supabase, porque o mailer padrão sem SMTP próprio tem
+    `rate_limit_email_sent = 2`/hora e travava o fluxo de confirmação —
+    ver item 17). Inserido em `admin_users` (`superadmin`) e em
+    `company_members` da empresa "Grupo Altavia" via `apply_migration`
+    (o `execute_sql` do MCP roda em transação somente-leitura — INSERT só
+    funciona por `apply_migration`). `priscilla.klein@gmail.com` ainda não
+    foi cadastrada.
+16. **Correção real de acesso ao painel do Supabase**: a conta
+    `rodneicalixto@hotmail.com` só tem papel Developer na org "SOS MKT" —
+    não conseguia salvar mudanças em Authentication (botão "Salvar
+    alterações" ficava travado) nem um token pessoal gerado por ela
+    conseguia via Management API (`403 Forbidden`, "does not have the
+    necessary privileges"). Resolvido logando no dashboard com
+    `rodnei@calixtosolucoes.com.br` (dono da org) direto no navegador.
+17. **Bug real encontrado e corrigido — RLS de `company_members` com
+    recursão infinita**: login no portal da empresa sempre retornava
+    "Esta conta não tem acesso ao portal da empresa" mesmo com a linha
+    certa em `company_members`. Causa: a policy
+    `company_members_select_own_company` (migration `0001`) fazia
+    `exists (select 1 from company_members cm where ...)` — uma subquery
+    na PRÓPRIA tabela dentro de uma RLS policy dessa tabela. Postgres
+    detecta isso e recusa com `42P17 infinite recursion detected in
+    policy for relation "company_members"` (só foi possível ver isso
+    com um log de debug temporário na Vercel, via `get_runtime_logs` —
+    o erro não aparecia em lugar nenhum antes disso). Corrigido na
+    migration `0005_fix_company_members_rls_recursion.sql`: criada
+    `public.is_company_member(target_company_id uuid)` como função
+    `SECURITY DEFINER` (roda ignorando RLS, quebrando o ciclo) e a
+    policy passou a chamar essa função em vez de fazer o `exists` direto
+    na tabela. `EXECUTE` da função restrito a `authenticated` (revogado
+    de `public`/`anon`) para fechar os dois avisos WARN do
+    `get_advisors(security)` sobre função `SECURITY DEFINER` chamável
+    publicamente. **Lição para o futuro**: nunca escrever uma RLS policy
+    que faça subquery na própria tabela — sempre extrair para uma função
+    `SECURITY DEFINER` (ou reescrever sem self-join) desde o início.
 
 ## 3. Escopo do MVP (do documento, seção 3)
 

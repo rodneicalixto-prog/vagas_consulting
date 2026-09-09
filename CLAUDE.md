@@ -70,6 +70,30 @@ funciona, pra não perder tempo tentando de novo o que já falhou:
   normalmente (`get_project`, `list_tables` testados e OK). **Nunca
   concluir "sem acesso" só porque `list_projects` não lista o projeto —
   sempre tentar com o ref direto primeiro.**
+- **Papel Developer não edita configuração do projeto.** A conta
+  `rodneicalixto@hotmail.com` (convidada como Developer na org "SOS MKT")
+  consegue usar o MCP normalmente (leitura/migrations via API key), mas
+  **não** consegue salvar nada em Authentication pelo dashboard (botão
+  "Salvar alterações" fica travado) nem um token pessoal gerado por ela
+  funciona pra endpoints de configuração via Management API (`403
+  Forbidden`). Pra mudar configuração de Auth (ex.: toggle "Confirm
+  email"), precisa logar no dashboard com `rodnei@calixtosolucoes.com.br`
+  (dono da org) direto no navegador — não tem solução via API/MCP com a
+  conta Developer.
+- **`execute_sql` roda em transação somente-leitura.** O MCP nativo
+  (`mcp__Supabase__execute_sql`) recusa qualquer INSERT/UPDATE com
+  `25006: cannot execute INSERT in a read-only transaction` — serve só
+  pra leitura/diagnóstico. Pra escrever dados (não só DDL), usar
+  `apply_migration` mesmo sendo DML, não só schema.
+- **Nunca escrever uma RLS policy com subquery na própria tabela.** A
+  policy original de `company_members` (`... exists (select 1 from
+  company_members cm where ...)`) causava `42P17 infinite recursion
+  detected in policy` em toda leitura — silenciosamente quebrava o login
+  do portal da empresa sem nenhum erro visível no app (só apareceu com
+  log de debug + `get_runtime_logs` da Vercel). Corrigido isolando a
+  checagem numa função `SECURITY DEFINER` (`public.is_company_member`,
+  migration `0005`) — é o padrão certo desde o início pra esse tipo de
+  policy "membro vê outros membros do mesmo grupo".
 - Repo GitHub numérico (`id` da API, usado em `gitSource.repoId` da
   Vercel): `1362784831` (`rodneicalixto-prog/vagas_consulting`).
 
