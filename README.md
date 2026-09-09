@@ -14,9 +14,8 @@ Login, recuperação de acesso e logout visível são requisitos obrigatórios p
 os ambientes autenticados. Contas internas só podem ser criadas pelo
 superadministrador; o cadastro de candidatos permanece um fluxo separado.
 
-O repositório ainda contém um portal empresarial implementado segundo uma
-direção anterior. Esse portal está marcado para descontinuação e não deve ser
-usado como referência para novas funcionalidades.
+O portal empresarial da direção anterior foi removido. Toda gestão de empresas,
+vagas e processos deve ser implementada no painel interno.
 
 Ver `PROJETO.md` para o planejamento completo e `CLAUDE.md` para as regras
 do projeto.

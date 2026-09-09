@@ -1,22 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireInternalUser } from "@/lib/auth/internal";
 
 export async function atenderSolicitacao(formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("not_authenticated");
-
-  const { data: isAdmin } = await supabase
-    .from("admin_users")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (!isAdmin) throw new Error("not_admin");
+  const { user } = await requireInternalUser("privacy.manage");
 
   const requestId = String(formData.get("request_id"));
   const resposta = String(formData.get("resposta") ?? "").trim();

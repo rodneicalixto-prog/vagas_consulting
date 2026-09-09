@@ -73,17 +73,14 @@ explícitas definem quais operações ele pode executar.
 | Protótipo do painel administrativo (7 telas) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222) |
 | Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
 | Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD), código no `main` |
-| Portal da empresa (`/portal`) | ⚠️ Implementação legada, incompatível com as premissas atuais e marcada para descontinuação. Empresas não terão conta nem acesso à plataforma. |
-| Painel administrativo (`/admin`) | ⚠️ Codado e conectado ao Supabase, mas ainda precisa absorver integralmente o cadastro de empresas e vagas, implementar a hierarquia entre superadministrador, administradores e operadores e oferecer logout visível. |
+| Portal da empresa (`/portal`) | ✅ Removido do código. A migration `0006`, quando aplicada, retira a estrutura e as permissões de acesso empresarial do banco. |
+| Painel administrativo (`/admin`) | ✅ Login e logout disponíveis, hierarquia entre superadministrador, administrador e operador aplicada no servidor, cadastro interno de empresas e vagas disponível. |
 | Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados + migration `0004` (admin_users, privacy_requests, reports, application_notes, RLS de `jobs` corrigida para impedir autopublicação pela empresa) |
 | Deploy em produção | ✅ **No ar** — https://vagas-consulting-umber.vercel.app responde 200 em `/`, `/login`, `/portal/login` e `/admin/login`. Bloqueador corrigido em 09/09/2026 via Vercel CLI (causa real: `NEXT_PUBLIC_SUPABASE_ANON_KEY` tinha sido apagada e nunca recriada — não era problema de tipo Secret/Config como se pensava). Ver `CLAUDE.md`. |
 
-> **Desalinhamento conhecido:** o portal da empresa e as permissões baseadas
-> em `company_members` pertencem a uma direção anterior do produto. Devem ser
-> descontinuados. O painel administrativo atual também precisa ser adaptado para
-> cadastrar diretamente empresas e vagas, aplicar a hierarquia definida acima e
-> disponibilizar logout visível. Os itens históricos abaixo registram o que foi
-> construído, mas não alteram as premissas mandatórias da seção 1.1.
+> **Registro histórico:** os itens abaixo que descrevem o portal empresarial ou
+> `company_members` documentam uma direção anterior. A implementação vigente é
+> definida pelas premissas da seção 1.1 e pela migration `0006`.
 
 ## 2.1 Infraestrutura
 
@@ -383,18 +380,13 @@ Estas perguntas do próprio documento ainda não têm resposta registrada e
 bloqueiam decisões de produto/arquitetura importantes:
 
 1. Nome definitivo e área geográfica inicial do produto.
-2. ~~Marketplace aberto ou operado por uma agência/empresa específica?~~ →
-   **Decidido:** operado pela Vagas Consulting. A empresa cliente não
-   publica vaga diretamente — envia uma solicitação/briefing, e é a
-   equipe interna (perfil Operações, painel `/admin`) quem cadastra e
-   publica de fato. Implementado no schema (RLS de `jobs` impede a
-   empresa de setar `status = publicada`) e no código (`/portal/vagas/nova`
-   grava `status = revisao`; `/admin/vagas` decide publicar/rejeitar/pedir
-   correção via service role).
+2. ~~Marketplace aberto ou operado por uma agência/empresa específica?~~
+   **Decidido:** uso próprio da Vagas Consulting, sem conta, login ou portal
+   para empresas. A equipe interna cadastra empresas e vagas no painel.
 3. Quem é o empregador/contratante/intermediador em cada modalidade?
-4. ~~Empresas publicam direto ou toda vaga passa por moderação?~~ →
-   **Decidido (decorre do item 2):** nenhuma vaga é publicada diretamente
-   pela empresa.
+4. ~~Empresas publicam direto ou toda vaga passa por moderação?~~
+   **Decidido:** somente superadministradores e administradores autorizados
+   publicam vagas.
 5. O candidato paga algo? (recomendação do documento: não cobrar)
 6. Pagamento de temporários dentro da plataforma — quem calcula/aprova?
 7. Quais dados/documentos são realmente necessários em cada etapa?
@@ -404,20 +396,19 @@ bloqueiam decisões de produto/arquitetura importantes:
 
 ## 8. Próximas fases propostas
 
-1. ~~Prototipar portal da empresa e painel admin (mesmo padrão visual).~~ ✅
+1. ~~Retirar o portal empresarial do código.~~ ✅
 2. ~~Definir stack final e criar repositório de código.~~ ✅ (Next.js +
    Supabase + Vercel, repo já existente antes desta fase)
-3. ~~Modelar banco de dados~~ ✅ — schema cobre candidato, empresa, vagas
-   (com fluxo solicitação → cadastro pela Vagas Consulting), pipeline,
-   temporários, mensagens, LGPD, denúncias e auditoria.
-4. Corrigir o bloqueador da Vercel (seção "BLOQUEADOR ATIVO" do
-   `CLAUDE.md`) — em andamento pelo Rodnei, em paralelo ao item 5.
-5. Criar usuário de teste em `company_members` (portal) e em
-   `admin_users` (painel admin) para validar os logins ponta a ponta —
-   não existe nenhum ainda.
-6. Confirmar se `SUPABASE_SERVICE_ROLE_KEY` está configurada na Vercel
-   (necessária para todas as rotas `/admin/*`, que usam
-   `src/lib/supabase/admin.ts`).
+3. ~~Modelar a hierarquia interna e retirar permissões empresariais.~~ ✅
+   A migration `0006` converte os perfis para superadministrador,
+   administrador e operador, desativa `company_members` e restringe novas
+   candidaturas a vagas publicadas.
+4. Aplicar a migration `0006` ao projeto Supabase e regenerar os tipos a partir
+   do banco remoto.
+5. Validar login, logout, cadastro interno de empresas e vagas e restrições de
+   cada papel em ambiente integrado.
+6. Implementar recuperação de senha, MFA administrativo e testes automatizados
+   de autorização.
 7. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
    Lançamento, conforme seção 14 do documento original).
 
