@@ -44,11 +44,17 @@ export async function convidarAdmin(
     return { error: "Não foi possível convidar. Verifique o e-mail e tente de novo." };
   }
 
-  await admin.from("admin_users").insert({
+  const { error: insertError } = await admin.from("admin_users").insert({
     user_id: invited.user.id,
     perfil,
     nome_exibicao: nome || null,
   });
+
+  if (insertError) {
+    return {
+      error: "Convite enviado, mas não foi possível registrar o perfil de admin. Tente de novo ou avise o suporte.",
+    };
+  }
 
   await admin.from("audit_log").insert({
     ator_id: user.id,

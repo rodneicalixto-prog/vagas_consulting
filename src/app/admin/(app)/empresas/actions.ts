@@ -32,7 +32,7 @@ export async function decidirEmpresa(formData: FormData) {
 
   const status = acao === "aprovar" ? "aprovada" : acao === "rejeitar" ? "bloqueada" : "ajustes";
 
-  const { data: after } = await admin
+  const { data: after, error } = await admin
     .from("companies")
     .update({
       status,
@@ -43,6 +43,10 @@ export async function decidirEmpresa(formData: FormData) {
     .eq("id", companyId)
     .select()
     .single();
+
+  if (error || !after) {
+    throw new Error("Não foi possível atualizar a empresa. Tente de novo.");
+  }
 
   await admin.from("audit_log").insert({
     ator_id: user.id,

@@ -10,7 +10,10 @@ export async function moverCandidatura(formData: FormData) {
   const jobId = String(formData.get("job_id"));
   const status = String(formData.get("status")) as Enums<"status_candidatura">;
 
-  await supabase.from("applications").update({ status }).eq("id", applicationId);
+  const { error } = await supabase.from("applications").update({ status }).eq("id", applicationId);
+  if (error) {
+    throw new Error("Não foi possível mover o candidato de etapa. Tente de novo.");
+  }
   revalidatePath(`/portal/vagas/${jobId}`);
 }
 
@@ -26,8 +29,11 @@ export async function adicionarNota(formData: FormData) {
   const nota = String(formData.get("nota") ?? "").trim();
   if (!nota) return;
 
-  await supabase
+  const { error } = await supabase
     .from("application_notes")
     .insert({ application_id: applicationId, autor_id: user.id, nota });
+  if (error) {
+    throw new Error("Não foi possível salvar a nota. Tente de novo.");
+  }
   revalidatePath(`/portal/vagas/${jobId}`);
 }

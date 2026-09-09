@@ -32,7 +32,7 @@ export async function decidirVaga(formData: FormData) {
 
   const status = acao === "publicar" ? "publicada" : acao === "rejeitar" ? "rejeitada" : "rascunho";
 
-  const { data: after } = await admin
+  const { data: after, error } = await admin
     .from("jobs")
     .update({
       status,
@@ -44,6 +44,10 @@ export async function decidirVaga(formData: FormData) {
     .eq("id", jobId)
     .select()
     .single();
+
+  if (error || !after) {
+    throw new Error("Não foi possível atualizar a vaga. Tente de novo.");
+  }
 
   await admin.from("audit_log").insert({
     ator_id: user.id,
