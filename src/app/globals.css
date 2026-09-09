@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --color-navy: #101d33;
+  --color-navy-2: #1b2d4d;
+  --color-navy-3: #0b1526;
+  --color-gold: #b8924c;
+  --color-gold-2: #d9b877;
+  --color-gold-3: #8f6f37;
+  --color-bg: #faf8f4;
+  --color-surface: #ffffff;
+  --color-border: #e7e2d8;
+  --color-text: #14171c;
+  --color-text-2: #5c6470;
+  --color-text-3: #9aa0a8;
+  --color-teal: #3f7a86;
+  --color-teal-bg: #e7f0f1;
+  --color-navy-bg: #e9edf3;
+  --color-gold-bg: #f6ecd9;
+  --color-success: #3f7a5c;
+  --color-success-bg: #eaf3ec;
+  --color-danger: #b3492f;
+  --color-danger-bg: #f7ece8;
+}
+
+@theme inline {
+  --color-navy: var(--color-navy);
+  --color-navy-2: var(--color-navy-2);
+  --color-navy-3: var(--color-navy-3);
+  --color-gold: var(--color-gold);
+  --color-gold-2: var(--color-gold-2);
+  --color-gold-3: var(--color-gold-3);
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+  --color-text-2: var(--color-text-2);
+  --color-text-3: var(--color-text-3);
+  --color-teal: var(--color-teal);
+  --color-teal-bg: var(--color-teal-bg);
+  --color-navy-bg: var(--color-navy-bg);
+  --color-gold-bg: var(--color-gold-bg);
+  --color-success: var(--color-success);
+  --color-success-bg: var(--color-success-bg);
+  --color-danger: var(--color-danger);
+  --color-danger-bg: var(--color-danger-bg);
+  --font-sans: var(--font-manrope);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}

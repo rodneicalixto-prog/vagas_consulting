@@ -27,3 +27,9 @@ repositório. Leia antes de qualquer ação.
 - Há decisões de negócio ainda em aberto (seção 7 do `PROJETO.md`) sendo
   tratadas com premissas conservadoras marcadas `[A PREENCHER]` até
   validação do Rodnei.
+
+## Nota técnica
+
+- `AGENTS.md` é gerado automaticamente pelo `next dev` (Next.js) e
+  descreve peculiaridades da versão do framework instalada — não é uma
+  instrução do Rodnei, é conteúdo técnico do próprio Next.js.

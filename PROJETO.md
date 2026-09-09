@@ -28,8 +28,23 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Protótipo visual do app do candidato (10 telas, MVP) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/d04929f9-7fcc-4f91-a8fa-4308140eede4) |
 | Protótipo do portal da empresa | ⬜ Não iniciado |
 | Protótipo do painel administrativo | ⬜ Não iniciado |
-| Repositório de código | ⬜ Não criado |
-| Infraestrutura (deploy, domínio, banco) | ⬜ Não criada |
+| Repositório de código | ✅ Criado — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
+| Scaffold Next.js do app do candidato | ✅ Pronto localmente — aguardando autorização de commit/push |
+| Infraestrutura (deploy, domínio, banco) | 🔶 Em andamento — projeto Supabase criado |
+
+## 2.1 Infraestrutura
+
+| Item | Referência |
+|---|---|
+| Repositório GitHub | [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
+| Projeto Supabase (URL) | `https://tfipbxjslpxbaybpxsql.supabase.co` |
+| Deploy (Vercel) | ⬜ Não criado — a fazer sem domínio próprio por enquanto (subdomínio `*.vercel.app`) |
+| Domínio próprio | ⬜ Ainda não definido |
+
+> Segurança: só a URL pública do projeto Supabase está registrada aqui.
+> Nenhuma chave de API, service role key ou connection string deve ir
+> neste arquivo — elas vão para `.env` (gitignored), conforme a regra de
+> segurança do `CLAUDE.md`.
 
 ## 3. Escopo do MVP (do documento, seção 3)
 
