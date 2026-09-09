@@ -21,11 +21,11 @@ export async function adminLogin(
 
   const { data: admin } = await supabase
     .from("admin_users")
-    .select("user_id")
+    .select("user_id, ativo")
     .eq("user_id", data.user.id)
     .maybeSingle();
 
-  if (!admin) {
+  if (!admin || admin.ativo === false) {
     await supabase.auth.signOut();
     return { error: "Esta conta não tem acesso ao painel administrativo." };
   }
