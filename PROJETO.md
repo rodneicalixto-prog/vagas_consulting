@@ -29,9 +29,9 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Protótipo do portal da empresa | ⬜ Não iniciado |
 | Protótipo do painel administrativo | ⬜ Não iniciado |
 | Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
-| Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD) — aguardando push/deploy |
+| Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD), código no `main` |
 | Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados |
-| Variáveis de ambiente na Vercel | ✅ Configuradas pelo Rodnei direto no painel (não verificado pelo Claude — ver seção 2.2) |
+| Deploy em produção | 🔴 **Fora do ar (500 em toda rota)** — variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` salva como tipo "Secret" na Vercel em vez de "Config". Correção pendente do lado do painel, não do código. Ver `CLAUDE.md` seção "BLOQUEADOR ATIVO" para o passo a passo exato. |
 
 ## 2.1 Infraestrutura
 
@@ -145,6 +145,40 @@ sessões futuras.
    rede normal; o teste real só é possível lá, testando manualmente ou
    via `get_runtime_errors`/`get_runtime_logs` do MCP da Vercel depois
    do deploy.
+10. **Deploy de produção quebrado após o push** — confirmado exatamente
+    pelo caminho previsto no item 9: `web_fetch_vercel_url` em `/login`
+    voltou 500, `get_runtime_logs` mostrou o erro real
+    (`Your project's URL and Key are required to create a Supabase
+    client!`) disparado dentro do middleware (`src/proxy.ts`), que roda
+    em toda rota — por isso o site inteiro caiu, não só o login.
+    Diagnóstico passo a passo (várias hipóteses testadas e descartadas
+    antes de achar a real):
+    - Variáveis realmente ausentes no painel → descartado, Rodnei
+      confirmou visualmente que existiam.
+    - Nomes de variável corrompidos por tradução automática do Chrome
+      na tela da Vercel → parcialmente verdade (havia variáveis lixo
+      "vaga"/"vagas"/"vagass" de tentativas anteriores, removidas), mas
+      não era a causa do 500.
+    - Cache de build reaproveitado no redeploy → descartado, redeploy
+      sem cache deu o mesmo erro.
+    - **Causa real**: `NEXT_PUBLIC_SUPABASE_ANON_KEY` foi salva com
+      **Type = "Secret"** no painel da Vercel. Vercel não expõe
+      variáveis tipo Secret pro Next.js inlinar no bundle do navegador
+      durante o build (é por isso que `NEXT_PUBLIC_*` — que por
+      definição *deveria* ser público — precisa ser tipo "Config", não
+      "Secret"). O próprio Vercel mostra um aviso nesse sentido na tela
+      da variável, que só percebemos ao abrir o painel de edição dela.
+    - Vercel não permite converter Secret → Config numa variável já
+      salva; a correção exige apagar e recriar a variável do zero como
+      Config. **Ver `CLAUDE.md`, seção "BLOQUEADOR ATIVO", para o passo
+      a passo exato de correção — ainda pendente de execução.**
+11. **Sessão encerrada pelo Rodnei antes da correção final** — ele optou
+    por não continuar o ping-pong de prints pra corrigir o tipo da
+    variável nesta sessão. Todo o código e a documentação estão salvos e
+    no `main`; falta só a correção de configuração no painel da Vercel
+    (não código) pra o deploy voltar a funcionar. Qualquer sessão futura
+    (Claude ou outra ferramenta) deve começar por aí antes de investigar
+    qualquer outra coisa.
 
 ## 3. Escopo do MVP (do documento, seção 3)
 

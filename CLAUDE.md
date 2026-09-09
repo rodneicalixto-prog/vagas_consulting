@@ -65,6 +65,54 @@ funciona, pra não perder tempo tentando de novo o que já falhou:
 - Repo GitHub numérico (`id` da API, usado em `gitSource.repoId` da
   Vercel): `1362784831` (`rodneicalixto-prog/vagas_consulting`).
 
+## 🔴 BLOQUEADOR ATIVO — app em produção fora do ar (500 em toda rota)
+
+Deploy atual (`https://vagas-consulting-umber.vercel.app`) retorna 500 em
+**todas** as rotas, inclusive `/` e `/login`. Causa raiz confirmada nos
+runtime logs da Vercel:
+
+```
+Error running the exported Web Handler: Error: Your project's URL and Key
+are required to create a Supabase client!
+```
+
+O erro acontece dentro do **middleware/proxy** (`src/proxy.ts` →
+`src/lib/supabase/middleware.ts`), que roda em toda request antes de
+qualquer página — por isso o site inteiro cai, não só o login.
+
+**Causa raiz real**: a variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` no painel
+da Vercel (Settings → Environment Variables) foi salva com **Type =
+"Secret"**. Variáveis tipo Secret não ficam disponíveis pro Next.js
+inlinar no bundle do navegador durante o build — por isso o valor chega
+vazio em runtime mesmo com o nome e valor certos. O Vercel mostra o aviso
+"Remove the public framework prefix to keep this value private... If
+that's safe, change the variable to Config" nessa variável.
+
+**Não dá pra converter Secret → Config depois de salva** (Vercel bloqueia
+essa opção). A correção pendente é:
+
+1. Apagar a variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` inteira.
+2. Recriá-la do zero: nome `NEXT_PUBLIC_SUPABASE_ANON_KEY`, colar o
+   mesmo valor (está em `.env.local` local, e foi passado no chat), e
+   **marcar Type = "Config"** (não "Secret") antes de salvar.
+3. Conferir se `NEXT_PUBLIC_SUPABASE_URL` também não está como Secret
+   (se estiver, mesma correção).
+4. Redeploy do deployment de produção mais recente (menu "..." → 
+   Redeploy).
+5. Validar: `mcp__Vercel__web_fetch_vercel_url` em
+   `https://vagas-consulting-umber.vercel.app/login` deve responder
+   `200`, não `500`. Também checar `mcp__Vercel__get_runtime_logs`
+   (filtro `level: ["error"]`) pra confirmar que o erro sumiu.
+
+**Tentativas já feitas e descartadas** (não repetir): redeploy comum (2x,
+inclusive sem cache) não resolveu porque o problema não é cache — é o
+tipo da variável em si, que já nasce errada em todo build. Reconectar
+Composio/Vercel não é relevante aqui (isso já foi resolvido antes, ver
+acima).
+
+Nenhum código do app precisa mudar pra isso — é 100% configuração no
+painel da Vercel.
+
 ## Disciplina de registro
 
 Sempre que uma ação técnica relevante for concluída (deploy, acesso
