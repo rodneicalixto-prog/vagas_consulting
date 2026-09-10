@@ -1,6 +1,16 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { criarEmpresa, decidirEmpresa } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { SubmitButton } from "@/components/form-buttons";
+
+const STATUS_LABEL: Record<string, { label: string; className: string }> = {
+  rascunho: { label: "Rascunho", className: "bg-navy-bg text-navy" },
+  em_analise: { label: "Em análise", className: "bg-gold-bg text-gold-3" },
+  ajustes: { label: "Em ajustes", className: "bg-gold-bg text-gold-3" },
+  aprovada: { label: "Ativa", className: "bg-success-bg text-success" },
+  suspensa: { label: "Suspensa", className: "bg-danger-bg text-danger" },
+  bloqueada: { label: "Inativa", className: "bg-danger-bg text-danger" },
+};
 
 export default async function ModeracaoEmpresasPage() {
   await requireInternalUser("companies.manage");
@@ -27,53 +37,69 @@ export default async function ModeracaoEmpresasPage() {
           <input name="nome_fantasia" placeholder="Nome fantasia" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
           <input name="cnpj" inputMode="numeric" placeholder="CNPJ, somente números" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
           <input name="endereco" placeholder="Endereço" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-          <button className="rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white md:col-span-2">Cadastrar empresa</button>
+          <SubmitButton
+            pendingLabel="Cadastrando..."
+            className="rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white md:col-span-2"
+          >
+            Cadastrar empresa
+          </SubmitButton>
         </form>
         {!companies || companies.length === 0 ? (
           <p className="mt-10 text-center text-sm text-text-2">Nenhuma empresa cadastrada.</p>
         ) : (
           <div className="flex flex-col gap-4">
-            {companies.map((c) => (
-              <div key={c.id} className="rounded-2xl border border-border bg-surface p-5">
-                <h3 className="text-[14px] font-extrabold text-text">{c.nome_fantasia ?? c.razao_social}</h3>
-                <p className="mt-0.5 text-[11.5px] text-text-2">
-                  {c.cnpj ? `CNPJ ${c.cnpj}` : "CNPJ não informado"} · {c.endereco ?? "endereço não informado"}
-                </p>
-
-                <form action={decidirEmpresa} className="mt-4 flex flex-col gap-2.5">
-                  <input type="hidden" name="company_id" value={c.id} />
-                  <textarea
-                    name="motivo"
-                    placeholder="Motivo da alteração de status"
-                    rows={2}
-                    className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]"
-                  />
-                  <div className="flex gap-2.5">
-                    <button
-                      name="acao"
-                      value="corrigir"
-                      className="flex-1 rounded-lg border border-border bg-bg py-2.5 text-[12px] font-extrabold text-text-2"
-                    >
-                      Marcar para revisão
-                    </button>
-                    <button
-                      name="acao"
-                      value="rejeitar"
-                      className="flex-1 rounded-lg bg-danger py-2.5 text-[12px] font-extrabold text-white"
-                    >
-                      Inativar
-                    </button>
-                    <button
-                      name="acao"
-                      value="aprovar"
-                      className="flex-1 rounded-lg bg-success py-2.5 text-[12px] font-extrabold text-white"
-                    >
-                      Ativar
-                    </button>
+            {companies.map((c) => {
+              const s = STATUS_LABEL[c.status] ?? STATUS_LABEL.rascunho;
+              return (
+                <div key={c.id} className="rounded-2xl border border-border bg-surface p-5">
+                  <div className="flex items-center gap-2.5">
+                    <h3 className="text-[14px] font-extrabold text-text">{c.nome_fantasia ?? c.razao_social}</h3>
+                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${s.className}`}>
+                      {s.label}
+                    </span>
                   </div>
-                </form>
-              </div>
-            ))}
+                  <p className="mt-0.5 text-[11.5px] text-text-2">
+                    {c.cnpj ? `CNPJ ${c.cnpj}` : "CNPJ não informado"} · {c.endereco ?? "endereço não informado"}
+                  </p>
+
+                  <form action={decidirEmpresa} className="mt-4 flex flex-col gap-2.5">
+                    <input type="hidden" name="company_id" value={c.id} />
+                    <textarea
+                      name="motivo"
+                      placeholder="Motivo da alteração de status"
+                      rows={2}
+                      className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]"
+                    />
+                    <div className="flex gap-2.5">
+                      <SubmitButton
+                        name="acao"
+                        value="corrigir"
+                        pendingLabel="Salvando..."
+                        className="flex-1 rounded-lg border border-border bg-bg py-2.5 text-[12px] font-extrabold text-text-2"
+                      >
+                        Marcar para revisão
+                      </SubmitButton>
+                      <SubmitButton
+                        name="acao"
+                        value="rejeitar"
+                        pendingLabel="Salvando..."
+                        className="flex-1 rounded-lg bg-danger py-2.5 text-[12px] font-extrabold text-white"
+                      >
+                        Inativar
+                      </SubmitButton>
+                      <SubmitButton
+                        name="acao"
+                        value="aprovar"
+                        pendingLabel="Salvando..."
+                        className="flex-1 rounded-lg bg-success py-2.5 text-[12px] font-extrabold text-white"
+                      >
+                        Ativar
+                      </SubmitButton>
+                    </div>
+                  </form>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { criarVaga, decidirVaga } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { SubmitButton } from "@/components/form-buttons";
 
 export default async function CadastroDeVagasPage() {
   const { role } = await requireInternalUser("jobs.manage");
@@ -36,7 +37,12 @@ export default async function CadastroDeVagasPage() {
           <input name="remuneracao_texto" placeholder="Remuneração" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm md:col-span-2" />
           <textarea name="descricao" placeholder="Descrição" rows={3} className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
           <textarea name="requisitos" placeholder="Requisitos" rows={3} className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-          <button className="rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white md:col-span-2">Salvar rascunho</button>
+          <SubmitButton
+            pendingLabel="Salvando..."
+            className="rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white md:col-span-2"
+          >
+            Salvar rascunho
+          </SubmitButton>
         </form>
         {!jobs || jobs.length === 0 ? (
           <p className="mt-10 text-center text-sm text-text-2">Nenhuma vaga cadastrada.</p>
@@ -80,28 +86,31 @@ export default async function CadastroDeVagasPage() {
                       className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]"
                     />
                     <div className="flex gap-2.5">
-                      <button
+                      <SubmitButton
                         name="acao"
                         value="corrigir"
+                        pendingLabel="Salvando..."
                         className="flex-1 rounded-lg border border-border bg-bg py-2.5 text-[12px] font-extrabold text-text-2"
                       >
                         Voltar a rascunho
-                      </button>
-                      <button
+                      </SubmitButton>
+                      <SubmitButton
                         name="acao"
                         value="encerrar"
+                        pendingLabel="Salvando..."
                         className="flex-1 rounded-lg bg-danger py-2.5 text-[12px] font-extrabold text-white"
                       >
                         Encerrar
-                      </button>
+                      </SubmitButton>
                       {role !== "operador" && (
-                        <button
+                        <SubmitButton
                           name="acao"
                           value="publicar"
+                          pendingLabel="Salvando..."
                           className="flex-1 rounded-lg bg-success py-2.5 text-[12px] font-extrabold text-white"
                         >
                           Publicar
-                        </button>
+                        </SubmitButton>
                       )}
                     </div>
                   </form>
