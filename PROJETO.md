@@ -320,6 +320,42 @@ sessões futuras.
     que faça subquery na própria tabela — sempre extrair para uma função
     `SECURITY DEFINER` (ou reescrever sem self-join) desde o início.
 
+18. **Incidente do painel admin (10/09/2026) — RESOLVIDO, eram dois
+    problemas empilhados.** O handoff da seção 10 registrava o painel
+    `/admin` quebrando com "This page couldn't load" (digest
+    `3578782868`) depois do login. Investigação desta sessão:
+    - **Problema 1 (schema):** a migration `0006` nunca tinha sido
+      aplicada no projeto Supabase real (`tfipbxjslpxbaybpxsql`) —
+      confirmado via SQL direto: o enum `admin_perfil` ainda tinha os 5
+      valores antigos (`superadmin, operacoes, compliance, suporte,
+      financeiro`) e a tabela `company_members` ainda existia. Aplicada
+      via `apply_migration` do MCP nativo do Supabase (ref direto, não
+      apareceu em `list_projects` — ver `CLAUDE.md`). A 1 linha de seed
+      que existia em `company_members` foi removida junto (esperado, a
+      migration dropa a tabela).
+    - **Problema 2 (o que causava o crash de fato):** mesmo com o schema
+      corrigido, o mesmo digest continuou aparecendo. A causa real,
+      encontrada via `get_runtime_errors` (tool MCP oficial da Vercel,
+      agregada — não trava como `get_runtime_logs` puro via streaming):
+      `Error: supabaseKey is required.` em `createAdminClient`
+      (`src/lib/supabase/admin.ts`). A env var `SUPABASE_SERVICE_ROLE_KEY`
+      estava configurada no painel da Vercel mas chegava vazia/corrompida
+      em runtime — mesmo padrão exato do bloqueador do item 14 (que foi
+      na `ANON_KEY`). Corrigido com delete + recreate da env var via API
+      da Vercel (valor pego direto no Supabase Studio, nunca por decrypt
+      via API — bloqueado pelo próprio ambiente por segurança) e um
+      redeploy manual do deployment de produção (env var só é lida no
+      cold start).
+    - Validado visualmente: painel `/admin` → "Acesso e permissões"
+      carregando limpo, Rodnei Calixto listado como Superadministrador.
+    - **Lição para o futuro:** se o mesmo `digest` de erro persistir
+      depois de corrigir uma causa aparente, não assumir outra causa do
+      mesmo tipo (ex.: "deve ser mais um problema de schema") — checar
+      `get_runtime_errors` da Vercel primeiro, é rápido e agregado. Env
+      var "sumindo" silenciosamente na Vercel já aconteceu 2x neste
+      projeto — se um 500 aparecer de novo do nada, suspeitar de env var
+      ausente/vazia antes de investigar lógica ou schema.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
@@ -434,10 +470,15 @@ bloqueiam decisões de produto/arquitetura importantes:
    A migration `0006` converte os perfis para superadministrador,
    administrador e operador, desativa `company_members` e restringe novas
    candidaturas a vagas publicadas.
-4. Aplicar a migration `0006` ao projeto Supabase e regenerar os tipos a partir
-   do banco remoto.
+4. ~~Aplicar a migration `0006` ao projeto Supabase.~~ ✅ (10/09/2026, ver
+   item 18 do log). Ainda falta **regenerar os tipos TypeScript** a partir
+   do banco remoto (`generate_typescript_types`) — `src/lib/supabase/types.ts`
+   pode estar desatualizado em relação ao schema pós-0006.
 5. Validar login, logout, cadastro interno de empresas e vagas e restrições de
-   cada papel em ambiente integrado.
+   cada papel em ambiente integrado. **Parcial:** login + carregamento do
+   painel admin já validados (item 18); cadastro de empresas/vagas e as
+   restrições por papel (`admin`/`operador`) ainda não foram testados de
+   ponta a ponta.
 6. Criar e aplicar a migration da constraint XOR de mensagens descrita na seção
    5.1.
 7. Implementar recuperação de senha, MFA administrativo e testes automatizados
@@ -474,6 +515,14 @@ Toda entrega que modificar documentação deve informar uma destas situações:
    deve ser comunicada, sem registrar uma confirmação fictícia.
 
 ## 10. Handoff do incidente do painel administrativo (10/09/2026)
+
+> **RESOLVIDO em 10/09/2026, sessão seguinte a este handoff.** Causa raiz
+> confirmada e corrigida — ver item 18 do log em 2.2. O handoff abaixo é
+> mantido como registro histórico do diagnóstico em andamento; note que o
+> item 5 de "Tentativas realizadas" já suspeitava corretamente da
+> `SUPABASE_SERVICE_ROLE_KEY`, mas descartou por falta de log — a suspeita
+> era certa, só faltava a evidência (que veio de `get_runtime_errors`, não
+> existia essa tool disponível na sessão deste handoff).
 
 ### Estado confirmado
 
@@ -528,7 +577,7 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 7. Somente declarar o incidente encerrado depois de confirmar o painel em
    produção e a ausência de novos erros nos Runtime Logs.
 
-# FECHAMENTO
+# FECHAMENTO (handoff original de 10/09/2026, mantido como histórico)
 
 1. **O que foi feito ou decidido:** foi registrado o estado real do incidente,
    incluindo o digest, as verificações locais, a correção provisória no commit
@@ -541,3 +590,24 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 3. **Próximo passo claro:** revogar o token exposto e, em ambiente com acesso à
    Vercel, obter o Runtime Log do digest `3578782868` antes de realizar qualquer
    nova alteração no painel.
+
+# FECHAMENTO DEFINITIVO DO INCIDENTE (10/09/2026, sessão seguinte)
+
+1. **O que foi feito:** causa raiz confirmada em duas camadas (migration 0006
+   não aplicada + `SUPABASE_SERVICE_ROLE_KEY` vazia na Vercel), ambas
+   corrigidas com autorização explícita do Rodnei a cada ação de risco
+   (migration destrutiva, redeploy de produção). Detalhes técnicos completos
+   no item 18 do log (seção 2.2). Painel `/admin` validado visualmente
+   funcionando.
+2. **O que está pendente:** regenerar `src/lib/supabase/types.ts` a partir do
+   schema pós-migration-0006 (item 4 da seção 8); testar cadastro de
+   empresas/vagas e restrições por papel de ponta a ponta (item 5); resolver
+   a constraint XOR de mensagens (seção 5.1, item 6 da seção 8); revogar os
+   tokens pessoais da Vercel que circularam nesta sessão e na anterior
+   (nenhum foi salvo em arquivo, mas ambos passaram por chat/conversa —
+   rotacionar por precaução). Sincronização com o cofre do Obsidian também
+   pendente pelo mesmo motivo já registrado na seção 9 (sem acesso ao
+   caminho do Windows a partir deste ambiente de execução).
+3. **Próximo passo claro:** seguir a seção 8 a partir do item 4 (regenerar
+   tipos TypeScript) antes de qualquer nova feature — o schema mudou, o
+   código de tipos ainda não foi atualizado pra refletir isso.

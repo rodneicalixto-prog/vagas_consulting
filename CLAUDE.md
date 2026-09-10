@@ -132,6 +132,46 @@ sem o painel. Validado com `web_fetch_vercel_url` (200 em `/login`,
 `/portal/login`, `/admin/login`) e `get_runtime_logs` (sem erros no
 deploy novo).
 
+## Regra permanente de acesso ao Supabase deste projeto
+
+O projeto Supabase real (`tfipbxjslpxbaybpxsql`, org "SOS MKT") **nunca**
+aparece em `list_projects` do MCP nativo (essa tool só lista a org padrão
+da conta MCP, hoje `jfpiyugtvtuihjuqweyc` / "calixto testesProject", que é
+outro projeto do Rodnei — não confundir os dois). Isso não significa falta
+de acesso: **chamar `execute_sql`/`list_tables`/`apply_migration`/
+`list_migrations` passando `project_id: tfipbxjslpxbaybpxsql` direto
+funciona normalmente**, sem precisar listar antes. Nunca concluir "sem
+acesso a esse Supabase" só porque `list_projects` não o mostra.
+
+O Composio também tem uma conexão `supabase` ativa e persistente (não pedir
+reautorização sem checar `COMPOSIO_MANAGE_CONNECTIONS` primeiro), mas para
+este projeto específico o caminho já testado e confiável é o MCP nativo com
+o ref direto acima — só recorrer ao Composio se isso falhar.
+
+**Nenhuma tool de MCP (nativa ou Composio) expõe a `service_role` secret
+key** — é por design, e correto. Para pegar esse valor (ex.: recriar a env
+var na Vercel), sempre pedir pro Rodnei buscar em Supabase Studio → Project
+Settings → API → Project API keys → `service_role`, e nunca tentar
+decrypt via Management API (o ambiente bloqueia por segurança, com razão).
+
+## Runtime errors da Vercel — use a tool certa
+
+Para investigar um erro em produção, `get_runtime_errors` (MCP oficial da
+Vercel, agregado por grupo de erro) é muito mais rápido e confiável que
+`get_runtime_logs` puro — este último é streaming via SSE e trava/dá
+timeout ("Exceeded query duration limit") quando chamado via curl simples.
+**Sempre tentar `get_runtime_errors` primeiro** para "por que a produção
+está dando erro" — só cair pro `get_runtime_logs` (com `requestId`
+específico) se precisar do contexto completo de uma requisição, não só o
+erro agregado.
+
+**Se o mesmo `digest` de erro persistir depois de corrigir uma causa
+aparente, não presumir outra causa do mesmo tipo** — reconsultar
+`get_runtime_errors` de novo antes de investigar mais fundo. Já aconteceu
+neste projeto: um crash com um único digest tinha DUAS causas empilhadas
+(schema desatualizado + env var vazia) — corrigir só uma não muda o
+digest, porque a exceção lançada pela outra causa é idêntica em texto/stack.
+
 ## Disciplina de registro
 
 Sempre que uma ação técnica relevante for concluída (deploy, acesso
