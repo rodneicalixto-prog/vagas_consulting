@@ -529,12 +529,14 @@ export type Database = {
           curriculo_url: string | null
           disponibilidade: string | null
           endereco: string | null
+          experiencias_profissionais: Json
           historico_terceirizadoras: Json
           id: string
           idade: number | null
           modalidades_desejadas: Database["public"]["Enums"]["modalidade_vaga"][]
           modelo_trabalho: Database["public"]["Enums"]["modelo_trabalho"][]
           nome_completo: string
+          nunca_trabalhou: boolean
           perfil_completo_pct: number
           resumo: string | null
           status_validacao: string
@@ -554,12 +556,14 @@ export type Database = {
           curriculo_url?: string | null
           disponibilidade?: string | null
           endereco?: string | null
+          experiencias_profissionais?: Json
           historico_terceirizadoras?: Json
           id: string
           idade?: number | null
           modalidades_desejadas?: Database["public"]["Enums"]["modalidade_vaga"][]
           modelo_trabalho?: Database["public"]["Enums"]["modelo_trabalho"][]
           nome_completo: string
+          nunca_trabalhou?: boolean
           perfil_completo_pct?: number
           resumo?: string | null
           status_validacao?: string
@@ -579,12 +583,14 @@ export type Database = {
           curriculo_url?: string | null
           disponibilidade?: string | null
           endereco?: string | null
+          experiencias_profissionais?: Json
           historico_terceirizadoras?: Json
           id?: string
           idade?: number | null
           modalidades_desejadas?: Database["public"]["Enums"]["modalidade_vaga"][]
           modelo_trabalho?: Database["public"]["Enums"]["modelo_trabalho"][]
           nome_completo?: string
+          nunca_trabalhou?: boolean
           perfil_completo_pct?: number
           resumo?: string | null
           status_validacao?: string

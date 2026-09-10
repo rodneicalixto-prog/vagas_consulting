@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
   IconEdit,
@@ -10,10 +11,10 @@ import { ConsentToggle } from "./consent-toggle";
 import { signOut } from "./actions";
 
 const menu = [
-  { label: "Dados pessoais", icon: IconUser },
-  { label: "Currículo e experiências", icon: IconResume },
-  { label: "Preferências de vaga", icon: IconPreferences },
-  { label: "Documentos", icon: IconDoc },
+  { label: "Dados pessoais", icon: IconUser, href: null },
+  { label: "Currículo e experiências", icon: IconResume, href: "/experiencias" },
+  { label: "Preferências de vaga", icon: IconPreferences, href: null },
+  { label: "Documentos", icon: IconDoc, href: null },
 ];
 
 function iniciais(nome: string) {
@@ -70,19 +71,28 @@ export default async function PerfilPage() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-        {menu.map(({ label, icon: Icon }, i) => (
-          <button
-            key={label}
-            className={`flex w-full items-center gap-3 px-3.5 py-3.5 text-left ${
-              i !== menu.length - 1 ? "border-b border-border" : ""
-            }`}
-          >
-            <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-navy-bg text-navy">
-              <Icon size={16} />
-            </span>
-            <span className="text-[13px] font-bold">{label}</span>
-          </button>
-        ))}
+        {menu.map(({ label, icon: Icon, href }, i) => {
+          const className = `flex w-full items-center gap-3 px-3.5 py-3.5 text-left ${
+            i !== menu.length - 1 ? "border-b border-border" : ""
+          }`;
+          const content = (
+            <>
+              <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-navy-bg text-navy">
+                <Icon size={16} />
+              </span>
+              <span className="text-[13px] font-bold">{label}</span>
+            </>
+          );
+          return href ? (
+            <Link key={label} href={href} className={className}>
+              {content}
+            </Link>
+          ) : (
+            <button key={label} className={className}>
+              {content}
+            </button>
+          );
+        })}
       </div>
 
       <div>

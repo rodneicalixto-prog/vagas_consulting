@@ -567,6 +567,31 @@ sessões futuras.
     como pendência explícita na própria tela (não vou adivinhar região
     a partir de texto livre).
 
+33. **Currículo e experiências obrigatório pós-onboarding (10/09/2026)**
+    — os 4 itens do menu "Perfil" (`src/app/(app)/perfil/page.tsx`) eram
+    `<button>` sem `onClick`/`href`, não faziam nada. Pesquisado modelo
+    real de formulário de solicitação de emprego (Jotform,
+    FitSmallBusiness) pra estruturar o bloco de histórico profissional:
+    empresa, cargo, período, motivo de saída. Migration
+    `0013_experiencias_profissionais.sql` adiciona
+    `profiles.experiencias_profissionais` (jsonb) e
+    `profiles.nunca_trabalhou` (bool, escape hatch pra quem nunca
+    trabalhou/primeiro emprego). Nova rota `/experiencias` (passo 3,
+    mesmo padrão do `/onboarding`) pede as 2 últimas experiências (com
+    "adicionar mais uma"). **Gate obrigatório** em
+    `src/app/(app)/layout.tsx` (antes só renderizava `<AppShell>`, sem
+    checagem nenhuma): se o perfil não tem experiência preenchida nem
+    marcou "nunca trabalhei", redireciona pra `/experiencias` antes de
+    liberar qualquer rota do grupo `(app)` (vagas, início, processos,
+    mensagens, perfil) — vale pra candidatos novos e também pros que já
+    tinham conta antes desta mudança. Botão "Currículo e experiências"
+    em `/perfil` virou link real; os outros 3 (Dados pessoais,
+    Preferências de vaga, Documentos) continuam mortos — registrado como
+    pendência separada, mesmo tipo de bug, fora do pedido desta vez.
+    **Sem teste de navegador real possível** (fluxo depende de sessão
+    autenticada real do Supabase, bloqueado neste ambiente de execução)
+    — validação final em produção pelo Rodnei.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
