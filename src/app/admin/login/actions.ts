@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isMissingColumn } from "@/lib/supabase/errors";
 
 export type AdminAuthState = { error: string | null };
 
@@ -19,13 +20,26 @@ export async function adminLogin(
     return { error: "E-mail ou senha incorretos." };
   }
 
-  const { data: admin } = await supabase
+  const access = await supabase
     .from("admin_users")
-    .select("user_id")
+    .select("user_id, ativo")
     .eq("user_id", data.user.id)
     .maybeSingle();
 
-  if (!admin) {
+  let hasAccess = !access.error && Boolean(access.data?.ativo);
+
+  // Compatibilidade durante o intervalo entre o deploy do código e a
+  // aplicação da migration 0006, que adiciona a coluna `ativo`.
+  if (isMissingColumn(access.error, "ativo")) {
+    const legacyAccess = await supabase
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+    hasAccess = !legacyAccess.error && Boolean(legacyAccess.data);
+  }
+
+  if (!hasAccess) {
     await supabase.auth.signOut();
     return { error: "Esta conta não tem acesso ao painel administrativo." };
   }

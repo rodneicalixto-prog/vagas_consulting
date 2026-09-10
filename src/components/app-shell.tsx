@@ -10,6 +10,7 @@ import {
   IconMessage,
   IconUser,
 } from "@/components/icons";
+import { signOut } from "@/app/(app)/perfil/actions";
 
 const navItems = [
   { href: "/inicio", label: "Início", icon: IconHome },
@@ -48,6 +49,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </nav>
+        <form action={signOut} className="mt-auto px-3 pb-5">
+          <button className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm font-semibold text-text-2 hover:bg-navy-bg hover:text-navy">
+            Sair
+          </button>
+        </form>
       </aside>
 
       {/* Content */}
