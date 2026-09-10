@@ -17,6 +17,7 @@ type CandidatoRow = {
   cidade: string | null;
   modalidades_desejadas: string[] | null;
   status_validacao: string;
+  blacklisted: boolean;
 };
 
 export default async function CandidatosPage() {
@@ -26,7 +27,7 @@ export default async function CandidatosPage() {
   const [{ data: profiles }, { data: usersPage }] = await Promise.all([
     admin
       .from("profiles")
-      .select("id, nome_completo, cidade, titulo_profissional, modalidades_desejadas, status_validacao, created_at")
+      .select("id, nome_completo, cidade, titulo_profissional, modalidades_desejadas, status_validacao, blacklisted, created_at")
       .order("created_at", { ascending: false }),
     admin.auth.admin.listUsers({ perPage: 1000 }),
   ]);
@@ -53,7 +54,14 @@ export default async function CandidatosPage() {
       cells: {
         nome: (
           <div className="min-w-0">
-            <div className="truncate font-bold text-text">{row.nome_completo}</div>
+            <div className="flex items-center gap-1.5">
+              <span className="truncate font-bold text-text">{row.nome_completo}</span>
+              {row.blacklisted && (
+                <span className="shrink-0 rounded bg-danger px-1.5 py-0.5 text-[9px] font-extrabold text-white">
+                  BLACK LIST
+                </span>
+              )}
+            </div>
             <div className="truncate text-[11px] text-text-2">{row.email}</div>
           </div>
         ),

@@ -13,6 +13,7 @@ const NAV = [
   { href: "/admin/candidatos", label: "Candidatos" },
   { href: "/admin/leads", label: "Leads" },
   { href: "/admin/prestacoes", label: "Prestações" },
+  { href: "/admin/blacklist", label: "Black list" },
   { href: "/admin/denuncias", label: "Denúncias", roles: ["superadmin", "admin"] },
   { href: "/admin/lgpd", label: "LGPD", roles: ["superadmin", "admin"] },
   { href: "/admin/auditoria", label: "Auditoria", roles: ["superadmin", "admin"] },

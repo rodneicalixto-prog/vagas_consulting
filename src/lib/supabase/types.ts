@@ -520,6 +520,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          blacklist_em: string | null
+          blacklist_motivo: string | null
+          blacklist_por: string | null
+          blacklisted: boolean
           cidade: string | null
           created_at: string
           curriculo_url: string | null
@@ -541,6 +545,10 @@ export type Database = {
           validado_por: string | null
         }
         Insert: {
+          blacklist_em?: string | null
+          blacklist_motivo?: string | null
+          blacklist_por?: string | null
+          blacklisted?: boolean
           cidade?: string | null
           created_at?: string
           curriculo_url?: string | null
@@ -562,6 +570,10 @@ export type Database = {
           validado_por?: string | null
         }
         Update: {
+          blacklist_em?: string | null
+          blacklist_motivo?: string | null
+          blacklist_por?: string | null
+          blacklisted?: boolean
           cidade?: string | null
           created_at?: string
           curriculo_url?: string | null

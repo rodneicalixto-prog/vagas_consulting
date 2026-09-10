@@ -40,3 +40,47 @@ export async function validarCandidato(formData: FormData) {
 
   revalidatePath("/admin/candidatos");
 }
+
+export async function alterarBlacklist(formData: FormData) {
+  const { user } = await requireInternalUser("pipeline.manage");
+  const candidateId = String(formData.get("candidate_id"));
+  const acao = String(formData.get("acao")); // "adicionar" | "remover"
+  const motivo = String(formData.get("motivo") ?? "").trim();
+
+  if (acao === "adicionar" && !motivo) {
+    throw new Error("Motivo é obrigatório para colocar na black list.");
+  }
+
+  const admin = createAdminClient();
+  const { data: before } = await admin.from("profiles").select("*").eq("id", candidateId).single();
+
+  const blacklisted = acao === "adicionar";
+  const { data: after, error } = await admin
+    .from("profiles")
+    .update({
+      blacklisted,
+      blacklist_motivo: blacklisted ? motivo : null,
+      blacklist_por: blacklisted ? user.id : null,
+      blacklist_em: blacklisted ? new Date().toISOString() : null,
+    })
+    .eq("id", candidateId)
+    .select()
+    .single();
+
+  if (error || !after) {
+    throw new Error("Não foi possível atualizar a black list. Tente de novo.");
+  }
+
+  await admin.from("audit_log").insert({
+    ator_id: user.id,
+    acao: blacklisted ? "candidato_blacklist_adicionado" : "candidato_blacklist_removido",
+    objeto_tipo: "profile",
+    objeto_id: candidateId,
+    antes: before,
+    depois: after,
+  });
+
+  revalidatePath("/admin/candidatos");
+  revalidatePath("/admin/blacklist");
+  revalidatePath(`/admin/candidatos/${candidateId}`);
+}

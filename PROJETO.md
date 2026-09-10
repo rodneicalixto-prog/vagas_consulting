@@ -538,6 +538,22 @@ sessões futuras.
     Server Component também precisa do valor real — o export existe,
     mas o valor não atravessa a fronteira.
 
+30. **Animação de entrada no modal de instalação (10/09/2026)** —
+    `.modal`/`.modal-overlay` em `globals.css` (fade+scale no card,
+    fade+blur no overlay), aplicado no único modal real da plataforma
+    (`InstallLeadCapture`).
+
+31. **Black list de candidatos (10/09/2026)** — nova aba `/admin/blacklist`,
+    visível a superadmin/admin/operador (mesma capability `pipeline.manage`
+    das outras telas de pipeline, sem restrição extra de papel — pedido
+    explícito do Rodnei). Migration `0012_blacklist_candidatos.sql`
+    adiciona `profiles.blacklisted/blacklist_motivo/blacklist_em/
+    blacklist_por`. Nova action `alterarBlacklist`
+    (`src/app/admin/(app)/candidatos/actions.ts`), motivo obrigatório
+    pra adicionar. Selo "BLACK LIST" visível em `/admin/candidatos` e
+    em `/admin/candidatos/[id]`, com botão de marcar/remover na própria
+    tela de detalhe.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

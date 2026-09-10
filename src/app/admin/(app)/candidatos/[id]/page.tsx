@@ -7,6 +7,7 @@ import { SubmitButton } from "@/components/form-buttons";
 import { statusLabel, statusPillClass, safeHttpUrl } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
 import { atualizarStatusCandidatura } from "./actions";
+import { alterarBlacklist } from "../actions";
 
 const STATUS_OPCOES: Enums<"status_candidatura">[] = [
   "recebida",
@@ -50,7 +51,7 @@ export default async function CandidatoDetalhePage({
       client
         .from("profiles")
         .select(
-          "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at",
+          "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo",
         )
         .eq("id", id)
         .maybeSingle(),
@@ -167,6 +168,11 @@ export default async function CandidatoDetalhePage({
           <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${statusCandidato.className}`}>
             {statusCandidato.label}
           </span>
+          {profile.blacklisted && (
+            <span className="rounded-full bg-danger px-2.5 py-1 text-[10px] font-extrabold text-white">
+              BLACK LIST
+            </span>
+          )}
         </div>
         <p className="mt-1 text-xs text-text-2">
           {authUser.user?.email ?? "—"} · {profile.telefone ?? "sem telefone"} ·{" "}
@@ -222,6 +228,48 @@ export default async function CandidatoDetalhePage({
           </div>
           {profile.resumo && (
             <p className="mt-3 rounded-lg bg-bg p-3 text-[12px] leading-relaxed text-text-2">{profile.resumo}</p>
+          )}
+        </div>
+
+        <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
+          <h3 className="mb-1 text-sm font-extrabold text-text">Black list</h3>
+          {profile.blacklisted ? (
+            <>
+              <p className="mb-3 text-[12px] text-danger">
+                Na black list — motivo: {profile.blacklist_motivo}
+              </p>
+              <form action={alterarBlacklist}>
+                <input type="hidden" name="candidate_id" value={id} />
+                <input type="hidden" name="acao" value="remover" />
+                <SubmitButton
+                  pendingLabel="Salvando..."
+                  className="rounded-lg bg-success px-4 py-2 text-[12px] font-extrabold text-white"
+                >
+                  Remover da black list
+                </SubmitButton>
+              </form>
+            </>
+          ) : (
+            <form action={alterarBlacklist} className="flex flex-wrap items-end gap-2.5">
+              <input type="hidden" name="candidate_id" value={id} />
+              <input type="hidden" name="acao" value="adicionar" />
+              <label className="flex flex-1 flex-col gap-1">
+                <span className="text-[10px] font-bold text-text-2">
+                  Motivo (obrigatório — ex.: não compareceu, desistência sem aviso)
+                </span>
+                <input
+                  name="motivo"
+                  required
+                  className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]"
+                />
+              </label>
+              <SubmitButton
+                pendingLabel="Salvando..."
+                className="rounded-lg bg-danger px-4 py-2 text-[12px] font-extrabold text-white"
+              >
+                Colocar na black list
+              </SubmitButton>
+            </form>
           )}
         </div>
 
