@@ -1,19 +1,46 @@
 import { redirect } from "next/navigation";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { FunnelBarChart, CategoryBarChart, TrendLineChart, CHART_COLORS } from "@/components/charts";
+import {
+  FunnelBarChart,
+  CategoryBarChart,
+  TrendLineChart,
+  DonutChart,
+  GroupedBarChart,
+  CHART_COLORS,
+} from "@/components/charts";
+import { statusLabel } from "@/lib/format";
+import type { Enums } from "@/lib/supabase/types";
+
+const STATUS_CANDIDATURA_COLOR: Record<string, string> = {
+  recebida: CHART_COLORS.neutro,
+  triagem: CHART_COLORS.atencao,
+  entrevista: CHART_COLORS.info,
+  teste: CHART_COLORS.info,
+  proposta: CHART_COLORS.destaque,
+  contratado: CHART_COLORS.sucesso,
+  rejeitada: CHART_COLORS.risco,
+  desistente: CHART_COLORS.risco,
+  expirada: "#9aa0a8",
+};
+
+const STATUS_CANDIDATO_LABEL: Record<string, string> = {
+  pendente: "Pendente",
+  aprovado: "Aprovado",
+  reprovado: "Reprovado",
+};
+
+const STATUS_CANDIDATO_COLOR: Record<string, string> = {
+  pendente: CHART_COLORS.atencao,
+  aprovado: CHART_COLORS.sucesso,
+  reprovado: CHART_COLORS.risco,
+};
 
 const STATUS_PAGAMENTO_COLOR: Record<string, string> = {
   pendente: CHART_COLORS.atencao,
   pago: CHART_COLORS.sucesso,
   parcial: CHART_COLORS.info,
   atrasado: CHART_COLORS.risco,
-};
-
-const MODALIDADE_COLOR: Record<string, string> = {
-  efetiva: CHART_COLORS.neutro,
-  pj: CHART_COLORS.destaque,
-  temporaria: CHART_COLORS.atencao,
 };
 
 const MODALIDADE_LABEL: Record<string, string> = {
@@ -56,6 +83,8 @@ export default async function EstrategicoPage() {
     { data: vagasPorModalidade },
     { data: leadsRecentes },
     { data: candidatosRecentes },
+    { data: candidaturasPorStatus },
+    { data: candidatosPorValidacao },
   ] = await Promise.all([
     admin.from("app_install_events").select("id", { count: "exact", head: true }),
     admin.from("leads").select("id", { count: "exact", head: true }),
@@ -63,9 +92,11 @@ export default async function EstrategicoPage() {
     admin.from("applications").select("id", { count: "exact", head: true }),
     admin.from("applications").select("id", { count: "exact", head: true }).eq("status", "contratado"),
     admin.from("service_engagements").select("status_pagamento, valor"),
-    admin.from("jobs").select("modalidade").eq("status", "publicada"),
+    admin.from("jobs").select("modalidade, status").in("status", ["publicada", "preenchida"]),
     admin.from("leads").select("created_at").gte("created_at", setentaDiasAtras),
     admin.from("profiles").select("created_at").gte("created_at", setentaDiasAtras),
+    admin.from("applications").select("status"),
+    admin.from("profiles").select("status_validacao"),
   ]);
 
   const porStatusPagamento = { pendente: 0, pago: 0, parcial: 0, atrasado: 0 } as Record<string, number>;
@@ -84,14 +115,42 @@ export default async function EstrategicoPage() {
     color: STATUS_PAGAMENTO_COLOR[status] ?? CHART_COLORS.info,
   }));
 
-  const porModalidade = { efetiva: 0, pj: 0, temporaria: 0 } as Record<string, number>;
+  const porModalidadeStatus: Record<string, { publicadas: number; preenchidas: number }> = {
+    efetiva: { publicadas: 0, preenchidas: 0 },
+    pj: { publicadas: 0, preenchidas: 0 },
+    temporaria: { publicadas: 0, preenchidas: 0 },
+  };
   for (const j of vagasPorModalidade ?? []) {
-    porModalidade[j.modalidade] = (porModalidade[j.modalidade] ?? 0) + 1;
+    const bucket = porModalidadeStatus[j.modalidade] ?? (porModalidadeStatus[j.modalidade] = { publicadas: 0, preenchidas: 0 });
+    if (j.status === "publicada") bucket.publicadas += 1;
+    else bucket.preenchidas += 1;
   }
-  const modalidadeChart = Object.entries(porModalidade).map(([modalidade, valor]) => ({
+  const modalidadeComparativo = Object.entries(porModalidadeStatus).map(([modalidade, v]) => ({
     categoria: MODALIDADE_LABEL[modalidade] ?? modalidade,
+    publicadas: v.publicadas,
+    preenchidas: v.preenchidas,
+  }));
+
+  const porStatusCandidatura: Partial<Record<Enums<"status_candidatura">, number>> = {};
+  for (const a of candidaturasPorStatus ?? []) {
+    porStatusCandidatura[a.status] = (porStatusCandidatura[a.status] ?? 0) + 1;
+  }
+  const candidaturasChart = Object.entries(porStatusCandidatura)
+    .filter(([, valor]) => valor > 0)
+    .map(([status, valor]) => ({
+      categoria: statusLabel[status as Enums<"status_candidatura">],
+      valor,
+      color: STATUS_CANDIDATURA_COLOR[status] ?? CHART_COLORS.neutro,
+    }));
+
+  const porStatusCandidato = { pendente: 0, aprovado: 0, reprovado: 0 } as Record<string, number>;
+  for (const p of candidatosPorValidacao ?? []) {
+    porStatusCandidato[p.status_validacao] = (porStatusCandidato[p.status_validacao] ?? 0) + 1;
+  }
+  const candidatosValidacaoChart = Object.entries(porStatusCandidato).map(([status, valor]) => ({
+    categoria: STATUS_CANDIDATO_LABEL[status] ?? status,
     valor,
-    color: MODALIDADE_COLOR[modalidade] ?? CHART_COLORS.neutro,
+    color: STATUS_CANDIDATO_COLOR[status] ?? CHART_COLORS.neutro,
   }));
 
   const funilChart = [
@@ -159,9 +218,31 @@ export default async function EstrategicoPage() {
           </div>
 
           <div className="rounded-2xl border border-border bg-surface p-5">
-            <h3 className="text-sm font-extrabold text-text">Vagas publicadas por modalidade</h3>
-            <p className="mb-1 mt-0.5 text-[11.5px] text-text-2">Composição do portfólio ativo</p>
-            <CategoryBarChart data={modalidadeChart} />
+            <h3 className="text-sm font-extrabold text-text">Vagas publicadas × preenchidas</h3>
+            <p className="mb-1 mt-0.5 text-[11.5px] text-text-2">Taxa de preenchimento por modalidade</p>
+            <GroupedBarChart
+              data={modalidadeComparativo}
+              series={[
+                { key: "publicadas", name: "Publicadas (em aberto)", color: CHART_COLORS.info },
+                { key: "preenchidas", name: "Preenchidas", color: CHART_COLORS.sucesso },
+              ]}
+            />
+          </div>
+
+          <div className="rounded-2xl border border-border bg-surface p-5">
+            <h3 className="text-sm font-extrabold text-text">Candidaturas por etapa do pipeline</h3>
+            <p className="mb-1 mt-0.5 text-[11.5px] text-text-2">Onde as candidaturas estão paradas hoje</p>
+            {candidaturasChart.length === 0 ? (
+              <p className="mt-8 text-center text-[12px] text-text-2">Nenhuma candidatura ainda.</p>
+            ) : (
+              <DonutChart data={candidaturasChart} />
+            )}
+          </div>
+
+          <div className="rounded-2xl border border-border bg-surface p-5">
+            <h3 className="text-sm font-extrabold text-text">Candidatos por validação de cadastro</h3>
+            <p className="mb-1 mt-0.5 text-[11.5px] text-text-2">Fila de moderação de perfis</p>
+            <DonutChart data={candidatosValidacaoChart} />
           </div>
         </div>
 

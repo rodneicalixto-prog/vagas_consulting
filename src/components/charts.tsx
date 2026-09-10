@@ -6,6 +6,8 @@ import {
   Bar,
   LineChart,
   Line,
+  PieChart,
+  Pie,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -70,6 +72,79 @@ export function CategoryBarChart({
             <Cell key={i} fill={d.color} />
           ))}
         </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function DonutChart({
+  data,
+}: {
+  data: { categoria: string; valor: number; color: string }[];
+}) {
+  const total = data.reduce((acc, d) => acc + d.valor, 0);
+  return (
+    <ResponsiveContainer width="100%" height={220}>
+      <PieChart>
+        <Tooltip contentStyle={{ borderRadius: 10, border: `1px solid ${GRID}`, fontSize: 12 }} />
+        <Legend wrapperStyle={{ fontSize: 11 }} />
+        <Pie
+          data={data}
+          dataKey="valor"
+          nameKey="categoria"
+          innerRadius={50}
+          outerRadius={80}
+          paddingAngle={total > 0 ? 2 : 0}
+        >
+          {data.map((d, i) => (
+            <Cell key={i} fill={d.color} />
+          ))}
+        </Pie>
+      </PieChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function ComparisonBarChart({
+  data,
+}: {
+  data: { periodo: string; valor: number }[];
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <BarChart data={data} margin={{ left: 0, right: 8, top: 8, bottom: 8 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+        <XAxis dataKey="periodo" tick={{ fontSize: 10.5 }} />
+        <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={28} />
+        <Tooltip contentStyle={{ borderRadius: 10, border: `1px solid ${GRID}`, fontSize: 12 }} />
+        <Bar dataKey="valor" radius={[6, 6, 0, 0]}>
+          {data.map((d, i) => (
+            <Cell key={i} fill={i === data.length - 1 ? CHART_COLORS.sucesso : CHART_COLORS.info} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function GroupedBarChart({
+  data,
+  series,
+}: {
+  data: Record<string, string | number>[];
+  series: { key: string; name: string; color: string }[];
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <BarChart data={data} margin={{ left: 0, right: 8, top: 8, bottom: 8 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+        <XAxis dataKey="categoria" tick={{ fontSize: 11 }} />
+        <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={28} />
+        <Tooltip contentStyle={{ borderRadius: 10, border: `1px solid ${GRID}`, fontSize: 12 }} />
+        <Legend wrapperStyle={{ fontSize: 11.5 }} />
+        {series.map((s) => (
+          <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} radius={[6, 6, 0, 0]} />
+        ))}
       </BarChart>
     </ResponsiveContainer>
   );
