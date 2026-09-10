@@ -601,6 +601,31 @@ candidato, (2) padrão de tabela de dados reutilizável no painel interno,
 implementar — não representam funcionalidade faltando, representam
 templates que não correspondem a nada que o produto faz hoje.
 
+**Progresso:**
+
+1. ✅ **Cards de vaga** (`/vagas`) — commit `b11176c`, publicado.
+2. ✅ **Breadcrumb + sidebar do admin** (fora do plano original desta
+   tabela, mas absorveu a parte aproveitável de uma segunda leva de 8
+   templates colados depois — topbar/breadcrumb, sistema de navegação)
+   — commit `9adbd79`, publicado. Achado no caminho: a sidebar nunca
+   tinha links pra `candidatos`/`leads`/`prestações`/`estratégico`
+   (só dava pra acessar digitando a URL) — corrigido junto.
+3. ✅ **Tabela de dados com ordenação** (`src/components/data-table.tsx`)
+   — commit `6777a79`, publicado. Aplicada em `/admin/candidatos` e
+   `/admin/leads`. `empresas` e `vagas` ficaram de fora por decisão: cada
+   item ali tem formulário de decisão com textarea que não cabe numa
+   linha de tabela — o card atual serve melhor.
+4. ✅ **Feed de prestações** (`/admin/prestacoes`) — ícone circular por
+   status de pagamento, valor formatado e alinhado à direita, sem
+   sparkline/saldo (não é carteira). Corrigido de passagem: o valor
+   aparecia sem formatação de milhar antes.
+5. Segunda leva de templates avaliada (feedback NPS/estrelas, modal de
+   agendamento multi-canal, 4 infográficos estáticos, speed dial,
+   sistema de navegação completo) — só a parte de breadcrumb/navegação
+   tinha correspondente real; o resto ficou registrado como proposta
+   (feedback modal, funil de conversão) ou fora de escopo (o restante),
+   ver plano em `C:\Users\USER\.claude\plans\quero-que-fa-a-pro-tender-seahorse.md`.
+
 ## Referências
 
 - `Planejamento_Aplicativo_de_Vagas.docx` (documento fonte, v1.0)
