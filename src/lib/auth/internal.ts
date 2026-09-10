@@ -56,11 +56,25 @@ export async function requireInternalUser(capability?: Capability) {
 
   if (!user) redirect("/admin/login");
 
-  const { data: account } = await supabase
+  const currentAccount = await supabase
     .from("admin_users")
     .select("perfil, nome_exibicao, ativo")
     .eq("user_id", user.id)
     .maybeSingle();
+
+  let account: { perfil: string; nome_exibicao: string | null; ativo: boolean } | null =
+    currentAccount.data;
+
+  // Mantém o painel acessível enquanto a migration 0006 ainda não tiver sido
+  // aplicada. Outros erros continuam bloqueando o acesso.
+  if (currentAccount.error?.code === "42703") {
+    const legacyAccount = await supabase
+      .from("admin_users")
+      .select("perfil, nome_exibicao")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    account = legacyAccount.data ? { ...legacyAccount.data, ativo: true } : null;
+  }
 
   if (!account || account.ativo === false) redirect("/admin/acesso-negado");
 
