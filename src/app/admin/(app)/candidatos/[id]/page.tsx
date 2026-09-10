@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
-import { DataTable, type DataTableColumn } from "@/components/data-table";
+import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 import { statusLabel, statusPillClass, safeHttpUrl } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
 
@@ -75,43 +75,34 @@ export default async function CandidatoDetalhePage({
     };
   });
 
-  const columns: DataTableColumn<CandidaturaRow>[] = [
-    {
-      key: "vaga",
-      label: "Vaga",
-      sortValue: (row) => row.jobTitulo,
-      render: (row) => <span className="font-bold text-text">{row.jobTitulo}</span>,
+  const columns: DataTableColumn[] = [
+    { key: "vaga", label: "Vaga", sortable: true },
+    { key: "empresa", label: "Empresa", sortable: true },
+    { key: "modalidade", label: "Modalidade" },
+    { key: "status", label: "Status", sortable: true },
+    { key: "data", label: "Data", sortable: true },
+  ];
+
+  const candidaturaRows: DataTableRow[] = candidaturas.map((row) => ({
+    id: row.id,
+    sortValues: {
+      vaga: row.jobTitulo,
+      empresa: row.empresa,
+      status: row.status,
+      data: row.created_at,
     },
-    {
-      key: "empresa",
-      label: "Empresa",
-      sortValue: (row) => row.empresa,
-      render: (row) => <span className="text-text-2">{row.empresa}</span>,
-    },
-    {
-      key: "modalidade",
-      label: "Modalidade",
-      render: (row) => <span className="text-text-2 uppercase">{row.jobModalidade}</span>,
-    },
-    {
-      key: "status",
-      label: "Status",
-      sortValue: (row) => row.status,
-      render: (row) => (
+    cells: {
+      vaga: <span className="font-bold text-text">{row.jobTitulo}</span>,
+      empresa: <span className="text-text-2">{row.empresa}</span>,
+      modalidade: <span className="text-text-2 uppercase">{row.jobModalidade}</span>,
+      status: (
         <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${statusPillClass[row.status]}`}>
           {statusLabel[row.status]}
         </span>
       ),
+      data: <span className="text-text-2">{new Date(row.created_at).toLocaleDateString("pt-BR")}</span>,
     },
-    {
-      key: "data",
-      label: "Data",
-      sortValue: (row) => row.created_at,
-      render: (row) => (
-        <span className="text-text-2">{new Date(row.created_at).toLocaleDateString("pt-BR")}</span>
-      ),
-    },
-  ];
+  }));
 
   const statusCandidato =
     CANDIDATO_STATUS_LABEL[profile.status_validacao] ?? CANDIDATO_STATUS_LABEL.pendente;
@@ -185,7 +176,7 @@ export default async function CandidatoDetalhePage({
           {candidaturas.length === 0 ? (
             <p className="text-[12px] text-text-2">Nenhuma candidatura ainda.</p>
           ) : (
-            <DataTable columns={columns} rows={candidaturas} rowKey={(row) => row.id} />
+            <DataTable columns={columns} rows={candidaturaRows} />
           )}
         </div>
 
