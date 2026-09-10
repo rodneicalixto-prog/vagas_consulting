@@ -53,8 +53,8 @@ export function InstallLeadCapture() {
   if (!showForm) return null;
   if (state.ok) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-        <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center">
+      <div className="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="modal w-full max-w-sm rounded-2xl bg-surface p-6 text-center">
           <p className="text-sm font-bold text-text">Cadastro recebido — obrigado!</p>
           <button
             onClick={() => setShowForm(false)}
@@ -69,7 +69,7 @@ export function InstallLeadCapture() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <form action={formAction} className="flex w-full max-w-sm flex-col gap-3 rounded-2xl bg-surface p-6">
+      <form action={formAction} className="modal flex w-full max-w-sm flex-col gap-3 rounded-2xl bg-surface p-6">
         <h2 className="text-[15px] font-extrabold text-text">Bem-vindo(a) ao Vagas Consulting</h2>
         <p className="-mt-1 text-[12px] text-text-2">
           Complete seu cadastro para continuar — leva menos de 1 minuto.
