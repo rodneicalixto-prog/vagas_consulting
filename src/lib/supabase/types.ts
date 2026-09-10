@@ -773,6 +773,7 @@ export type Database = {
         | "rejeitada"
         | "desistente"
         | "expirada"
+        | "reprovado_cliente"
       status_convite_temp:
         | "ofertado"
         | "visualizado"
@@ -959,6 +960,7 @@ export const Constants = {
         "rejeitada",
         "desistente",
         "expirada",
+        "reprovado_cliente",
       ],
       status_convite_temp: [
         "ofertado",

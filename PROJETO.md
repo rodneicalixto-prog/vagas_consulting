@@ -497,6 +497,25 @@ sessões futuras.
       continua não implementado (dropzone é só visual) — a mensagem no
       onboarding foi ajustada pra deixar isso explícito ao candidato.
 
+28. **Gestão de status de candidatura + histórico por empresa
+    (10/09/2026)** — confirmado por busca no código: não existia
+    nenhuma ação em nenhum lugar do painel que alterasse
+    `applications.status` (só leitura). Migration
+    `0011_status_reprovado_cliente.sql` adiciona o valor
+    `reprovado_cliente` ao enum `status_candidatura` (distinguindo
+    reprovação pela empresa contratante da reprovação genérica
+    interna, que continua em `rejeitada`). Nova action
+    `atualizarStatusCandidatura`
+    (`src/app/admin/(app)/candidatos/[id]/actions.ts`) com select de
+    status + motivo opcional por candidatura, integrada na tabela de
+    Candidaturas de `/admin/candidatos/[id]` — grava em
+    `application_notes` quando há motivo e em `audit_log` sempre,
+    mesmo padrão das outras telas. `/admin/estrategico` ganhou uma
+    tabela "Histórico por empresa" (contratados / reprovados /
+    desistências / em aberto), usando o `DataTable` já existente.
+    `src/lib/format.ts` ganhou `STATUS_CANDIDATURA_EM_ABERTO` (lista
+    dos estágios que ainda aguardam tratativa).
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

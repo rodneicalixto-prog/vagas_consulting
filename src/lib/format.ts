@@ -20,7 +20,8 @@ export const statusLabel: Record<Enums<"status_candidatura">, string> = {
   proposta: "Proposta",
   contratado: "Contratado",
   rejeitada: "Não seguiu",
-  desistente: "Desistência",
+  reprovado_cliente: "Reprovado pelo cliente",
+  desistente: "Desistência própria",
   expirada: "Expirada",
 };
 
@@ -32,6 +33,7 @@ export const statusPillClass: Record<Enums<"status_candidatura">, string> = {
   proposta: "bg-success-bg text-success",
   contratado: "bg-success-bg text-success",
   rejeitada: "bg-black/5 text-text-3",
+  reprovado_cliente: "bg-danger-bg text-danger",
   desistente: "bg-black/5 text-text-3",
   expirada: "bg-black/5 text-text-3",
 };
@@ -44,9 +46,19 @@ export const statusProgress: Record<Enums<"status_candidatura">, number> = {
   proposta: 4,
   contratado: 5,
   rejeitada: 5,
+  reprovado_cliente: 5,
   desistente: 5,
   expirada: 5,
 };
+
+/** Estágios ainda em aberto/aguardando tratativa (não chegaram a um desfecho final). */
+export const STATUS_CANDIDATURA_EM_ABERTO: Enums<"status_candidatura">[] = [
+  "recebida",
+  "triagem",
+  "entrevista",
+  "teste",
+  "proposta",
+];
 
 export function timeAgo(iso: string | null): string {
   if (!iso) return "";

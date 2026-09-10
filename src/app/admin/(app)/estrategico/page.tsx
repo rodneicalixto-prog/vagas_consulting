@@ -9,7 +9,8 @@ import {
   GroupedBarChart,
   CHART_COLORS,
 } from "@/components/charts";
-import { statusLabel } from "@/lib/format";
+import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
+import { statusLabel, STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
 
 const STATUS_CANDIDATURA_COLOR: Record<string, string> = {
@@ -20,7 +21,8 @@ const STATUS_CANDIDATURA_COLOR: Record<string, string> = {
   proposta: CHART_COLORS.destaque,
   contratado: CHART_COLORS.sucesso,
   rejeitada: CHART_COLORS.risco,
-  desistente: CHART_COLORS.risco,
+  reprovado_cliente: CHART_COLORS.risco,
+  desistente: "#9aa0a8",
   expirada: "#9aa0a8",
 };
 
@@ -98,6 +100,10 @@ export default async function EstrategicoPage() {
     admin.from("applications").select("status"),
     admin.from("profiles").select("status_validacao"),
   ]);
+
+  const { data: candidaturasPorEmpresa } = await admin
+    .from("applications")
+    .select("status, jobs(companies(nome_fantasia, razao_social))");
 
   const porStatusPagamento = { pendente: 0, pago: 0, parcial: 0, atrasado: 0 } as Record<string, number>;
   let valorPago = 0;
@@ -177,6 +183,39 @@ export default async function EstrategicoPage() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, v]) => ({ semana: semanaLabel(new Date(key)), ...v }));
 
+  const porEmpresa = new Map<string, { contratados: number; reprovados: number; desistencias: number; emAberto: number }>();
+  for (const a of candidaturasPorEmpresa ?? []) {
+    const job = Array.isArray(a.jobs) ? a.jobs[0] : a.jobs;
+    const company = job && (Array.isArray(job.companies) ? job.companies[0] : job.companies);
+    const nome = company?.nome_fantasia ?? company?.razao_social ?? "Sem empresa";
+    const atual = porEmpresa.get(nome) ?? { contratados: 0, reprovados: 0, desistencias: 0, emAberto: 0 };
+    if (a.status === "contratado") atual.contratados += 1;
+    else if (a.status === "reprovado_cliente" || a.status === "rejeitada") atual.reprovados += 1;
+    else if (a.status === "desistente") atual.desistencias += 1;
+    else if (STATUS_CANDIDATURA_EM_ABERTO.includes(a.status)) atual.emAberto += 1;
+    porEmpresa.set(nome, atual);
+  }
+
+  const empresaColumns: DataTableColumn[] = [
+    { key: "empresa", label: "Empresa", sortable: true },
+    { key: "contratados", label: "Contratados", sortable: true, align: "right" },
+    { key: "reprovados", label: "Reprovados", sortable: true, align: "right" },
+    { key: "desistencias", label: "Desistências", sortable: true, align: "right" },
+    { key: "emAberto", label: "Em aberto", sortable: true, align: "right" },
+  ];
+
+  const empresaRows: DataTableRow[] = Array.from(porEmpresa.entries()).map(([nome, v], i) => ({
+    id: String(i),
+    sortValues: { empresa: nome, ...v },
+    cells: {
+      empresa: <span className="font-bold text-text">{nome}</span>,
+      contratados: <span className="font-extrabold text-success">{v.contratados}</span>,
+      reprovados: <span className="font-extrabold text-danger">{v.reprovados}</span>,
+      desistencias: <span className="text-text-2">{v.desistencias}</span>,
+      emAberto: <span className="font-extrabold text-gold-3">{v.emAberto}</span>,
+    },
+  }));
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-9 pt-7">
@@ -244,6 +283,19 @@ export default async function EstrategicoPage() {
             <p className="mb-1 mt-0.5 text-[11.5px] text-text-2">Fila de moderação de perfis</p>
             <DonutChart data={candidatosValidacaoChart} />
           </div>
+        </div>
+
+        <div className="mt-6">
+          <h3 className="text-sm font-extrabold text-text">Histórico por empresa</h3>
+          <p className="mb-3 mt-0.5 text-[11.5px] text-text-2">
+            Contratados, reprovados (pelo cliente ou internamente), desistências e candidaturas
+            ainda em aberto/aguardando tratativa — por empresa
+          </p>
+          {empresaRows.length === 0 ? (
+            <p className="text-[12px] text-text-2">Nenhuma candidatura registrada ainda.</p>
+          ) : (
+            <DataTable columns={empresaColumns} rows={empresaRows} />
+          )}
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-4">

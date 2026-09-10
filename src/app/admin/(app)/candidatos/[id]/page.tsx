@@ -3,8 +3,23 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
+import { SubmitButton } from "@/components/form-buttons";
 import { statusLabel, statusPillClass, safeHttpUrl } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
+import { atualizarStatusCandidatura } from "./actions";
+
+const STATUS_OPCOES: Enums<"status_candidatura">[] = [
+  "recebida",
+  "triagem",
+  "entrevista",
+  "teste",
+  "proposta",
+  "contratado",
+  "reprovado_cliente",
+  "rejeitada",
+  "desistente",
+  "expirada",
+];
 
 const CANDIDATO_STATUS_LABEL: Record<string, { label: string; className: string }> = {
   pendente: { label: "Pendente", className: "bg-gold-bg text-gold-3" },
@@ -81,6 +96,7 @@ export default async function CandidatoDetalhePage({
     { key: "modalidade", label: "Modalidade" },
     { key: "status", label: "Status", sortable: true },
     { key: "data", label: "Data", sortable: true },
+    { key: "acao", label: "Mudar status" },
   ];
 
   const candidaturaRows: DataTableRow[] = candidaturas.map((row) => ({
@@ -101,6 +117,34 @@ export default async function CandidatoDetalhePage({
         </span>
       ),
       data: <span className="text-text-2">{new Date(row.created_at).toLocaleDateString("pt-BR")}</span>,
+      acao: (
+        <form action={atualizarStatusCandidatura} className="flex flex-wrap items-center gap-1.5">
+          <input type="hidden" name="application_id" value={row.id} />
+          <input type="hidden" name="candidate_id" value={id} />
+          <select
+            name="status"
+            defaultValue={row.status}
+            className="rounded-lg border border-border bg-bg px-2 py-1.5 text-[11px]"
+          >
+            {STATUS_OPCOES.map((s) => (
+              <option key={s} value={s}>
+                {statusLabel[s]}
+              </option>
+            ))}
+          </select>
+          <input
+            name="motivo"
+            placeholder="Motivo (opcional)"
+            className="w-28 rounded-lg border border-border bg-bg px-2 py-1.5 text-[11px]"
+          />
+          <SubmitButton
+            pendingLabel="..."
+            className="rounded-lg bg-navy px-2.5 py-1.5 text-[11px] font-extrabold text-white"
+          >
+            Salvar
+          </SubmitButton>
+        </form>
+      ),
     },
   }));
 
@@ -114,8 +158,9 @@ export default async function CandidatoDetalhePage({
           ← Voltar pra Candidatos
         </Link>
         <div className="mt-2 rounded-xl border border-gold-bg bg-gold-bg px-4 py-2.5 text-[12px] font-bold text-gold-3">
-          Visualização (somente leitura) — você está vendo os dados de{" "}
-          <b>{profile.nome_completo}</b>. Nenhuma ação em nome dele é feita por aqui.
+          Dados pessoais em modo leitura — você está vendo o cadastro de{" "}
+          <b>{profile.nome_completo}</b>. O status das candidaturas abaixo pode ser
+          atualizado pela equipe interna; nenhuma ação é feita em nome do candidato.
         </div>
         <div className="mt-3 flex items-center gap-2.5">
           <h1 className="text-xl font-extrabold text-text">{profile.nome_completo}</h1>
