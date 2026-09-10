@@ -19,13 +19,18 @@ export async function adminLogin(
     return { error: "E-mail ou senha incorretos." };
   }
 
-  const { data: admin } = await supabase
+  const access = await supabase
     .from("admin_users")
-    .select("user_id")
+    .select("*")
     .eq("user_id", data.user.id)
     .maybeSingle();
 
-  if (!admin) {
+  const hasAccess =
+    !access.error &&
+    access.data !== null &&
+    (!("ativo" in access.data) || access.data.ativo !== false);
+
+  if (!hasAccess) {
     await supabase.auth.signOut();
     return { error: "Esta conta não tem acesso ao painel administrativo." };
   }

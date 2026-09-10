@@ -6,18 +6,61 @@ produzido, e serve de referência única para as próximas fases técnicas.
 
 ## 1. Visão
 
-Plataforma de recrutamento com três ambientes conectados:
+Plataforma proprietária de recrutamento operada exclusivamente pela equipe
+da Vagas Consulting. O produto possui dois ambientes:
 
-- **App do candidato** — busca, candidatura, acompanhamento de processos,
+- **App do candidato:** busca, candidatura, acompanhamento de processos,
   trabalhos temporários, mensagens, perfil e privacidade.
-- **Portal da empresa/recrutador** — cadastro, publicação de vagas,
-  pipeline de seleção, gestão de temporários.
-- **Painel administrativo** — moderação, LGPD, auditoria, permissões,
+- **Painel interno:** cadastro de empresas, cadastro e publicação de vagas,
+  gestão do pipeline de seleção, temporários, LGPD, auditoria, acessos e
   suporte.
+
+Empresas são registros de clientes ou contratantes mantidos pela equipe
+interna. Elas não criam contas, não acessam a plataforma, não se cadastram e
+não cadastram nem solicitam vagas. Todo o ciclo operacional é controlado pela
+Vagas Consulting.
 
 Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 **Temporária**, cada uma com campos obrigatórios e avisos próprios (aba
 "Regras da vaga").
+
+### 1.1 Premissas mandatórias de produto e acesso
+
+Estas premissas prevalecem sobre protótipos, implementações e registros
+históricos que descrevam um portal ou autosserviço de empresas:
+
+1. A plataforma é de uso operacional próprio da Vagas Consulting.
+2. Não existe cadastro, login ou portal para empresas.
+3. Empresas existem apenas como entidades cadastrais vinculadas a vagas e
+   processos, sempre administradas pela equipe interna.
+4. Somente usuários internos autorizados podem criar ou alterar empresas e
+   criar, revisar, publicar, pausar ou encerrar vagas.
+5. O **superadministrador** possui controle total, inclusive sobre usuários,
+   papéis e permissões.
+6. **Administradores** executam as funções de gestão delegadas pelo
+   superadministrador e podem supervisionar operadores conforme sua alçada.
+7. **Operadores** executam apenas atividades operacionais explicitamente
+   autorizadas, sem poder elevar o próprio acesso nem administrar papéis.
+8. Autorização deve ser validada no servidor e no banco de dados. A ocultação
+   de telas ou botões não substitui controle de acesso.
+9. O painel interno e o app do candidato devem possuir login funcional,
+   recuperação de acesso e logout visível em todas as sessões autenticadas.
+10. Contas internas só podem ser criadas ou convidadas pelo
+    superadministrador. O fluxo de cadastro do candidato permanece separado do
+    controle de acesso da equipe interna.
+
+### 1.2 Hierarquia de acesso
+
+| Papel | Responsabilidade | Limites obrigatórios |
+|---|---|---|
+| Superadministrador | Controle integral da plataforma, usuários, papéis, permissões, empresas, vagas, processos, LGPD e auditoria | Papel reservado; nenhum outro usuário pode concedê-lo, alterá-lo ou removê-lo sem autorização equivalente |
+| Administrador | Gestão das áreas e operadores delegados pelo superadministrador | Não pode ampliar a própria alçada nem assumir funções não delegadas |
+| Operador | Execução de tarefas de recrutamento e atendimento autorizadas | Não gerencia papéis, permissões ou configurações críticas |
+| Candidato | Gestão do próprio perfil, consentimentos, candidaturas, mensagens e processos | Não acessa o painel interno nem dados de outros candidatos |
+
+O modelo de autorização deve separar o nível hierárquico das permissões
+funcionais. O papel define a posição do usuário na hierarquia; permissões
+explícitas definem quais operações ele pode executar.
 
 ## 2. Estado atual
 
@@ -30,10 +73,14 @@ Modalidades suportadas desde o MVP: **Efetiva (CLT)**, **PJ** e
 | Protótipo do painel administrativo (7 telas) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222) |
 | Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
 | Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD), código no `main` |
-| Portal da empresa (`/portal`) | ✅ Codado, conectado ao Supabase real e **testado ponta a ponta em produção** (login → dashboard mostrando as 4 vagas reais da "Grupo Altavia"): login, dashboard, solicitar vaga, lista de solicitações, pipeline de candidatos (kanban + notas internas), candidatos (agregado), temporários (leitura). Empresa nunca publica sozinha — só solicita. |
-| Painel administrativo (`/admin`) | ✅ Codado, conectado ao Supabase real (via service role, restrito a `admin_users`) e **testado em produção** (login como superadmin funcionando): visão geral, moderação de empresas, cadastro/publicação de vagas, LGPD, auditoria, acesso e permissões (convite de novo admin). |
+| Portal da empresa (`/portal`) | ✅ Removido do código. A migration `0006`, quando aplicada, retira a estrutura e as permissões de acesso empresarial do banco. |
+| Painel administrativo (`/admin`) | ✅ Login e logout disponíveis, hierarquia entre superadministrador, administrador e operador aplicada no servidor, cadastro interno de empresas e vagas disponível. |
 | Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados + migration `0004` (admin_users, privacy_requests, reports, application_notes, RLS de `jobs` corrigida para impedir autopublicação pela empresa) |
 | Deploy em produção | ✅ **No ar** — https://vagas-consulting-umber.vercel.app responde 200 em `/`, `/login`, `/portal/login` e `/admin/login`. Bloqueador corrigido em 09/09/2026 via Vercel CLI (causa real: `NEXT_PUBLIC_SUPABASE_ANON_KEY` tinha sido apagada e nunca recriada — não era problema de tipo Secret/Config como se pensava). Ver `CLAUDE.md`. |
+
+> **Registro histórico:** os itens abaixo que descrevem o portal empresarial ou
+> `company_members` documentam uma direção anterior. A implementação vigente é
+> definida pelas premissas da seção 1.1 e pela migration `0006`.
 
 ## 2.1 Infraestrutura
 
@@ -273,13 +320,19 @@ sessões futuras.
     que faça subquery na própria tabela — sempre extrair para uma função
     `SECURITY DEFINER` (ou reescrever sem self-join) desde o início.
 
-## 3. Escopo do MVP (do documento, seção 3)
+## 3. Escopo do MVP (revisado)
 
-**Incluído:** login/perfis/currículo/busca/candidatura/convite/favoritos/
-alertas · cadastro e validação de empresas · publicação de vagas ·
-pipeline de seleção, mensagens, notificações · aceite/check-in/conclusão
-de temporários · painel admin, moderação, permissões, auditoria, LGPD e
-exportações essenciais.
+**Incluído:** login, logout, recuperação de acesso, perfis, currículo,
+busca, candidatura, convite, favoritos e alertas do candidato; cadastro
+interno de empresas; cadastro, publicação e gestão interna de vagas; pipeline
+de seleção, mensagens e notificações; aceite, check-in e conclusão de
+temporários; painel interno, hierarquia entre superadministrador,
+administradores e operadores, permissões, auditoria, LGPD e exportações
+essenciais.
+
+**Excluído por decisão de produto:** cadastro de empresas por representantes
+externos, login empresarial, portal da empresa, solicitação de vagas por
+empresas e qualquer forma de autopublicação de vaga.
 
 **Fora do MVP:** folha de pagamento, assinatura eletrônica com validade
 jurídica específica, emissão fiscal, ponto oficial, verificação de
@@ -289,7 +342,7 @@ antecedentes, planos pagos, matching avançado.
 
 | Camada | Recomendação |
 |---|---|
-| Interfaces | Web app responsiva, instalável como PWA no MVP; portal empresa/admin por papéis; apps nativos depois |
+| Interfaces | Web app responsiva para candidatos e painel interno responsivo com acesso hierárquico; apps nativos depois |
 | Backend | API modular (auth, vagas, candidaturas, mensagens, consentimentos, arquivos, notificações, auditoria) |
 | Banco | PostgreSQL com isolamento lógico por empresa; Supabase é opção, não decisão fechada |
 | Arquivos | Storage privado, URLs temporárias, varredura, política de retenção |
@@ -299,13 +352,45 @@ antecedentes, planos pagos, matching avançado.
 
 ## 5. Backlog priorizado (do documento, seção 13)
 
-**P0** — Identidade e acesso · Perfil e currículo · Empresas e validação ·
-Vagas e regras · Candidatura e pipeline · LGPD e preferências · Admin e
-auditoria.
+**P0** — Login, logout e recuperação de acesso · Hierarquia e permissões
+internas · Perfil e currículo · Cadastro interno de empresas · Vagas e
+regras · Candidatura e pipeline · LGPD e preferências · Painel interno e
+auditoria · Descontinuação do portal empresarial.
 
 **P1** — Mensagens e agenda · Temporários · Relatórios.
 
 **P2** — Matching e automação · Pagamentos e extratos.
+
+### 5.1 Pendência de integridade em mensagens
+
+**Status:** pendente e bloqueadora para considerar o modelo de mensagens
+concluído.
+
+A constraint atual `messages_vinculo_check` exige que `application_id` ou
+`invite_id` esteja preenchido, mas ainda aceita os dois campos simultaneamente.
+A policy criada na migration `0006` restringe a inserção feita pelo candidato;
+ela não substitui a garantia estrutural da tabela e não protege inserções feitas
+com service role.
+
+A correção deve ser entregue em uma migration posterior à `0006`, após verificar
+e corrigir registros existentes que tenham os dois vínculos preenchidos. A regra
+definitiva será XOR, exigindo exatamente um vínculo:
+
+```sql
+alter table messages
+  drop constraint if exists messages_vinculo_check;
+
+alter table messages
+  add constraint messages_vinculo_check
+  check (num_nonnulls(application_id, invite_id) = 1);
+```
+
+Critérios para encerrar esta pendência:
+
+1. Consultar e tratar registros com nenhum vínculo ou com os dois vínculos.
+2. Criar e aplicar a migration da constraint XOR.
+3. Testar inserções válidas por candidatura e por convite.
+4. Confirmar que inserções com nenhum vínculo ou com ambos sejam rejeitadas.
 
 ## 6. Compliance obrigatório (LGPD)
 
@@ -326,18 +411,13 @@ Estas perguntas do próprio documento ainda não têm resposta registrada e
 bloqueiam decisões de produto/arquitetura importantes:
 
 1. Nome definitivo e área geográfica inicial do produto.
-2. ~~Marketplace aberto ou operado por uma agência/empresa específica?~~ →
-   **Decidido:** operado pela Vagas Consulting. A empresa cliente não
-   publica vaga diretamente — envia uma solicitação/briefing, e é a
-   equipe interna (perfil Operações, painel `/admin`) quem cadastra e
-   publica de fato. Implementado no schema (RLS de `jobs` impede a
-   empresa de setar `status = publicada`) e no código (`/portal/vagas/nova`
-   grava `status = revisao`; `/admin/vagas` decide publicar/rejeitar/pedir
-   correção via service role).
+2. ~~Marketplace aberto ou operado por uma agência/empresa específica?~~
+   **Decidido:** uso próprio da Vagas Consulting, sem conta, login ou portal
+   para empresas. A equipe interna cadastra empresas e vagas no painel.
 3. Quem é o empregador/contratante/intermediador em cada modalidade?
-4. ~~Empresas publicam direto ou toda vaga passa por moderação?~~ →
-   **Decidido (decorre do item 2):** nenhuma vaga é publicada diretamente
-   pela empresa.
+4. ~~Empresas publicam direto ou toda vaga passa por moderação?~~
+   **Decidido:** somente superadministradores e administradores autorizados
+   publicam vagas.
 5. O candidato paga algo? (recomendação do documento: não cobrar)
 6. Pagamento de temporários dentro da plataforma — quem calcula/aprova?
 7. Quais dados/documentos são realmente necessários em cada etapa?
@@ -347,21 +427,22 @@ bloqueiam decisões de produto/arquitetura importantes:
 
 ## 8. Próximas fases propostas
 
-1. ~~Prototipar portal da empresa e painel admin (mesmo padrão visual).~~ ✅
+1. ~~Retirar o portal empresarial do código.~~ ✅
 2. ~~Definir stack final e criar repositório de código.~~ ✅ (Next.js +
    Supabase + Vercel, repo já existente antes desta fase)
-3. ~~Modelar banco de dados~~ ✅ — schema cobre candidato, empresa, vagas
-   (com fluxo solicitação → cadastro pela Vagas Consulting), pipeline,
-   temporários, mensagens, LGPD, denúncias e auditoria.
-4. Corrigir o bloqueador da Vercel (seção "BLOQUEADOR ATIVO" do
-   `CLAUDE.md`) — em andamento pelo Rodnei, em paralelo ao item 5.
-5. Criar usuário de teste em `company_members` (portal) e em
-   `admin_users` (painel admin) para validar os logins ponta a ponta —
-   não existe nenhum ainda.
-6. Confirmar se `SUPABASE_SERVICE_ROLE_KEY` está configurada na Vercel
-   (necessária para todas as rotas `/admin/*`, que usam
-   `src/lib/supabase/admin.ts`).
-7. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
+3. ~~Modelar a hierarquia interna e retirar permissões empresariais.~~ ✅
+   A migration `0006` converte os perfis para superadministrador,
+   administrador e operador, desativa `company_members` e restringe novas
+   candidaturas a vagas publicadas.
+4. Aplicar a migration `0006` ao projeto Supabase e regenerar os tipos a partir
+   do banco remoto.
+5. Validar login, logout, cadastro interno de empresas e vagas e restrições de
+   cada papel em ambiente integrado.
+6. Criar e aplicar a migration da constraint XOR de mensagens descrita na seção
+   5.1.
+7. Implementar recuperação de senha, MFA administrativo e testes automatizados
+   de autorização.
+8. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
    Lançamento, conforme seção 14 do documento original).
 
 ## Referências
@@ -370,3 +451,24 @@ bloqueiam decisões de produto/arquitetura importantes:
 - Protótipo do app do candidato: https://claude.ai/code/artifact/d04929f9-7fcc-4f91-a8fa-4308140eede4
 - Protótipo do portal da empresa: https://claude.ai/code/artifact/188573ac-e75a-4ca3-8637-6252d7dee810
 - Protótipo do painel administrativo: https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222
+
+## 9. Regra de documentação no Obsidian
+
+Toda documentação Markdown criada ou alterada para este projeto deve ser
+salva ou sincronizada no cofre do Obsidian abaixo:
+
+```text
+C:\Users\USER\Desktop\Jarvis V8\obsidian-template
+```
+
+O repositório Git permanece como fonte versionada do projeto. A versão no
+Obsidian deve reproduzir o mesmo conteúdo, sem substituir o commit dos arquivos
+Markdown no repositório.
+
+Toda entrega que modificar documentação deve informar uma destas situações:
+
+1. **Sincronização concluída:** o arquivo foi salvo no cofre indicado e o
+   conteúdo foi conferido.
+2. **Sincronização pendente:** o ambiente não possui acesso ao caminho local do
+   Windows. Nesse caso, a alteração deve ser preservada no Git e a pendência
+   deve ser comunicada, sem registrar uma confirmação fictícia.

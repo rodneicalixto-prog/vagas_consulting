@@ -1,6 +1,8 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireInternalUser } from "@/lib/auth/internal";
 
 export default async function AuditoriaPage() {
+  await requireInternalUser("audit.read");
   const admin = createAdminClient();
 
   const { data: logs } = await admin

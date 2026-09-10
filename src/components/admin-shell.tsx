@@ -3,31 +3,31 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark, Wordmark } from "@/components/brand-mark";
+import { adminSignOut } from "@/app/admin/actions";
+import type { InternalRole } from "@/lib/auth/internal";
 
 const NAV = [
   { href: "/admin", label: "Visão geral", exact: true },
   { href: "/admin/empresas", label: "Empresas" },
   { href: "/admin/vagas", label: "Cadastro de vagas" },
-  { href: "/admin/lgpd", label: "LGPD" },
-  { href: "/admin/auditoria", label: "Auditoria" },
-  { href: "/admin/acesso", label: "Acesso" },
+  { href: "/admin/lgpd", label: "LGPD", roles: ["superadmin", "admin"] },
+  { href: "/admin/auditoria", label: "Auditoria", roles: ["superadmin", "admin"] },
+  { href: "/admin/acesso", label: "Acesso", roles: ["superadmin"] },
 ];
 
 const PERFIL_LABEL: Record<string, string> = {
   superadmin: "Superadministrador",
-  operacoes: "Operações",
-  compliance: "Compliance e privacidade",
-  suporte: "Suporte",
-  financeiro: "Financeiro",
+  admin: "Administrador",
+  operador: "Operador",
 };
 
 export function AdminShell({
   adminName,
-  perfil,
+  role,
   children,
 }: {
   adminName: string;
-  perfil: string;
+  role: InternalRole;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -41,7 +41,7 @@ export function AdminShell({
         </div>
         <div className="px-2 pb-5 text-[9.5px] font-extrabold uppercase tracking-wide text-white/40">Admin</div>
         <nav className="flex flex-col gap-0.5">
-          {NAV.map((item) => {
+          {NAV.filter((item) => !item.roles || item.roles.includes(role)).map((item) => {
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
             return (
               <Link
@@ -61,10 +61,15 @@ export function AdminShell({
           <div className="min-w-0">
             <b className="block truncate text-xs text-white">{adminName}</b>
             <span className="block truncate text-[10.5px] text-white/50">
-              {PERFIL_LABEL[perfil] ?? perfil}
+              {PERFIL_LABEL[role]}
             </span>
           </div>
         </div>
+        <form action={adminSignOut} className="mt-3">
+          <button className="w-full rounded-lg border border-white/15 px-3 py-2 text-xs font-bold text-white/70 hover:bg-white/10 hover:text-white">
+            Sair
+          </button>
+        </form>
       </aside>
       <main className="flex-1 overflow-hidden">{children}</main>
     </div>

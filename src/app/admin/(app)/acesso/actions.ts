@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireInternalUser } from "@/lib/auth/internal";
 
 export type ConvidarState = { error: string | null; info?: string };
 
@@ -10,32 +10,15 @@ export async function convidarAdmin(
   _prevState: ConvidarState,
   formData: FormData,
 ): Promise<ConvidarState> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessão expirada." };
-
-  const { data: isAdmin } = await supabase
-    .from("admin_users")
-    .select("perfil")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (!isAdmin) return { error: "Sem permissão." };
-  if (isAdmin.perfil !== "superadmin") {
-    return { error: "Só o superadministrador pode convidar novos usuários do painel." };
-  }
+  const { user } = await requireInternalUser("users.manage");
 
   const email = String(formData.get("email") ?? "").trim();
-  const perfil = String(formData.get("perfil") ?? "") as
-    | "superadmin"
-    | "operacoes"
-    | "compliance"
-    | "suporte"
-    | "financeiro";
+  const perfil = String(formData.get("perfil") ?? "") as "admin" | "operador";
   const nome = String(formData.get("nome") ?? "").trim();
 
-  if (!email || !perfil) return { error: "Preencha e-mail e perfil." };
+  if (!email || !["admin", "operador"].includes(perfil)) {
+    return { error: "Preencha e-mail e perfil com valores válidos." };
+  }
 
   const admin = createAdminClient();
   const { data: invited, error } = await admin.auth.admin.inviteUserByEmail(email);

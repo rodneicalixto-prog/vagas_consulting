@@ -1,15 +1,15 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { InviteAdminForm } from "./invite-form";
+import { requireInternalUser } from "@/lib/auth/internal";
 
 const PERFIL_LABEL: Record<string, string> = {
   superadmin: "Superadministrador",
-  operacoes: "Operações",
-  compliance: "Compliance e privacidade",
-  suporte: "Suporte",
-  financeiro: "Financeiro",
+  admin: "Administrador",
+  operador: "Operador",
 };
 
 export default async function AcessoPage() {
+  await requireInternalUser("users.manage");
   const admin = createAdminClient();
 
   const { data: admins } = await admin
