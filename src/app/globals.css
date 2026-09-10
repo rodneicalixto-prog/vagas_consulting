@@ -44,7 +44,7 @@
   --color-success-bg: var(--color-success-bg);
   --color-danger: var(--color-danger);
   --color-danger-bg: var(--color-danger-bg);
-  --font-sans: var(--font-manrope);
+  --font-sans: "Manrope", "Segoe UI", Arial, sans-serif;
 }
 
 body {
