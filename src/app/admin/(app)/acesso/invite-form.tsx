@@ -22,11 +22,8 @@ export function InviteAdminForm() {
         <span className="text-[10.5px] font-bold text-text-2">Perfil</span>
         <select name="perfil" required defaultValue="" className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]">
           <option value="" disabled>Selecionar...</option>
-          <option value="operacoes">Operações</option>
-          <option value="compliance">Compliance e privacidade</option>
-          <option value="suporte">Suporte</option>
-          <option value="financeiro">Financeiro</option>
-          <option value="superadmin">Superadministrador</option>
+          <option value="admin">Administrador</option>
+          <option value="operador">Operador</option>
         </select>
       </label>
       <button

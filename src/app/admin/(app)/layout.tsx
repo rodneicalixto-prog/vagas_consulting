@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { AdminShell } from "@/components/admin-shell";
+import { normalizeInternalRole } from "@/lib/auth/internal";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminAppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -10,16 +11,18 @@ export default async function AdminAppLayout({ children }: { children: React.Rea
 
   if (!user) redirect("/admin/login");
 
-  const { data: admin } = await supabase
+  const { data: account } = await supabase
     .from("admin_users")
     .select("perfil, nome_exibicao")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (!admin) redirect("/admin/login");
+  if (!account) redirect("/admin/acesso-negado");
+
+  const role = normalizeInternalRole(account.perfil);
 
   return (
-    <AdminShell adminName={admin.nome_exibicao ?? user.email ?? "Admin"} perfil={admin.perfil}>
+    <AdminShell adminName={account.nome_exibicao ?? user.email ?? "Usuário"} role={role}>
       {children}
     </AdminShell>
   );

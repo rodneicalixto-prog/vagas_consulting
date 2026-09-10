@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { atenderSolicitacao } from "./actions";
+import { requireInternalUser } from "@/lib/auth/internal";
 
 const TIPO_LABEL: Record<string, string> = {
   acesso: "Acesso aos dados",
@@ -11,6 +12,7 @@ const TIPO_LABEL: Record<string, string> = {
 };
 
 export default async function LgpdPage() {
+  await requireInternalUser("privacy.manage");
   const admin = createAdminClient();
 
   const { data: requests } = await admin
