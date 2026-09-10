@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       admin_users: {
         Row: {
+          ativo: boolean
           created_at: string
           mfa_ativo: boolean
           nome_exibicao: string | null
@@ -23,6 +24,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ativo?: boolean
           created_at?: string
           mfa_ativo?: boolean
           nome_exibicao?: string | null
@@ -30,6 +32,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ativo?: boolean
           created_at?: string
           mfa_ativo?: boolean
           nome_exibicao?: string | null
@@ -616,10 +619,8 @@ export type Database = {
     Enums: {
       admin_perfil:
         | "superadmin"
-        | "operacoes"
-        | "compliance"
-        | "suporte"
-        | "financeiro"
+        | "admin"
+        | "operador"
       modalidade_vaga: "efetiva" | "pj" | "temporaria"
       modelo_trabalho: "presencial" | "hibrido" | "remoto"
       status_candidatura:
@@ -806,10 +807,8 @@ export const Constants = {
     Enums: {
       admin_perfil: [
         "superadmin",
-        "operacoes",
-        "compliance",
-        "suporte",
-        "financeiro",
+        "admin",
+        "operador",
       ],
       modalidade_vaga: ["efetiva", "pj", "temporaria"],
       modelo_trabalho: ["presencial", "hibrido", "remoto"],
