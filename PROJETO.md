@@ -554,6 +554,19 @@ sessões futuras.
     em `/admin/candidatos/[id]`, com botão de marcar/remover na própria
     tela de detalhe.
 
+32. **Empresas em "efeito cascata" + métricas de empresa no estratégico
+    (10/09/2026)** — `/admin/empresas` virou `<details>/<summary>` nativo
+    (sem JS extra): cada card mostra só nome + status por padrão,
+    CNPJ/endereço/formulário de decisão só aparecem ao expandir.
+    `/admin/estrategico` ganhou: KPI "Empresas cadastradas" (total),
+    coluna "Vagas abertas" na tabela "Histórico por empresa" (antes só
+    tinha contratados/reprovados/desistências/em aberto), e um gráfico
+    novo "Vagas cadastradas por mês" (últimos 12 meses). **Quebra por
+    região pedida mas não implementada** — `companies` só tem endereço
+    em texto livre, sem campo estruturado de UF/região; registrado
+    como pendência explícita na própria tela (não vou adivinhar região
+    a partir de texto livre).
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

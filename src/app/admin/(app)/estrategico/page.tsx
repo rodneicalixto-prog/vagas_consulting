@@ -67,6 +67,16 @@ function dataDeCorte(diasAtras: number): string {
   return new Date(Date.now() - diasAtras * 24 * 60 * 60 * 1000).toISOString();
 }
 
+function mesLabel(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
+}
+
+function mesChave(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 export default async function EstrategicoPage() {
   const { role } = await requireInternalUser();
   if (role !== "superadmin") redirect("/admin");
@@ -100,9 +110,18 @@ export default async function EstrategicoPage() {
     admin.from("profiles").select("status_validacao"),
   ]);
 
-  const { data: candidaturasPorEmpresa } = await admin
-    .from("applications")
-    .select("status, jobs(companies(nome_fantasia, razao_social))");
+  const trezentosSessentaCincoDiasAtras = dataDeCorte(365);
+
+  const [{ count: totalEmpresas }, { data: candidaturasPorEmpresa }, { data: vagasAbertasRaw }, { data: vagasPorMesRaw }] =
+    await Promise.all([
+      admin.from("companies").select("id", { count: "exact", head: true }),
+      admin.from("applications").select("status, jobs(companies(nome_fantasia, razao_social))"),
+      admin
+        .from("jobs")
+        .select("status, companies(nome_fantasia, razao_social)")
+        .eq("status", "publicada"),
+      admin.from("jobs").select("created_at").gte("created_at", trezentosSessentaCincoDiasAtras),
+    ]);
 
   const porStatusPagamento = { pendente: 0, pago: 0, parcial: 0, atrasado: 0 } as Record<string, number>;
   let valorPago = 0;
@@ -182,25 +201,40 @@ export default async function EstrategicoPage() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, v]) => ({ semana: semanaLabel(new Date(key)), ...v }));
 
-  const porEmpresa = new Map<string, { contratados: number; reprovados: number; desistencias: number; emAberto: number }>();
+  const porEmpresa = new Map<
+    string,
+    { contratados: number; reprovados: number; desistencias: number; emAberto: number; vagasAbertas: number }
+  >();
+  function empresaBucket(nome: string) {
+    return (
+      porEmpresa.get(nome) ??
+      (porEmpresa.set(nome, { contratados: 0, reprovados: 0, desistencias: 0, emAberto: 0, vagasAbertas: 0 }),
+      porEmpresa.get(nome)!)
+    );
+  }
   for (const a of candidaturasPorEmpresa ?? []) {
     const job = Array.isArray(a.jobs) ? a.jobs[0] : a.jobs;
     const company = job && (Array.isArray(job.companies) ? job.companies[0] : job.companies);
     const nome = company?.nome_fantasia ?? company?.razao_social ?? "Sem empresa";
-    const atual = porEmpresa.get(nome) ?? { contratados: 0, reprovados: 0, desistencias: 0, emAberto: 0 };
+    const atual = empresaBucket(nome);
     if (a.status === "contratado") atual.contratados += 1;
     else if (a.status === "reprovado_cliente" || a.status === "rejeitada") atual.reprovados += 1;
     else if (a.status === "desistente") atual.desistencias += 1;
     else if (STATUS_CANDIDATURA_EM_ABERTO.includes(a.status)) atual.emAberto += 1;
-    porEmpresa.set(nome, atual);
+  }
+  for (const j of vagasAbertasRaw ?? []) {
+    const company = Array.isArray(j.companies) ? j.companies[0] : j.companies;
+    const nome = company?.nome_fantasia ?? company?.razao_social ?? "Sem empresa";
+    empresaBucket(nome).vagasAbertas += 1;
   }
 
   const empresaColumns: DataTableColumn[] = [
     { key: "empresa", label: "Empresa", sortable: true },
+    { key: "vagasAbertas", label: "Vagas abertas", sortable: true, align: "right" },
     { key: "contratados", label: "Contratados", sortable: true, align: "right" },
     { key: "reprovados", label: "Reprovados", sortable: true, align: "right" },
     { key: "desistencias", label: "Desistências", sortable: true, align: "right" },
-    { key: "emAberto", label: "Em aberto", sortable: true, align: "right" },
+    { key: "emAberto", label: "Candidaturas em aberto", sortable: true, align: "right" },
   ];
 
   const empresaRows: DataTableRow[] = Array.from(porEmpresa.entries()).map(([nome, v], i) => ({
@@ -208,12 +242,22 @@ export default async function EstrategicoPage() {
     sortValues: { empresa: nome, ...v },
     cells: {
       empresa: <span className="font-bold text-text">{nome}</span>,
+      vagasAbertas: <span className="font-extrabold text-navy">{v.vagasAbertas}</span>,
       contratados: <span className="font-extrabold text-success">{v.contratados}</span>,
       reprovados: <span className="font-extrabold text-danger">{v.reprovados}</span>,
       desistencias: <span className="text-text-2">{v.desistencias}</span>,
       emAberto: <span className="font-extrabold text-gold-3">{v.emAberto}</span>,
     },
   }));
+
+  const vagasPorMes = new Map<string, number>();
+  for (const j of vagasPorMesRaw ?? []) {
+    const chave = mesChave(j.created_at);
+    vagasPorMes.set(chave, (vagasPorMes.get(chave) ?? 0) + 1);
+  }
+  const vagasPorMesChart = Array.from(vagasPorMes.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([chave, valor]) => ({ categoria: mesLabel(`${chave}-01`), valor, color: CHART_COLORS.destaque }));
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -225,7 +269,8 @@ export default async function EstrategicoPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-9 py-6">
-        <div className="grid grid-cols-2 gap-3.5 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3.5 md:grid-cols-5">
+          <Kpi label="Empresas cadastradas" value={totalEmpresas ?? 0} />
           <Kpi label="Instalações do app" value={totalInstalacoes ?? 0} />
           <Kpi label="Leads capturados" value={totalLeads ?? 0} />
           <Kpi label="Candidatos cadastrados" value={totalCandidatos ?? 0} />
@@ -282,7 +327,24 @@ export default async function EstrategicoPage() {
             <p className="mb-1 mt-0.5 text-[11.5px] text-text-2">Fila de moderação de perfis</p>
             <DonutChart data={candidatosValidacaoChart} />
           </div>
+
+          <div className="rounded-2xl border border-border bg-surface p-5">
+            <h3 className="text-sm font-extrabold text-text">Vagas cadastradas por mês</h3>
+            <p className="mb-1 mt-0.5 text-[11.5px] text-text-2">Últimos 12 meses</p>
+            {vagasPorMesChart.length === 0 ? (
+              <p className="mt-8 text-center text-[12px] text-text-2">Sem dados no período.</p>
+            ) : (
+              <CategoryBarChart data={vagasPorMesChart} />
+            )}
+          </div>
         </div>
+
+        <p className="mt-4 rounded-xl bg-navy-bg p-3 text-[11px] font-semibold leading-relaxed text-navy">
+          Quebra por região ainda não é possível: o cadastro de empresa hoje só tem um campo de
+          endereço em texto livre, sem estado/região estruturados. Pra ter esse gráfico, precisa
+          adicionar um campo de UF/região no cadastro (`/admin/empresas`) — não é ajuste de
+          gráfico, é dado que ainda não é coletado de forma estruturada.
+        </p>
 
         <div className="mt-6">
           <h3 className="text-sm font-extrabold text-text">Histórico por empresa</h3>

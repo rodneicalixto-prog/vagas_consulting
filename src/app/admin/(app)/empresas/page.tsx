@@ -51,14 +51,21 @@ export default async function ModeracaoEmpresasPage() {
             {companies.map((c) => {
               const s = STATUS_LABEL[c.status] ?? STATUS_LABEL.rascunho;
               return (
-                <div key={c.id} className="rounded-2xl border border-border bg-surface p-5">
-                  <div className="flex items-center gap-2.5">
+                <details key={c.id} className="group rounded-2xl border border-border bg-surface p-5">
+                  <summary className="flex cursor-pointer list-none items-center gap-2.5">
                     <h3 className="text-[14px] font-extrabold text-text">{c.nome_fantasia ?? c.razao_social}</h3>
                     <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${s.className}`}>
                       {s.label}
                     </span>
-                  </div>
-                  <p className="mt-0.5 text-[11.5px] text-text-2">
+                    <span className="ml-auto text-[11px] font-bold text-text-3 group-open:hidden">
+                      Ver detalhes ↓
+                    </span>
+                    <span className="ml-auto hidden text-[11px] font-bold text-text-3 group-open:inline">
+                      Ocultar ↑
+                    </span>
+                  </summary>
+
+                  <p className="mt-2.5 text-[11.5px] text-text-2">
                     {c.cnpj ? `CNPJ ${c.cnpj}` : "CNPJ não informado"} · {c.endereco ?? "endereço não informado"}
                   </p>
 
@@ -97,7 +104,7 @@ export default async function ModeracaoEmpresasPage() {
                       </SubmitButton>
                     </div>
                   </form>
-                </div>
+                </details>
               );
             })}
           </div>
