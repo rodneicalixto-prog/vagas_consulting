@@ -197,7 +197,7 @@ export default function OnboardingPage() {
 
         <div className="flex flex-col gap-2.5 rounded-2xl border border-border bg-white p-4">
           <span className="text-[13px] font-bold text-text">
-            Você já trabalhou em alguma dessas empresas?
+            Você já trabalhou em alguma destas empresas: {EMPRESAS_TERCEIRIZADORAS.join(", ")}?
           </span>
           <span className="text-[11px] text-text-3">
             Pergunta obrigatória, mas não elimina sua candidatura.
