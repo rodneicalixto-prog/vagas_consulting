@@ -1,6 +1,8 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireInternalUser } from "@/lib/auth/internal";
 
 export default async function AdminOverviewPage() {
+  await requireInternalUser("dashboard.read");
   const admin = createAdminClient();
 
   const [
