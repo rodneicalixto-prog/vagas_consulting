@@ -609,6 +609,51 @@ sessões futuras.
     preenchidos automaticamente. Sem migration — só reaproveita dados já
     existentes em `jobs`.
 
+35. **PWA gerada de verdade (10/09/2026)** — antes disso o app não era
+    instalável: sem manifest, sem ícones dedicados, sem service worker
+    (só existia um listener de `appinstalled` em
+    `src/components/install-lead-capture.tsx`, que registra o evento
+    depois que o navegador já instalou por conta própria, mas nada
+    tornava o app elegível pro navegador oferecer instalação). Entregue:
+    - `src/app/manifest.ts` (convenção nativa do App Router do Next,
+      serve `/manifest.webmanifest`) com nome, `start_url: /inicio`,
+      `display: standalone`, cores da marca e ícones.
+    - Ícones gerados de verdade a partir de um monograma "VC" na
+      paleta navy/gold (`scripts/generate-pwa-icons.mjs`, usa o `sharp`
+      que já vem como dependência transitiva do Next/`next/image` — sem
+      instalar nada novo): 192, 512, 512 maskable (com padding de
+      área segura) e apple-touch-icon 180, salvos em `public/icons/`.
+    - Service worker (`public/sw.js`, registrado por
+      `src/components/register-service-worker.tsx`): cacheia só o
+      shell estático (`_next/static`, ícones) e serve
+      `public/offline.html` quando a navegação falha por falta de
+      rede. **Não cacheia HTML de página nem API/Supabase** —
+      decisão deliberada, já que candidatos/admins veem dados que
+      mudam o tempo todo (candidaturas, status, mensagens); cachear
+      isso daria a impressão de "offline funcionando" mostrando dado
+      velho.
+    - Botão real de instalação (`src/components/install-app-button.tsx`):
+      só aparece quando o navegador de fato dispara
+      `beforeinstallprompt` (critério real de instalabilidade
+      cumprido) e some se o app já está rodando em modo standalone —
+      antes disso a instalação dependia inteiramente do menu nativo do
+      navegador, sem nenhum controle na própria UI.
+    - **Bug real encontrado e corrigido durante a validação em
+      navegador**: o matcher do proxy/middleware
+      (`src/proxy.ts`) só isentava imagens e `_next/static` da checagem
+      de sessão — `/manifest.webmanifest`, `/sw.js` e `/offline.html`
+      caíam no bloqueio de rota protegida e eram redirecionados pra
+      `/login` (confirmado testando `fetch()` real, retornando HTML de
+      login em vez do manifest). Corrigido adicionando os três ao
+      matcher; validado depois que passaram a responder com o
+      content-type correto (`application/manifest+json`,
+      `application/javascript`, `text/html`) mesmo sem sessão.
+    - **Testado de verdade em navegador local** (`preview_start` +
+      Claude Browser, não só build/lint): confirmado
+      `<link rel="manifest">` no `<head>`, apple-touch-icon presente, e
+      o service worker chegando a `active` via
+      `navigator.serviceWorker.getRegistrations()`.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
