@@ -429,6 +429,39 @@ sessões futuras.
       (`src/components/admin-shell.tsx`) e "Ver publicação →" por vaga
       já publicada em `/admin/vagas`.
 
+24. **Cards da Visão geral tornados clicáveis + tela de Denúncias nova
+    (10/09/2026)** — os 4 KPIs e os itens das 2 filas em `/admin`
+    (`src/app/admin/(app)/page.tsx`) eram `<div>`s sem link nenhum,
+    pedido explícito do Rodnei pra corrigir ("todos os cards clicáveis
+    sempre"). 3 dos 4 KPIs já tinham destino óbvio; "Denúncias abertas"
+    não tinha porque a tabela `reports` nunca ganhou UI no painel —
+    criada `/admin/denuncias` (abrir/fechar com motivo, mesmo padrão de
+    `audit_log`) em vez de só linkar pra lugar nenhum.
+
+25. **Dashboard estratégico com gráficos reais, não estáticos
+    (10/09/2026)** — correção de entendimento: os infográficos estáticos
+    que ficaram fora do upgrade de design (seção 8.1) eram sobre os
+    templates específicos de marketing (mapa de calor, relatório anual,
+    persona) que o Rodnei colou naquela rodada. O ponto real é diferente
+    e mais importante: gráfico de dados vivos dentro do painel é
+    obrigatório pra gestão estratégica — "visualiza, já entende e
+    reajusta, planeja, faço relatório". Instalado `recharts` (sem
+    bloqueio de rede neste ambiente, diferente de tentativas anteriores
+    com outras ferramentas) e criado `src/components/charts.tsx`
+    (componentes cliente puros — server component continua fazendo toda
+    a busca/agregação, só passa arrays prontos). `/admin/estrategico`
+    ganhou: funil de conversão (leads → candidatos → candidaturas →
+    contratados, nova query de total de `applications`), evolução
+    semanal de leads/candidatos (linha, últimos 70 dias, agregado em
+    JS), prestações por status de pagamento e vagas por modalidade
+    (ambos agora gráfico de barras de verdade, com eixo/legenda/tooltip,
+    substituindo o bar chart feito à mão com `<div>`s). Cor por decisão
+    de negócio, não estética — pedido explícito do Rodnei: vermelho
+    vivo (`#dc2626`) pra atrasado/risco, verde vivo (`#16a34a`) pra
+    pago/sucesso, âmbar (`#f59e0b`) pra pendente/atenção, definido em
+    `CHART_COLORS` em `charts.tsx` e mapeado por status/modalidade na
+    própria página, não hardcoded no componente de gráfico.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
