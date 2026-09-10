@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 
@@ -42,10 +43,10 @@ export default async function AdminOverviewPage() {
 
       <div className="flex-1 overflow-y-auto px-9 py-6">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Kpi label="Empresas ativas" value={empresasAtivas ?? 0} />
-          <Kpi label="Vagas publicadas" value={vagasPublicadas ?? 0} />
-          <Kpi label="Candidatos cadastrados" value={candidatosCadastrados ?? 0} />
-          <Kpi label="Denúncias abertas" value={denunciasAbertas ?? 0} alert />
+          <Kpi label="Empresas ativas" value={empresasAtivas ?? 0} href="/admin/empresas" />
+          <Kpi label="Vagas publicadas" value={vagasPublicadas ?? 0} href="/admin/vagas" />
+          <Kpi label="Candidatos cadastrados" value={candidatosCadastrados ?? 0} href="/admin/candidatos" />
+          <Kpi label="Denúncias abertas" value={denunciasAbertas ?? 0} href="/admin/denuncias" alert />
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4">
@@ -56,12 +57,16 @@ export default async function AdminOverviewPage() {
                 <p className="text-[12px] text-text-2">Nenhuma empresa aguardando.</p>
               )}
               {(filaEmpresas ?? []).map((c) => (
-                <div key={c.id} className="flex items-center justify-between rounded-lg border border-border p-2.5">
+                <Link
+                  key={c.id}
+                  href="/admin/empresas"
+                  className="flex items-center justify-between rounded-lg border border-border p-2.5 transition-colors hover:border-navy/30"
+                >
                   <span className="text-[12.5px] font-bold text-text">{c.nome_fantasia ?? c.razao_social}</span>
                   <span className="rounded bg-danger-bg px-2 py-0.5 text-[10px] font-extrabold text-danger">
                     {c.status === "ajustes" ? "Ajustes pendentes" : "Em análise"}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -72,12 +77,16 @@ export default async function AdminOverviewPage() {
                 <p className="text-[12px] text-text-2">Nenhuma solicitação aguardando.</p>
               )}
               {(filaVagas ?? []).map((j) => (
-                <div key={j.id} className="flex items-center gap-2.5 rounded-lg border border-border p-2.5">
+                <Link
+                  key={j.id}
+                  href="/admin/vagas"
+                  className="flex items-center gap-2.5 rounded-lg border border-border p-2.5 transition-colors hover:border-navy/30"
+                >
                   <span className="rounded-md bg-navy-bg px-2 py-1 text-[9.5px] font-extrabold uppercase text-navy">
                     {j.modalidade}
                   </span>
                   <span className="text-[12.5px] font-bold text-text">{j.titulo}</span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -87,11 +96,32 @@ export default async function AdminOverviewPage() {
   );
 }
 
-function Kpi({ label, value, alert = false }: { label: string; value: number; alert?: boolean }) {
-  return (
-    <div className="rounded-2xl border border-border bg-surface p-4">
+function Kpi({
+  label,
+  value,
+  alert = false,
+  href,
+}: {
+  label: string;
+  value: number;
+  alert?: boolean;
+  href?: string;
+}) {
+  const content = (
+    <>
       <div className="text-[10.5px] font-bold uppercase text-text-2">{label}</div>
       <div className={`mt-1.5 text-[23px] font-extrabold ${alert ? "text-danger" : "text-navy"}`}>{value}</div>
-    </div>
+    </>
   );
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-navy/30"
+      >
+        {content}
+      </Link>
+    );
+  }
+  return <div className="rounded-2xl border border-border bg-surface p-4">{content}</div>;
 }
