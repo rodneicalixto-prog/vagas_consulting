@@ -15,6 +15,7 @@ export async function convidarAdmin(
   const email = String(formData.get("email") ?? "").trim();
   const perfil = String(formData.get("perfil") ?? "") as "admin" | "operador";
   const nome = String(formData.get("nome") ?? "").trim();
+  const telefone = String(formData.get("telefone") ?? "").trim();
 
   if (!email || !["admin", "operador"].includes(perfil)) {
     return { error: "Preencha e-mail e perfil com valores válidos." };
@@ -31,6 +32,7 @@ export async function convidarAdmin(
     user_id: invited.user.id,
     perfil,
     nome_exibicao: nome || null,
+    telefone: telefone || null,
   });
 
   if (insertError) {

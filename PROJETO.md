@@ -73,10 +73,11 @@ explícitas definem quais operações ele pode executar.
 | Protótipo do painel administrativo (7 telas) | ✅ Publicado — [artifact](https://claude.ai/code/artifact/4e3073eb-bc6e-4374-a4d9-f756345f3222) |
 | Repositório de código | ✅ Criado e com push feito — [rodneicalixto-prog/vagas_consulting](https://github.com/rodneicalixto-prog/vagas_consulting) |
 | Scaffold Next.js do app do candidato | ✅ Conectado ao Supabase de verdade (auth, vagas, candidaturas, perfil, LGPD), código no `main` |
-| Portal da empresa (`/portal`) | ✅ Removido do código. A migration `0006`, quando aplicada, retira a estrutura e as permissões de acesso empresarial do banco. |
-| Painel administrativo (`/admin`) | ✅ Login e logout disponíveis, hierarquia entre superadministrador, administrador e operador aplicada no servidor, cadastro interno de empresas e vagas disponível. |
-| Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados + migration `0004` (admin_users, privacy_requests, reports, application_notes, RLS de `jobs` corrigida para impedir autopublicação pela empresa) |
-| Deploy em produção | ✅ **No ar** — https://vagas-consulting-umber.vercel.app responde 200 em `/`, `/login`, `/portal/login` e `/admin/login`. Bloqueador corrigido em 09/09/2026 via Vercel CLI (causa real: `NEXT_PUBLIC_SUPABASE_ANON_KEY` tinha sido apagada e nunca recriada — não era problema de tipo Secret/Config como se pensava). Ver `CLAUDE.md`. |
+| Portal da empresa (`/portal`) | ❌ **Removido do código** (migration `0006_operacao_interna_e_hierarquia.sql`, commit `ed455cc`, 10/09/2026) — decisão de produto: operação passou a ser 100% interna, empresa não tem mais login/portal próprio, existe só como entidade cadastral. Vagas nascem de solicitação/briefing recebido por outro canal (não pelo app) e são cadastradas direto pela equipe interna em `/admin/vagas`. |
+| Painel administrativo (`/admin`) | ✅ Login/logout, hierarquia superadmin/admin/operador com permissões granulares no servidor (`requireInternalUser`, ex.: `companies.manage`, `jobs.manage`, `jobs.publish`, `users.manage`), cadastro interno de empresas e vagas. Ficou quebrado após a migration 0006 (schema dessincronizado + `SUPABASE_SERVICE_ROLE_KEY` vazia na Vercel) — **corrigido de verdade em 10/09/2026**, confirmado visualmente pelo Rodnei. |
+| Banco de dados (Supabase) | ✅ Schema + coluna extra (histórico terceirizadoras) + dados de exemplo semeados + migrations `0004` (admin_users, privacy_requests, reports, application_notes) e `0005` (fix de recursão infinita em RLS de `company_members`) + `0006` (operação 100% interna — remove portal/`company_members`, hierarquia de admin) |
+| Deploy em produção | ✅ **No ar** — https://vagas-consulting-umber.vercel.app. Dois bloqueadores distintos de env var já resolvidos (09/09: `NEXT_PUBLIC_SUPABASE_ANON_KEY` apagada; 10/09: `SUPABASE_SERVICE_ROLE_KEY` chegando vazia em runtime). Ver `CLAUDE.md`. |
+| Domínio próprio | `sosvagas.sosmkt.com.br` — configuração em andamento (10/09/2026) |
 
 > **Registro histórico:** os itens abaixo que descrevem o portal empresarial ou
 > `company_members` documentam uma direção anterior. A implementação vigente é
@@ -446,20 +447,64 @@ Critérios para encerrar esta pendência:
 Estas perguntas do próprio documento ainda não têm resposta registrada e
 bloqueiam decisões de produto/arquitetura importantes:
 
-1. Nome definitivo e área geográfica inicial do produto.
-2. ~~Marketplace aberto ou operado por uma agência/empresa específica?~~
-   **Decidido:** uso próprio da Vagas Consulting, sem conta, login ou portal
-   para empresas. A equipe interna cadastra empresas e vagas no painel.
-3. Quem é o empregador/contratante/intermediador em cada modalidade?
-4. ~~Empresas publicam direto ou toda vaga passa por moderação?~~
-   **Decidido:** somente superadministradores e administradores autorizados
-   publicam vagas.
-5. O candidato paga algo? (recomendação do documento: não cobrar)
-6. Pagamento de temporários dentro da plataforma — quem calcula/aprova?
-7. Quais dados/documentos são realmente necessários em cada etapa?
-8. WhatsApp é só alerta ou também atendimento/candidatura?
-9. Quais setores/tipos de vaga entram no piloto?
-10. Quem administra aprovação, suporte, denúncias, privacidade, incidentes?
+1. Nome definitivo do produto: **ainda em aberto**. Área geográfica inicial:
+   **Decidido (10/09/2026) — Brasil** (nacional, não regional).
+2. ~~Marketplace aberto ou operado por uma agência/empresa específica?~~ →
+   **Decidido:** operado pela Vagas Consulting. A empresa cliente não
+   publica vaga diretamente — envia uma solicitação/briefing (fora do
+   app, ver decisão 10/09 abaixo), e é a equipe interna (painel `/admin`)
+   quem cadastra e publica de fato. Implementado no schema (RLS de `jobs`
+   impede a empresa de publicar) e reforçado pela migration `0006`
+   (empresa nem tem mais login/portal).
+3. Quem é o empregador/contratante/intermediador em cada modalidade? →
+   **Decidido (10/09/2026): é variável**, definido contrato a contrato
+   conforme a necessidade — não é uma regra fixa por modalidade
+   (Efetiva/PJ/Temporária). Implicação de schema: precisa de um campo
+   explícito por vaga (ex.: `jobs.empregador_formal` ou similar) que o
+   admin preenche/confirma no cadastro, em vez de inferir da modalidade.
+4. ~~Empresas publicam direto ou toda vaga passa por moderação?~~ →
+   **Decidido (decorre do item 2):** nenhuma vaga é publicada diretamente
+   pela empresa; hoje nem existe mais canal de auto-atendimento pra
+   empresa (portal removido, migration `0006`) — o cadastro da vaga é
+   100% interno (`/admin/vagas`), a partir de uma solicitação recebida
+   por fora do app.
+5. O candidato paga algo? (recomendação do documento: não cobrar) —
+   ainda em aberto, sem decisão registrada.
+6. Pagamento de temporários dentro da plataforma — quem calcula/aprova? →
+   **Decidido (10/09/2026):** não é calculado automaticamente pela
+   plataforma — o valor/condição de pagamento é **explícito, definido
+   pelo admin no momento em que cadastra a vaga** (campo manual, não
+   fórmula). Implicação de schema: `jobs`/`temp_work` precisa de um
+   campo de remuneração/condição de pagamento visível e editável só pelo
+   admin no cadastro.
+7. Quais dados/documentos são realmente necessários em cada etapa? —
+   ainda em aberto.
+8. WhatsApp é só alerta ou também atendimento/candidatura? →
+   **Decidido (10/09/2026): notificação + atendimento básico.** Não é só
+   alerta de saída — o candidato também pode interagir por WhatsApp
+   (confirmar interesse, tirar dúvida com bot/atendente). Isso exige
+   integração bidirecional (linha do kit KPA já usa Evolution API pra
+   outros clientes — avaliar reaproveitar o mesmo padrão), escopo maior
+   que só disparo de notificação. Ainda não implementado — vira item de
+   backlog técnico novo (P1, junto com "Mensagens e agenda").
+9. Quais setores/tipos de vaga entram no piloto? — ainda em aberto.
+10. Quem administra aprovação, suporte, denúncias, privacidade,
+    incidentes? — ainda em aberto (hoje existem `superadmin`
+    `rodnei@calixtosolucoes.com.br` e `admin` `priscilla.klein@gmail.com`,
+    cadastrada em 10/09/2026; hierarquia completa de `admin_perfil`
+    (superadmin/admin/operador) já existe no schema desde a migration
+    `0006`, com permissões granulares por ação via `requireInternalUser`
+    — falta decidir quem ocupa cada papel além desses dois).
+
+**Escopo dos textos legais (LGPD/Termos) — decidido 10/09/2026:** o app
+deve ser **construído em conformidade** com as regras de LGPD (opt-in por
+canal, registro de consentimento, direitos do titular etc. — seção 6
+segue valendo como requisito técnico), mas **não cabe a mim redigir o
+texto legal final que é exposto ao candidato/empresa** — isso é
+responsabilidade do Rodnei/assessoria jurídica dele publicar como aviso
+de segurança/privacidade de dados. Meu trabalho é garantir que o produto
+tecnicamente respeita essas regras (schema, RLS, fluxos de consentimento),
+não gerar a peça jurídica final.
 
 ## 8. Próximas fases propostas
 

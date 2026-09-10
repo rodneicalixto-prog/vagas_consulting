@@ -19,6 +19,10 @@ export function InviteAdminForm() {
         <input name="email" type="email" required className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]" />
       </label>
       <label className="flex flex-col gap-1">
+        <span className="text-[10.5px] font-bold text-text-2">Telefone</span>
+        <input name="telefone" placeholder="(11) 90000-0000" className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]" />
+      </label>
+      <label className="flex flex-col gap-1">
         <span className="text-[10.5px] font-bold text-text-2">Perfil</span>
         <select name="perfil" required defaultValue="" className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]">
           <option value="" disabled>Selecionar...</option>

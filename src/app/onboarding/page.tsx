@@ -58,6 +58,7 @@ function ChipGroup<T extends string>({
 
 export default function OnboardingPage() {
   const [nomeCompleto, setNomeCompleto] = useState("");
+  const [idade] = useState("");
   const [cidade, setCidade] = useState("");
   const [telefone, setTelefone] = useState("");
   const [modeloTrabalho, setModeloTrabalho] = useState<Enums<"modelo_trabalho">[]>([]);
@@ -97,6 +98,7 @@ export default function OnboardingPage() {
           : [];
       saveProfile({
         nomeCompleto,
+        idade,
         cidade,
         telefone,
         modeloTrabalho,

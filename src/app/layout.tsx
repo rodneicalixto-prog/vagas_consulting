@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { InstallLeadCapture } from "@/components/install-lead-capture";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-bg text-text font-sans">
         {children}
+        <InstallLeadCapture />
       </body>
     </html>
   );

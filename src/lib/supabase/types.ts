@@ -21,6 +21,7 @@ export type Database = {
           mfa_ativo: boolean
           nome_exibicao: string | null
           perfil: Database["public"]["Enums"]["admin_perfil"]
+          telefone: string | null
           user_id: string
         }
         Insert: {
@@ -29,6 +30,7 @@ export type Database = {
           mfa_ativo?: boolean
           nome_exibicao?: string | null
           perfil: Database["public"]["Enums"]["admin_perfil"]
+          telefone?: string | null
           user_id: string
         }
         Update: {
@@ -37,7 +39,32 @@ export type Database = {
           mfa_ativo?: boolean
           nome_exibicao?: string | null
           perfil?: Database["public"]["Enums"]["admin_perfil"]
+          telefone?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      app_install_events: {
+        Row: {
+          created_at: string
+          id: string
+          plataforma: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plataforma?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plataforma?: string | null
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -198,38 +225,6 @@ export type Database = {
         }
         Relationships: []
       }
-      company_members: {
-        Row: {
-          company_id: string
-          created_at: string
-          id: string
-          papel: string
-          user_id: string
-        }
-        Insert: {
-          company_id: string
-          created_at?: string
-          id?: string
-          papel?: string
-          user_id: string
-        }
-        Update: {
-          company_id?: string
-          created_at?: string
-          id?: string
-          papel?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "company_members_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       consents: {
         Row: {
           canal: string | null
@@ -382,6 +377,45 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          idade: number | null
+          latitude: number | null
+          longitude: number | null
+          nome_completo: string
+          origem: string
+          telefone: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          idade?: number | null
+          latitude?: number | null
+          longitude?: number | null
+          nome_completo: string
+          origem?: string
+          telefone: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          idade?: number | null
+          latitude?: number | null
+          longitude?: number | null
+          nome_completo?: string
+          origem?: string
+          telefone?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           application_id: string | null
@@ -430,6 +464,24 @@ export type Database = {
           },
         ]
       }
+      platform_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
       privacy_requests: {
         Row: {
           atendido_em: string | null
@@ -474,14 +526,18 @@ export type Database = {
           disponibilidade: string | null
           historico_terceirizadoras: Json
           id: string
+          idade: number | null
           modalidades_desejadas: Database["public"]["Enums"]["modalidade_vaga"][]
           modelo_trabalho: Database["public"]["Enums"]["modelo_trabalho"][]
           nome_completo: string
           perfil_completo_pct: number
           resumo: string | null
+          status_validacao: string
           telefone: string | null
           titulo_profissional: string | null
           updated_at: string
+          validado_em: string | null
+          validado_por: string | null
         }
         Insert: {
           cidade?: string | null
@@ -490,14 +546,18 @@ export type Database = {
           disponibilidade?: string | null
           historico_terceirizadoras?: Json
           id: string
+          idade?: number | null
           modalidades_desejadas?: Database["public"]["Enums"]["modalidade_vaga"][]
           modelo_trabalho?: Database["public"]["Enums"]["modelo_trabalho"][]
           nome_completo: string
           perfil_completo_pct?: number
           resumo?: string | null
+          status_validacao?: string
           telefone?: string | null
           titulo_profissional?: string | null
           updated_at?: string
+          validado_em?: string | null
+          validado_por?: string | null
         }
         Update: {
           cidade?: string | null
@@ -506,14 +566,18 @@ export type Database = {
           disponibilidade?: string | null
           historico_terceirizadoras?: Json
           id?: string
+          idade?: number | null
           modalidades_desejadas?: Database["public"]["Enums"]["modalidade_vaga"][]
           modelo_trabalho?: Database["public"]["Enums"]["modelo_trabalho"][]
           nome_completo?: string
           perfil_completo_pct?: number
           resumo?: string | null
+          status_validacao?: string
           telefone?: string | null
           titulo_profissional?: string | null
           updated_at?: string
+          validado_em?: string | null
+          validado_por?: string | null
         }
         Relationships: []
       }
@@ -558,6 +622,82 @@ export type Database = {
           tipo?: Database["public"]["Enums"]["tipo_denuncia"]
         }
         Relationships: []
+      }
+      service_engagements: {
+        Row: {
+          application_id: string | null
+          candidate_id: string
+          company_id: string
+          created_at: string
+          criado_por: string | null
+          data_fim: string | null
+          data_inicio: string
+          id: string
+          job_id: string
+          modalidade: Database["public"]["Enums"]["modalidade_vaga"]
+          observacoes: string | null
+          periodicidade: string | null
+          status_pagamento: Database["public"]["Enums"]["status_pagamento_servico"]
+          updated_at: string
+          valor: number | null
+        }
+        Insert: {
+          application_id?: string | null
+          candidate_id: string
+          company_id: string
+          created_at?: string
+          criado_por?: string | null
+          data_fim?: string | null
+          data_inicio: string
+          id?: string
+          job_id: string
+          modalidade: Database["public"]["Enums"]["modalidade_vaga"]
+          observacoes?: string | null
+          periodicidade?: string | null
+          status_pagamento?: Database["public"]["Enums"]["status_pagamento_servico"]
+          updated_at?: string
+          valor?: number | null
+        }
+        Update: {
+          application_id?: string | null
+          candidate_id?: string
+          company_id?: string
+          created_at?: string
+          criado_por?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          id?: string
+          job_id?: string
+          modalidade?: Database["public"]["Enums"]["modalidade_vaga"]
+          observacoes?: string | null
+          periodicidade?: string | null
+          status_pagamento?: Database["public"]["Enums"]["status_pagamento_servico"]
+          updated_at?: string
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_engagements_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_engagements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_engagements_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       temp_work: {
         Row: {
@@ -617,10 +757,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      admin_perfil:
-        | "superadmin"
-        | "admin"
-        | "operador"
+      admin_perfil: "superadmin" | "admin" | "operador"
       modalidade_vaga: "efetiva" | "pj" | "temporaria"
       modelo_trabalho: "presencial" | "hibrido" | "remoto"
       status_candidatura:
@@ -651,6 +788,7 @@ export type Database = {
         | "aprovada"
         | "suspensa"
         | "bloqueada"
+      status_pagamento_servico: "pendente" | "pago" | "parcial" | "atrasado"
       status_solicitacao_lgpd:
         | "aberta"
         | "em_atendimento"
@@ -805,11 +943,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      admin_perfil: [
-        "superadmin",
-        "admin",
-        "operador",
-      ],
+      admin_perfil: ["superadmin", "admin", "operador"],
       modalidade_vaga: ["efetiva", "pj", "temporaria"],
       modelo_trabalho: ["presencial", "hibrido", "remoto"],
       status_candidatura: [
@@ -843,6 +977,7 @@ export const Constants = {
         "suspensa",
         "bloqueada",
       ],
+      status_pagamento_servico: ["pendente", "pago", "parcial", "atrasado"],
       status_solicitacao_lgpd: [
         "aberta",
         "em_atendimento",
