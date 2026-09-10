@@ -472,3 +472,72 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 2. **Sincronização pendente:** o ambiente não possui acesso ao caminho local do
    Windows. Nesse caso, a alteração deve ser preservada no Git e a pendência
    deve ser comunicada, sem registrar uma confirmação fictícia.
+
+## 10. Handoff do incidente do painel administrativo (10/09/2026)
+
+### Estado confirmado
+
+- A aplicação pública e o login do candidato carregam, mas a rota autenticada
+  `/admin` continua exibindo `This page couldn't load` com o digest
+  `3578782868` no deployment de produção observado.
+- O login administrativo aceita a credencial e redireciona para `/admin`; a
+  falha acontece durante a renderização server-side do painel, depois da
+  autenticação.
+- A causa raiz ainda não foi confirmada. Build e lint locais não reproduzem o
+  erro de execução da Vercel e não substituem a consulta ao Runtime Log.
+- O commit local `e607a59` restaura no layout o fluxo de autenticação usado
+  antes da regressão e remove a chamada duplicada de `requireInternalUser` da
+  página inicial. Essa é uma correção provisória, ainda sem validação em
+  produção.
+- A branch disponível neste ambiente é `work`, sem remote Git configurado. Por
+  isso, o commit local não foi enviado ao GitHub nem implantado pela Vercel.
+
+### Tentativas realizadas e limites encontrados
+
+1. `npm run lint` e `npm run build` passaram; o build gerou `/admin` como rota
+   dinâmica.
+2. Foi fornecido um token pessoal da Vercel, porém o ambiente bloqueou com
+   HTTP 403 tanto o download da CLI em `registry.npmjs.org` quanto o acesso
+   direto a `api.vercel.com` e ao domínio publicado.
+3. O token foi exposto na conversa e deve ser revogado. Seu valor não foi salvo
+   no repositório, em arquivo local ou no commit.
+4. Não foi possível consultar Runtime Logs, confirmar as variáveis do
+   deployment, acionar redeploy nem testar uma sessão administrativa em
+   produção.
+5. Não há evidência suficiente para atribuir o incidente à
+   `SUPABASE_SERVICE_ROLE_KEY`: a documentação anterior registra que essa
+   variável já existia na Vercel. A hipótese não deve ser tratada como causa
+   sem o log correspondente ao digest atual.
+
+### Sequência recomendada para a próxima sessão
+
+1. Revogar o token exposto e gerar outro token temporário.
+2. Em um ambiente com acesso à Vercel, consultar o deployment atualmente
+   associado a `vagas-consulting-umber.vercel.app` e registrar o commit SHA que
+   está em produção.
+3. Buscar o Runtime Log da requisição autenticada a `/admin`, usando o digest
+   `3578782868`, antes de alterar novamente o código.
+4. Comparar o erro do log com `src/app/admin/(app)/layout.tsx`,
+   `src/app/admin/(app)/page.tsx`, `src/lib/auth/internal.ts` e
+   `src/lib/supabase/admin.ts`.
+5. Se o commit `e607a59` ainda não estiver publicado, enviar a branch, integrar
+   a correção e criar um novo deployment. Se já estiver publicado, corrigir a
+   exceção indicada pelo Runtime Log em vez de continuar por hipótese.
+6. Validar com a conta administrativa real: login, abertura de `/admin`,
+   empresas, vagas, LGPD, auditoria, acesso e logout.
+7. Somente declarar o incidente encerrado depois de confirmar o painel em
+   produção e a ausência de novos erros nos Runtime Logs.
+
+# FECHAMENTO
+
+1. **O que foi feito ou decidido:** foi registrado o estado real do incidente,
+   incluindo o digest, as verificações locais, a correção provisória no commit
+   `e607a59`, os bloqueios externos e a sequência de diagnóstico para a próxima
+   sessão.
+2. **O que está pendente:** consultar o Runtime Log da Vercel, confirmar o SHA
+   publicado, implantar e validar a correção, revogar o token exposto e
+   sincronizar este arquivo com o cofre do Obsidian. A sincronização está
+   pendente porque este ambiente não acessa o caminho do Windows.
+3. **Próximo passo claro:** revogar o token exposto e, em ambiente com acesso à
+   Vercel, obter o Runtime Log do digest `3578782868` antes de realizar qualquer
+   nova alteração no painel.
