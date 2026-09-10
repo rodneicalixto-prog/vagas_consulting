@@ -13,7 +13,7 @@ export default async function CadastroDeVagasPage() {
   ]);
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Cadastro de vagas</h1>
         <p className="mt-1 text-xs text-text-2">

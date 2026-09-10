@@ -10,9 +10,13 @@ const NAV = [
   { href: "/admin", label: "Visão geral", exact: true },
   { href: "/admin/empresas", label: "Empresas" },
   { href: "/admin/vagas", label: "Cadastro de vagas" },
+  { href: "/admin/candidatos", label: "Candidatos" },
+  { href: "/admin/leads", label: "Leads" },
+  { href: "/admin/prestacoes", label: "Prestações" },
   { href: "/admin/lgpd", label: "LGPD", roles: ["superadmin", "admin"] },
   { href: "/admin/auditoria", label: "Auditoria", roles: ["superadmin", "admin"] },
   { href: "/admin/acesso", label: "Acesso", roles: ["superadmin"] },
+  { href: "/admin/estrategico", label: "Estratégico", roles: ["superadmin"] },
 ];
 
 const PERFIL_LABEL: Record<string, string> = {
@@ -31,6 +35,9 @@ export function AdminShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const current = NAV.find((item) =>
+    item.exact ? pathname === item.href : pathname.startsWith(item.href),
+  );
 
   return (
     <div className="flex min-h-dvh bg-bg">
@@ -71,7 +78,18 @@ export function AdminShell({
           </button>
         </form>
       </aside>
-      <main className="flex-1 overflow-hidden">{children}</main>
+      <main className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex h-11 shrink-0 items-center gap-1.5 border-b border-border px-9 text-[11.5px] font-bold text-text-3">
+          <span>Admin</span>
+          {current && current.href !== "/admin" && (
+            <>
+              <span className="text-text-3/60">/</span>
+              <span className="text-text-2">{current.label}</span>
+            </>
+          )}
+        </div>
+        <div className="flex-1 overflow-hidden">{children}</div>
+      </main>
     </div>
   );
 }

@@ -23,7 +23,7 @@ export default async function CandidatosPage() {
   const emailById = new Map(usersPage?.users.map((u) => [u.id, u.email]) ?? []);
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Candidatos</h1>
         <p className="mt-1 text-xs text-text-2">

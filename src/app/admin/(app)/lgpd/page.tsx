@@ -24,7 +24,7 @@ export default async function LgpdPage() {
   const atendidas = (requests ?? []).filter((r) => r.status === "atendida" || r.status === "recusada");
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">LGPD</h1>
         <p className="mt-1 text-xs text-text-2">
