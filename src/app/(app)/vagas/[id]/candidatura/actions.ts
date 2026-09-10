@@ -13,6 +13,22 @@ export async function enviarCandidatura(jobId: string, respostas: Record<string,
     redirect("/login");
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("telefone, endereco, curriculo_url")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const temCurriculo = Boolean(profile?.curriculo_url);
+  const temDadosDeContato = Boolean(profile?.telefone?.trim() && profile?.endereco?.trim());
+
+  if (!temCurriculo && !temDadosDeContato) {
+    return {
+      error:
+        "Complete seu perfil (telefone e endereço) antes de se candidatar — sem currículo, é isso que a empresa recebe.",
+    };
+  }
+
   const { error } = await supabase.from("applications").insert({
     job_id: jobId,
     candidate_id: user.id,

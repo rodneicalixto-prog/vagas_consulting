@@ -61,6 +61,7 @@ export default function OnboardingPage() {
   const [idade] = useState("");
   const [cidade, setCidade] = useState("");
   const [telefone, setTelefone] = useState("");
+  const [endereco, setEndereco] = useState("");
   const [modeloTrabalho, setModeloTrabalho] = useState<Enums<"modelo_trabalho">[]>([]);
   const [modalidades, setModalidades] = useState<Enums<"modalidade_vaga">[]>([]);
   const [disponibilidade, setDisponibilidade] = useState("Imediata");
@@ -101,6 +102,7 @@ export default function OnboardingPage() {
         idade,
         cidade,
         telefone,
+        endereco,
         modeloTrabalho,
         modalidades,
         disponibilidade,
@@ -108,6 +110,9 @@ export default function OnboardingPage() {
       });
     });
   };
+
+  const camposObrigatoriosCompletos =
+    nomeCompleto.trim() && cidade.trim() && telefone.trim() && endereco.trim();
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-xl flex-col">
@@ -127,35 +132,49 @@ export default function OnboardingPage() {
 
       <div className="flex flex-1 flex-col gap-5 px-5 pb-4 pt-4 md:px-8">
         <label className="flex flex-col gap-1.5">
-          <span className="text-xs font-bold text-text-2">Nome completo</span>
+          <span className="text-xs font-bold text-text-2">Nome completo *</span>
           <input
             className="rounded-lg border border-border bg-white px-3.5 py-3 text-sm outline-none focus:border-navy"
             value={nomeCompleto}
             onChange={(e) => setNomeCompleto(e.target.value)}
             placeholder="Seu nome completo"
+            required
           />
         </label>
 
         <div className="grid grid-cols-2 gap-2.5">
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-bold text-text-2">Cidade</span>
+            <span className="text-xs font-bold text-text-2">Cidade *</span>
             <input
               className="rounded-lg border border-border bg-white px-3.5 py-3 text-sm outline-none focus:border-navy"
               value={cidade}
               onChange={(e) => setCidade(e.target.value)}
               placeholder="São Paulo, SP"
+              required
             />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-bold text-text-2">Telefone</span>
+            <span className="text-xs font-bold text-text-2">Telefone *</span>
             <input
               className="rounded-lg border border-border bg-white px-3.5 py-3 text-sm outline-none focus:border-navy"
               value={telefone}
               onChange={(e) => setTelefone(e.target.value)}
               placeholder="(11) 90000-0000"
+              required
             />
           </label>
         </div>
+
+        <label className="flex flex-col gap-1.5">
+          <span className="text-xs font-bold text-text-2">Endereço completo *</span>
+          <input
+            className="rounded-lg border border-border bg-white px-3.5 py-3 text-sm outline-none focus:border-navy"
+            value={endereco}
+            onChange={(e) => setEndereco(e.target.value)}
+            placeholder="Rua, número, bairro, cidade"
+            required
+          />
+        </label>
 
         <div className="flex flex-col gap-2">
           <span className="text-xs font-bold text-text-2">Modelo de trabalho</span>
@@ -284,23 +303,29 @@ export default function OnboardingPage() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-xs font-bold text-text-2">Currículo</span>
+          <span className="text-xs font-bold text-text-2">Currículo (opcional)</span>
           <div className="flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-border bg-white px-4 py-6 text-center text-navy">
             <IconUpload />
             <span className="text-[12.5px] font-bold text-text">
               Arraste seu currículo ou toque para selecionar
             </span>
             <span className="text-[11px] text-text-3">
-              PDF, até 5 MB — upload ainda não conectado nesta fase
+              PDF, até 5 MB — upload ainda não conectado nesta fase. Sem currículo, nome,
+              telefone e endereço acima são o que a empresa recebe da sua candidatura.
             </span>
           </div>
         </div>
       </div>
 
       <div className="sticky bottom-0 bg-bg px-5 pb-6 pt-3 md:px-8">
+        {!camposObrigatoriosCompletos && (
+          <p className="mb-2 text-[11.5px] font-semibold text-danger">
+            Preencha nome, cidade, telefone e endereço pra continuar.
+          </p>
+        )}
         <button
           onClick={onSubmit}
-          disabled={pending || !nomeCompleto || !respostaTerceirizadorasCompleta}
+          disabled={pending || !camposObrigatoriosCompletos || !respostaTerceirizadorasCompleta}
           className="w-full rounded-xl bg-gold px-0 py-3.5 text-[14.5px] font-extrabold text-[#1c1508] disabled:opacity-60"
         >
           {pending ? "Salvando..." : "Concluir perfil"}

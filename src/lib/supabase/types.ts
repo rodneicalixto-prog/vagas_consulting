@@ -524,6 +524,7 @@ export type Database = {
           created_at: string
           curriculo_url: string | null
           disponibilidade: string | null
+          endereco: string | null
           historico_terceirizadoras: Json
           id: string
           idade: number | null
@@ -544,6 +545,7 @@ export type Database = {
           created_at?: string
           curriculo_url?: string | null
           disponibilidade?: string | null
+          endereco?: string | null
           historico_terceirizadoras?: Json
           id: string
           idade?: number | null
@@ -564,6 +566,7 @@ export type Database = {
           created_at?: string
           curriculo_url?: string | null
           disponibilidade?: string | null
+          endereco?: string | null
           historico_terceirizadoras?: Json
           id?: string
           idade?: number | null

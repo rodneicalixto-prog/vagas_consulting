@@ -462,6 +462,41 @@ sessões futuras.
     `CHART_COLORS` em `charts.tsx` e mapeado por status/modalidade na
     própria página, não hardcoded no componente de gráfico.
 
+26. **Barras pretas corrigidas (recharts 3.x → 2.x) + mais variedade de
+    gráfico (10/09/2026)** — `recharts@3` (lançado recentemente, mudanças
+    internas grandes) renderizava as barras do funil sólidas em preto em
+    vez das cores configuradas; corrigido com downgrade pra `recharts@2`
+    (estável, mesma API, zero mudança de código). Aproveitado pra
+    adicionar 3 gráficos com dado real por trás: rosca de candidaturas
+    por etapa do pipeline, rosca de candidatos por status de validação,
+    e comparativo de barras agrupadas "vagas publicadas × preenchidas"
+    por modalidade (substituindo o gráfico solto que só mostrava metade
+    da história).
+
+27. **Endereço obrigatório + candidatura bloqueada sem currículo nem
+    contato (10/09/2026)** — o Rodnei pediu correção urgente: hoje é
+    possível concluir o cadastro do candidato sem telefone/endereço, e
+    enviar candidatura sem currículo nenhum (o app promete "currículo e
+    experiências" à empresa mas nunca confere se existe — e o upload de
+    currículo nem está implementado ainda, só o dropzone visual). Corrigido:
+    - Migration `0010_endereco_candidato.sql` — nova coluna
+      `profiles.endereco`.
+    - Onboarding (`src/app/onboarding/page.tsx` +
+      `src/app/onboarding/actions.ts`): campo de endereço adicionado;
+      nome/cidade/telefone/endereço agora são obrigatórios pra concluir
+      o perfil, validado tanto no client (botão desabilitado) quanto no
+      server (a action lança erro se faltar algum).
+    - Candidatura (`src/app/(app)/vagas/[id]/candidatura/actions.ts`):
+      antes de aceitar o envio, confere se o perfil tem currículo OU
+      (telefone + endereço) preenchidos — sem os dois, recusa com
+      mensagem clara em vez de mandar candidatura vazia pra empresa.
+    - `/admin/candidatos/[id]` mostra o endereço e um aviso vermelho
+      quando um candidato antigo (cadastrado antes dessa regra) está com
+      telefone/endereço faltando.
+    - **Pendência real, não resolvida ainda:** upload de currículo em si
+      continua não implementado (dropzone é só visual) — a mensagem no
+      onboarding foi ajustada pra deixar isso explícito ao candidato.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

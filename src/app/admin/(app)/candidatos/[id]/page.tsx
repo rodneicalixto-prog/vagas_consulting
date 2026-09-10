@@ -35,7 +35,7 @@ export default async function CandidatoDetalhePage({
       client
         .from("profiles")
         .select(
-          "id, nome_completo, cidade, telefone, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at",
+          "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at",
         )
         .eq("id", id)
         .maybeSingle(),
@@ -127,6 +127,11 @@ export default async function CandidatoDetalhePage({
           {authUser.user?.email ?? "—"} · {profile.telefone ?? "sem telefone"} ·{" "}
           {profile.cidade ?? "sem cidade"}
         </p>
+        {!profile.telefone?.trim() || !profile.endereco?.trim() ? (
+          <p className="mt-1.5 rounded-lg bg-danger-bg px-2.5 py-1.5 text-[11px] font-semibold text-danger">
+            Cadastro incompleto (telefone/endereço) — candidato anterior à exigência de dados obrigatórios.
+          </p>
+        ) : null}
       </div>
 
       <div className="flex-1 overflow-y-auto px-9 py-6">
@@ -140,6 +145,10 @@ export default async function CandidatoDetalhePage({
             <div>
               <div className="text-[10px] font-bold uppercase text-text-3">Disponibilidade</div>
               <div className="text-text-2">{profile.disponibilidade ?? "—"}</div>
+            </div>
+            <div>
+              <div className="text-[10px] font-bold uppercase text-text-3">Endereço</div>
+              <div className="text-text-2">{profile.endereco ?? "—"}</div>
             </div>
             <div>
               <div className="text-[10px] font-bold uppercase text-text-3">Modalidades desejadas</div>
