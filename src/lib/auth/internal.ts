@@ -2,7 +2,6 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { isMissingColumn } from "@/lib/supabase/errors";
 
 export type InternalRole = "superadmin" | "admin" | "operador";
 
@@ -59,25 +58,15 @@ export async function requireInternalUser(capability?: Capability) {
 
   const currentAccount = await supabase
     .from("admin_users")
-    .select("perfil, nome_exibicao, ativo")
+    .select("*")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  let account: { perfil: string; nome_exibicao: string | null; ativo: boolean } | null =
-    currentAccount.data;
+  const account = currentAccount.error ? null : currentAccount.data;
 
-  // Mantém o painel acessível enquanto a migration 0006 ainda não tiver sido
-  // aplicada. Outros erros continuam bloqueando o acesso.
-  if (isMissingColumn(currentAccount.error, "ativo")) {
-    const legacyAccount = await supabase
-      .from("admin_users")
-      .select("perfil, nome_exibicao")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    account = legacyAccount.data ? { ...legacyAccount.data, ativo: true } : null;
+  if (!account || (("ativo" in account) && account.ativo === false)) {
+    redirect("/admin/acesso-negado");
   }
-
-  if (!account || account.ativo === false) redirect("/admin/acesso-negado");
 
   const role = normalizeRole(account.perfil);
   if (capability && !can(role, capability)) redirect("/admin/acesso-negado");

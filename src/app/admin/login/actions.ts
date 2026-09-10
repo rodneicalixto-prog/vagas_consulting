@@ -22,22 +22,14 @@ export async function adminLogin(
 
   const access = await supabase
     .from("admin_users")
-    .select("user_id, ativo")
+    .select("*")
     .eq("user_id", data.user.id)
     .maybeSingle();
 
-  let hasAccess = !access.error && Boolean(access.data?.ativo);
-
-  // Compatibilidade durante o intervalo entre o deploy do código e a
-  // aplicação da migration 0006, que adiciona a coluna `ativo`.
-  if (isMissingColumn(access.error, "ativo")) {
-    const legacyAccess = await supabase
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", data.user.id)
-      .maybeSingle();
-    hasAccess = !legacyAccess.error && Boolean(legacyAccess.data);
-  }
+  const hasAccess =
+    !access.error &&
+    access.data !== null &&
+    (!("ativo" in access.data) || access.data.ativo !== false);
 
   if (!hasAccess) {
     await supabase.auth.signOut();
