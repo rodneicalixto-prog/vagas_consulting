@@ -65,3 +65,14 @@ export function timeAgo(iso: string | null): string {
 export function companyInitial(name: string | null | undefined): string {
   return (name ?? "?").trim().charAt(0).toUpperCase() || "?";
 }
+
+/** Retorna a URL só se for http(s) — bloqueia esquemas perigosos (javascript:, data:, etc.) em campos preenchidos pelo próprio usuário. */
+export function safeHttpUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? url : null;
+  } catch {
+    return null;
+  }
+}

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { DataTable, type DataTableColumn } from "@/components/data-table";
-import { statusLabel, statusPillClass } from "@/lib/format";
+import { statusLabel, statusPillClass, safeHttpUrl } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
 
 const CANDIDATO_STATUS_LABEL: Record<string, { label: string; className: string }> = {
@@ -165,8 +165,8 @@ export default async function CandidatoDetalhePage({
             <div>
               <div className="text-[10px] font-bold uppercase text-text-3">Currículo</div>
               <div className="text-text-2">
-                {profile.curriculo_url ? (
-                  <a href={profile.curriculo_url} target="_blank" rel="noreferrer" className="text-navy underline">
+                {safeHttpUrl(profile.curriculo_url) ? (
+                  <a href={safeHttpUrl(profile.curriculo_url)!} target="_blank" rel="noreferrer" className="text-navy underline">
                     Ver arquivo
                   </a>
                 ) : (
