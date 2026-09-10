@@ -38,7 +38,7 @@ const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
   operador: ["dashboard.read", "companies.manage", "jobs.manage", "pipeline.manage"],
 };
 
-function normalizeRole(role: string): InternalRole {
+export function normalizeInternalRole(role: string): InternalRole {
   if (role === "superadmin") return "superadmin";
   if (role === "admin" || role === "operacoes" || role === "compliance") return "admin";
   return "operador";
@@ -68,7 +68,7 @@ export async function requireInternalUser(capability?: Capability) {
     redirect("/admin/acesso-negado");
   }
 
-  const role = normalizeRole(account.perfil);
+  const role = normalizeInternalRole(account.perfil);
   if (capability && !can(role, capability)) redirect("/admin/acesso-negado");
 
   return { user, account, role };
