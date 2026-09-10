@@ -361,6 +361,37 @@ auditoria · Descontinuação do portal empresarial.
 
 **P2** — Matching e automação · Pagamentos e extratos.
 
+### 5.1 Pendência de integridade em mensagens
+
+**Status:** pendente e bloqueadora para considerar o modelo de mensagens
+concluído.
+
+A constraint atual `messages_vinculo_check` exige que `application_id` ou
+`invite_id` esteja preenchido, mas ainda aceita os dois campos simultaneamente.
+A policy criada na migration `0006` restringe a inserção feita pelo candidato;
+ela não substitui a garantia estrutural da tabela e não protege inserções feitas
+com service role.
+
+A correção deve ser entregue em uma migration posterior à `0006`, após verificar
+e corrigir registros existentes que tenham os dois vínculos preenchidos. A regra
+definitiva será XOR, exigindo exatamente um vínculo:
+
+```sql
+alter table messages
+  drop constraint if exists messages_vinculo_check;
+
+alter table messages
+  add constraint messages_vinculo_check
+  check (num_nonnulls(application_id, invite_id) = 1);
+```
+
+Critérios para encerrar esta pendência:
+
+1. Consultar e tratar registros com nenhum vínculo ou com os dois vínculos.
+2. Criar e aplicar a migration da constraint XOR.
+3. Testar inserções válidas por candidatura e por convite.
+4. Confirmar que inserções com nenhum vínculo ou com ambos sejam rejeitadas.
+
 ## 6. Compliance obrigatório (LGPD)
 
 - Opt-in de alertas de vagas **separado por canal** (WhatsApp/E-mail/SMS),
@@ -407,9 +438,11 @@ bloqueiam decisões de produto/arquitetura importantes:
    do banco remoto.
 5. Validar login, logout, cadastro interno de empresas e vagas e restrições de
    cada papel em ambiente integrado.
-6. Implementar recuperação de senha, MFA administrativo e testes automatizados
+6. Criar e aplicar a migration da constraint XOR de mensagens descrita na seção
+   5.1.
+7. Implementar recuperação de senha, MFA administrativo e testes automatizados
    de autorização.
-7. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
+8. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
    Lançamento, conforme seção 14 do documento original).
 
 ## Referências
