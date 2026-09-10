@@ -18,21 +18,6 @@ import {
 
 const GRID = "#e7e2d8";
 
-/**
- * Paleta com peso de decisão de negócio, não estética neutra: verde vivo é
- * receita/sucesso, vermelho vivo é risco/atraso, âmbar é atenção/pendência.
- * Usada tanto pra semântica fixa (status de pagamento) quanto pra dar
- * contraste de leitura rápida em séries sem semântica de risco (modalidade).
- */
-export const CHART_COLORS = {
-  sucesso: "#16a34a",
-  risco: "#dc2626",
-  atencao: "#f59e0b",
-  info: "#2563eb",
-  destaque: "#7c3aed",
-  neutro: "#0ea5e9",
-};
-
 export function FunnelBarChart({
   data,
 }: {
@@ -105,28 +90,6 @@ export function DonutChart({
   );
 }
 
-export function ComparisonBarChart({
-  data,
-}: {
-  data: { periodo: string; valor: number }[];
-}) {
-  return (
-    <ResponsiveContainer width="100%" height={200}>
-      <BarChart data={data} margin={{ left: 0, right: 8, top: 8, bottom: 8 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
-        <XAxis dataKey="periodo" tick={{ fontSize: 10.5 }} />
-        <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={28} />
-        <Tooltip contentStyle={{ borderRadius: 10, border: `1px solid ${GRID}`, fontSize: 12 }} />
-        <Bar dataKey="valor" radius={[6, 6, 0, 0]}>
-          {data.map((d, i) => (
-            <Cell key={i} fill={i === data.length - 1 ? CHART_COLORS.sucesso : CHART_COLORS.info} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  );
-}
-
 export function GroupedBarChart({
   data,
   series,
@@ -167,7 +130,7 @@ export function TrendLineChart({
           type="monotone"
           dataKey="leads"
           name="Leads"
-          stroke={CHART_COLORS.atencao}
+          stroke="#f59e0b"
           strokeWidth={3}
           dot={false}
         />
@@ -175,7 +138,7 @@ export function TrendLineChart({
           type="monotone"
           dataKey="candidatos"
           name="Candidatos"
-          stroke={CHART_COLORS.info}
+          stroke="#2563eb"
           strokeWidth={3}
           dot={false}
         />

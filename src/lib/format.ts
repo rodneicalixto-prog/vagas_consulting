@@ -74,6 +74,23 @@ export function timeAgo(iso: string | null): string {
   return `há ${months} mês${months === 1 ? "" : "es"}`;
 }
 
+/**
+ * Paleta com peso de decisão de negócio, não estética neutra: verde vivo é
+ * receita/sucesso, vermelho vivo é risco/atraso, âmbar é atenção/pendência.
+ * Fica aqui (não em charts.tsx, que é "use client") porque Server Components
+ * (como estrategico/page.tsx) importavam de lá e recebiam `undefined` pra
+ * cada cor — Server Component não lê o valor real de um export não-componente
+ * de um módulo "use client". Era a causa raiz real de todo gráfico sair preto.
+ */
+export const CHART_COLORS = {
+  sucesso: "#16a34a",
+  risco: "#dc2626",
+  atencao: "#f59e0b",
+  info: "#2563eb",
+  destaque: "#7c3aed",
+  neutro: "#0ea5e9",
+};
+
 export function companyInitial(name: string | null | undefined): string {
   return (name ?? "?").trim().charAt(0).toUpperCase() || "?";
 }

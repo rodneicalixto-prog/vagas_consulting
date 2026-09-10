@@ -516,6 +516,28 @@ sessões futuras.
     `src/lib/format.ts` ganhou `STATUS_CANDIDATURA_EM_ABERTO` (lista
     dos estágios que ainda aguardam tratativa).
 
+29. **Causa raiz real das barras/rosca pretas em `/admin/estrategico`
+    (10/09/2026)** — não era o `recharts` (o downgrade pra v2 no item 26
+    não resolveu nada; a versão nunca foi o problema). Causa real:
+    `CHART_COLORS` estava definido dentro de `src/components/charts.tsx`,
+    que tem `"use client"` no topo. `estrategico/page.tsx` é Server
+    Component e importava `CHART_COLORS` de lá — Server Component **não
+    lê o valor real de um export não-componente de um módulo
+    `"use client"`**, só recebe `undefined`. Toda cor virava `fill`
+    ausente, e SVG sem `fill` renderiza preto por padrão do navegador —
+    por isso todo gráfico, sempre, saía preto em qualquer versão do
+    recharts testada. Diagnosticado de verdade (não por suposição) rodando o
+    projeto localmente com `preview_start`/navegador via Claude Browser
+    e inspecionando o DOM renderizado (`fill` do `<path>` sempre `null`)
+    até isolar a causa numa página de teste descartável. Corrigido
+    movendo `CHART_COLORS` pra `src/lib/format.ts` (módulo sem
+    `"use client"`, importável por Server e Client Components) e
+    atualizando `estrategico/page.tsx` pra importar de lá.
+    **Lição pro futuro:** nunca definir uma constante/objeto de dados
+    (não-componente) dentro de um arquivo `"use client"` se algum
+    Server Component também precisa do valor real — o export existe,
+    mas o valor não atravessa a fronteira.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

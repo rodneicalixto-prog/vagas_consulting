@@ -7,10 +7,9 @@ import {
   TrendLineChart,
   DonutChart,
   GroupedBarChart,
-  CHART_COLORS,
 } from "@/components/charts";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
-import { statusLabel, STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
+import { statusLabel, STATUS_CANDIDATURA_EM_ABERTO, CHART_COLORS } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
 
 const STATUS_CANDIDATURA_COLOR: Record<string, string> = {
