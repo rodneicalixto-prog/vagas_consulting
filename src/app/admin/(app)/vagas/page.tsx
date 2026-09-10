@@ -1,16 +1,37 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { criarVaga, decidirVaga } from "./actions";
+import { decidirVaga } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { SubmitButton } from "@/components/form-buttons";
+import { CriarVagaForm } from "./criar-vaga-form";
 
 export default async function CadastroDeVagasPage() {
   const { role } = await requireInternalUser("jobs.manage");
   const admin = createAdminClient();
 
   const [{ data: jobs }, { data: companies }] = await Promise.all([
-    admin.from("jobs").select("id, titulo, modalidade, status, descricao, requisitos, remuneracao_texto, companies(razao_social)").order("created_at", { ascending: false }),
+    admin
+      .from("jobs")
+      .select(
+        "id, titulo, modalidade, status, descricao, requisitos, remuneracao_texto, local, company_id, companies(razao_social)",
+      )
+      .order("created_at", { ascending: false }),
     admin.from("companies").select("id, razao_social, nome_fantasia").eq("status", "aprovada").order("razao_social"),
   ]);
+
+  const defaultsByCompany: Record<
+    string,
+    { modalidade: string; local: string; remuneracao_texto: string; descricao: string; requisitos: string }
+  > = {};
+  for (const job of jobs ?? []) {
+    if (!job.company_id || defaultsByCompany[job.company_id]) continue;
+    defaultsByCompany[job.company_id] = {
+      modalidade: job.modalidade ?? "",
+      local: job.local ?? "",
+      remuneracao_texto: job.remuneracao_texto ?? "",
+      descricao: job.descricao ?? "",
+      requisitos: job.requisitos ?? "",
+    };
+  }
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -22,28 +43,7 @@ export default async function CadastroDeVagasPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-9 py-6">
-        <form action={criarVaga} className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-5 md:grid-cols-2">
-          <h2 className="text-sm font-extrabold text-text md:col-span-2">Cadastrar vaga</h2>
-          <select name="company_id" required defaultValue="" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm">
-            <option value="" disabled>Selecionar empresa</option>
-            {(companies ?? []).map((company) => <option key={company.id} value={company.id}>{company.nome_fantasia ?? company.razao_social}</option>)}
-          </select>
-          <input name="titulo" required placeholder="Título da vaga" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-          <select name="modalidade" required defaultValue="" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm">
-            <option value="" disabled>Modalidade</option>
-            <option value="efetiva">Efetiva</option><option value="pj">PJ</option><option value="temporaria">Temporária</option>
-          </select>
-          <input name="local" placeholder="Local" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-          <input name="remuneracao_texto" placeholder="Remuneração" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm md:col-span-2" />
-          <textarea name="descricao" placeholder="Descrição" rows={3} className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-          <textarea name="requisitos" placeholder="Requisitos" rows={3} className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-          <SubmitButton
-            pendingLabel="Salvando..."
-            className="rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white md:col-span-2"
-          >
-            Salvar rascunho
-          </SubmitButton>
-        </form>
+        <CriarVagaForm companies={companies ?? []} defaultsByCompany={defaultsByCompany} />
         {!jobs || jobs.length === 0 ? (
           <p className="mt-10 text-center text-sm text-text-2">Nenhuma vaga cadastrada.</p>
         ) : (

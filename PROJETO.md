@@ -592,6 +592,23 @@ sessões futuras.
     autenticada real do Supabase, bloqueado neste ambiente de execução)
     — validação final em produção pelo Rodnei.
 
+34. **Preenchimento automático no "Cadastrar vaga" com base no histórico
+    da empresa (10/09/2026)** — `/admin/vagas` agora calcula, por
+    empresa, os dados da vaga mais recente já cadastrada (modalidade,
+    local, remuneração, descrição, requisitos), a partir do próprio
+    array `jobs` já buscado na página (ordenado por `created_at desc`,
+    então o primeiro job de cada `company_id` encontrado é o mais
+    recente — sem query nova). Extraído o formulário "Cadastrar vaga"
+    pra um componente cliente novo (`src/app/admin/(app)/vagas/criar-vaga-form.tsx`,
+    `"use client"`) porque selecionar a empresa agora precisa de
+    `onChange` pra atualizar os outros campos — mesmo padrão
+    server/client já usado em `SubmitButton`/`DataTable` (a página
+    continua sendo Server Component, só passa `companies` e o mapa de
+    defaults já prontos via props). Campos continuam editáveis — é
+    ponto de partida, não travamento; aviso visual avisa quando foram
+    preenchidos automaticamente. Sem migration — só reaproveita dados já
+    existentes em `jobs`.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
