@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isMissingColumn } from "@/lib/supabase/errors";
 
 export type AdminAuthState = { error: string | null };
 
@@ -29,7 +30,7 @@ export async function adminLogin(
 
   // Compatibilidade durante o intervalo entre o deploy do código e a
   // aplicação da migration 0006, que adiciona a coluna `ativo`.
-  if (access.error?.code === "42703") {
+  if (isMissingColumn(access.error, "ativo")) {
     const legacyAccess = await supabase
       .from("admin_users")
       .select("user_id")

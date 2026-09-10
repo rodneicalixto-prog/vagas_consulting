@@ -2,6 +2,7 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isMissingColumn } from "@/lib/supabase/errors";
 
 export type InternalRole = "superadmin" | "admin" | "operador";
 
@@ -67,7 +68,7 @@ export async function requireInternalUser(capability?: Capability) {
 
   // Mantém o painel acessível enquanto a migration 0006 ainda não tiver sido
   // aplicada. Outros erros continuam bloqueando o acesso.
-  if (currentAccount.error?.code === "42703") {
+  if (isMissingColumn(currentAccount.error, "ativo")) {
     const legacyAccount = await supabase
       .from("admin_users")
       .select("perfil, nome_exibicao")
