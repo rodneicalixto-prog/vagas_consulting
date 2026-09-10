@@ -58,6 +58,16 @@ export default async function CadastroDeVagasPage() {
                     </span>
                     <h3 className="text-[14px] font-extrabold text-text">{job.titulo}</h3>
                     <span className="text-[10px] font-bold uppercase text-text-3">{job.status}</span>
+                    {job.status === "publicada" && (
+                      <a
+                        href={`/vagas/${job.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="ml-auto text-[11px] font-bold text-navy underline"
+                      >
+                        Ver publicação →
+                      </a>
+                    )}
                   </div>
                   <p className="mt-0.5 text-[11.5px] text-text-2">{company?.razao_social}</p>
 

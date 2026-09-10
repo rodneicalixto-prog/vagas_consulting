@@ -79,14 +79,24 @@ export function AdminShell({
         </form>
       </aside>
       <main className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex h-11 shrink-0 items-center gap-1.5 border-b border-border px-9 text-[11.5px] font-bold text-text-3">
-          <span>Admin</span>
-          {current && current.href !== "/admin" && (
-            <>
-              <span className="text-text-3/60">/</span>
-              <span className="text-text-2">{current.label}</span>
-            </>
-          )}
+        <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-9">
+          <div className="flex items-center gap-1.5 text-[11.5px] font-bold text-text-3">
+            <span>Admin</span>
+            {current && current.href !== "/admin" && (
+              <>
+                <span className="text-text-3/60">/</span>
+                <span className="text-text-2">{current.label}</span>
+              </>
+            )}
+          </div>
+          <a
+            href="/vagas"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg border border-border px-3 py-1.5 text-[11px] font-bold text-text-2 hover:border-navy hover:text-navy"
+          >
+            Ver vitrine pública ↗
+          </a>
         </div>
         <div className="flex-1 overflow-hidden">{children}</div>
       </main>

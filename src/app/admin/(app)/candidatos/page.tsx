@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { validarCandidato } from "./actions";
@@ -77,6 +78,12 @@ export default async function CandidatosPage() {
       label: "Ação",
       render: (row) => (
         <div className="flex gap-1.5">
+          <Link
+            href={`/admin/candidatos/${row.id}`}
+            className="rounded bg-navy-bg px-2.5 py-1.5 text-[10.5px] font-extrabold text-navy"
+          >
+            Visualizar
+          </Link>
           <form action={validarCandidato}>
             <input type="hidden" name="candidate_id" value={row.id} />
             <input type="hidden" name="acao" value="aprovar" />

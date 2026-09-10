@@ -401,6 +401,34 @@ sessões futuras.
       projeto — se um 500 aparecer de novo do nada, suspeitar de env var
       ausente/vazia antes de investigar lógica ou schema.
 
+23. **Visualização do candidato pelo admin, só leitura (10/09/2026)** —
+    o Rodnei pediu que admin/superadmin/operador consigam ver a área do
+    candidato sem deslogar da sessão de gestão. Investigação mostrou o
+    motivo de isso não existir: o app do candidato usa `auth.uid()`
+    direto em toda consulta, sem indireção nenhuma, e o navegador só
+    mantém uma sessão Supabase Auth por vez. Decisão confirmada com o
+    Rodnei (via plan mode): (1) só leitura, sem agir em nome do
+    candidato; (2) visual no estilo do próprio painel admin, não réplica
+    do app mobile. Entregue em duas partes complementares:
+    - `src/app/admin/(app)/candidatos/[id]/page.tsx` (primeira rota
+      dinâmica do painel admin): perfil, candidaturas (via `DataTable`)
+      e mensagens do candidato, tudo somente leitura, com banner
+      deixando isso explícito. Cada carregamento grava uma linha em
+      `audit_log` (`candidato_visualizado_pelo_admin`) — rastreabilidade
+      que não existia antes (hoje já dá pra consultar o banco direto
+      sem deixar rastro; esta tela formaliza e audita o acesso). Link
+      "Visualizar" adicionado na lista de `/admin/candidatos`.
+    - Depois o Rodnei esclareceu que também queria checar erros de
+      **publicação** de vaga (não só o histórico de um candidato). Como
+      o `middleware.ts` só exige estar autenticado (`auth.getUser()`,
+      sem checar papel) pra rotas não-admin, a própria conta do admin
+      já consegue abrir `/vagas` e `/vagas/[id]` — a vitrine pública real,
+      sem filtro por identidade — numa aba nova, sem perder a sessão do
+      painel. Não precisou de nenhuma view nova pra isso, só faltava o
+      link: "Ver vitrine pública ↗" fixo na topbar do admin
+      (`src/components/admin-shell.tsx`) e "Ver publicação →" por vaga
+      já publicada em `/admin/vagas`.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
