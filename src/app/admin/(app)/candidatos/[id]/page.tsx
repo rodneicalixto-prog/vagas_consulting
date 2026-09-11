@@ -6,6 +6,7 @@ import { DataTable, type DataTableColumn, type DataTableRow } from "@/components
 import { SubmitButton } from "@/components/form-buttons";
 import { statusLabel, statusPillClass, safeHttpUrl } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
+import type { ExperienciaProfissional } from "@/app/experiencias/actions";
 import { atualizarStatusCandidatura } from "./actions";
 import { alterarBlacklist } from "../actions";
 
@@ -51,7 +52,7 @@ export default async function CandidatoDetalhePage({
       client
         .from("profiles")
         .select(
-          "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo",
+          "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou",
         )
         .eq("id", id)
         .maybeSingle(),
@@ -229,6 +230,40 @@ export default async function CandidatoDetalhePage({
           {profile.resumo && (
             <p className="mt-3 rounded-lg bg-bg p-3 text-[12px] leading-relaxed text-text-2">{profile.resumo}</p>
           )}
+        </div>
+
+        <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
+          <h3 className="mb-3 text-sm font-extrabold text-text">Experiências profissionais</h3>
+          {profile.nunca_trabalhou ? (
+            <p className="text-[12px] text-text-2">Candidato marcou &quot;nunca trabalhei antes&quot; (primeiro emprego).</p>
+          ) : (() => {
+            const experiencias = Array.isArray(profile.experiencias_profissionais)
+              ? (profile.experiencias_profissionais as unknown as ExperienciaProfissional[])
+              : [];
+            return experiencias.length === 0 ? (
+              <p className="text-[12px] text-text-2">
+                Sem dados de experiência preenchidos — currículo/experiências ainda pendente.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {experiencias.map((exp, i) => (
+                  <div key={i} className="rounded-lg bg-bg p-3 text-[12px]">
+                    <p className="font-bold text-text">
+                      {exp.cargo || "—"} · {exp.empresa || "—"}
+                    </p>
+                    <p className="text-text-2">
+                      {exp.inicio || "—"} até {exp.fim || "—"}
+                    </p>
+                    {exp.motivoSaida && (
+                      <p className="mt-1 text-text-2">
+                        <b className="text-text">Motivo de saída:</b> {exp.motivoSaida}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
 
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
