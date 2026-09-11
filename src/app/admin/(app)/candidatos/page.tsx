@@ -110,14 +110,14 @@ export default async function CandidatosPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 px-9 pt-7">
+      <div className="shrink-0 px-4 md:px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Candidatos</h1>
         <p className="mt-1 text-xs text-text-2">
           Banco de candidatos da plataforma — busque, acompanhe e valide (aprovado/reprovado)
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-9 py-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
         {candidatos.length === 0 ? (
           <p className="mt-10 text-center text-sm text-text-2">Nenhum candidato cadastrado.</p>
         ) : (

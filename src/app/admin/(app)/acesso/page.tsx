@@ -19,14 +19,14 @@ export default async function AcessoPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 px-9 pt-7">
+      <div className="shrink-0 px-4 md:px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Acesso e permissões</h1>
         <p className="mt-1 text-xs text-text-2">
           Perfis, permissões, autenticação forte, sessões e segregação de funções
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-9 py-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
         <InviteAdminForm />
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface">

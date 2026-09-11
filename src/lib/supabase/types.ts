@@ -379,38 +379,50 @@ export type Database = {
       }
       leads: {
         Row: {
+          anuncio_id: string | null
+          campanha_id: string | null
           created_at: string
           email: string
+          formulario_id: string | null
           id: string
           idade: number | null
           latitude: number | null
           longitude: number | null
           nome_completo: string
           origem: string
+          plataforma_origem: string | null
           telefone: string
           user_id: string | null
         }
         Insert: {
+          anuncio_id?: string | null
+          campanha_id?: string | null
           created_at?: string
           email: string
+          formulario_id?: string | null
           id?: string
           idade?: number | null
           latitude?: number | null
           longitude?: number | null
           nome_completo: string
           origem?: string
+          plataforma_origem?: string | null
           telefone: string
           user_id?: string | null
         }
         Update: {
+          anuncio_id?: string | null
+          campanha_id?: string | null
           created_at?: string
           email?: string
+          formulario_id?: string | null
           id?: string
           idade?: number | null
           latitude?: number | null
           longitude?: number | null
           nome_completo?: string
           origem?: string
+          plataforma_origem?: string | null
           telefone?: string
           user_id?: string | null
         }

@@ -40,14 +40,14 @@ export default async function PrestacoesPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 px-9 pt-7">
+      <div className="shrink-0 px-4 md:px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Prestações de serviço</h1>
         <p className="mt-1 text-xs text-text-2">
           Controle de datas de início/saída e pagamentos — todas as modalidades
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-9 py-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
           <h3 className="mb-3 text-sm font-extrabold text-text">Registrar nova prestação</h3>
           {!candidatosContratados || candidatosContratados.length === 0 ? (

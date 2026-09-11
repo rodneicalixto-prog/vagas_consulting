@@ -154,7 +154,7 @@ export default async function CandidatoDetalhePage({
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 px-9 pt-7">
+      <div className="shrink-0 px-4 md:px-9 pt-7">
         <Link href="/admin/candidatos" className="text-[11.5px] font-bold text-text-3 hover:text-text-2">
           ← Voltar pra Candidatos
         </Link>
@@ -185,7 +185,7 @@ export default async function CandidatoDetalhePage({
         ) : null}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-9 py-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
           <h3 className="mb-3 text-sm font-extrabold text-text">Perfil</h3>
           <div className="grid grid-cols-2 gap-3 text-[12px] md:grid-cols-3">

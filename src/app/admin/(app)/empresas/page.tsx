@@ -23,14 +23,14 @@ export default async function ModeracaoEmpresasPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 px-9 pt-7">
+      <div className="shrink-0 px-4 md:px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Empresas</h1>
         <p className="mt-1 text-xs text-text-2">
           Cadastro interno de clientes e contratantes da Vagas Consulting
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-9 py-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
         <form action={criarEmpresa} className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-5 md:grid-cols-2">
           <h2 className="text-sm font-extrabold text-text md:col-span-2">Cadastrar empresa</h2>
           <input name="razao_social" required placeholder="Razão social" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />

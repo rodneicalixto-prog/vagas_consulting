@@ -654,6 +654,25 @@ sessões futuras.
       o service worker chegando a `active` via
       `navigator.serviceWorker.getRegistrations()`.
 
+36. **Painel admin responsivo em todas as telas (10/09/2026)** — antes o
+    `AdminShell` (`src/components/admin-shell.tsx`) tinha sidebar fixa de
+    240px sempre visível, sem adaptação nenhuma; num celular isso
+    apertava o conteúdo contra a faixa lateral. Corrigido:
+    - Sidebar vira `hidden md:flex` (some abaixo do breakpoint `md`) e
+      um botão hambúrguer no topo abre um drawer deslizante (overlay +
+      painel) com a mesma navegação, perfil e "Sair" — fecha ao clicar
+      fora, no ✕ ou ao navegar pra uma rota nova.
+    - As 13 páginas do admin (`admin/(app)/**/page.tsx`) tinham padding
+      lateral fixo `px-9` (36px) tanto no cabeçalho quanto na área de
+      conteúdo — em tela de celular isso desperdiçava ~19% da largura;
+      trocado por `px-4 md:px-9` em todas.
+    - **Validado de verdade em navegador** (`preview_start` + Claude
+      Browser, viewport mobile 375px e desktop): drawer abre/fecha
+      corretamente, lista os 12 itens de navegação, sidebar desktop
+      permanece inalterada. A rota de teste temporária usada pra validar
+      sem precisar de sessão real foi completamente removida depois
+      (junto com a entrada temporária em `PUBLIC_PATHS`).
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
@@ -829,6 +848,129 @@ não gerar a peça jurídica final.
    de autorização.
 8. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
    Lançamento, conforme seção 14 do documento original).
+
+## 8.0 Próxima fase planejada — agente de IA + WhatsApp (10/09/2026, ainda não iniciada)
+
+Rodnei trouxe a visão da próxima grande fase, explicitamente **não pra
+começar agora** ("essa será a próxima etapa") — registrado aqui só como
+escopo futuro, pra não ser esquecido nem começado por engano sem plano
+prévio:
+
+1. **Agente de IA pra processar currículo anexado**: candidato anexa um
+   arquivo (PDF/imagem) e um agente de IA extrai as informações
+   (experiências, dados pessoais, etc.) e preenche automaticamente os
+   campos correspondentes do cadastro na plataforma — substituindo o
+   preenchimento manual hoje usado em `/experiencias` (item 33 do log)
+   enquanto o upload de currículo de verdade ainda não existe.
+2. **Canal via WhatsApp com Evolution API + n8n**, pra tratativas que vão
+   além do que o app cobre hoje:
+   - Envio de testes de raciocínio/triagem adicional pelo WhatsApp.
+   - Recebimento de vídeos curtos de entrevista, especialmente pra
+     candidatos a cargos de gestão.
+   - Rodnei pediu explicitamente que a implementação pense em API da
+     Evolution (ou equivalente) + n8n como orquestrador, não construção
+     de um canal WhatsApp do zero.
+
+**Antes de começar esta fase**, quando o Rodnei sinalizar o início dela,
+vai precisar de um plano próprio (arquitetura do agente de IA — qual
+modelo/serviço processa o currículo, onde os dados extraídos são
+validados antes de gravar no banco —, e desenho do fluxo Evolution
+API/n8n — quem hospeda a instância, como os eventos de WhatsApp chegam
+de volta pra plataforma, como o resultado dos testes/vídeos vira dado
+estruturado ligado ao candidato/candidatura). Não é uma extensão trivial
+do código atual.
+
+## 8.0.1 Plano — comunicação multicanal e aquisição de leads (10/09/2026)
+
+Rodnei expandiu a visão da fase anterior (8.0) pra cobrir todo o ciclo de
+comunicação e aquisição da plataforma. Cada item abaixo é tratado como
+sua própria vertical de arquitetura — não são a mesma feature.
+
+### A. E-mail para troca de mensagens na plataforma
+
+Hoje `messages` (migration `0001`, `application_id`/`invite_id` +
+`remetente_id`/`destinatario_id`) só existe dentro do app — sem eco por
+e-mail. Plano: ao inserir uma mensagem, disparar um e-mail transacional
+pro destinatário (assunto + preview do conteúdo + link de volta pro
+app), condicionado a um novo consentimento por canal em `consents`
+(`finalidade = 'mensagens_plataforma'`, `canal = 'email'` — segue o
+mesmo padrão já usado por `alertas_vagas`). Provedor: quando for
+construir de fato, decidir via integração real do Marketplace da Vercel
+(ex.: Resend) — nunca hardcodar SDK de e-mail sem essa etapa.
+
+### B. E-mail único de recrutamento (entrada)
+
+Uma caixa dedicada (ex. `vagas@sosvagas.sosmkt.com.br`) que recebe
+currículo por e-mail de qualquer pessoa. Plano: webhook de e-mail
+inbound (Resend Inbound ou equivalente) recebe o anexo, cria/atualiza o
+candidato e guarda o arquivo — este passo **depende diretamente do
+agente de IA de currículo já registrado em 8.0** (é ele quem extrai os
+dados estruturados do anexo recebido aqui).
+
+### C. Disparos em massa de WhatsApp
+
+Usa a direção já definida em 8.0 (Evolution API). **Achado nesta
+sessão**: já existe uma instância Evolution API real conectada nesta
+conta (`mcp__jarvis-evolution__*`), com várias linhas (`essencial`,
+`athenas`, `equipalok`, `previsa`, `terra_fibra`, além de uma leva
+`rh_linha_02..06`, `rh_discolab`, `rh_supervisor`, `rh_jheny`,
+`estagios`) — mas **nenhuma está claramente dedicada ao Vagas
+Consulting**; parecem compartilhadas entre outros negócios/clientes do
+Rodnei. **Decisão pendente do Rodnei antes de qualquer envio real**:
+qual linha usar (ou criar uma nova, dedicada) — não vamos disparar
+mensagem de candidato usando o número de outro cliente por engano.
+Requisitos técnicos do disparo em massa: respeitar opt-in
+(`consents`, canal `whatsapp`), limitar taxa de envio (evitar
+banimento), e logar cada envio (nova tabela `whatsapp_campanhas` +
+`whatsapp_envios`, com status de entrega).
+
+### D. Campanhas de e-mail marketing
+
+Já existe a finalidade `marketing` em `consents` (desmarcada por
+padrão, conforme LGPD — seção 6). Plano: tabela `campanhas_email`
+(assunto, corpo, segmento/query de público, status), disparo pelo mesmo
+provedor de e-mail do item A, link de descadastro obrigatório, e
+registro de envio/abertura/clique pra métricas — sem inventar
+funcionalidade de tracking além do que o provedor escolhido oferecer
+nativamente.
+
+### E. Sincronizar Instagram/Facebook/LinkedIn para leads de campanha de tráfego
+
+Objetivo: leads de anúncio (Lead Ads) caindo direto na tabela `leads`
+(migration `0009`) já existente, com atribuição de campanha. Plano:
+1. Estender `leads` com colunas de atribuição: `plataforma_origem`
+   (`meta`/`linkedin`/`app_install`/...), `campanha_id`, `anuncio_id`,
+   `formulario_id` — aditivo, não quebra o uso atual (`origem` continua
+   existindo pra compatibilidade).
+2. Endpoint de webhook dedicado por plataforma
+   (`/api/webhooks/leads/meta`, `/api/webhooks/leads/linkedin`) que
+   valida a assinatura/verify-token da plataforma e grava direto em
+   `leads`.
+3. **Meta (Instagram + Facebook) exige**: um Meta App com permissão
+   `leads_retrieval`, webhook de `leadgen` assinado e verificado — só o
+   Rodnei pode criar/autorizar esse App na Meta Business Suite.
+4. **LinkedIn exige**: app no LinkedIn Marketing Developer Platform +
+   acesso ao Lead Gen Forms API — mesma dependência de credencial
+   externa que só o Rodnei pode provisionar.
+5. Sem essas credenciais, o endpoint fica pronto no código mas nunca
+   recebe tráfego real — não é possível simular "sincronizado" sem elas.
+
+### Ordem de execução recomendada
+
+1. **Agora** (sem depender de credencial externa): estender schema de
+   `leads` com atribuição de campanha + criar os endpoints de webhook
+   (Meta/LinkedIn) já validando payload/assinatura, mas retornando erro
+   claro se as variáveis de ambiente de credencial não estiverem
+   configuradas — código pronto, "plugado" quando o Rodnei tiver os
+   Apps criados.
+2. **Aguardando decisão do Rodnei**: qual instância Evolution API usar
+   pra disparo em massa de WhatsApp (ou criar uma nova).
+3. **Aguardando decisão do Rodnei**: qual provedor de e-mail integrar
+   (Resend via Marketplace da Vercel é o caminho natural neste stack) —
+   usado tanto pelo item A (mensagens) quanto pelo D (campanhas).
+4. **Aguardando credencial do Rodnei**: Meta App (`leads_retrieval`) e
+   LinkedIn Marketing Developer Platform App, pra ativar de fato os
+   webhooks do item E.
 
 ## 8.1 Upgrade de design em andamento (decidido 10/09/2026)
 
