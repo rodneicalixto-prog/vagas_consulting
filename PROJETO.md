@@ -673,6 +673,38 @@ sessões futuras.
       sem precisar de sessão real foi completamente removida depois
       (junto com a entrada temporária em `PUBLIC_PATHS`).
 
+36b. **Preferências de vaga e Documentos no menu do Perfil (11/09/2026,
+    commit `a759564`)** — os 2 últimos itens do menu `/perfil` ainda eram
+    botões mortos (`href` nulo), mesma pendência do tipo já corrigida no
+    item 33/8.0.6 para "Dados pessoais" e "Currículo e experiências".
+    "Preferências de vaga" (`/perfil/preferencias-vaga`) edita
+    `modelo_trabalho`/`modalidades_desejadas`/`disponibilidade`.
+    "Documentos" (`/perfil/documentos`) mostra o currículo anexado via
+    signed URL gerada sob demanda e permite substituir, com a mesma
+    validação de tipo/tamanho/anti-IDOR já usada em `/experiencias`. Com
+    isso os 4 itens do menu de perfil estão todos funcionais.
+
+37. **Constraint XOR real em `messages` (11/09/2026)** — fechada a
+    pendência da seção 5.1. Migration
+    `0017_messages_vinculo_xor.sql` troca
+    `messages_vinculo_check` de "pelo menos um vínculo" (`application_id
+    is not null or invite_id is not null`) para exatamente um vínculo
+    (`num_nonnulls(application_id, invite_id) = 1`), aplicada no projeto
+    Supabase real (`tfipbxjslpxbaybpxsql`) via `apply_migration`.
+    Verificado antes de aplicar: `select ... where num_nonnulls(...) <> 1`
+    não retornou nenhuma linha (nada pra migrar/limpar); nenhum caminho
+    de insert em `messages` existe hoje no código (só leitura em
+    `/mensagens` e `/admin/candidatos/[id]` — a funcionalidade de enviar
+    mensagem ainda não foi construída); a policy de insert do candidato
+    (`messages_insert_candidate_process`, migration `0006`) já exigia só
+    `application_id`, então nada muda do lado de RLS — a lacuna real era
+    só a falta de proteção contra um insert feito com `service_role`
+    (que ignora RLS) preenchendo os dois campos ao mesmo tempo.
+    `get_advisors(security)` depois da migration: mesmos avisos de
+    sempre (4 INFO de RLS sem policy em tabelas só-service-role + 1 WARN
+    de "Leaked Password Protection" desativado, pendência separada, só
+    ativável no painel do Supabase). Build e lint limpos.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
@@ -716,8 +748,7 @@ auditoria · Descontinuação do portal empresarial.
 
 ### 5.1 Pendência de integridade em mensagens
 
-**Status:** pendente e bloqueadora para considerar o modelo de mensagens
-concluído.
+**Status:** ✅ resolvida em 11/09/2026 — ver item 37 do log (seção 2.2).
 
 A constraint atual `messages_vinculo_check` exige que `application_id` ou
 `invite_id` esteja preenchido, mas ainda aceita os dois campos simultaneamente.
@@ -842,8 +873,8 @@ não gerar a peça jurídica final.
    `admin`): cadastro de empresa, cadastro e publicação de vaga,
    ativar/inativar empresa. Achado e corrigido no processo: feedback
    visual de salvamento ausente (item 21 do log).
-6. Criar e aplicar a migration da constraint XOR de mensagens descrita na seção
-   5.1.
+6. ~~Criar e aplicar a migration da constraint XOR de mensagens descrita na
+   seção 5.1.~~ ✅ (11/09/2026)
 7. Implementar recuperação de senha, MFA administrativo e testes automatizados
    de autorização.
 8. Testar o MVP por fase (Descoberta → Design → Construção → Piloto →
