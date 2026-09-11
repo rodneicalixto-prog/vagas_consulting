@@ -13,8 +13,8 @@ import { signOut } from "./actions";
 const menu = [
   { label: "Dados pessoais", icon: IconUser, href: "/perfil/dados-pessoais" },
   { label: "Currículo e experiências", icon: IconResume, href: "/experiencias" },
-  { label: "Preferências de vaga", icon: IconPreferences, href: null },
-  { label: "Documentos", icon: IconDoc, href: null },
+  { label: "Preferências de vaga", icon: IconPreferences, href: "/perfil/preferencias-vaga" },
+  { label: "Documentos", icon: IconDoc, href: "/perfil/documentos" },
 ];
 
 function iniciais(nome: string) {
