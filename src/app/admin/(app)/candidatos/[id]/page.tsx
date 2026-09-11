@@ -38,6 +38,36 @@ type CandidaturaRow = {
   empresa: string;
 };
 
+async function buscarPerfilComCurriculoAssinado(client: ReturnType<typeof createAdminClient>, id: string) {
+  const result = await client
+    .from("profiles")
+    .select(
+      "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou",
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!result.data?.curriculo_url) {
+    return { ...result, curriculoIndisponivel: false };
+  }
+
+  // curriculo_url guarda o path dentro do bucket privado "curriculos" — gera um link
+  // assinado de curta duração pra exibir, em vez de expor o bucket. Nunca deixa uma
+  // falha aqui (rede, policy, objeto ausente) propagar e derrubar a página inteira —
+  // ela vira um estado exibível ("link indisponível"), não uma exceção.
+  try {
+    const { data: signed, error } = await client.storage
+      .from("curriculos")
+      .createSignedUrl(result.data.curriculo_url, 60 * 10);
+    if (error || !signed) {
+      return { ...result, data: { ...result.data, curriculo_url: null }, curriculoIndisponivel: true };
+    }
+    return { ...result, data: { ...result.data, curriculo_url: signed.signedUrl }, curriculoIndisponivel: false };
+  } catch {
+    return { ...result, data: { ...result.data, curriculo_url: null }, curriculoIndisponivel: true };
+  }
+}
+
 export default async function CandidatoDetalhePage({
   params,
 }: {
@@ -47,24 +77,13 @@ export default async function CandidatoDetalhePage({
   const { user: admin } = await requireInternalUser("pipeline.manage");
   const client = createAdminClient();
 
-  const [{ data: profile }, { data: authUser }, { data: applications }, { data: mensagens }] =
-    await Promise.all([
-      client
-        .from("profiles")
-        .select(
-          "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou",
-        )
-        .eq("id", id)
-        .maybeSingle()
-        .then(async (result) => {
-          if (!result.data?.curriculo_url) return result;
-          // curriculo_url guarda o path dentro do bucket privado "curriculos" — gera
-          // um link assinado de curta duração pra exibir, em vez de expor o bucket.
-          const { data: signed } = await client.storage
-            .from("curriculos")
-            .createSignedUrl(result.data.curriculo_url, 60 * 10);
-          return { ...result, data: { ...result.data, curriculo_url: signed?.signedUrl ?? null } };
-        }),
+  const [
+    { data: profile, curriculoIndisponivel },
+    { data: authUser },
+    { data: applications },
+    { data: mensagens },
+  ] = await Promise.all([
+      buscarPerfilComCurriculoAssinado(client, id),
       client.auth.admin.getUserById(id),
       client
         .from("applications")
@@ -230,6 +249,8 @@ export default async function CandidatoDetalhePage({
                   <a href={safeHttpUrl(profile.curriculo_url)!} target="_blank" rel="noreferrer" className="text-navy underline">
                     Ver arquivo
                   </a>
+                ) : curriculoIndisponivel ? (
+                  <span className="text-danger">Currículo enviado, mas o link falhou — tentar de novo</span>
                 ) : (
                   "—"
                 )}

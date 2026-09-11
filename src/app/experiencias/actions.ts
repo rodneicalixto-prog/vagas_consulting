@@ -16,9 +16,11 @@ export type ExperienciaProfissional = {
 const TIPOS_ACEITOS = new Set(["application/pdf", "image/png", "image/jpeg", "image/webp"]);
 const TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024; // 5MB
 
-export type ProcessarCurriculoState =
-  | { error: string; curriculoUrl?: undefined; sugestao?: undefined }
-  | { error?: undefined; curriculoUrl: string; sugestao: CurriculoExtraido };
+export type ProcessarCurriculoState = {
+  error?: string;
+  curriculoUrl?: string;
+  sugestao?: CurriculoExtraido;
+};
 
 /**
  * Sobe o arquivo de currículo pro Storage e pede à IA os dados estruturados.
@@ -49,21 +51,32 @@ export async function processarCurriculo(file: File): Promise<ProcessarCurriculo
   const nomeSeguro = file.name.replace(/[^A-Za-z0-9._-]/g, "_").replace(/^\.+/, "");
   const caminho = `${user.id}/${Date.now()}-${nomeSeguro}`;
 
-  const { error: uploadError } = await supabase.storage.from("curriculos").upload(caminho, buffer, {
-    contentType: file.type,
-    upsert: false,
-  });
+  // Upload e extração por IA são independentes (ambos só precisam do buffer já em
+  // memória) — rodam em paralelo em vez de em série pra reduzir o tempo de espera.
+  const [{ error: uploadError }, extracao] = await Promise.all([
+    supabase.storage.from("curriculos").upload(caminho, buffer, {
+      contentType: file.type,
+      upsert: false,
+    }),
+    extrairDadosCurriculo(buffer, file.type)
+      .then((sugestao) => ({ sugestao, erro: false as const }))
+      .catch(() => ({ sugestao: undefined, erro: true as const })),
+  ]);
+
   if (uploadError) {
     return { error: "Não foi possível salvar o arquivo. Tente de novo." };
   }
 
-  try {
-    const sugestao = await extrairDadosCurriculo(buffer, file.type);
-    return { curriculoUrl: caminho, sugestao };
-  } catch {
-    // Upload já salvo mesmo se a extração falhar — candidato preenche manualmente.
-    return { error: "Currículo salvo, mas não deu pra ler os dados automaticamente. Preencha manualmente." };
+  // Upload já salvo mesmo se a extração falhar — o path nunca pode se perder aqui,
+  // senão o arquivo fica órfão no bucket e o candidato tem que reanexar do zero.
+  if (extracao.erro) {
+    return {
+      curriculoUrl: caminho,
+      error: "Currículo salvo, mas não deu pra ler os dados automaticamente. Preencha manualmente.",
+    };
   }
+
+  return { curriculoUrl: caminho, sugestao: extracao.sugestao };
 }
 
 export async function salvarExperiencias(
@@ -93,7 +106,7 @@ export async function salvarExperiencias(
       ? curriculoPath
       : undefined;
 
-  await supabase
+  const { error } = await supabase
     .from("profiles")
     .update({
       nunca_trabalhou: nuncaTrabalhou,
@@ -103,6 +116,10 @@ export async function salvarExperiencias(
       ...(curriculoPathValido ? { curriculo_url: curriculoPathValido } : {}),
     })
     .eq("id", user.id);
+
+  if (error) {
+    throw new Error("Não foi possível salvar. Tente de novo.");
+  }
 
   redirect("/inicio");
 }

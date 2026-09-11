@@ -35,26 +35,23 @@ export default function ExperienciasPage() {
     setAnalisandoCurriculo(true);
     try {
       const resultado = await processarCurriculo(file);
-      if (resultado.error) {
-        setErro(resultado.error);
-        if (!resultado.curriculoUrl) return;
-      }
+      if (resultado.error) setErro(resultado.error);
       if (resultado.curriculoUrl) setCurriculoPath(resultado.curriculoUrl);
-      if (resultado.sugestao) {
-        const { sugestao } = resultado;
-        if (sugestao.experiencias.length > 0) {
-          setExperiencias(
-            sugestao.experiencias.map((e) => ({
-              empresa: e.empresa,
-              cargo: e.cargo,
-              inicio: e.inicio,
-              fim: e.fim,
-              motivoSaida: e.motivoSaida,
-            })),
-          );
-          setCurriculoPreenchido(true);
-        }
+
+      const experienciasExtraidas = resultado.sugestao?.experiencias ?? [];
+      if (experienciasExtraidas.length > 0) {
+        setExperiencias(
+          experienciasExtraidas.map((e) => ({
+            empresa: e.empresa,
+            cargo: e.cargo,
+            inicio: e.inicio,
+            fim: e.fim,
+            motivoSaida: e.motivoSaida,
+          })),
+        );
       }
+      // Reflete o resultado desta tentativa, não acumula de anexos anteriores.
+      setCurriculoPreenchido(experienciasExtraidas.length > 0);
     } finally {
       setAnalisandoCurriculo(false);
     }
