@@ -225,6 +225,59 @@ export type Database = {
         }
         Relationships: []
       }
+      compromissos: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          fim: string | null
+          id: string
+          inicio: string
+          responsavel_id: string
+          status: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          fim?: string | null
+          id?: string
+          inicio: string
+          responsavel_id: string
+          status?: string
+          tipo?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          fim?: string | null
+          id?: string
+          inicio?: string
+          responsavel_id?: string
+          status?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compromissos_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consents: {
         Row: {
           canal: string | null

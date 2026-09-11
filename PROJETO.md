@@ -1054,6 +1054,34 @@ como proxima extensao (schema de habilidades/skills ainda nao existe
 em `profiles`, seria preciso desenhar isso antes do matching virar
 realidade).
 
+## 8.0.4 Agenda da equipe interna — implementado (10/09/2026)
+
+Escopo confirmado com o Rodnei antes de codar: agenda de entrevistas +
+compromissos internos, só pra equipe interna (superadmin/admin/
+operador) — candidato nao tem agenda propria nesta versao. Visao
+unificada e restrita ao superadmin.
+
+- Migration `0016`: tabela `compromissos` (responsavel_id,
+  tipo `entrevista|interno`, titulo, descricao, application_id
+  opcional pra vincular a uma candidatura em aberto, inicio/fim,
+  status `agendado|concluido|cancelado`). RLS habilitado sem policy —
+  acesso só via service role, mesmo padrao ja usado em `audit_log`/
+  `service_engagements` (paginas ficam inteiras dentro do painel admin).
+- `/admin/agenda` ("Minha agenda", capability `pipeline.manage` —
+  todos os 3 papeis): cria/conclui/cancela/exclui compromisso proprio,
+  lista candidaturas em aberto (`STATUS_CANDIDATURA_EM_ABERTO`) pra
+  vincular a uma entrevista.
+- `/admin/agenda/equipe` ("Agenda da equipe", superadmin — mesmo padrao
+  de `role !== "superadmin" ? redirect(...)` ja usado em
+  `/admin/estrategico`): tabela com os compromissos de todo mundo,
+  ultimos 7 dias em diante, mostrando o responsavel de cada um.
+- Nav do admin (`admin-shell.tsx`) ganha "Minha agenda" (todos) e
+  "Agenda da equipe" (so superadmin).
+- Validado: build/lint limpos, rota `/admin/agenda` testada em
+  navegador local sem sessao (redireciona pro login corretamente, sem
+  erro de servidor) — fluxo completo com sessao real de equipe interna
+  ainda nao visto rodando, validacao final em producao pelo Rodnei.
+
 ## 8.1 Upgrade de design em andamento (decidido 10/09/2026)
 
 O Rodnei trouxe 6 templates de design system (tabela de dados interativa,
