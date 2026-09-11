@@ -55,7 +55,16 @@ export default async function CandidatoDetalhePage({
           "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou",
         )
         .eq("id", id)
-        .maybeSingle(),
+        .maybeSingle()
+        .then(async (result) => {
+          if (!result.data?.curriculo_url) return result;
+          // curriculo_url guarda o path dentro do bucket privado "curriculos" — gera
+          // um link assinado de curta duração pra exibir, em vez de expor o bucket.
+          const { data: signed } = await client.storage
+            .from("curriculos")
+            .createSignedUrl(result.data.curriculo_url, 60 * 10);
+          return { ...result, data: { ...result.data, curriculo_url: signed?.signedUrl ?? null } };
+        }),
       client.auth.admin.getUserById(id),
       client
         .from("applications")

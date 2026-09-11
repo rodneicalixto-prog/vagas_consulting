@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { salvarExperiencias, type ExperienciaProfissional } from "./actions";
+import { useRef, useState, useTransition } from "react";
+import { processarCurriculo, salvarExperiencias, type ExperienciaProfissional } from "./actions";
 
 const EXPERIENCIA_VAZIA: ExperienciaProfissional = {
   empresa: "",
@@ -19,6 +19,10 @@ export default function ExperienciasPage() {
   ]);
   const [erro, setErro] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [analisandoCurriculo, setAnalisandoCurriculo] = useState(false);
+  const [curriculoPath, setCurriculoPath] = useState<string | undefined>(undefined);
+  const [curriculoPreenchido, setCurriculoPreenchido] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const atualizar = (i: number, campo: keyof ExperienciaProfissional, valor: string) => {
     setExperiencias((list) => list.map((e, idx) => (idx === i ? { ...e, [campo]: valor } : e)));
@@ -26,11 +30,41 @@ export default function ExperienciasPage() {
 
   const adicionarMais = () => setExperiencias((list) => [...list, { ...EXPERIENCIA_VAZIA }]);
 
+  const onAnexarCurriculo = async (file: File) => {
+    setErro(null);
+    setAnalisandoCurriculo(true);
+    try {
+      const resultado = await processarCurriculo(file);
+      if (resultado.error) {
+        setErro(resultado.error);
+        if (!resultado.curriculoUrl) return;
+      }
+      if (resultado.curriculoUrl) setCurriculoPath(resultado.curriculoUrl);
+      if (resultado.sugestao) {
+        const { sugestao } = resultado;
+        if (sugestao.experiencias.length > 0) {
+          setExperiencias(
+            sugestao.experiencias.map((e) => ({
+              empresa: e.empresa,
+              cargo: e.cargo,
+              inicio: e.inicio,
+              fim: e.fim,
+              motivoSaida: e.motivoSaida,
+            })),
+          );
+          setCurriculoPreenchido(true);
+        }
+      }
+    } finally {
+      setAnalisandoCurriculo(false);
+    }
+  };
+
   const onSubmit = () => {
     setErro(null);
     startTransition(async () => {
       try {
-        await salvarExperiencias(nuncaTrabalhou, experiencias);
+        await salvarExperiencias(nuncaTrabalhou, experiencias, curriculoPath);
       } catch (e) {
         setErro(e instanceof Error ? e.message : "Não foi possível salvar. Tente de novo.");
       }
@@ -54,6 +88,36 @@ export default function ExperienciasPage() {
       </div>
 
       <div className="flex flex-1 flex-col gap-4 px-5 pb-4 pt-4 md:px-8">
+        <div className="flex flex-col gap-2 rounded-xl border border-dashed border-navy/30 bg-navy-bg/40 p-3.5">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,.webp"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onAnexarCurriculo(file);
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={analisandoCurriculo}
+            className="text-[13px] font-bold text-navy underline disabled:opacity-60"
+          >
+            {analisandoCurriculo
+              ? "Analisando currículo..."
+              : curriculoPath
+                ? "Currículo anexado — trocar arquivo"
+                : "Anexar currículo (opcional) — preenche os campos abaixo automaticamente"}
+          </button>
+          {curriculoPreenchido && !analisandoCurriculo && (
+            <p className="text-[11px] font-semibold text-navy">
+              Campos preenchidos com base no currículo — revise antes de continuar.
+            </p>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={() => setNuncaTrabalhou((v) => !v)}

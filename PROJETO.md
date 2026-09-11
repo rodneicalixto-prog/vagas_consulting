@@ -1010,6 +1010,50 @@ Rodnei pediu grau elevado de seguranca. Executado nesta sessao:
   no codigo. Pendencia real: sem scan automatizado verificado ainda —
   recomendado rodar quando "Dynamic workflows" estiver disponivel.
 
+## 8.0.3 Agente de IA para curriculo — implementado (10/09/2026)
+
+Primeira etapa real do item 1 do roadmap (8.0). Decisoes confirmadas com
+o Rodnei antes de codar: upload acontece na propria tela `/experiencias`
+(fluxo ja obrigatorio), a IA so **sugere** — pre-preenche os campos, o
+candidato revisa e confirma antes de salvar (nunca grava direto), e o
+arquivo fica no Supabase Storage (mesmo projeto do banco).
+
+- **Migration `0015`**: bucket privado `curriculos` + policies de RLS
+  (candidato so sobe/le/atualiza dentro da propria pasta, path
+  `<user_id>/<timestamp>-<nome>`).
+- **`src/lib/ai/curriculo.ts`**: `extrairDadosCurriculo()` usa
+  `generateObject` do AI SDK (`model: "anthropic/claude-sonnet-5"`, via
+  AI Gateway da Vercel) com schema Zod estrito — nome, telefone, cidade,
+  titulo profissional e experiencias em ordem cronologica. **Funciona
+  automaticamente em producao na Vercel** (autenticacao nativa via OIDC
+  do proprio deploy, sem chave manual); pra testar local seria preciso
+  `AI_GATEWAY_API_KEY` (nao configurada, nao testado localmente).
+- **`processarCurriculo()`** (nova action em
+  `src/app/experiencias/actions.ts`): valida tipo/tamanho (PDF/PNG/JPG/
+  WEBP, max 5MB), passa por `checkBotId()` (BotID), sobe o arquivo,
+  chama a extracao — se a extracao falhar o upload continua valido
+  (candidato preenche manualmente, currículo já salvo).
+- **`salvarExperiencias()`** agora grava `curriculo_url` = o **path**
+  do storage (nao uma URL publica) — o link so e gerado como signed URL
+  de curta duracao (10min) no momento em que o admin abre
+  `/admin/candidatos/[id]`, sem expor o bucket.
+- **UI em `/experiencias`**: botao "Anexar curriculo (opcional)" acima
+  do formulario manual; ao selecionar arquivo, mostra "Analisando
+  curriculo..." e pre-preenche a lista de experiencias com o resultado
+  — aviso visual deixa claro que e sugestao, pra revisar antes de
+  continuar.
+- **Nao testado de ponta a ponta**: precisa de sessao real de candidato
+  + `AI_GATEWAY_API_KEY` configurada (producao ja teria isso via OIDC,
+  mas o upload/extração real com um PDF de verdade ainda nao foi visto
+  rodando). Validacao final em producao pelo Rodnei.
+
+**Visao maior confirmada pelo Rodnei (ainda nao implementada)**: essa
+mesma IA sera reaproveitada pra analise estrategica e pra recomendar o
+melhor candidato pra cada vaga — "subir as habilidades pra ele" fica
+como proxima extensao (schema de habilidades/skills ainda nao existe
+em `profiles`, seria preciso desenhar isso antes do matching virar
+realidade).
+
 ## 8.1 Upgrade de design em andamento (decidido 10/09/2026)
 
 O Rodnei trouxe 6 templates de design system (tabela de dados interativa,
