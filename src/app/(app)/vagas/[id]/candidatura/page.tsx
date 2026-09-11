@@ -100,7 +100,7 @@ export default function CandidaturaPage({
         )}
 
         <div className="text-xs font-extrabold uppercase tracking-wide text-text-2">
-          Perguntas eliminatórias
+          Perguntas complementares
         </div>
         {perguntas.map((q) => (
           <Card key={q.id} className="flex flex-col gap-2.5">
@@ -158,7 +158,14 @@ export default function CandidaturaPage({
           </p>
         </button>
 
-        {erro && <p className="text-[12.5px] font-semibold text-danger">{erro}</p>}
+        {erro && (
+          <p className="text-[12.5px] font-semibold text-danger">
+            {erro}{" "}
+            <Link href="/perfil/dados-pessoais" className="underline">
+              Completar agora →
+            </Link>
+          </p>
+        )}
 
         <PrimaryButton disabled={!confirmado || pending} onClick={onSubmit}>
           {pending ? "Enviando..." : "Enviar candidatura"}

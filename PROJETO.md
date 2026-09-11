@@ -1082,6 +1082,57 @@ unificada e restrita ao superadmin.
   erro de servidor) — fluxo completo com sessao real de equipe interna
   ainda nao visto rodando, validacao final em producao pelo Rodnei.
 
+## 8.0.5 Incidente real em producao — BotID removido (10/09/2026, noite)
+
+Rodnei reportou `/admin/login` travando com "This page couldn't load"
+no Chrome real, repetido mesmo em aba anonima sem extensoes (descarta
+cache/extensao do navegador). Meu `fetch()` simples sempre respondia
+200 rapido (nao executa o script client-side do BotID, entao nao pegou
+o problema) — o teste real em navegador, que roda esse script, foi o
+que revelou a falha.
+
+**Causa suspeita**: Vercel BotID (integrado mais cedo nesta sessao),
+unica mudanca recente que afeta toda pagina/request via `withBotId` no
+`next.config.ts` + script global em `instrumentation-client.ts`. Login
+quebrado e muito mais grave que protecao contra bot nesta fase —
+**revertido por completo**: `next.config.ts` sem `withBotId` (headers
+de seguranca continuam), `instrumentation-client.ts` removido,
+`checkBotId()` removido das 3 server actions que tinham
+(`track-install-action`, `candidatura`, `processarCurriculo`), pacote
+`botid` desinstalado. Deploy `c35cc5f` confirmado `READY` e
+`/admin/login` carregando normal logo em seguida.
+
+**Pendencia real**: causa raiz nao 100% confirmada com certeza
+absoluta (correlacao temporal forte + unica mudanca que toca toda
+pagina, mas nao reproduzi o erro eu mesmo em nenhum ambiente) —
+Rodnei vai retestar apos o revert pra confirmar que sumiu de vez.
+
+## 8.0.6 Correcoes reais achadas testando em producao (10/09/2026, noite)
+
+Testando candidatura de verdade em producao, Rodnei achou dois
+problemas reais:
+
+1. **"Complete seu perfil" sem nenhum jeito de completar**: a tela de
+   candidatura (`/vagas/[id]/candidatura`) mostra o erro "Complete seu
+   perfil (telefone e endereco)..." quando faltam esses dados, mas
+   **nao existia nenhuma tela onde um candidato ja onboarded pudesse
+   editar telefone/endereco depois** — o botao "Dados pessoais" em
+   `/perfil` era morto (registrado como pendencia separada em sessoes
+   anteriores, mas isso virou bloqueio real de fluxo, nao so estetico).
+   Corrigido: nova rota `/perfil/dados-pessoais` (Server Component
+   busca o perfil atual, form so com nome/cidade/telefone/endereco,
+   nova action `atualizarDadosPessoais` que atualiza so esses 4 campos
+   — nunca toca em experiencias/modalidades/historico de
+   terceirizadoras ja preenchidos). Botao "Dados pessoais" em
+   `/perfil` agora e um link real, e a mensagem de erro na candidatura
+   ganhou um link direto "Completar agora →".
+2. **"Perguntas eliminatorias" era rotulo errado**: Rodnei confirmou
+   que nenhuma pergunta da candidatura elimina o candidato de fato — e
+   o codigo confirma isso, as respostas so vao pro jsonb
+   `applications.respostas`, sem nenhuma logica de rejeicao em lugar
+   nenhum. Rotulo corrigido pra "Perguntas complementares" em
+   `src/app/(app)/vagas/[id]/candidatura/page.tsx`.
+
 ## 8.1 Upgrade de design em andamento (decidido 10/09/2026)
 
 O Rodnei trouxe 6 templates de design system (tabela de dados interativa,
