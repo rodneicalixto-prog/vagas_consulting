@@ -46,7 +46,8 @@ export async function processarCurriculo(file: File): Promise<ProcessarCurriculo
   if (!user) redirect("/login");
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const caminho = `${user.id}/${Date.now()}-${file.name}`;
+  const nomeSeguro = file.name.replace(/[^A-Za-z0-9._-]/g, "_").replace(/^\.+/, "");
+  const caminho = `${user.id}/${Date.now()}-${nomeSeguro}`;
 
   const { error: uploadError } = await supabase.storage.from("curriculos").upload(caminho, buffer, {
     contentType: file.type,
@@ -84,6 +85,14 @@ export async function salvarExperiencias(
     }
   }
 
+  // curriculoPath vem do cliente (estado do formulário) — nunca confiar sem validar
+  // que aponta pra dentro da própria pasta do usuário no bucket. Sem isso, um
+  // cliente malicioso poderia forjar o path de outro candidato (IDOR).
+  const curriculoPathValido =
+    curriculoPath && curriculoPath.startsWith(`${user.id}/`) && !curriculoPath.includes("..")
+      ? curriculoPath
+      : undefined;
+
   await supabase
     .from("profiles")
     .update({
@@ -91,7 +100,7 @@ export async function salvarExperiencias(
       experiencias_profissionais: nuncaTrabalhou ? [] : experiencias,
       // curriculo_url guarda o path dentro do bucket privado "curriculos", não uma
       // URL pública — o link assinado é gerado sob demanda em quem exibe (admin).
-      ...(curriculoPath ? { curriculo_url: curriculoPath } : {}),
+      ...(curriculoPathValido ? { curriculo_url: curriculoPathValido } : {}),
     })
     .eq("id", user.id);
 
