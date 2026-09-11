@@ -1,15 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { checkBotId } from "botid/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function enviarCandidatura(jobId: string, respostas: Record<string, boolean>) {
-  const { isBot } = await checkBotId();
-  if (isBot) {
-    return { error: "Não foi possível enviar a candidatura. Tente novamente." };
-  }
-
   const supabase = await createClient();
   const {
     data: { user },

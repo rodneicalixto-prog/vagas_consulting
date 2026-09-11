@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { checkBotId } from "botid/server";
 import { createClient } from "@/lib/supabase/server";
 import { extrairDadosCurriculo, type CurriculoExtraido } from "@/lib/ai/curriculo";
 
@@ -29,11 +28,6 @@ export type ProcessarCurriculoState = {
  * os campos pré-preenchidos no formulário.
  */
 export async function processarCurriculo(file: File): Promise<ProcessarCurriculoState> {
-  const { isBot } = await checkBotId();
-  if (isBot) {
-    return { error: "Não foi possível processar o arquivo. Tente de novo." };
-  }
-
   if (!TIPOS_ACEITOS.has(file.type)) {
     return { error: "Envie um PDF, PNG, JPG ou WEBP." };
   }

@@ -1,6 +1,5 @@
 "use server";
 
-import { checkBotId } from "botid/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -33,11 +32,6 @@ export async function registrarLead(
 
   if (!nomeCompleto || !email || !telefone) {
     return { error: "Preencha nome, e-mail e telefone." };
-  }
-
-  const { isBot } = await checkBotId();
-  if (isBot) {
-    return { error: "Não foi possível salvar seu cadastro. Tente de novo." };
   }
 
   const supabase = await createClient();

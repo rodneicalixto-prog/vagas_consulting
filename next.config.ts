@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withBotId } from "botid/next/config";
 
 const SECURITY_HEADERS = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -15,4 +14,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBotId(nextConfig);
+export default nextConfig;
