@@ -972,6 +972,44 @@ Objetivo: leads de anúncio (Lead Ads) caindo direto na tabela `leads`
    LinkedIn Marketing Developer Platform App, pra ativar de fato os
    webhooks do item E.
 
+## 8.0.2 Seguranca — checklist executado (10/09/2026)
+
+Rodnei pediu grau elevado de seguranca. Executado nesta sessao:
+
+- `npm audit`: 0 vulnerabilidades (484 dependencias).
+- Advisors de seguranca do Supabase: 3 tabelas com RLS habilitado sem
+  policy (`application_notes`, `audit_log`, `service_engagements`) —
+  confirmado por grep que so sao acessadas via `createAdminClient`
+  (service role, ignora RLS de qualquer forma), entao nao e uma falha
+  real, so um lint informativo do proprio design. Achado real que
+  precisa de acao do Rodnei: "Leaked Password Protection" desativado no
+  Supabase Auth — **so ativavel no painel** (Authentication → Policies
+  → Password Security), nenhuma ferramenta MCP disponivel expoe essa
+  configuracao de Auth.
+- Headers de seguranca adicionados (`next.config.ts`): HSTS,
+  X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
+  Permissions-Policy.
+- **Vercel BotID integrado** (`npm install botid`): `next.config.ts`
+  envolvido em `withBotId`, `src/instrumentation-client.ts` protegendo
+  todo POST (`/*`) — cobre `registrarLead` (captura de instalacao,
+  endpoint publico sem autenticacao, alvo real de flood ja que
+  `leads_insert_all` e `with check (true)`) e `enviarCandidatura` — e
+  `checkBotId()` chamado no inicio das duas server actions
+  correspondentes (`src/app/track-install-action.ts`,
+  `src/app/(app)/vagas/[id]/candidatura/actions.ts`), rejeitando
+  requisicao de bot antes de tocar no banco. Validado localmente
+  (build, lint, `preview_start` + Claude Browser) — a protecao real do
+  BotID roda na edge da Vercel, entao o efeito completo so aparece em
+  producao.
+- Scan automatizado de codigo (`claude-security`) **nao rodou** nesta
+  sessao — faltava a ferramenta `Workflow` (depende de "Dynamic
+  workflows" ligado em `/config`, numa sessao interativa de terminal).
+  Revisao manual feita no lugar: toda action de mutacao do admin exige
+  `requireInternalUser`; `createAdminClient` (service role) nunca e
+  importado em componente `"use client"`; nenhum `dangerouslySetInnerHTML`
+  no codigo. Pendencia real: sem scan automatizado verificado ainda —
+  recomendado rodar quando "Dynamic workflows" estiver disponivel.
+
 ## 8.1 Upgrade de design em andamento (decidido 10/09/2026)
 
 O Rodnei trouxe 6 templates de design system (tabela de dados interativa,
