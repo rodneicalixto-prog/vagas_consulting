@@ -17,17 +17,17 @@ export const DecideCompanySchema = z.object({
 // Vagas
 export const CreateJobSchema = z.object({
   company_id: z.string().uuid("ID da empresa inválido"),
-  titulo: z.string().min(3, "Título deve ter ao menos 3 caracteres"),
-  descricao: z.string().min(10, "Descrição deve ter ao menos 10 caracteres"),
-  modalidade: z.enum(["clt", "pj", "temporaria"], { errorMap: () => ({ message: "Modalidade inválida" }) }),
-  localizacao: z.string().optional(),
-  requisitos: z.array(z.string()).optional(),
-  regras: z.record(z.any()).optional(),
+  titulo: z.string().min(2, "Título deve ter ao menos 2 caracteres"),
+  modalidade: z.enum(["efetiva", "pj", "temporaria"], { errorMap: () => ({ message: "Modalidade deve ser efetiva, pj ou temporaria" }) }),
+  local: z.string().nullable().optional(),
+  descricao: z.string().nullable().optional(),
+  requisitos: z.string().nullable().optional(),
+  remuneracao_texto: z.string().nullable().optional(),
 });
 
-export const PublishJobSchema = z.object({
+export const DecideJobSchema = z.object({
   job_id: z.string().uuid("ID da vaga inválido"),
-  status: z.enum(["publicada", "pausada", "encerrada"], { errorMap: () => ({ message: "Status inválido" }) }),
+  acao: z.enum(["publicar", "encerrar", "corrigir"], { errorMap: () => ({ message: "Ação deve ser publicar, encerrar ou corrigir" }) }),
   motivo: z.string().nullable().optional(),
 });
 
@@ -52,14 +52,22 @@ export const UpdateJobPreferencesSchema = z.object({
 // Candidatura
 export const ApplyJobSchema = z.object({
   job_id: z.string().uuid("ID da vaga inválido"),
-  carta_apresentacao: z.string().min(10, "Carta deve ter ao menos 10 caracteres").nullable(),
+  respostas: z.record(z.boolean(), { errorMap: () => ({ message: "Respostas devem ser boolean" }) }),
+});
+
+// Consentimento
+export const SetConsentSchema = z.object({
+  finalidade: z.string().min(1, "Finalidade é obrigatória"),
+  canal: z.string().nullable().optional(),
+  concedido: z.boolean(),
 });
 
 // Admin: Acesso
 export const InviteAdminSchema = z.object({
   email: z.string().email("Email inválido"),
-  perfil: z.enum(["admin", "operador"], { errorMap: () => ({ message: "Perfil inválido" }) }),
-  permissoes: z.array(z.string()).optional(),
+  perfil: z.enum(["admin", "operador"], { errorMap: () => ({ message: "Perfil deve ser admin ou operador" }) }),
+  nome: z.string().nullable().optional(),
+  telefone: z.string().nullable().optional(),
 });
 
 // Auditoria: dados de entrada base
@@ -76,9 +84,10 @@ export const AuditLogQuerySchema = z.object({
 export type CreateCompanyInput = z.infer<typeof CreateCompanySchema>;
 export type DecideCompanyInput = z.infer<typeof DecideCompanySchema>;
 export type CreateJobInput = z.infer<typeof CreateJobSchema>;
-export type PublishJobInput = z.infer<typeof PublishJobSchema>;
+export type DecideJobInput = z.infer<typeof DecideJobSchema>;
 export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
 export type UpdateJobPreferencesInput = z.infer<typeof UpdateJobPreferencesSchema>;
 export type ApplyJobInput = z.infer<typeof ApplyJobSchema>;
+export type SetConsentInput = z.infer<typeof SetConsentSchema>;
 export type InviteAdminInput = z.infer<typeof InviteAdminSchema>;
 export type AuditLogQueryInput = z.infer<typeof AuditLogQuerySchema>;

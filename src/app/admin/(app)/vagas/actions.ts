@@ -3,20 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { validateFormData } from "@/lib/validation/validate-form";
+import { CreateJobSchema, DecideJobSchema, type CreateJobInput, type DecideJobInput } from "@/lib/validation/schemas";
 
 export async function criarVaga(formData: FormData) {
   const { user } = await requireInternalUser("jobs.manage");
-  const companyId = String(formData.get("company_id") ?? "");
-  const titulo = String(formData.get("titulo") ?? "").trim();
-  const modalidade = String(formData.get("modalidade") ?? "");
-  const local = String(formData.get("local") ?? "").trim();
-  const descricao = String(formData.get("descricao") ?? "").trim();
-  const requisitos = String(formData.get("requisitos") ?? "").trim();
-  const remuneracao = String(formData.get("remuneracao_texto") ?? "").trim();
 
-  if (!companyId || titulo.length < 2 || !["efetiva", "pj", "temporaria"].includes(modalidade)) {
-    throw new Error("Preencha empresa, título e modalidade com valores válidos.");
-  }
+  // Validar com Zod
+  const validated = validateFormData<CreateJobInput>(CreateJobSchema, formData);
+
+  const { company_id: companyId, titulo, modalidade, local, descricao, requisitos, remuneracao_texto: remuneracao } = validated;
 
   const admin = createAdminClient();
   const { data: job, error } = await admin
@@ -51,14 +47,11 @@ export async function criarVaga(formData: FormData) {
 }
 
 export async function decidirVaga(formData: FormData) {
-  const jobId = String(formData.get("job_id"));
-  const acao = String(formData.get("acao"));
-  const { user } = await requireInternalUser(acao === "publicar" ? "jobs.publish" : "jobs.manage");
-  const motivo = String(formData.get("motivo") ?? "").trim();
+  // Validar com Zod
+  const validated = validateFormData<DecideJobInput>(DecideJobSchema, formData);
+  const { job_id: jobId, acao, motivo } = validated;
 
-  if (!["publicar", "encerrar", "corrigir"].includes(acao)) {
-    throw new Error("Ação inválida.");
-  }
+  const { user } = await requireInternalUser(acao === "publicar" ? "jobs.publish" : "jobs.manage");
 
   const admin = createAdminClient();
   const { data: before } = await admin.from("jobs").select("*").eq("id", jobId).single();

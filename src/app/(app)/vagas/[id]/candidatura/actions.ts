@@ -2,8 +2,13 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ApplyJobSchema, type ApplyJobInput } from "@/lib/validation/schemas";
 
 export async function enviarCandidatura(jobId: string, respostas: Record<string, boolean>) {
+  // Validar com Zod
+  const validated = ApplyJobSchema.parse({ job_id: jobId, respostas });
+  const { job_id: validatedJobId, respostas: validatedRespostas } = validated;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -30,9 +35,9 @@ export async function enviarCandidatura(jobId: string, respostas: Record<string,
   }
 
   const { error } = await supabase.from("applications").insert({
-    job_id: jobId,
+    job_id: validatedJobId,
     candidate_id: user.id,
-    respostas,
+    respostas: validatedRespostas,
     origem: "app_candidato",
   });
 
