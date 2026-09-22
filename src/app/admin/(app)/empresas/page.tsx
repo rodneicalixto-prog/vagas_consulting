@@ -1,3 +1,4 @@
+import { Pagination } from "@/components/Pagination";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { criarEmpresa, decidirEmpresa } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
@@ -12,14 +13,25 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   bloqueada: { label: "Inativa", className: "bg-danger-bg text-danger" },
 };
 
-export default async function ModeracaoEmpresasPage() {
+export default async function ModeracaoEmpresasPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   await requireInternalUser("companies.manage");
   const admin = createAdminClient();
 
-  const { data: companies } = await admin
+  const page = Math.max(1, parseInt(searchParams.page || "1", 10));
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
+  const { data: companies, count } = await admin
     .from("companies")
-    .select("id, razao_social, nome_fantasia, cnpj, endereco, status")
-    .order("created_at", { ascending: false });
+    .select("id, razao_social, nome_fantasia, cnpj, endereco, status", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  const totalPages = Math.ceil((count || 0) / limit);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -44,10 +56,18 @@ export default async function ModeracaoEmpresasPage() {
             Cadastrar empresa
           </SubmitButton>
         </form>
+
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-xs text-text-2">
+            Total: {count} empresas | Página {page} de {totalPages}
+          </p>
+        </div>
+
         {!companies || companies.length === 0 ? (
           <p className="mt-10 text-center text-sm text-text-2">Nenhuma empresa cadastrada.</p>
         ) : (
-          <div className="flex flex-col gap-4">
+          <>
+            <div className="flex flex-col gap-4">
             {companies.map((c) => {
               const s = STATUS_LABEL[c.status] ?? STATUS_LABEL.rascunho;
               return (
@@ -107,7 +127,10 @@ export default async function ModeracaoEmpresasPage() {
                 </details>
               );
             })}
-          </div>
+            </div>
+
+            <Pagination currentPage={page} totalPages={totalPages} baseUrl="/admin/empresas" />
+          </>
         )}
       </div>
     </div>

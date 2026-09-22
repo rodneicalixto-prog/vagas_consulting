@@ -1,22 +1,35 @@
+import { Pagination } from "@/components/Pagination";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decidirVaga } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { SubmitButton } from "@/components/form-buttons";
 import { CriarVagaForm } from "./criar-vaga-form";
 
-export default async function CadastroDeVagasPage() {
+export default async function CadastroDeVagasPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const { role } = await requireInternalUser("jobs.manage");
   const admin = createAdminClient();
 
-  const [{ data: jobs }, { data: companies }] = await Promise.all([
+  const page = Math.max(1, parseInt(searchParams.page || "1", 10));
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
+  const [{ data: jobs, count }, { data: companies }] = await Promise.all([
     admin
       .from("jobs")
       .select(
         "id, titulo, modalidade, status, descricao, requisitos, remuneracao_texto, local, company_id, companies(razao_social)",
+        { count: "exact" },
       )
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1),
     admin.from("companies").select("id, razao_social, nome_fantasia").eq("status", "aprovada").order("razao_social"),
   ]);
+
+  const totalPages = Math.ceil((count || 0) / limit);
 
   const defaultsByCompany: Record<
     string,
@@ -44,10 +57,18 @@ export default async function CadastroDeVagasPage() {
 
       <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
         <CriarVagaForm companies={companies ?? []} defaultsByCompany={defaultsByCompany} />
+
+        <div className="flex justify-between items-center my-4">
+          <p className="text-xs text-text-2">
+            Total: {count} vagas | Página {page} de {totalPages}
+          </p>
+        </div>
+
         {!jobs || jobs.length === 0 ? (
           <p className="mt-10 text-center text-sm text-text-2">Nenhuma vaga cadastrada.</p>
         ) : (
-          <div className="flex flex-col gap-4">
+          <>
+            <div className="flex flex-col gap-4">
             {jobs.map((job) => {
               const company = Array.isArray(job.companies) ? job.companies[0] : job.companies;
               return (
@@ -127,7 +148,10 @@ export default async function CadastroDeVagasPage() {
                 </div>
               );
             })}
-          </div>
+            </div>
+
+            <Pagination currentPage={page} totalPages={totalPages} baseUrl="/admin/vagas" />
+          </>
         )}
       </div>
     </div>
