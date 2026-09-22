@@ -3,25 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { validateFormData } from "@/lib/validation/validate-form";
+import { CreateCompanySchema, DecideCompanySchema, CreateCompanyInput, DecideCompanyInput } from "@/lib/validation/schemas";
+import { logAudit, logDelete } from "@/lib/security/audit";
 
 export async function criarEmpresa(formData: FormData) {
   const { user } = await requireInternalUser("companies.manage");
-  const razaoSocial = String(formData.get("razao_social") ?? "").trim();
-  const nomeFantasia = String(formData.get("nome_fantasia") ?? "").trim();
-  const cnpj = String(formData.get("cnpj") ?? "").replace(/\D/g, "");
-  const endereco = String(formData.get("endereco") ?? "").trim();
 
-  if (razaoSocial.length < 2) throw new Error("Informe a razão social.");
-  if (cnpj && cnpj.length !== 14) throw new Error("O CNPJ deve conter 14 dígitos.");
+  const input = validateFormData<CreateCompanyInput>(CreateCompanySchema, formData);
+  const cnpj = input.cnpj?.replace(/\D/g, "") || null;
 
   const admin = createAdminClient();
   const { data: company, error } = await admin
     .from("companies")
     .insert({
-      razao_social: razaoSocial,
-      nome_fantasia: nomeFantasia || null,
-      cnpj: cnpj || null,
-      endereco: endereco || null,
+      razao_social: input.razao_social,
+      nome_fantasia: input.nome_fantasia || null,
+      cnpj,
+      endereco: input.endereco || null,
       status: "aprovada",
       decidido_por: user.id,
       decidido_em: new Date().toISOString(),
@@ -31,14 +30,13 @@ export async function criarEmpresa(formData: FormData) {
 
   if (error || !company) throw new Error("Não foi possível cadastrar a empresa.");
 
-  const { error: auditError } = await admin.from("audit_log").insert({
+  await logAudit({
     ator_id: user.id,
     acao: "empresa_criada_internamente",
     objeto_tipo: "company",
     objeto_id: company.id,
     depois: company,
   });
-  if (auditError) throw new Error("Empresa criada, mas a auditoria falhou.");
 
   revalidatePath("/admin/empresas");
   revalidatePath("/admin");
@@ -46,28 +44,23 @@ export async function criarEmpresa(formData: FormData) {
 
 export async function decidirEmpresa(formData: FormData) {
   const { user } = await requireInternalUser("companies.manage");
-  const companyId = String(formData.get("company_id"));
-  const acao = String(formData.get("acao")); // "aprovar" | "rejeitar" | "corrigir"
-  const motivo = String(formData.get("motivo") ?? "").trim();
 
-  if (!["aprovar", "rejeitar", "corrigir"].includes(acao)) {
-    throw new Error("Ação inválida.");
-  }
+  const input = validateFormData<DecideCompanyInput>(DecideCompanySchema, formData);
 
   const admin = createAdminClient();
-  const { data: before } = await admin.from("companies").select("*").eq("id", companyId).single();
+  const { data: before } = await admin.from("companies").select("*").eq("id", input.company_id).single();
 
-  const status = acao === "aprovar" ? "aprovada" : acao === "rejeitar" ? "bloqueada" : "ajustes";
+  const status = input.acao === "aprovar" ? "aprovada" : input.acao === "rejeitar" ? "bloqueada" : "ajustes";
 
   const { data: after, error } = await admin
     .from("companies")
     .update({
       status,
-      motivo_decisao: motivo || null,
+      motivo_decisao: input.motivo || null,
       decidido_por: user.id,
       decidido_em: new Date().toISOString(),
     })
-    .eq("id", companyId)
+    .eq("id", input.company_id)
     .select()
     .single();
 
@@ -75,11 +68,11 @@ export async function decidirEmpresa(formData: FormData) {
     throw new Error("Não foi possível atualizar a empresa. Tente de novo.");
   }
 
-  await admin.from("audit_log").insert({
+  await logAudit({
     ator_id: user.id,
-    acao: `empresa_${acao}`,
+    acao: `empresa_${input.acao}`,
     objeto_tipo: "company",
-    objeto_id: companyId,
+    objeto_id: input.company_id,
     antes: before,
     depois: after,
   });

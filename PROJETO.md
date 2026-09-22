@@ -1014,9 +1014,16 @@ Rodnei pediu grau elevado de seguranca. Executado nesta sessao:
   (service role, ignora RLS de qualquer forma), entao nao e uma falha
   real, so um lint informativo do proprio design. Achado real que
   precisa de acao do Rodnei: "Leaked Password Protection" desativado no
-  Supabase Auth — **so ativavel no painel** (Authentication → Policies
-  → Password Security), nenhuma ferramenta MCP disponivel expoe essa
-  configuracao de Auth.
+  Supabase Auth. **Investigado e fechado em 11/09/2026**: o toggle
+  (Authentication → Sign In / Providers → Email → Password Security →
+  "Prevent use of leaked passwords") existe mas fica travado/cinza —
+  a própria tela do Supabase avisa "Only available on Pro plan and
+  above". O projeto está no plano Free. Rodnei decidiu explicitamente
+  **não fazer upgrade pra Pro só por isso** — pendência encerrada como
+  "bloqueada por plano", não como bug ou tarefa pendente. Nenhuma
+  ferramenta MCP (nativa ou Composio) expõe essa configuração de Auth de
+  qualquer forma, então mesmo com Pro a correção continuaria sendo manual
+  pelo painel.
 - Headers de seguranca adicionados (`next.config.ts`): HSTS,
   X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
   Permissions-Policy.
