@@ -154,4 +154,4 @@ O admin da empresa **cria e acompanha vagas sigilosas** da própria empresa.
 ### Pendências
 
 1. **E1**: confirmar se "4" é o limite inicial de operadores por empresa.
-2. **E9**: quem concede o acesso de confiança a operadores da empresa (recomendação: o admin da empresa, com auditoria).
+2. **E9 (decidido em 14/10/2026: sim, o admin da empresa concede e retira o acesso de confiança dos operadores da própria empresa, com auditoria `carteira_confidenciais_liberadas/revogadas`; superadmin continua podendo em qualquer empresa).** Texto original: **E9**: quem concede o acesso de confiança a operadores da empresa (recomendação: o admin da empresa, com auditoria).

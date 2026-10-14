@@ -1285,6 +1285,9 @@ sessões futuras.
     própria empresa; um admin por empresa; candidatos de operador
     desativado voltam à fila; sem cobrança por operador extra por ora.
     Pendentes: E1 ("4" = limite inicial?) e E9.
+92. **E9 decidida (14/10/2026)**: o admin da empresa concede e retira o
+    acesso de confiança (vagas sigilosas) dos operadores da própria
+    empresa, com auditoria. Única pendência do admin da empresa: E1.
 
 ## 3. Escopo do MVP (revisado)
 
