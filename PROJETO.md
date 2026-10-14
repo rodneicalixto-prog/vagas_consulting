@@ -983,6 +983,16 @@ sessões futuras.
     Previsa" não será usado aqui. Registrado também em
     `docs/UI_UX_BRIEFING.md`. Sem alteração de código.
 
+59. **Migration 0020 aplicada em produção (14/10/2026)**, autorizada pelo
+    Rodnei ("sim"): `alter function public.arquivo_automatico_vagas() set
+    search_path = public, pg_temp` (migration
+    `auto_arquivamento_vagas_search_path`). Validação: advisors de segurança
+    não listam mais `function_search_path_mutable`; função executada dentro
+    de transação desfeita (0 vagas arquivadas, `proconfig` =
+    `search_path=public, pg_temp`). Restam só os alertas esperados (4
+    tabelas RLS sem política por desenho; proteção de senha vazada exige
+    Pro). Arquivo `0020_...sql` adicionado ao repo. Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

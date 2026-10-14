@@ -56,7 +56,7 @@ linhas que o backup, nunca menos). Resultado esperado: `RESULTADO: backup
 
 1. Baixar o `.json.gz` do Drive e descompactar (`7z x` ou `gzip -d`).
 2. O arquivo é `{ projeto, gerado_em, tabelas: { <tabela>: [linhas…] } }`.
-3. Recriar o schema com as migrations (`supabase/migrations/0001…0019`) em um
+3. Recriar o schema com as migrations (`supabase/migrations/0001…0020`) em um
    projeto Supabase novo e inserir as linhas de cada tabela, na ordem de
    dependência (`profiles` → `companies` → `jobs` → `applications` …).
 4. **Um backup que nunca foi restaurado não é backup:** faça o teste em um
