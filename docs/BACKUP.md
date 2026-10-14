@@ -65,7 +65,7 @@ propriedades da tarefa).
 - **Aviso do `client_id` compartilhado:** o rclone avisa que o `client_id`
   dele será aposentado em 2026. Se o envio parar de funcionar, crie um
   `client_id` próprio no Google Cloud (grátis).
-- **Conta usada:** a conta autorizada no rclone em 14/10/2026 tinha 15 GiB
+- **Conta usada:** a conta autorizada no rclone em 14/10/2026 é `sosmktcomercial@gmail.com` e tinha 15 GiB
   com 13,6 GiB livres. Primeiro envio bem-sucedido em 14/10/2026 às 14:23.
 
 ## Limites conhecidos

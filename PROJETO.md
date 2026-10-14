@@ -914,6 +914,13 @@ sessões futuras.
     (domingo 19/10/2026), teste de restauração trimestral, conta Google
     definitiva do backup. Commit local, sem push.
 
+52. **Conta do backup confirmada (14/10/2026)**: o Drive que recebe o
+    backup é o de **sosmktcomercial@gmail.com** ("Rodnei Calixto dos
+    Santos"), 9% de 15 GB usados, confirmado pelo Rodnei no seletor de
+    contas do Google. Pasta: "Backups Vagas Consulting". A conta
+    rodneicalixto@gmail.com não serve (sem espaço). Dados pessoais:
+    manter a pasta privada, sem compartilhamento.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
