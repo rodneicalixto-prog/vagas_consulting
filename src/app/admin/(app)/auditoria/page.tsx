@@ -1,6 +1,6 @@
 import { Pagination } from "@/components/Pagination";
 import { requireInternalUser } from "@/lib/auth/internal";
-import { getAuditLogs } from "@/lib/security/audit";
+import { getAuditLogs, type AuditLogRow } from "@/lib/security/audit";
 
 export default async function AuditoriaPage({
   searchParams,
@@ -38,7 +38,7 @@ export default async function AuditoriaPage({
                 <div>Objeto</div>
                 <div>Detalhes</div>
               </div>
-              {logs.map((log: any) => (
+              {logs.map((log: AuditLogRow & { id: string }) => (
                 <div key={log.id} className="grid grid-cols-5 gap-3 border-b border-border px-5 py-3 text-[12px] last:border-none">
                   <div className="text-text-2">{new Date(log.created_at).toLocaleString("pt-BR")}</div>
                   <div className="text-text-2">{log.ator_id ? `#${log.ator_id.slice(0, 8)}` : "Sistema"}</div>

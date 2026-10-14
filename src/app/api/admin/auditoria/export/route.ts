@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { getAuditLogs, auditLogsToCSV } from "@/lib/security/audit";
-import { AuditLogQuerySchema, AuditLogQueryInput } from "@/lib/validation/schemas";
+import { AuditLogQuerySchema } from "@/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
   try {
-    const { user } = await requireInternalUser("audit.read");
+    await requireInternalUser("audit.read");
 
     const searchParams = req.nextUrl.searchParams;
     const query = {

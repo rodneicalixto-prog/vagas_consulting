@@ -1,36 +1,13 @@
--- Auto-arquivamento de vagas expiradas
--- Adiciona campo de expiração e novo status para arquivo automático
+-- Auto-arquivamento de vagas expiradas — parte 1: enum, coluna e índice.
+--
+-- IMPORTANTE: o Postgres recusa usar um valor de enum recém-criado na mesma
+-- transação (55P04 "unsafe use of new value"). Por isso a função que usa
+-- 'arquivada' fica em outra migration (0019). Em produção estas duas partes
+-- foram aplicadas em 28/09/2026 como `auto_arquivamento_vagas_enum_e_coluna`
+-- e `auto_arquivamento_vagas_funcao`.
 
--- Adicionar novo status 'arquivada' ao enum status_vaga
-alter type status_vaga add value 'arquivada';
+alter type status_vaga add value if not exists 'arquivada';
 
--- Adicionar coluna expira_em
-alter table jobs add column expira_em timestamptz;
+alter table jobs add column if not exists expira_em timestamptz;
 
--- Índice pra queries de expiração
-create index jobs_expira_em_idx on jobs (expira_em);
-
--- Função pra arquivar vagas expiradas
-create or replace function arquivo_automatico_vagas()
-returns table (id uuid, titulo text, status_novo status_vaga)
-language sql
-as $$
-  with arquivadas as (
-    update jobs
-    set
-      status = 'arquivada'::status_vaga,
-      updated_at = now()
-    where
-      status = 'publicada'
-      and expira_em is not null
-      and expira_em <= now()
-    returning jobs.id, jobs.titulo, jobs.status
-  )
-  select * from arquivadas;
-$$;
-
--- Comentário pra referência
-comment on function arquivo_automatico_vagas() is
-  'Arquiva todas as vagas publicadas cuja data de expiração já passou.
-   Chamada por: Edge Function Vercel em /api/cron/archive-jobs ou manualmente.
-   Uso: SELECT * FROM arquivo_automatico_vagas();';
+create index if not exists jobs_expira_em_idx on jobs (expira_em);

@@ -1,15 +1,14 @@
-import { ZodSchema, ZodError } from "zod";
+import type { ZodSchema } from "zod";
 
 export function validateFormData<T>(schema: ZodSchema, formData: FormData): T {
-  const obj: Record<string, any> = {};
+  const obj: Record<string, FormDataEntryValue | FormDataEntryValue[]> = {};
 
   for (const [key, value] of formData.entries()) {
     if (obj[key] === undefined) {
       obj[key] = value;
-    } else if (Array.isArray(obj[key])) {
-      obj[key].push(value);
     } else {
-      obj[key] = [obj[key], value];
+      const atual = obj[key];
+      obj[key] = Array.isArray(atual) ? [...atual, value] : [atual, value];
     }
   }
 

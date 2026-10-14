@@ -6,9 +6,9 @@ export interface AuditOptions {
   acao: string;
   objeto_tipo: string;
   objeto_id: string;
-  antes?: any;
-  depois?: any;
-  detalhes?: Record<string, any>;
+  antes?: unknown;
+  depois?: unknown;
+  detalhes?: Record<string, unknown>;
 }
 
 export async function logAudit(options: AuditOptions): Promise<void> {
@@ -78,7 +78,16 @@ export async function getAuditLogs(query: AuditLogQuery) {
   };
 }
 
-export function auditLogsToCSV(logs: any[]): string {
+export type AuditLogRow = {
+  created_at: string;
+  acao: string;
+  objeto_tipo: string;
+  objeto_id: string | null;
+  ator_id: string | null;
+  depois: unknown;
+};
+
+export function auditLogsToCSV(logs: AuditLogRow[]): string {
   const headers = ["Data", "Ação", "Tipo", "ID", "Ator", "Depois"];
   const rows = logs.map((log) => [
     new Date(log.created_at).toLocaleString("pt-BR"),

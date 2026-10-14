@@ -802,6 +802,17 @@ sessões futuras.
     tinham acesso a essa org. Pendente: 1º disparo real do cron
     (02:00 UTC) e arquivo `0018_...sql` do repo ainda diverge do aplicado.
 
+41. **Migration 0018 corrigida + lint zerado (14/10/2026)** (commit local,
+    sem push): `0018_auto_arquivamento_vagas.sql` agora contém só enum +
+    coluna + índice (com `if not exists`); a função foi para
+    `0019_auto_arquivamento_vagas_funcao.sql`. Conteúdo conferido contra a
+    função real em produção (`pg_get_functiondef`) — idêntica. Motivo da
+    divisão: Postgres recusa usar valor de enum novo na mesma transação
+    (55P04). Lint: 0 erros (6 → 0) removendo `any` em `audit.ts`,
+    `validate-form.ts` e `auditoria/page.tsx`, `let`→`const` em
+    `Pagination.tsx`. `tsc --noEmit` limpo. Restam 4 warnings de variável
+    não usada (`SetConsentInput`, `ApplyJobInput`, `logDelete`, `pages`).
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
