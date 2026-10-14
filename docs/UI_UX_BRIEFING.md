@@ -78,7 +78,7 @@ componente em `ui.tsx` e `form-buttons.tsx`, sem um guia central.
 
 ## Arquivos necessários
 
-- ✅ Logo recebida (`logomarca.png`, pasta pai do repositório).
+- ✅ Logo recebida (`logomarca.png`, pasta pai do repositório). **Decisão do Rodnei (14/10/2026): a marca do app é Vagas Consulting**; o logo "SOS Consulting — Método Previsa" enviado no mesmo dia é de outra marca e não foi aplicado.
 - Ícones PWA: `public/icons/icon-192.png`, `icon-512.png`,
   `icon-512-maskable.png`, `icon-32.png` — já existem no projeto.
 - Nenhum ativo visual pendente conhecido (Rodnei, 14/10/2026); reavaliar quando houver a campanha de divulgação.

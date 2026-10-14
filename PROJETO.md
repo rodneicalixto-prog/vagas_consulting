@@ -978,6 +978,11 @@ sessões futuras.
     `brand-mark.tsx`). Os ícones gerados a partir do logo errado foram
     revertidos antes de qualquer commit. Nada foi publicado.
 
+58. **Marca confirmada (14/10/2026)**: o Rodnei decidiu manter **Vagas
+    Consulting** como marca do app. O logo "SOS Consulting — Método
+    Previsa" não será usado aqui. Registrado também em
+    `docs/UI_UX_BRIEFING.md`. Sem alteração de código.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
