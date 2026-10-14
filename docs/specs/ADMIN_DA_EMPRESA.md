@@ -130,3 +130,28 @@ O admin da empresa **cria e acompanha vagas sigilosas** da própria empresa.
 **Pontos de atenção:** (1) os totais do dashboard do operador comum não devem revelar a existência de vaga sigilosa (já garantido pelo filtro de escopo); (2) o agente da empresa trata a vaga sigilosa sem citar o nome da empresa antes da etapa permitida.
 
 **Decisão nova pedida (E9):** o admin da empresa pode **conceder ou retirar** o acesso de confiança de um operador da própria empresa, ou isso continua só com o superadmin? Recomendação: o admin da empresa concede, com auditoria, porque o sigilo é dele.
+
+## 10. Decisões do Rodnei (14/10/2026)
+
+| # | Tema | Decisão |
+|---|---|---|
+| E1 | Operadores em aberto | Resposta recebida: "4". **Interpretação a confirmar:** limite inicial de **4 operadores por empresa**? (ver pendências) |
+| E2 | Quem define o limite por empresa | **Somente o superadmin** (não o admin da plataforma) |
+| E3 | Vagas confidenciais da própria empresa | **Sim** (e cria/acompanha sigilosas, §9) |
+| E4 | Publicação de vaga | **Regra atual**: admin da plataforma publica; admin da empresa não publica |
+| E5 | Prestações e valores da empresa | **Sim, somente leitura**, só da própria empresa |
+| E6 | Admin em mais de uma empresa | **Não**: uma pessoa, uma empresa |
+| E7 | Candidatos de operador desativado | **Voltam à fila da empresa** e o admin da empresa redistribui |
+| E8 | Cobrança por operador extra | **Não há cobrança inicialmente** (o limite continua existindo) |
+
+### Consequências
+
+- **Limite editável só pelo superadmin**, com histórico em auditoria (`limite_operadores_alterado`). O admin da plataforma vê o limite, não altera.
+- **Prestações**: o admin da empresa ganha leitura filtrada pela empresa (capability de leitura própria, separada de `finance.read` global).
+- **Redistribuição**: ao desativar operador, a tela mostra os candidatos em andamento dele com ação "atribuir a outro operador".
+- **Sem cobrança**: o campo de plano comercial fica fora da Fase 1; o limite é só controle operacional.
+
+### Pendências
+
+1. **E1**: confirmar se "4" é o limite inicial de operadores por empresa.
+2. **E9**: quem concede o acesso de confiança a operadores da empresa (recomendação: o admin da empresa, com auditoria).

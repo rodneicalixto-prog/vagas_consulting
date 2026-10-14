@@ -1280,6 +1280,11 @@ sessões futuras.
     admin da empresa cria e acompanha vagas sigilosas da própria empresa;
     spec §9 ADMIN_DA_EMPRESA.md. Pendente E9: quem concede o acesso de
     confiança a operadores da empresa.
+91. **Decisões E2-E8 do admin da empresa (14/10/2026)**: limite só pelo
+    superadmin; publicação segue a regra atual; prestações só leitura da
+    própria empresa; um admin por empresa; candidatos de operador
+    desativado voltam à fila; sem cobrança por operador extra por ora.
+    Pendentes: E1 ("4" = limite inicial?) e E9.
 
 ## 3. Escopo do MVP (revisado)
 
