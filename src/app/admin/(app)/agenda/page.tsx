@@ -5,6 +5,7 @@ import { obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import { criarCompromisso, atualizarStatusCompromisso, excluirCompromisso } from "./actions";
+import { CalendarioMes } from "@/components/calendario-mes";
 
 const STATUS_LABEL: Record<string, string> = {
   agendado: "Agendado",
@@ -32,8 +33,16 @@ function formatarDataHora(iso: string) {
   });
 }
 
-export default async function AgendaPage() {
+const MES_RE = /^(\d{4})-(0[1-9]|1[0-2])$/;
+const DATA_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+export default async function AgendaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mes?: string; data?: string; modo?: string }>;
+}) {
   const { user, role } = await requireInternalUser("pipeline.manage");
+  const sp = await searchParams;
   const admin = createAdminClient();
   // Carteira: o seletor de candidaturas só oferece vagas do escopo.
   const vagasIds = await vagasVisiveis(await obterEscopo(user.id, role));
@@ -68,6 +77,23 @@ export default async function AgendaPage() {
   });
 
   const agora = agoraMs();
+
+  // Calendário: mês pedido (?mes=AAAA-MM) ou o atual; dia clicado preenche o formulário.
+  const hoje = new Date(agora);
+  const hojeChave = `${hoje.getUTCFullYear()}-${String(hoje.getUTCMonth() + 1).padStart(2, "0")}-${String(hoje.getUTCDate()).padStart(2, "0")}`;
+  const m = MES_RE.exec(sp.mes ?? "");
+  const ano = m ? Number(m[1]) : hoje.getUTCFullYear();
+  const mes = m ? Number(m[2]) - 1 : hoje.getUTCMonth();
+  const dataEscolhida = DATA_RE.test(sp.data ?? "") ? (sp.data as string) : "";
+  const modo = sp.modo === "lista" ? "lista" : "calendario";
+  const chaveMes = (a: number, mm: number) => `${a}-${String(mm + 1).padStart(2, "0")}`;
+  const hrefMes = (alvo: "anterior" | "proximo" | "hoje") => {
+    if (alvo === "hoje") return "/admin/agenda";
+    const d = new Date(Date.UTC(ano, mes + (alvo === "proximo" ? 1 : -1), 1));
+    return `/admin/agenda?mes=${chaveMes(d.getUTCFullYear(), d.getUTCMonth())}`;
+  };
+  const hrefDia = (dia: string) => `/admin/agenda?mes=${chaveMes(ano, mes)}&data=${dia}#novo`;
+
   const proximos = (compromissos ?? []).filter(
     (c) => c.status === "agendado" && new Date(c.inicio).getTime() >= agora - 60 * 60 * 1000,
   );
@@ -90,10 +116,47 @@ export default async function AgendaPage() {
           )}
         </div>
         <p className="mt-1 text-xs text-text-2">Entrevistas e compromissos internos</p>
+        <div className="mt-3 flex gap-2">
+          <Link
+            href="/admin/agenda"
+            className={`rounded-full border px-3 py-1.5 text-[11.5px] font-bold ${
+              modo === "calendario" ? "border-navy bg-navy text-white" : "border-border bg-surface text-text-2"
+            }`}
+          >
+            Calendário
+          </Link>
+          <Link
+            href="/admin/agenda?modo=lista"
+            className={`rounded-full border px-3 py-1.5 text-[11.5px] font-bold ${
+              modo === "lista" ? "border-navy bg-navy text-white" : "border-border bg-surface text-text-2"
+            }`}
+          >
+            Lista
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
-        <form action={criarCompromisso} className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-5 md:grid-cols-2">
+        {modo === "calendario" && (
+          <div className="mb-6">
+            <CalendarioMes
+              ano={ano}
+              mes={mes}
+              eventos={(compromissos ?? []).map((c) => ({
+                id: c.id,
+                titulo: c.titulo,
+                tipo: c.tipo,
+                inicio: c.inicio,
+                status: c.status,
+              }))}
+              hojeChave={hojeChave}
+              hrefDia={hrefDia}
+              hrefMes={hrefMes}
+            />
+          </div>
+        )}
+
+        <form id="novo" action={criarCompromisso} className="mb-6 grid scroll-mt-4 gap-3 rounded-2xl border border-border bg-surface p-5 md:grid-cols-2">
           <h2 className="text-sm font-extrabold text-text md:col-span-2">Novo compromisso</h2>
           <input name="titulo" required placeholder="Título" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
           <select name="tipo" defaultValue="interno" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm">
@@ -104,7 +167,7 @@ export default async function AgendaPage() {
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold uppercase text-text-3">Início</label>
               <div className="flex gap-2">
-                <input type="date" name="data_inicio" required className="w-full rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
+                <input type="date" name="data_inicio" required defaultValue={dataEscolhida} className="w-full rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
                 <input type="time" name="hora_inicio" required className="w-full rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
               </div>
             </div>

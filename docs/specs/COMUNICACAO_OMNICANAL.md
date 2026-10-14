@@ -218,3 +218,9 @@ aprendizado para o roteiro daquela empresa.
    guardar a conversa **sem identificação direta** (nome, telefone e e-mail
    trocados por código) ou com **prazo final** (ex.: 5 anos), e excluir a
    pedido do titular também no Drive. Decisão do Rodnei pendente.
+
+### Fechamento de 14/10/2026
+
+- **Teto mensal de custo de IA: US$ 100** (assumido como teto da plataforma no conjunto; se for por empresa, o Rodnei indica). Ao atingir 80% avisa o superadmin; ao atingir 100% o agente pausa e volta ao modo sugestão manual.
+- **Provedor:** Groq (confirmado, não xAI Grok), além de OpenAI e Claude.
+- **Retenção (E8): os dois mecanismos.** Supabase guarda 12 meses; depois a conversa vai ao Drive **pseudonimizada** (nome, telefone e e-mail trocados por um **código estável por candidato**, sem a chave no Drive) e **com prazo final** (proposta: 5 anos, a confirmar). O código estável permite o histórico que o Rodnei quer (há quanto tempo procura emprego, quantas reprovações) sem expor a identidade. Dado pseudonimizado ainda é dado pessoal: a **tabela de correspondência código↔pessoa fica só no Supabase** e, a pedido do titular, é apagada, o que desfaz o vínculo no Drive.

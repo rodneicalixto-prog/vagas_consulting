@@ -1240,6 +1240,13 @@ sessões futuras.
     pelo Rodnei. O agente escreve rascunho; o operador aprova, edita ou
     descarta. Autonomia sobe por tipo de mensagem e por empresa conforme
     a taxa de aprovação sem edição (escada de níveis 0-3 na spec).
+84. **Fechamento das decisões e Fase 1 do dashboard (14/10/2026)**: teto
+    de IA US$ 100/mês; Groq (não xAI); retenção em dois mecanismos (12
+    meses no Supabase e depois Drive pseudonimizado com prazo final);
+    dashboard E1-E6 aprovadas. Construído: visão geral nova (cards
+    clicáveis, filtros de período/empresa, funil, evolução, setores,
+    tempo de vaga em aberto, quadro somente leitura) e modo calendário
+    na Minha agenda. 24 testes unitários. Sem migration.
 
 ## 3. Escopo do MVP (revisado)
 

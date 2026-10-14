@@ -124,7 +124,7 @@ clicar em qualquer card abre a lista com o mesmo total; (c) mover cartão grava
 auditoria e respeita `exigirVaga`; (d) nenhum dado de contato aparece no
 kanban; (e) filtro de período muda cards, gráficos e tabelas juntos.
 
-## 10. Decisões pedidas ao Rodnei
+## 10. Decisões do Rodnei (14/10/2026: "recomendações ok")
 
 | # | Pergunta | Recomendação |
 |---|---|---|
@@ -134,3 +134,9 @@ kanban; (e) filtro de período muda cards, gráficos e tabelas juntos.
 | E4 | Limites do semáforo de vaga em aberto: 15 e 30 dias? | Sim, ajustável por empresa depois |
 | E5 | Admin e superadmin usam o mesmo dashboard (com todas as empresas)? | Sim, mesma tela, escopo `todos` |
 | E6 | Exportar CSV para o operador? | Sim, só os campos visíveis |
+
+### Status
+
+- E1 a E6 aprovadas com as recomendações da tabela.
+- **Fase 1 construída** (14/10/2026): cards clicáveis com detalhe, filtros de período e empresa, funil, evolução semanal, setores, situação das vagas, tempo das vagas em aberto com semáforo, quadro de candidaturas somente leitura. O card "Aguardando exame médico" aparece desativado até a Fase 3.
+- **Modo calendário na Minha agenda** (pedido do Rodnei): calendário mensal; clicar em um dia preenche a data do novo compromisso; alternância Calendário/Lista.
