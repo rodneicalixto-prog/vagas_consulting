@@ -1031,6 +1031,19 @@ sessões futuras.
     ser aplicada em produção para registrar o histórico (no-op). Commit
     local.
 
+63. **Primeira vaga temporária publicada (14/10/2026)**: cadastrada e
+    publicada pelo Rodnei no painel, "ajudante de logistica 2",
+    `temporaria`, `publicada`, local Caieiras, com descrição, remuneração
+    "2.354,00" (parece valor mensal; para temporária o usual é por
+    diária). Antes disso houve 2 tentativas com modalidade `efetiva` por
+    causa do **pré-preenchimento do formulário** (campos copiados da última
+    vaga da empresa): ficaram 2 rascunhos "ajudante de logistica"
+    (efetiva), sem efeito para o candidato. Achados de produto: o painel
+    não tem **edição de vaga** (só publicar/voltar a rascunho/encerrar) e
+    o formulário deveria vir com modalidade em branco ou avisar a cópia.
+    Pendente: teste manual do convite com essa vaga; decidir se muda o
+    formulário. Registro feito só por leitura do banco.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
