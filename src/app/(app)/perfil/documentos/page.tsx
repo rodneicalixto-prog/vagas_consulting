@@ -54,6 +54,12 @@ export default async function DocumentosPage() {
             >
               Anexar currículo
             </Link>
+            <Link href="/experiencias" className="text-[12.5px] font-bold text-navy underline">
+              Prefiro preencher meu currículo no app
+            </Link>
+            <p className="max-w-xs text-[11.5px] text-text-2">
+              Sem currículo anexado, basta ter telefone e endereço preenchidos para se candidatar.
+            </p>
           </div>
         )}
       </div>

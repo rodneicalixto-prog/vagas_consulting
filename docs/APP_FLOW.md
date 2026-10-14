@@ -64,6 +64,17 @@
 (candidatura registrada, status inicial `recebida`) → acompanha em
 `/processos`.
 
+## Regras de entrada do candidato (atualizado em 14/10/2026)
+
+- Conta **sem perfil** (ex.: criada por convite ou de administrador) que
+  abre qualquer tela do candidato é levada a `/onboarding`, que cria o perfil.
+- Telas de edição de perfil que não conseguem gravar (perfil inexistente)
+  também levam ao `/onboarding`, em vez de fingir que salvaram.
+- Em `/vagas/[id]`: com convite pendente para a vaga o botão é
+  **Responder convite** (`/convites/[id]`); sem convite é **Candidatar-se**.
+- Em `/perfil/documentos` sem arquivo há duas saídas: anexar currículo ou
+  **preencher o currículo no app** (`/experiencias`).
+
 ## Jornadas alternativas
 
 - Candidato recebe convite direto pra temporário (`invites`) sem passar

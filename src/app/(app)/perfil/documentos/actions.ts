@@ -76,13 +76,17 @@ export async function substituirDocumento(file: File): Promise<{ error?: string 
     return { error: "Não foi possível salvar o arquivo. Tente de novo." };
   }
 
-  const { error } = await supabase
+  const { data: atualizado, error } = await supabase
     .from("profiles")
     .update({ curriculo_url: caminhoValido })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select("id");
 
   if (error) {
     return { error: "Não foi possível salvar. Tente de novo." };
+  }
+  if (!atualizado || atualizado.length === 0) {
+    return { error: "Complete seu cadastro (menu Perfil) antes de anexar o currículo." };
   }
 
   revalidatePath("/perfil/documentos");

@@ -1056,6 +1056,20 @@ sessões futuras.
     "ajudante de logistica" (efetiva) confirmados como `encerrada`. Fora
     do escopo, não feito: período da remuneração (mês/diária). Commit local.
 
+65. **Quatro correções do app do candidato (14/10/2026)**, aprovadas pelo
+    Rodnei ("sim, corrigir os 4"), achadas no teste manual dele. Causa raiz:
+    a conta de teste (admin, id `372ab9c4…`) **não tinha linha em
+    `profiles`**; só o onboarding cria o perfil e as telas de edição faziam
+    UPDATE que afetava 0 linhas sem erro ("Salvar" fingia gravar; início
+    mostrava "Olá, candidato" e 0%). Correções: (1) layout `(app)` leva
+    conta sem perfil a `/onboarding`; (2) dados pessoais, preferências,
+    experiências e documento passam a detectar UPDATE sem efeito
+    (`.select("id")`) e mandam ao onboarding / mostram erro; (3) botão da
+    vaga: "Responder convite" só com convite real em `invites`, senão
+    "Candidatar-se"; (4) Documentos: "Prefiro preencher meu currículo no
+    app". Verificação: `tsc` e `eslint` sem erros, `next build` OK. Não
+    publicado. Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

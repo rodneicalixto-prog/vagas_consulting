@@ -25,6 +25,23 @@ export default async function VagaDetalhePage({
 
   if (!vaga) notFound();
 
+  // Só existe "convite" de verdade se houver um registro em `invites` para
+  // este candidato e esta vaga, ainda sem resposta.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: convite } = user
+    ? await supabase
+        .from("invites")
+        .select("id")
+        .eq("job_id", vaga.id)
+        .eq("candidate_id", user.id)
+        .in("status", ["ofertado", "visualizado"])
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
+
   return (
     <div className="flex flex-col pb-6">
       <div className="flex items-center justify-between px-5 pt-6 md:px-8 md:pt-8">
@@ -69,10 +86,10 @@ export default async function VagaDetalhePage({
           </div>
         )}
         <Link
-          href={`/vagas/${vaga.id}/candidatura`}
+          href={convite ? `/convites/${convite.id}` : `/vagas/${vaga.id}/candidatura`}
           className="flex-1 rounded-xl bg-gold py-3.5 text-center text-[14px] font-extrabold text-[#1c1508]"
         >
-          {vaga.modalidade === "temporaria" ? "Aceitar convite" : "Candidatar-se"}
+          {convite ? "Responder convite" : "Candidatar-se"}
         </Link>
       </div>
     </div>

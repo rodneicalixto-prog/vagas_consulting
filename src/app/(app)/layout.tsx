@@ -15,6 +15,10 @@ export default async function AppGroupLayout({ children }: { children: React.Rea
       .eq("id", user.id)
       .maybeSingle();
 
+    // Conta sem registro de perfil (ex.: criada por convite/admin): só o
+    // onboarding cria o perfil, então é para lá que ela precisa ir.
+    if (!profile) redirect("/onboarding");
+
     const experiencias = Array.isArray(profile?.experiencias_profissionais)
       ? profile.experiencias_profissionais
       : [];

@@ -100,7 +100,7 @@ export async function salvarExperiencias(
       ? curriculoPath
       : undefined;
 
-  const { error } = await supabase
+  const { data: atualizado, error } = await supabase
     .from("profiles")
     .update({
       nunca_trabalhou: nuncaTrabalhou,
@@ -109,11 +109,13 @@ export async function salvarExperiencias(
       // URL pública — o link assinado é gerado sob demanda em quem exibe (admin).
       ...(curriculoPathValido ? { curriculo_url: curriculoPathValido } : {}),
     })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select("id");
 
   if (error) {
     throw new Error("Não foi possível salvar. Tente de novo.");
   }
+  if (!atualizado || atualizado.length === 0) redirect("/onboarding");
 
   redirect("/inicio");
 }

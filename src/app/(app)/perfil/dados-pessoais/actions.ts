@@ -22,14 +22,18 @@ export async function atualizarDadosPessoais(formData: FormData) {
 
   // Só atualiza estes 4 campos — nunca toca em experiências, modalidades ou
   // histórico de terceirizadoras já preenchidos em outras telas.
-  const { error } = await supabase
+  const { data: atualizado, error } = await supabase
     .from("profiles")
     .update({ nome_completo: nomeCompleto, cidade, telefone, endereco })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select("id");
 
   if (error) {
     throw new Error("Não foi possível salvar. Tente de novo.");
   }
+  // UPDATE em perfil inexistente não dá erro e não grava nada: manda para o
+  // cadastro, que cria o perfil.
+  if (!atualizado || atualizado.length === 0) redirect("/onboarding");
 
   revalidatePath("/perfil");
   redirect("/perfil");
