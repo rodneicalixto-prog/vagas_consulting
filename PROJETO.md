@@ -954,6 +954,16 @@ sessões futuras.
     `1ea573f` (fluxo de convites) foi **bloqueado pelo Claude Code** por não
     haver "sim" explícito; aguardando confirmação. Commit local.
 
+56. **Push do fluxo de convites + deploy (14/10/2026)**: autorizado pelo
+    Rodnei ("sim", depois do bloqueio do item 55). `a7e609c..4567db8` em
+    `main` (convites, verify-backup, logs). Deploy
+    `dpl_Hc3qHCVqzk3L6Kgt8LDnXVM2RQ35` `READY`. Rotas: `/login` 200,
+    `/admin/login` 200; `/convites`, `/convites/[id]` e `/admin/convites`
+    redirecionam (307) para login quando sem sessão, ou seja, existem e
+    estão protegidas. Sem runtime errors em 1h. Pendente: teste manual dos
+    convites pelo Rodnei (deixado por último), cron/pausa (15/10 após 02:00
+    UTC), backup agendado (19/10), teste de restauração.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
