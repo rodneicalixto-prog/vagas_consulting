@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { statusLabel, statusPillClass, statusProgress } from "@/lib/format";
 import { Card, Pill } from "@/components/ui";
@@ -16,6 +17,12 @@ export default async function ProcessosPage() {
     .eq("candidate_id", user!.id)
     .order("created_at", { ascending: false });
 
+  const { count: convitesAbertos } = await supabase
+    .from("invites")
+    .select("id", { count: "exact", head: true })
+    .eq("candidate_id", user!.id)
+    .in("status", ["ofertado", "visualizado"]);
+
   const andamento = (candidaturas ?? []).filter(
     (c) => !STATUS_ENCERRADOS.includes(c.status as (typeof STATUS_ENCERRADOS)[number]),
   );
@@ -30,6 +37,18 @@ export default async function ProcessosPage() {
       </h1>
 
       <div className="flex flex-col gap-3 px-5 md:px-8">
+        <Link
+          href="/convites"
+          className="flex items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3 text-[13px] font-extrabold text-navy"
+        >
+          <span>Meus convites</span>
+          {(convitesAbertos ?? 0) > 0 && (
+            <span className="rounded-full bg-gold-bg px-2.5 py-1 text-[10.5px] text-gold-3">
+              {convitesAbertos} aguardando resposta
+            </span>
+          )}
+        </Link>
+
         {andamento.length === 0 && encerrados.length === 0 && (
           <p className="text-[12.5px] text-text-3">
             Você ainda não tem candidaturas. Explore as vagas disponíveis.

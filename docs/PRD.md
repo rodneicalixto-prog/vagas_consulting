@@ -45,7 +45,7 @@ vaga diretamente, elas solicitam e a equipe interna cadastra e publica.
 | Perfil, currículo, experiências, documentos | Base de dados pro pipeline | Essencial | ✅ Construído |
 | Agente de IA pra ler currículo anexado e pré-preencher o perfil | Reduz preenchimento manual | Essencial | ✅ Construído (`src/lib/ai/curriculo.ts`) |
 | Busca e candidatura a vagas (efetiva/PJ/temporária) | Núcleo do produto | Essencial | ✅ Construído |
-| Convite direto pra temporário (fora do fluxo de candidatura) | Agilidade em demanda pontual | Essencial | ✅ Construído (`invites`) |
+| Convite direto pra temporário (fora do fluxo de candidatura) | Agilidade em demanda pontual | Essencial | ✅ Construído em 14/10/2026 (`/convites`, `/admin/convites`), ainda não publicado — antes disso só existia a tabela `invites` |
 | Mensagens candidato↔operação | Comunicação no pipeline | Essencial | ✅ Construído |
 | Agenda de entrevistas/compromissos da equipe interna | Organização operacional | Alta | ✅ Construído |
 | Painel admin: empresas, vagas, candidatos, blacklist | Operação do marketplace | Essencial | ✅ Construído |

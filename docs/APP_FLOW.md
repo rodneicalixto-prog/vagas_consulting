@@ -23,7 +23,9 @@
 | `/vagas` | Lista/busca de vagas publicadas | `jobs` (status=publicada) |
 | `/vagas/[id]` | Detalhe da vaga | `jobs`, `companies` |
 | `/vagas/[id]/candidatura` | Formulário de candidatura | `jobs.regras`, respostas do candidato |
-| `/processos` | Acompanhamento das candidaturas | `applications`, `invites` |
+| `/processos` | Acompanhamento das candidaturas e atalho para convites | `applications`, `invites` |
+| `/convites` | Lista de convites do candidato | `invites` |
+| `/convites/[id]` | Detalhe, aceitar ou recusar convite | `invites`, `audit_log` |
 | `/mensagens` | Chat candidato↔operação | `messages` |
 | `/perfil` | Hub do perfil | `profiles` |
 | `/perfil/dados-pessoais` | Dados pessoais | `profiles` (campos base) |
@@ -51,6 +53,7 @@
 | `/admin/denuncias` | Moderação de denúncias |
 | `/admin/lgpd` | Solicitações LGPD do titular |
 | `/admin/estrategico` | Painel estratégico: KPIs de empresas cadastradas, instalações do app, leads, candidatos e contratações fechadas; séries dos últimos 70 dias (leads/candidatos), distribuição de candidaturas, vagas por modalidade e financeiro de prestações (confirmado em `src/app/admin/(app)/estrategico/page.tsx`, 14/10/2026) |
+| `/admin/convites` | Criar, confirmar e cancelar convites para vaga temporária | `invites`, `audit_log` |
 | `/admin/acesso` | Convite e gestão de contas administrativas |
 | `/admin/acesso-negado` | Tela de acesso negado por papel |
 
@@ -65,7 +68,7 @@
 
 - Candidato recebe convite direto pra temporário (`invites`) sem passar
   pelo fluxo de candidatura — aceita/recusa/confirma pelo próprio fluxo de
-  `/processos` ou mensagens. **Decisão (Rodnei, 14/10/2026): o aceite de convite terá tela própria** — a construir; hoje o aceite só ocorre por `/processos` ou mensagens.
+  `/processos` ou mensagens. **Decisão (Rodnei, 14/10/2026): o aceite de convite tem tela própria** — `/convites/[id]`, construída em 14/10/2026 (ver `docs/specs/CONVITE_ACEITE.md`).
 - Candidato reprovado (`status = reprovado_cliente`) ou desistente —
   estado terminal, sem retomada automática.
 - Admin corrige vaga em vez de publicar/encerrar (`acao: "corrigir"` em

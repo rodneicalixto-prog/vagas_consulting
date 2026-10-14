@@ -70,6 +70,24 @@ export const InviteAdminSchema = z.object({
   telefone: z.string().nullable().optional(),
 });
 
+// Convites (vaga temporária)
+export const RespondInviteSchema = z.object({
+  invite_id: z.string().uuid("ID do convite inválido"),
+  acao: z.enum(["aceitar", "recusar"], { error: "Ação deve ser aceitar ou recusar" }),
+  motivo: z.string().max(200).nullable().optional(),
+});
+
+export const CreateInviteSchema = z.object({
+  candidate_id: z.string().uuid("Candidato inválido"),
+  job_id: z.string().uuid("Vaga inválida"),
+  validade_horas: z.coerce.number().int().min(1, "Mínimo 1 hora").max(168, "Máximo 7 dias").default(24),
+});
+
+export const DecideInviteSchema = z.object({
+  invite_id: z.string().uuid("ID do convite inválido"),
+  acao: z.enum(["confirmar", "cancelar"], { error: "Ação deve ser confirmar ou cancelar" }),
+});
+
 // Auditoria: dados de entrada base
 export const AuditLogQuerySchema = z.object({
   page: z.number().min(1).default(1),
@@ -91,3 +109,6 @@ export type ApplyJobInput = z.infer<typeof ApplyJobSchema>;
 export type SetConsentInput = z.infer<typeof SetConsentSchema>;
 export type InviteAdminInput = z.infer<typeof InviteAdminSchema>;
 export type AuditLogQueryInput = z.infer<typeof AuditLogQuerySchema>;
+export type RespondInviteInput = z.infer<typeof RespondInviteSchema>;
+export type CreateInviteInput = z.infer<typeof CreateInviteSchema>;
+export type DecideInviteInput = z.infer<typeof DecideInviteSchema>;

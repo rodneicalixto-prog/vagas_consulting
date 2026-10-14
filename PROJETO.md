@@ -929,6 +929,22 @@ sessões futuras.
     cron 02:00 UTC e pausa por inatividade (15/10); 1ª execução do backup
     agendado (19/10); teste de restauração; tela de aceite de convite.
 
+54. **Fluxo de convite construído, não publicado (14/10/2026)**, a pedido do
+    Rodnei ("vamos fazer as suas tarefas de ponta a ponta"). Achado: a
+    tabela `invites` existia mas **nenhum código a usava** (o PRD dizia
+    "construído"; corrigido). Entregue localmente: candidato `/convites` e
+    `/convites/[id]` (visualiza, aceita, recusa com motivo opcional, prazo
+    por `validade`, expirado calculado), atalho em `/processos`; admin
+    `/admin/convites` (criar com prazo em horas, confirmar `aceito`,
+    cancelar); server actions com verificação de dono/estado/validade,
+    escrita pelo cliente admin (sem política de UPDATE ao candidato) e
+    `audit_log`. Sem migration. Verificação: `tsc` limpo, eslint limpo,
+    `next build` local OK (rotas novas compilam), transições testadas no
+    banco de produção dentro de transação com ROLLBACK (0 linhas
+    persistidas). Spec: `docs/specs/CONVITE_ACEITE.md` v1.0 com P1–P5 nos
+    padrões sugeridos. Pendente: Rodnei validar P1–P5 e testar em tela;
+    push/deploy só com "sim". Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
