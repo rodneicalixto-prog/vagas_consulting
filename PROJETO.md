@@ -1148,6 +1148,15 @@ sessões futuras.
     entrevista. Spec `CARTEIRA_ATENDENTE.md` v0.3 completa. Falta o aval
     explícito para construir (migration `0023` aditiva). Nada construído.
 
+73. **Documentação da Fase 1 atualizada (14/10/2026)**: pedido do Rodnei
+    ("primeiro as documentações") antes de construir o núcleo da carteira.
+    Seis documentos em **v1.4** com a seção "Carteira por atendente e
+    vagas confidenciais": PRD (perfis, operador de confiança, sigilo), TRD
+    (helper único de escopo, riscos), Fluxo (escopo do operador), UI/UX (tela
+    Carteira, selo Confidencial), Schema (`company_assignments`,
+    `jobs.confidencial`) e Plano (Etapa 7, 6 passos). Índice `docs/README.md`
+    em 1.4. Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

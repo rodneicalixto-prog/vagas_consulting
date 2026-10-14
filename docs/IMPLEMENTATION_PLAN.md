@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > O app já está construído (18 migrations, 15+ commits, em produção). Este
@@ -77,6 +77,20 @@ de `get_runtime_errors` consultado manualmente.
    `PROJETO.md` (ver `PRD.md` → "Perguntas em aberto").
 7. 🟢 Atualizações de dependência de rotina (Next 16.3.4→16.3.6, React
    19.2→19.3, etc. — sem vulnerabilidade associada).
+
+## Etapa 7 — Carteira por atendente (v1.4, 14/10/2026)
+
+| Passo | Entrega | Verificação |
+|---|---|---|
+| 1 | Migration `0023`: `company_assignments` + `jobs.confidencial` | Aplicada; defaults não mudam o comportamento atual |
+| 2 | Helper `escopoDoUsuario` + testes | admin, operador, sem carteira, inativo, confiança |
+| 3 | Aplicar nas telas do operador | Teste por tela com 2 empresas |
+| 4 | Tela **Carteira** e conta operadora com atribuição | Fluxo ponta a ponta |
+| 5 | Sigilo: ocultar do operador comum e anonimizar ao candidato | Operador comum × de confiança |
+| 6 | Cadastrar Athenas e ePró, 2 operadores, conferir isolamento | Roteiro manual do Rodnei |
+
+Responsável: a Claude, com aprovação do Rodnei a cada publicação. Pronto =
+critérios de aceite de `specs/CARTEIRA_ATENDENTE.md` §7 cumpridos.
 
 ## Para cada tarefa do backlog
 

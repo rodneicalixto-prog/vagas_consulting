@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do código real do repositório (`vagas_consulting`),
@@ -58,6 +58,37 @@ vaga diretamente, elas solicitam e a equipe interna cadastra e publica.
 | Recuperação de senha | Acesso básico esperado | Essencial | ❌ **Não implementado** |
 | MFA administrativo | Segurança do painel (PII de candidatos) | Alta | ❌ **Não implementado** (campo `mfa_ativo` existe na UI, sem fluxo real) |
 | Agente de IA + WhatsApp (Evolution API + n8n) para triagem/vídeo-entrevista | Expande canal de atendimento | Próxima fase (Rodnei, 14/10/2026) | ⬜ Planejado, não iniciado (ver `PROJETO.md` seção 8.0) — Rodnei pediu explicitamente pra não começar sem plano próprio |
+
+## Carteira por atendente e vagas confidenciais (v1.4, 14/10/2026)
+
+**Problema.** O Rodnei capta vagas e faz as tratativas pela IA para duas
+empresas de ramos e CNPJs diferentes (**Athenas** e **ePró Estética**), cada uma
+com um operador próprio que dá continuidade. Hoje todo operador vê todas as
+empresas.
+
+**Objetivo.** Cada operador enxerga e trata **somente** a(s) empresa(s)
+atribuída(s) e ativa(s) para ele; **admin** e **superadmin** mantêm a visão geral.
+
+**Perfis**
+
+| Perfil | Escopo | Pode |
+|---|---|---|
+| superadmin | Tudo | Tudo, incluindo contas, carteira e confidencialidade |
+| admin | Tudo (como o superadmin) | Operar, publicar, ver valores e prestações |
+| operador | Só a carteira ativa | Cadastrar vaga (rascunho), atender candidatos e convites da carteira. **Não** publica, **não** vê valores/prestações |
+
+**Operador de confiança.** Profissional do Rodnei (ou outro) que também vê
+**vagas confidenciais** (gerência, altos cargos, sigilo da empresa). O
+funcionário da empresa cliente é operador comum e **não** as vê.
+
+**Vaga confidencial.** Oculta do operador comum (vaga, candidaturas, convites e
+contagens). Ao candidato aparece como "Empresa confidencial" até a candidatura
+chegar à etapa de entrevista.
+
+**Critérios de aceite:** ver `specs/CARTEIRA_ATENDENTE.md` (§7).
+
+**Fora do escopo agora:** multi-tenant, cobrança e white-label
+(`DIAGNOSTICO_MULTIUSUARIO_WHITELABEL.md`).
 
 ## Fora da versão 1
 

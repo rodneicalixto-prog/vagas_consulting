@@ -11,12 +11,12 @@ documentos afetados, antes do código.
 
 | # | Documento | Arquivo | Versão | App |
 |---|---|---|---|---|
-| 1 | PRD | [PRD.md](PRD.md) | 1.3 | v0.1.0 |
-| 2 | TRD | [TRD.md](TRD.md) | 1.3 | v0.1.0 |
-| 3 | Fluxo do app | [APP_FLOW.md](APP_FLOW.md) | 1.3 | v0.1.0 |
-| 4 | Briefing de UI/UX | [UI_UX_BRIEFING.md](UI_UX_BRIEFING.md) | 1.3 | v0.1.0 |
-| 5 | Schema do backend | [BACKEND_SCHEMA.md](BACKEND_SCHEMA.md) | 1.2 | v0.1.0 |
-| 6 | Plano de implementação | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | 1.3 | v0.1.0 |
+| 1 | PRD | [PRD.md](PRD.md) | 1.4 | v0.1.0 |
+| 2 | TRD | [TRD.md](TRD.md) | 1.4 | v0.1.0 |
+| 3 | Fluxo do app | [APP_FLOW.md](APP_FLOW.md) | 1.4 | v0.1.0 |
+| 4 | Briefing de UI/UX | [UI_UX_BRIEFING.md](UI_UX_BRIEFING.md) | 1.4 | v0.1.0 |
+| 5 | Schema do backend | [BACKEND_SCHEMA.md](BACKEND_SCHEMA.md) | 1.4 | v0.1.0 |
+| 6 | Plano de implementação | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | 1.4 | v0.1.0 |
 
 Planejamento: [DIAGNOSTICO_MULTIUSUARIO_WHITELABEL.md](DIAGNOSTICO_MULTIUSUARIO_WHITELABEL.md)
 (carteira por atendente, aluguel e white-label).

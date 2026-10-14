@@ -1,6 +1,6 @@
 # Schema do Backend
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Gerado a partir do schema **real** do Supabase (`tfipbxjslpxbaybpxsql`,
@@ -168,3 +168,21 @@ em `profiles` (soft — não é exclusão de dados). **Sem política de retenç�
 18 migrations em `supabase/migrations/`, aplicadas sequencialmente.
 `0003_seed_dados_exemplo.sql` populou dados de exemplo (não confirmado se
 ainda ativo em produção ou se foi limpo — **Confirmado em produção em 14/10/2026:** 1 empresa, 1 vaga (publicada), 2 perfis e nenhuma empresa com nome de seed — o seed de exemplo foi limpo).
+
+## Carteira por atendente (v1.4, 14/10/2026)
+
+### `company_assignments` (nova, migration `0023`)
+`id uuid`, `company_id uuid → companies.id`, `user_id uuid → auth.users.id`,
+`ativo boolean default true`, `acessa_confidenciais boolean default false`,
+`criado_por uuid null`, `created_at`. **Único** `(company_id, user_id)`.
+Sem política RLS para usuário comum (acesso só pelo servidor).
+
+### `jobs` (alteração)
+`confidencial boolean not null default false`.
+
+### Regras
+- Operador lê vaga/empresa/candidato/convite apenas se `company_id` ∈
+  atribuições ativas; confidencial exige `acessa_confidenciais = true`.
+- Desativar a atribuição corta o acesso sem apagar histórico.
+- Alterações de atribuição e de `confidencial` vão para `audit_log`.
+- Retenção: sem mudança.

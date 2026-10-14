@@ -1,6 +1,6 @@
 # Briefing de UI e UX
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir de `src/app/globals.css`, `src/app/manifest.ts`
@@ -85,6 +85,17 @@ componente em `ui.tsx` e `form-buttons.tsx`, sem um guia central.
 
 
 > **Regra de dinheiro (14/10/2026):** valores de remuneração são sempre em reais; o formulário tem prefixo R$ fixo e máscara, e o valor é salvo como `R$ 0.000,00`.
+
+## Carteira e sigilo na interface (v1.4, 14/10/2026)
+
+- **Tela Carteira** (superadmin): lista de empresas com os operadores, chave
+  Ativo/Inativo e seleção "Operador de confiança"; confirmação ao desativar.
+- **Selo "Confidencial"** nas vagas sigilosas do painel; formulário de vaga com
+  campo "Vaga confidencial" visível só para admin/superadmin.
+- **Operador**: empresa **pré-selecionada e travada** no cadastro de vaga; menu
+  sem as telas restritas; botão "Publicar" ausente.
+- **Candidato**: "Empresa confidencial" no lugar do nome; mesmo estilo de texto,
+  sem ícone enganoso. Contraste e foco conforme a meta WCAG 2.1 AA.
 
 ## Anexo A — Inventário de telas e estados vazios (14/10/2026)
 

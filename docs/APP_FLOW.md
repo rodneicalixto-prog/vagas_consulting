@@ -1,6 +1,6 @@
 # Fluxo do App (App Flow)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir da árvore de rotas real em `src/app/`.
@@ -63,6 +63,19 @@
 `/vagas/[id]/candidatura` (preenche e envia) → estado de sucesso
 (candidatura registrada, status inicial `recebida`) → acompanha em
 `/processos`.
+
+## Operador: escopo da carteira (v1.4, 14/10/2026)
+
+- `/admin` para **operador** mostra só empresas, vagas, candidatos, convites e
+  indicadores da carteira ativa. Admin/superadmin veem tudo.
+- Vaga criada por operador nasce em **rascunho**; só admin/superadmin publicam.
+- `Prestações`, `Leads`, `Black list`, `Denúncias`, `LGPD`, `Auditoria`,
+  `Acesso` e `Estratégico`: não aparecem para operador.
+- **Carteira** (superadmin): atribuir, ativar e desativar operadores por
+  empresa; marcar operador de confiança.
+- Vaga **confidencial**: oculta do operador comum; candidato vê "Empresa
+  confidencial" até a etapa de entrevista.
+- Acesso a registro fora da carteira → "Acesso não autorizado" + auditoria.
 
 ## Regras de entrada do candidato (atualizado em 14/10/2026)
 

@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -85,6 +85,23 @@ Next.js (Vercel) ── Server Actions / Route Handlers
 - Vercel BotID foi **removido** (commit `c35cc5f`) — suspeito de causar
   "This page couldn't load" em produção; sem substituto de bot-protection
   ativo hoje. **Decisão (14/10/2026): risco aceito no início**; revisar quando houver abuso de cadastro.
+
+## Autorização por carteira (v1.4, 14/10/2026)
+
+- **Nova tabela** `company_assignments` (N:N empresa × usuário, com `ativo` e
+  `acessa_confidenciais`) e **`jobs.confidencial`**. Migration `0023`,
+  **aditiva**, com padrões seguros (nada confidencial, nada atribuído).
+- **Um helper único** `escopoDoUsuario` devolve "sem filtro" (admin/superadmin)
+  ou a lista de empresas ativas do operador. Toda leitura e toda ação do painel
+  passa por ele; ações por `id` **verificam o pertencimento** (anti-IDOR).
+- O painel usa a chave de serviço, então a RLS não protege essas leituras: o
+  helper é a barreira, e há **teste por tela** com duas empresas.
+- Visibilidade de candidato derivada de `applications`/`invites` das vagas da
+  carteira; confidencial exige `acessa_confidenciais`.
+- Anonimato ao candidato: o nome da empresa é omitido no servidor (não no
+  cliente) enquanto a candidatura não chega à etapa de entrevista.
+- **Riscos:** esquecer o helper em alguma tela; contagens agregadas que vazam
+  dado de outra empresa. Mitigação: um único ponto de entrada e checklist de telas.
 
 ## Metas de desempenho e confiabilidade
 
