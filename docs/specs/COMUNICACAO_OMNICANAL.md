@@ -161,15 +161,46 @@ Critérios de aceite da Fase 1: (a) operador só vê conversas da carteira;
 envios; (d) mensagem recebida aparece no inbox em até 5 s; (e) nenhuma
 credencial no repositório (variáveis de ambiente).
 
-## 11. Decisões pedidas ao Rodnei
+## 11. Decisões do Rodnei (14/10/2026)
 
-| # | Pergunta | Recomendação |
+| # | Tema | Decisão |
 |---|---|---|
-| E1 | Começar pelo WhatsApp via Evolution (já existente) ou direto pela API oficial da Meta? | Evolution agora, com plano de migrar; oficial para disparo em massa |
-| E2 | Qual número/instância é o canal da plataforma? Um por empresa cliente ou um comum? | Um por empresa (sigilo e marca), começando por um piloto |
-| E3 | Provedor de e-mail: Resend ou Amazon SES? Domínio de envio? | Resend para começar; domínio próprio de envio |
-| E4 | SMS e Telegram entram agora ou só depois da Fase 5? | Depois da Fase 5 |
-| E5 | Qual modelo de IA e teto mensal de custo? | Modelo econômico para triagem; teto fixo por mês |
-| E6 | O agente começa em modo sugestão (operador aprova)? | Sim, por 2 a 4 semanas |
-| E7 | Operador pode disparar para várias pessoas ou só 1 a 1? | Só 1 a 1; massa apenas admin |
-| E8 | Prazo de guarda das conversas? | 12 meses após o encerramento da candidatura |
+| E1 | Canal inicial de WhatsApp | **Evolution API já existente** (migrar para a API oficial depois, se necessário) |
+| E2 | Números | **Um número por empresa**, usado pelo operador daquela empresa |
+| E3 | Provedor de e-mail | **Resend como candidato**; ainda não avaliado pelo Rodnei (avaliar custo, entregabilidade e domínio antes de contratar) |
+| E4 | SMS e Telegram | **Depois da Fase 5**; uso como reforço quando o candidato para de responder, **por vontade do operador** (não automático) |
+| E5 | Modelos de IA | **OpenAI e Claude**, e **Groq**, por conta do superadmin no início. A plataforma deve ficar **pronta para cada empresa cadastrar a própria chave** (BYOK) |
+| E6 | Modo sugestão do agente | Explicado em 14/10; decisão **pendente** (ver abaixo) |
+| E7 | Disparo | **Operador só 1 a 1**; massa apenas admin |
+| E8 | Guarda das conversas | **12 meses no Supabase** (após o encerramento da candidatura); depois, arquivo no **Google Drive** sem prazo definido. Ressalva LGPD abaixo |
+
+### Consequências para o projeto
+
+- **Chaves de IA por empresa:** a tabela `ai_provider_keys` (empresa, provedor,
+  chave **cifrada**, teto mensal, status) entra na Fase 3. A chave nunca é
+  gravada em texto puro, nunca volta para o navegador e nunca vai em log;
+  uso por Supabase Vault ou criptografia em coluna com chave de servidor.
+  Sem chave da empresa, usa a do superadmin e o custo é apontado ao
+  superadmin.
+- **Teto mensal de custo:** por empresa e por provedor; ao atingir, o agente
+  pausa e avisa o superadmin. **Valor do teto: pendente.**
+- **Roteamento de modelo:** modelo econômico para triagem e mensagens
+  curtas; modelo mais forte só para resumo e casos ambíguos.
+- **SMS/Telegram como reforço:** botão "Reforçar por SMS/Telegram" na conversa,
+  habilitado só se o candidato tem opt-in desse canal e não respondeu em N
+  horas; nunca dispara sozinho.
+- **Número por empresa:** `channel_accounts` já prevê uma conta por empresa;
+  o operador só usa a conta da empresa da conversa.
+
+### Pendentes
+
+1. Teto mensal de custo (valor) e se há teto por empresa.
+2. "Grock" é **Groq** (modelos Llama, o que o n8n do Rodnei já usa) ou **xAI
+   Grok**? A spec assume Groq.
+3. Avaliação do Resend (custo e domínio de envio).
+4. Modo sugestão do agente (E6).
+5. **Arquivo "eterno" no Drive e a LGPD:** guardar dado pessoal sem prazo
+   conflita com o princípio da necessidade/limitação. Proposta: no Drive,
+   guardar a conversa **sem identificação direta** (nome, telefone e e-mail
+   trocados por código) ou com **prazo final** (ex.: 5 anos), e excluir a
+   pedido do titular também no Drive. Decisão do Rodnei pendente.

@@ -1229,6 +1229,13 @@ sessões futuras.
 81. **Kanban adiado (14/10/2026)**: por decisão do Rodnei, o arrastar
     cartão só será definido com o agente de IA, que conduzirá o processo
     inicial; o operador entra na última etapa. Kanban nasce só leitura.
+82. **Decisões da comunicação omnicanal (14/10/2026)**: WhatsApp pela
+    Evolution existente; um número por empresa; e-mail via Resend a
+    avaliar; SMS/Telegram depois da Fase 5 como reforço manual; IA com
+    OpenAI, Claude e Groq por conta do superadmin e chave própria por
+    empresa (BYOK, cifrada); operador só 1 a 1. Guarda: 12 meses
+    no Supabase e depois Drive. Pendentes: teto mensal, Groq×Grok, modo
+    sugestão (E6) e retenção do arquivo no Drive (LGPD).
 
 ## 3. Escopo do MVP (revisado)
 
