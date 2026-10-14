@@ -993,6 +993,17 @@ sessões futuras.
     tabelas RLS sem política por desenho; proteção de senha vazada exige
     Pro). Arquivo `0020_...sql` adicionado ao repo. Commit local.
 
+60. **Preparação do teste de restauração (14/10/2026)**: o Rodnei criou um
+    projeto de teste (ref `tfkdobclqfnuqxfbqjwt`), mas o MCP do Supabase só
+    enxerga a org SOS MKT (2 projetos: Vagas Consulting e um inativo
+    antigo) e **não tem permissão** nesse ref: ele está em outra
+    organização. Nada foi aplicado nele. Criado
+    `scripts/backup/restore-vagas.mjs` (recusa produção e destino não
+    vazio; só roda local; nunca imprime dados) e documentado em
+    `docs/BACKUP.md`. Pendente: aplicar migrations 0001–0020 no projeto de
+    teste (por CLI do Rodnei ou reautenticando o MCP com a outra org),
+    rodar o script, registrar o resultado e apagar o projeto. Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

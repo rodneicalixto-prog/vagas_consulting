@@ -79,6 +79,25 @@ linhas que o backup, nunca menos). Resultado esperado: `RESULTADO: backup
 - **Conta usada:** a conta autorizada no rclone em 14/10/2026 é `sosmktcomercial@gmail.com` e tinha 15 GiB
   com 13,6 GiB livres. Primeiro envio bem-sucedido em 14/10/2026 às 14:23.
 
+## Teste de restauração com script (`restore-vagas.mjs`)
+
+1. Crie um projeto Supabase **vazio e descartável** e aplique as migrations
+   0001–0020 nele (`supabase link` + `supabase db push`, ou pelo SQL Editor).
+2. No PowerShell, na raiz do projeto:
+
+   ```powershell
+   $env:RESTORE_SUPABASE_URL="https://<ref-de-teste>.supabase.co"
+   $env:RESTORE_SERVICE_ROLE_KEY="<service_role do projeto de TESTE>"
+   node scripts/backup/restore-vagas.mjs
+   ```
+
+3. Esperado: `RESULTADO: restauração completa.` com `backup = restaurado`
+   em todas as tabelas.
+4. **Apague o projeto de teste** (contém dados pessoais reais).
+
+O script recusa rodar contra a produção e contra destino não vazio. Cria
+contas placeholder para as chaves de `auth.users` (limite conhecido).
+
 ## Limites conhecidos
 
 - **Auth:** `auth.users` (e-mails/senhas) não está no schema `public` e **não
