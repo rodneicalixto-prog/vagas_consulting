@@ -813,6 +813,14 @@ sessões futuras.
     `Pagination.tsx`. `tsc --noEmit` limpo. Restam 4 warnings de variável
     não usada (`SetConsentInput`, `ApplyJobInput`, `logDelete`, `pages`).
 
+42. **Push de 184e0b7 + deploy (14/10/2026)**: autorizado pelo Rodnei
+    ("prossiga"). `7f49271..184e0b7` em `main`. Deploy
+    `dpl_29M4SjqaDvc3S9GMYpzSsvVnsMDv` `READY` em `sosvagas.sosmkt.com.br`.
+    `/login` 200, `/admin/login` 200, `/` 307; sem runtime errors em 1h.
+    Banco confirmado: função, coluna e enum do cron existem (item 40).
+    Pendente: teste manual de `/admin/auditoria` e candidatura; 1º disparo
+    do cron (02:00 UTC); Leaked Password Protection; 22 `[A PREENCHER]`.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
