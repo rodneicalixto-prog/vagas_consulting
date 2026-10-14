@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { exibirRemuneracao } from "@/lib/money";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { modalidadeLabel, modalidadeTagClass } from "@/lib/format";
@@ -64,7 +65,7 @@ export default async function VagaDetalhePage({
         {vaga.remuneracao_texto && (
           <div>
             <div className="text-[10px] font-bold text-text-3">Remuneração</div>
-            <div className="text-[15px] font-extrabold text-navy">{vaga.remuneracao_texto}</div>
+            <div className="text-[15px] font-extrabold text-navy">{exibirRemuneracao(vaga.remuneracao_texto)}</div>
           </div>
         )}
         <Link

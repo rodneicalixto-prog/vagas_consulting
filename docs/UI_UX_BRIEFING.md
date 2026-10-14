@@ -84,6 +84,8 @@ componente em `ui.tsx` e `form-buttons.tsx`, sem um guia central.
 - Nenhum ativo visual pendente conhecido (Rodnei, 14/10/2026); reavaliar quando houver a campanha de divulgação.
 
 
+> **Regra de dinheiro (14/10/2026):** valores de remuneração são sempre em reais; o formulário tem prefixo R$ fixo e máscara, e o valor é salvo como `R$ 0.000,00`.
+
 ## Anexo A — Inventário de telas e estados vazios (14/10/2026)
 
 Gerado a partir de `src/app/**/page.tsx`. A coluna "Estado vazio" é o texto

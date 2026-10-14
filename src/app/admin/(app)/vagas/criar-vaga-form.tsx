@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { criarVaga } from "./actions";
 import { SubmitButton } from "@/components/form-buttons";
+import { centavosParaReais, exibirRemuneracao, formatBRL } from "@/lib/money";
 
 type VagaDefaults = {
   modalidade: string;
@@ -31,7 +32,7 @@ export function CriarVagaForm({
   const onEmpresaChange = (companyId: string) => {
     const defaults = defaultsByCompany[companyId];
     if (defaults) {
-      setCampos(defaults);
+      setCampos({ ...defaults, remuneracao_texto: exibirRemuneracao(defaults.remuneracao_texto) });
       setPreenchidoAutomaticamente(true);
     } else {
       setPreenchidoAutomaticamente(false);
@@ -87,13 +88,32 @@ export function CriarVagaForm({
         onChange={(e) => setCampos((c) => ({ ...c, local: e.target.value }))}
         className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm"
       />
-      <input
-        name="remuneracao_texto"
-        placeholder="Remuneração"
-        value={campos.remuneracao_texto}
-        onChange={(e) => setCampos((c) => ({ ...c, remuneracao_texto: e.target.value }))}
-        className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm md:col-span-2"
-      />
+      <div className="md:col-span-2">
+        <label htmlFor="remuneracao_visivel" className="mb-1 block text-[12px] font-extrabold text-text-2">
+          Remuneração (em reais)
+        </label>
+        <div className="flex items-center rounded-lg border border-border bg-bg focus-within:border-navy">
+          <span className="select-none border-r border-border px-3 py-2.5 text-sm font-extrabold text-text-2">
+            R$
+          </span>
+          <input
+            id="remuneracao_visivel"
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="0,00"
+            value={campos.remuneracao_texto.replace(/^R\$\s?/, "")}
+            onChange={(e) => {
+              const digitos = e.target.value.replace(/\D/g, "");
+              setCampos((c) => ({
+                ...c,
+                remuneracao_texto: digitos ? formatBRL(centavosParaReais(digitos)) : "",
+              }));
+            }}
+            className="w-full bg-transparent px-3 py-2.5 text-sm outline-none"
+          />
+        </div>
+        <input type="hidden" name="remuneracao_texto" value={campos.remuneracao_texto} />
+      </div>
       <textarea
         name="descricao"
         placeholder="Descrição"

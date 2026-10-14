@@ -12,6 +12,7 @@ import {
   formatPrazo,
 } from "@/lib/convites";
 import { responderConvite } from "./actions";
+import { exibirRemuneracao } from "@/lib/money";
 
 const MOTIVOS = [
   "Não tenho disponibilidade nesse dia/horário",
@@ -113,7 +114,7 @@ export default async function ConviteDetalhePage({
             </div>
             <div>
               <dt className="font-extrabold text-text-2">Remuneração</dt>
-              <dd>{convite.jobs?.remuneracao_texto ?? "A combinar"}</dd>
+              <dd>{exibirRemuneracao(convite.jobs?.remuneracao_texto) || "A combinar"}</dd>
             </div>
             <div className="col-span-2">
               <dt className="font-extrabold text-text-2">Responder até</dt>

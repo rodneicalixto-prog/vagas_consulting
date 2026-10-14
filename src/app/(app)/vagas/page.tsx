@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { exibirRemuneracao } from "@/lib/money";
 import { createClient } from "@/lib/supabase/server";
 import { modalidadeLabel, modalidadeTagClass, timeAgo, companyInitial } from "@/lib/format";
 import { Tag } from "@/components/ui";
@@ -73,7 +74,7 @@ export default async function VagasPage() {
 
                 <div className="flex items-center justify-between">
                   {v.remuneracao_texto ? (
-                    <div className="text-[13px] font-extrabold text-navy">{v.remuneracao_texto}</div>
+                    <div className="text-[13px] font-extrabold text-navy">{exibirRemuneracao(v.remuneracao_texto)}</div>
                   ) : (
                     <div className="text-[12.5px] font-semibold text-text-3">A combinar</div>
                   )}

@@ -1044,6 +1044,18 @@ sessões futuras.
     Pendente: teste manual do convite com essa vaga; decidir se muda o
     formulário. Registro feito só por leitura do banco.
 
+64. **Remuneração fixa em reais (14/10/2026)**, pedido do Rodnei: o campo
+    de remuneração da vaga agora tem prefixo **R$** fixo e máscara de
+    centavos (digitar `235400` mostra `2.354,00`); o servidor valida e grava
+    de forma canônica `R$ 2.354,00` (coluna continua texto, sem migration);
+    valor inválido é recusado ("Informe a remuneração em reais…"). Valores
+    antigos (`2354,00`) passam a ser **exibidos** como `R$ 2.354,00` no app
+    do candidato, no convite e no painel, **sem alterar linhas do banco**.
+    Novos arquivos: `src/lib/money.ts`. Verificação: helpers testados com 11
+    entradas, `tsc` e `eslint` limpos, `next build` OK. Rascunhos
+    "ajudante de logistica" (efetiva) confirmados como `encerrada`. Fora
+    do escopo, não feito: período da remuneração (mês/diária). Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

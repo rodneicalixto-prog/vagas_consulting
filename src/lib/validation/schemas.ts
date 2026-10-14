@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizarRemuneracao } from "@/lib/money";
 
 // Empresas
 export const CreateCompanySchema = z.object({
@@ -22,7 +23,25 @@ export const CreateJobSchema = z.object({
   local: z.string().nullable().optional(),
   descricao: z.string().nullable().optional(),
   requisitos: z.string().nullable().optional(),
-  remuneracao_texto: z.string().nullable().optional(),
+  // Sempre em reais; gravado como "R$ 2.354,00".
+  remuneracao_texto: z
+    .string()
+    .nullable()
+    .optional()
+    .superRefine((v, ctx) => {
+      try {
+        normalizarRemuneracao(v);
+      } catch (e) {
+        ctx.addIssue({ code: "custom", message: (e as Error).message });
+      }
+    })
+    .transform((v) => {
+      try {
+        return normalizarRemuneracao(v);
+      } catch {
+        return null;
+      }
+    }),
 });
 
 export const DecideJobSchema = z.object({

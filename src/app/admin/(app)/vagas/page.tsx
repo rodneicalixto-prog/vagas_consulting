@@ -1,4 +1,5 @@
 import { Pagination } from "@/components/Pagination";
+import { exibirRemuneracao } from "@/lib/money";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decidirVaga } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
@@ -104,7 +105,7 @@ export default async function CadastroDeVagasPage({
                   )}
                   {job.remuneracao_texto && (
                     <p className="mt-1 text-[11.5px] text-text-2">
-                      <b className="text-text">Remuneração:</b> {job.remuneracao_texto}
+                      <b className="text-text">Remuneração:</b> {exibirRemuneracao(job.remuneracao_texto)}
                     </p>
                   )}
 
