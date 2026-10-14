@@ -1218,8 +1218,8 @@ sessões futuras.
 79. **Projeto de teste apagado (14/10/2026)**: o Rodnei apagou o projeto
     `testes-vagas` (ref `tfkdobclqfnuqxfbqjwt`, org Plataforma_calixto), que
     guardava cópia com dados reais. Confirmado pelo painel da organização
-    (só resta o projeto do Priscilla Klein). **Pendente:** `npx supabase
-    logout` — a CLI ainda estava autenticada na verificação seguinte.
+    (só resta o projeto do Priscilla Klein). **Concluído:** `npx supabase logout` feito pelo
+    Rodnei e confirmado (`AccessTokenRequiredError` na CLI).
 
 ## 3. Escopo do MVP (revisado)
 
