@@ -789,6 +789,19 @@ sessões futuras.
     - **Regra do Rodnei (14/10/2026):** registrar tudo após cada ação e
       trazer o próximo passo por prioridade para zerar as pendências.
 
+40. **Migration do cron confirmada no banco de produção (14/10/2026)**:
+    consulta de leitura via MCP nativo do Supabase (reautenticado na org
+    SOS MKT, `project_id` direto) em `tfipbxjslpxbaybpxsql`:
+    `funcao_existe=1`, `coluna_expira_em=1`, `enum_arquivada=1`.
+    `list_migrations` termina em `auto_arquivamento_vagas_enum_e_coluna` e
+    `auto_arquivamento_vagas_funcao` (28/09). Projeto estava pausado
+    (`COMING_UP`) e voltou a `ACTIVE_HEALTHY`. Lição: o MCP nativo ficou
+    com token escopado à org errada (`equipalok` / org pessoal); resolvido
+    reautenticando via `/mcp` com `rodnei@calixtosolucoes.com.br` e
+    marcando a org SOS MKT. Composio (5 contas Supabase) e Chrome não
+    tinham acesso a essa org. Pendente: 1º disparo real do cron
+    (02:00 UTC) e arquivo `0018_...sql` do repo ainda diverge do aplicado.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
