@@ -106,7 +106,9 @@ export async function decidirVaga(formData: FormData) {
   const validated = validateFormData<DecideJobInput>(DecideJobSchema, formData);
   const { job_id: jobId, acao, motivo } = validated;
 
-  const { user, role } = await requireInternalUser(acao === "publicar" ? "jobs.publish" : "jobs.manage");
+  // Colocar no ar, pausar e reativar mexem na publicação: só quem publica.
+  const mexeNaPublicacao = acao === "publicar" || acao === "pausar" || acao === "reativar";
+  const { user, role } = await requireInternalUser(mexeNaPublicacao ? "jobs.publish" : "jobs.manage");
 
   // Carteira: a vaga precisa estar no escopo (e visível, se confidencial).
   const escopo = await obterEscopo(user.id, role);
@@ -120,7 +122,22 @@ export async function decidirVaga(formData: FormData) {
     await requireInternalUser("jobs.publish");
   }
 
-  const status = acao === "publicar" ? "publicada" : acao === "encerrar" ? "encerrada" : "rascunho";
+  if (!before) throw new Error("Vaga não encontrada.");
+  if (acao === "pausar" && before.status !== "publicada") {
+    throw new Error("Só é possível pausar uma vaga publicada.");
+  }
+  if (acao === "reativar" && before.status !== "pausada") {
+    throw new Error("Só é possível reativar uma vaga pausada.");
+  }
+
+  const status =
+    acao === "publicar" || acao === "reativar"
+      ? "publicada"
+      : acao === "pausar"
+        ? "pausada"
+        : acao === "encerrar"
+          ? "encerrada"
+          : "rascunho";
 
   const { data: after, error } = await admin
     .from("jobs")
@@ -129,9 +146,11 @@ export async function decidirVaga(formData: FormData) {
       motivo_decisao: motivo || null,
       decidido_por: user.id,
       decidido_em: new Date().toISOString(),
+      // Reativar preserva a data original de publicação (e o tempo em aberto).
       publicada_em: acao === "publicar" ? new Date().toISOString() : undefined,
     })
     .eq("id", jobId)
+    .eq("status", before.status)
     .select()
     .single();
 

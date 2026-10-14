@@ -1326,6 +1326,16 @@ sessões futuras.
     é levado à etapa que falta ao agir. Voltar do Termos agora vai à
     home. Spec `docs/specs/VITRINE_PUBLICA.md`. 37 testes; teste de
     fumaça local. Pendente: SEO da vaga, busca real e paginação.
+98. **Cadastro de vagas em cascata, com pausar e reativar (14/10/2026)**:
+    pedido do Rodnei ("poluído, ocupa muito espaço"). A tela virou uma
+    cascata empresa → vagas (linhas compactas que abrem para detalhes e
+    decisão), chips por situação com contagem e busca, e "+ Nova vaga"
+    recolhido. Ordem dentro da empresa: abertas, pausadas, pendentes e
+    canceladas. Novas ações auditadas **Pausar** e **Reativar** (só quem
+    publica; reativar preserva a data de publicação); "Encerrar" passou a
+    se chamar **Cancelar vaga** e encerradas aparecem como Canceladas,
+    com "Reabrir como rascunho". Sem migration (status `pausada` já
+    existia). Sem paginação: até 500 vagas por carga.
 
 ## 3. Escopo do MVP (revisado)
 

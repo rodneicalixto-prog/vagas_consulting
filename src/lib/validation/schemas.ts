@@ -46,7 +46,9 @@ export const CreateJobSchema = z.object({
 
 export const DecideJobSchema = z.object({
   job_id: z.string().uuid("ID da vaga inválido"),
-  acao: z.enum(["publicar", "encerrar", "corrigir"], { error: "Ação deve ser publicar, encerrar ou corrigir" }),
+  acao: z.enum(["publicar", "encerrar", "corrigir", "pausar", "reativar"], {
+    error: "Ação deve ser publicar, encerrar, corrigir, pausar ou reativar",
+  }),
   motivo: z.string().nullable().optional(),
 });
 
