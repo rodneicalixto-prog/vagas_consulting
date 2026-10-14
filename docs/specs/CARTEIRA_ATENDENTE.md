@@ -1,6 +1,6 @@
 # Especificação — Carteira por atendente (Fase 1)
 
-> **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec v0.2 · **Data:** 14/10/2026 · **Status:** D1–D3 decididas; falta confirmar o sigilo de vagas (D5/D6) e o aval para construir
+> **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec v0.3 · **Data:** 14/10/2026 · **Status:** D1–D6 decididas; falta só o aval explícito para construir (a migration 0023 altera o banco de produção)
 
 ## 1. Contexto e objetivo
 
@@ -103,15 +103,28 @@ tela (ver §7).
 6. Teste automatizado do helper (escopo, admin, operador sem carteira) e roteiro
    manual com 2 operadores reais antes de publicar.
 
+## 7.1 Regras de sigilo (D5/D6) — detalhe
+
+- Vaga com `confidencial = true`:
+  - **Painel:** oculta de operador sem `acessa_confidenciais`, inclusive suas
+    candidaturas, convites e contagens (nas telas e nos totais da visão geral).
+  - **Candidato:** em listas, detalhe e convite, o nome da empresa vira
+    "Empresa confidencial". Quando a candidatura do candidato chega a
+    `entrevista`, `teste`, `proposta` ou `contratado`, o nome real é mostrado.
+  - **Convite:** a mesma regra vale para a tela do convite.
+- Marcar/desmarcar `confidencial`: só admin e superadmin.
+- Auditoria: mudança de `confidencial` e de `acessa_confidenciais` vai para `audit_log`.
+
 ## 8. Plano de implementação
 
 | Passo | Entrega | Verificação |
 |---|---|---|
-| 1 | Migration `0023` (`company_assignments`) | Aplicada em teste e em produção (aditiva) |
+| 1 | Migration `0023`: tabela `company_assignments` (com `acessa_confidenciais`) e `jobs.confidencial` | Aplicada em produção (aditiva, defaults seguros: nada fica confidencial nem atribuído) |
 | 2 | Helper `escopoDoUsuario` + testes | Casos: admin, operador, sem carteira, inativo |
 | 3 | Aplicar nas telas e ações do operador (empresas, vagas, candidatos, convites, visão geral) | Teste por tela com 2 empresas |
 | 4 | Tela **Carteira** + convite de conta operadora com atribuição | Fluxo ponta a ponta |
-| 5 | Cadastrar Athenas e ePró, criar os 2 operadores e conferir isolamento | Roteiro manual do Rodnei |
+| 5 | Sigilo: ocultar vaga confidencial do operador comum e anonimizar a empresa ao candidato | Teste com operador comum × operador de confiança |
+| 6 | Cadastrar Athenas e ePró, criar os 2 operadores e conferir isolamento | Roteiro manual do Rodnei |
 
 ## 8.1 Vagas confidenciais e operador de confiança (novo, de D2)
 
@@ -138,13 +151,10 @@ Como o vínculo é N:N, o mesmo profissional de confiança pode ser atribuído �
 | D2 | Quem é o operador? | **Funcionário da empresa cliente (padrão) ou profissional do Rodnei**, este principalmente em gerência, altos cargos e vagas sigilosas |
 | D3 | Operador vê prestações e valores? | **Não.** Só admin (e superadmin) |
 
-### Pendentes
-| # | Pergunta | Sugestão |
-|---|---|---|
-| D5 | "Sigilo" significa que a vaga **não pode ser vista pelo operador funcionário da empresa**, apenas por você, admin e o profissional de confiança? | Sim (campo `confidencial` + `acessa_confidenciais`) |
-| D6 | Em vaga confidencial o **candidato** também não deve ver o nome da empresa? | Sim, mostrar "Empresa confidencial" até a etapa de entrevista |
+| D5 | Vaga sigilosa fica oculta do operador funcionário da empresa? | **Sim.** Só admin, superadmin e operador de confiança (`acessa_confidenciais`) a veem, com candidaturas e convites |
+| D6 | O candidato não vê o nome da empresa em vaga confidencial? | **Sim.** Mostra "Empresa confidencial"; o nome real aparece quando a candidatura chega à etapa **entrevista** ou além |
 
-### Menores (já com sugestão)
+### Menor (com sugestão, vale como padrão)
 | # | Pergunta | Sugestão |
 |---|---|---|
 | D4 | Quem **reatribui** carteira? | Só superadmin |

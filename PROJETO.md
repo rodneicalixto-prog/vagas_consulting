@@ -1141,6 +1141,13 @@ sessões futuras.
     esconde da operação da empresa?) e D6 (candidato não vê o nome da
     empresa?). Nada construído.
 
+72. **D5 e D6 decididas (14/10/2026)**: o Rodnei respondeu "sim para as
+    duas". Vaga confidencial fica oculta do operador sem
+    `acessa_confidenciais` (só admin, superadmin e operador de confiança) e
+    o candidato vê "Empresa confidencial" até a candidatura chegar à etapa
+    entrevista. Spec `CARTEIRA_ATENDENTE.md` v0.3 completa. Falta o aval
+    explícito para construir (migration `0023` aditiva). Nada construído.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
