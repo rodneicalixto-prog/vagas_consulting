@@ -705,6 +705,90 @@ sessões futuras.
     de "Leaked Password Protection" desativado, pendência separada, só
     ativável no painel do Supabase). Build e lint limpos.
 
+38. **Análise geral + migration `0018` corrigida e aplicada + 6 documentos
+    de planejamento gerados (28/09/2026)** — sessão pedida como "análise e
+    correção urgente":
+    - **Projeto Supabase estava `INACTIVE`** (pausado por inatividade,
+      tier Free) quando a sessão começou — achado ao tentar regenerar
+      `types.ts`. `restore_project` via MCP falhou com `permission denied`
+      (a conta que o MCP usa, `rodneicalixto@hotmail.com`, nem aparece em
+      `list_organizations` da org "SOS MKT" — mesmo padrão já documentado
+      pra outras configs). Reativado manualmente pelo Rodnei no Studio,
+      logado como dono da org.
+    - **`src/lib/supabase/types.ts` estava desatualizado desde o commit
+      `feba760` (10/09)** — não refletia as migrations `0017` e `0018`.
+      Regenerado via `generate_typescript_types`.
+    - **Causa raiz real de `expira_em`/arquivamento nunca ter funcionado**:
+      a migration `0018_auto_arquivamento_vagas.sql`, como commitada,
+      **nunca tinha sido aplicada em produção** — `list_migrations` parava
+      em `0017`; a função `arquivo_automatico_vagas` não existia no banco
+      (`pg_proc` vazio). O cron `/api/cron/archive-jobs`, em produção
+      desde o commit `74b2ba8` (22/09), estava rodando todo dia e
+      falhando silenciosamente. **A causa de nunca ter sido aplicada não
+      era só falta de execução — a migration como escrita é inválida**:
+      Postgres recusa (`55P04: unsafe use of new value`) usar um valor de
+      enum novo (`ALTER TYPE ... ADD VALUE 'arquivada'`) na mesma
+      transação em que a função que o usa é criada. Corrigido aplicando em
+      duas migrations separadas (`auto_arquivamento_vagas_enum_e_coluna` +
+      `auto_arquivamento_vagas_funcao`), com autorização explícita do
+      Rodnei a cada ação de risco (produção). Confirmado com `execute_sql`
+      direto: função existe, coluna `expira_em` existe, enum `status_vaga`
+      tem `arquivada`. **O arquivo `0018_...sql` no repo continua com a
+      versão antiga (inválida) — não reflete como o schema foi de fato
+      aplicado; considerar corrigir o arquivo ou adicionar uma nota.**
+      `types.ts` regenerado de novo depois da correção.
+    - **6 documentos de planejamento gerados** em `docs/` (PRD, TRD,
+      App Flow, Briefing UI/UX, Schema do Backend, Plano de Implementação)
+      — rascunho a partir do código real, `PROJETO.md` e `CLAUDE.md`
+      (não do zero), com perguntas genuinamente em aberto marcadas como
+      tal em vez de inventadas. Ver `docs/PRD.md` → "Perguntas em aberto"
+      pra lista completa.
+    - **2 achados novos, não corrigidos ainda** (fora do escopo pedido):
+      `src/lib/validation/schemas.ts` e `src/lib/security/audit.ts` usam a
+      API `errorMap` do Zod 3, descontinuada no Zod 4 (`zod@4.6.2`
+      instalado) — `tsc --noEmit` falha de verdade, o que quebra
+      `next build` com type-check estrito. E `npm run build` local
+      (Windows) trava com crash do binário nativo do Turbopack
+      compilando `globals.css` (`0xc0000142`) — não confirmado se afeta o
+      build da Vercel (Linux) ou é isolado deste ambiente.
+    - `npm audit`: 0 vulnerabilidades. `npm outdated`: só patch/minor,
+      nada crítico (Next 16.3.4→16.3.6, React 19.2→19.3,
+      `@supabase/supabase-js` 2.116→2.117.2, `ai` 7.0.97→7.0.119).
+
+39. **Regra dos seis documentos + build de produção destravado + deploy
+    (14/10/2026)**:
+    - **Regra permanente (Rodnei):** nenhum app é construído sem PRD, TRD,
+      Fluxo do app, Briefing UI/UX, Schema do backend e Plano de
+      implementação, versionados, vinculados a projeto e versão, e lidos
+      antes. Salva no kit KPA (`04_DIRETRIZES/pre-build-docs.md`, commit
+      `9bd2698`). Aqui: `docs/` ganhou cabeçalho de versão (doc v1.1, app
+      v0.1.0) e `docs/README.md` (índice) — commit `6395a7f`.
+    - **Descoberta:** os deploys de `cb0cb2b` (5 melhorias P1) e `74b2ba8`
+      (cron de auto-arquivamento) terminaram em `ERROR` na Vercel; produção
+      seguia servindo um deploy antigo. Causa: `tsc` falhava (Zod 4 não
+      aceita `errorMap`; `z.record(z.boolean())` inválido; capability
+      `"auditoria.view"` inexistente; tipos Json).
+    - **Bug de runtime escondido por trás do de build:** `audit.ts` e a
+      página `/admin/auditoria` usavam colunas inexistentes em `audit_log`
+      (`criado_em`, `detalhes`; as reais são `created_at`, `depois`).
+      Corrigido; `detalhes` agora é gravado dentro de `depois`.
+    - **Correção:** commit `7f49271` (schemas.ts, audit.ts, auditoria page,
+      export route, candidatura/actions.ts, types.ts regenerado).
+      `tsc --noEmit` limpo. Push autorizado pelo Rodnei; deploy
+      `dpl_2hZKtM5pXhKf7T8E2Vr9LSuYapmJ` ficou `READY` em
+      `sosvagas.sosmkt.com.br`. Smoke test: `/login` 200, `/admin/login`
+      200, `/api/cron/archive-jobs` 307 sem auth; sem runtime errors em 1h.
+    - **Pendências abertas:** (a) reconfirmar no banco que
+      `arquivo_automatico_vagas` existe e conferir o 1º disparo do cron
+      (02:00 UTC); (b) teste manual de `/admin/auditoria` e candidatura;
+      (c) 6 erros de lint `no-explicit-any` (`audit.ts`,
+      `validate-form.ts`); (d) 22 `[A PREENCHER]` em `docs/`; (e) arquivo
+      `0018_...sql` no repo diverge do que foi aplicado (enum + função em
+      duas migrations); (f) Leaked Password Protection desativado no
+      Supabase.
+    - **Regra do Rodnei (14/10/2026):** registrar tudo após cada ação e
+      trazer o próximo passo por prioridade para zerar as pendências.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
