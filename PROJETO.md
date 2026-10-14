@@ -921,6 +921,14 @@ sessões futuras.
     rodneicalixto@gmail.com não serve (sem espaço). Dados pessoais:
     manter a pasta privada, sem compartilhamento.
 
+53. **Push de a7e609c + deploy (14/10/2026)**: autorizado pelo Rodnei
+    ("sim"). `76d2ad9..a7e609c` em `main` (script e doc de backup, docs
+    v1.3, logs 48–52). Deploy `dpl_9TyTvHXDNMxqMtd3WdLmrwQrQ1kd` `READY`;
+    `/login` 200, `/admin/login` 200, `/` 307; sem runtime errors em 1h.
+    Pendente: teste manual de `/admin/auditoria` e candidatura (Rodnei);
+    cron 02:00 UTC e pausa por inatividade (15/10); 1ª execução do backup
+    agendado (19/10); teste de restauração; tela de aceite de convite.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
