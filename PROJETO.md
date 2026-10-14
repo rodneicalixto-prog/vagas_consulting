@@ -849,6 +849,15 @@ sessões futuras.
     dourado (6,25:1) — esses dois itens do Anexo B eram falso alarme.
     Falta verificar visualmente em produção após o push. Commit local.
 
+46. **Respostas finais do Rodnei aos documentos, v1.3 (14/10/2026)**:
+    metas do KPI variam por campanha de divulgação; **requisito: app nunca
+    fora do ar + segunda cópia do banco fora do Supabase**; backlog sob
+    responsabilidade da Claude com aprovação do Rodnei; aceite de convite
+    terá tela própria. Achado crítico: o Supabase Free pausa o projeto por
+    inatividade (aconteceu em 28/09 e 14/10) — incompatível com "nunca fora
+    do ar"; entrou no backlog como 🔴 junto com a rotina de backup externo.
+    `[A PREENCHER]` restantes nos 6 documentos: 0. Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

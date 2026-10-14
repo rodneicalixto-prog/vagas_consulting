@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -88,7 +88,19 @@ Next.js (Vercel) ── Server Actions / Route Handlers
 
 ## Metas de desempenho e confiabilidade
 
-[A PREENCHER — pergunta reformulada: o app precisa garantir um tempo máximo de carregamento, ficar no ar quase sempre e ter cópia de segurança do banco além da automática do Supabase gratuito? Não está registrado em nenhum `.md`.]
+**Requisitos definidos pelo Rodnei em 14/10/2026:**
+
+- **Disponibilidade:** o app não pode ficar fora do ar.
+- **Backup:** precisa existir uma **segunda cópia do banco**, além da cópia que o Supabase já faz.
+
+**Lacuna entre requisito e realidade (a resolver):**
+
+| Requisito | Situação hoje | O que falta |
+|---|---|---|
+| Nunca fora do ar | Supabase **Free** pausa o projeto por inatividade — aconteceu em 28/09 e 14/10/2026 | Plano Pro (não pausa) ou rotina que mantenha o projeto ativo; monitoramento externo de disponibilidade |
+| Segunda cópia do banco | Só o backup padrão do próprio Supabase | Rotina própria (ex.: `pg_dump` agendado) gravando fora do Supabase, com teste de restauração |
+
+Tempo máximo de carregamento: sem meta definida.
 
 ## Ambientes e entrega
 

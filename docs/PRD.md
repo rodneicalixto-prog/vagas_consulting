@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do código real do repositório (`vagas_consulting`),
@@ -35,7 +35,7 @@ vaga diretamente, elas solicitam e a equipe interna cadastra e publica.
 
 ## Objetivo e medida de sucesso
 
-**Sinal de sucesso (decisão de 14/10/2026):** indicador combinado, no início, de **vagas cadastradas**, **interações de candidatos** (candidaturas) e **volume de apps baixados** (`app_install_events`). Metas numéricas: [A PREENCHER: valores-alvo mensais].
+**Sinal de sucesso (decisão de 14/10/2026):** indicador combinado, no início, de **vagas cadastradas**, **interações de candidatos** (candidaturas) e **volume de apps baixados** (`app_install_events`). **Metas numéricas variáveis (Rodnei, 14/10/2026):** dependem da campanha de divulgação da ferramenta; serão definidas a cada campanha, não há alvo fixo.
 
 ## Funcionalidades principais
 

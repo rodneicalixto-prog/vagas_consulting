@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > O app já está construído (18 migrations, 15+ commits, em produção). Este
@@ -80,11 +80,22 @@ de `get_runtime_errors` consultado manualmente.
 
 ## Para cada tarefa do backlog
 
-[A PREENCHER: responsável/agente, entrada, entrega e "o que conta como
-pronto" para os itens 3–6 dependem de decisão sua — não vou atribuir prazo
-ou responsável sem confirmação, principalmente pro item 6 (decisões de
-negócio) e pro início da fase de WhatsApp/IA (`PROJETO.md` seção 8.0, que
-você pediu explicitamente pra não começar sem aviso seu).]
+**Responsável (Rodnei, 14/10/2026): a Claude executa os itens do backlog,
+sob aprovação do Rodnei.** Continua valendo a regra do `CLAUDE.md`: nada de
+push, deploy ou alteração de arquivo sem autorização explícita no momento da
+ação, e a fase de WhatsApp/IA (`PROJETO.md` seção 8.0) não começa sem plano
+próprio e aviso do Rodnei.
+
+Novos itens de backlog nascidos das respostas de 14/10/2026:
+
+1. 🔴 Segunda cópia do banco fora do Supabase (rotina agendada + teste de
+   restauração).
+2. 🔴 Evitar pausa por inatividade do projeto Supabase (plano Pro ou
+   rotina de keep-alive) e monitoramento externo de disponibilidade.
+3. 🟡 Tela própria de aceite de convite de entrevista.
+4. 🟡 Documentar tokens tipográficos e breakpoints próprios.
+5. 🟡 Auditoria de acessibilidade (WCAG 2.1 AA).
+6. 🟡 Definir metas numéricas a cada campanha de divulgação.
 
 ## Antes de passar pra próxima etapa
 

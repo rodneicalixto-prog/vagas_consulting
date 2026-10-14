@@ -1,6 +1,6 @@
 # Briefing de UI e UX
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.3 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir de `src/app/globals.css`, `src/app/manifest.ts`
@@ -81,7 +81,7 @@ componente em `ui.tsx` e `form-buttons.tsx`, sem um guia central.
 - ✅ Logo recebida (`logomarca.png`, pasta pai do repositório).
 - Ícones PWA: `public/icons/icon-192.png`, `icon-512.png`,
   `icon-512-maskable.png`, `icon-32.png` — já existem no projeto.
-- Ainda não definido (Rodnei não sabe, 14/10/2026) — [A PREENCHER: reavaliar após o inventário do Anexo A].
+- Nenhum ativo visual pendente conhecido (Rodnei, 14/10/2026); reavaliar quando houver a campanha de divulgação.
 
 
 ## Anexo A — Inventário de telas e estados vazios (14/10/2026)
