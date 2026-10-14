@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { empresasParaFiltro, filtroConfidencialJobs, obterEscopo } from "@/lib/auth/escopo";
 import { convidarDoBanco } from "./actions";
+import { idsBloqueadosNasEmpresas } from "@/lib/blacklist-empresa";
 
 /** Remove caracteres que têm significado na sintaxe de filtro do PostgREST. */
 function limparBusca(v: string | undefined): string {
@@ -34,6 +35,9 @@ export default async function TalentosPage({
     })
     .eq("status_validacao", "aprovado")
     .eq("blacklisted", false);
+  // Black list da empresa: quem ela bloqueou não aparece para o time dela.
+  const bloqueados = escopo.todos ? [] : await idsBloqueadosNasEmpresas(escopo.empresas);
+  if (bloqueados.length > 0) consulta = consulta.not("id", "in", `(${bloqueados.join(",")})`);
   if (q) consulta = consulta.or(`nome_completo.ilike.%${q}%,titulo_profissional.ilike.%${q}%`);
   if (cidade) consulta = consulta.ilike("cidade", `%${cidade}%`);
 

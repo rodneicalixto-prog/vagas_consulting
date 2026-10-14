@@ -1343,6 +1343,14 @@ sessões futuras.
     com vagas abertas, operadores usados/limite (oculto do operador),
     filtros e "+ Cadastrar empresa" recolhido. Sem migration; até 3000
     candidaturas e 300 empresas por carga.
+100. **Black list por empresa (14/10/2026)**: pedido do Rodnei ("ele
+    precisa ter, mas só o dele"; "precisa cadastrar os candidatos
+    problemáticos"). Migration 0026 aplicada (`company_blacklist`). O admin
+    da empresa cadastra por candidato ou por telefone (vale antes do
+    cadastro), vê só a lista dele e libera; bloqueia candidatura e convite
+    da empresa, com mensagem neutra. Plataforma segue com a global.
+    Atalho na ficha do candidato; talentos omite os bloqueados. Spec
+    `ADMIN_DA_EMPRESA.md` §12.
 
 ## 3. Escopo do MVP (revisado)
 

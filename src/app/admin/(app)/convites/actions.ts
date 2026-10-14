@@ -13,6 +13,7 @@ import {
 import { logAudit } from "@/lib/security/audit";
 import { CONVITES_ATIVOS, CONVITES_CANCELAVEIS, conviteExpirado } from "@/lib/convites";
 import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
+import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 
 export async function criarConvite(formData: FormData) {
   const { user, role } = await requireInternalUser("pipeline.manage");
@@ -27,12 +28,15 @@ export async function criarConvite(formData: FormData) {
   const admin = createAdminClient();
 
   const [{ data: candidato }, { data: vaga }] = await Promise.all([
-    admin.from("profiles").select("id, blacklisted, status_validacao").eq("id", candidateId).maybeSingle(),
-    admin.from("jobs").select("id, status, modalidade").eq("id", jobId).maybeSingle(),
+    admin.from("profiles").select("id, blacklisted, status_validacao, telefone").eq("id", candidateId).maybeSingle(),
+    admin.from("jobs").select("id, status, modalidade, company_id").eq("id", jobId).maybeSingle(),
   ]);
 
   if (!candidato) throw new Error("Candidato não encontrado.");
   if (candidato.blacklisted) throw new Error("Candidato está na black list e não pode receber convite.");
+  if (await bloqueadoNaEmpresa(vaga?.company_id, { id: candidato.id, telefone: candidato.telefone })) {
+    throw new Error("Este candidato está na black list da empresa e não pode ser convidado.");
+  }
   if (!escopo.todos && candidato.status_validacao !== "aprovado") {
     throw new Error("Só é possível convidar candidatos aprovados.");
   }

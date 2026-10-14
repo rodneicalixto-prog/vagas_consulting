@@ -20,7 +20,8 @@ export type Capability =
   | "platform.data" // leads, black list e dados da plataforma (admin e superadmin)
   | "carteira.manage" // atribuir operadores a empresas e definir limites (superadmin)
   | "operadores.manage" // convidar/ativar/desativar operadores da própria empresa (admin da empresa)
-  | "finance.empresa"; // prestações da própria empresa, somente leitura (admin da empresa)
+  | "finance.empresa" // prestações da própria empresa, somente leitura (admin da empresa)
+  | "blacklist.empresa"; // black list só da própria empresa (admin da empresa)
 
 const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
   superadmin: [
@@ -58,6 +59,7 @@ const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
     "pipeline.manage",
     "operadores.manage",
     "finance.empresa",
+    "blacklist.empresa",
   ],
   operador: ["dashboard.read", "companies.manage", "jobs.manage", "pipeline.manage"],
 };

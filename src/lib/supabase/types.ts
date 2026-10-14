@@ -228,6 +228,56 @@ export type Database = {
         }
         Relationships: []
       }
+      company_blacklist: {
+        Row: {
+          ativo: boolean
+          candidate_id: string | null
+          company_id: string
+          created_at: string
+          criado_por: string | null
+          id: string
+          motivo: string
+          nome_informado: string | null
+          removido_em: string | null
+          removido_por: string | null
+          telefone_normalizado: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          candidate_id?: string | null
+          company_id: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          motivo: string
+          nome_informado?: string | null
+          removido_em?: string | null
+          removido_por?: string | null
+          telefone_normalizado?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          candidate_id?: string | null
+          company_id?: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          motivo?: string
+          nome_informado?: string | null
+          removido_em?: string | null
+          removido_por?: string | null
+          telefone_normalizado?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_blacklist_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_assignments: {
         Row: {
           papel: string

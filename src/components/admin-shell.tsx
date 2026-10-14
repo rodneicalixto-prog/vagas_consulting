@@ -37,7 +37,7 @@ const NAV: NavItem[] = [
   { href: "/admin/ranking", label: "Ranking", roles: ["superadmin", "admin"] },
   { href: "/admin/leads", label: "Leads", roles: ["superadmin", "admin"] },
   { href: "/admin/prestacoes", label: "Prestações", roles: ["superadmin", "admin", "admin_empresa"] },
-  { href: "/admin/blacklist", label: "Black list", roles: ["superadmin", "admin"] },
+  { href: "/admin/blacklist", label: "Black list", roles: ["superadmin", "admin", "admin_empresa"] },
   { href: "/admin/denuncias", label: "Denúncias", roles: ["superadmin", "admin"] },
   { href: "/admin/lgpd", label: "LGPD", roles: ["superadmin", "admin"] },
   { href: "/admin/auditoria", label: "Auditoria", roles: ["superadmin", "admin"] },

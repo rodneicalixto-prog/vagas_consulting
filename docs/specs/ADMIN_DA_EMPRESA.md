@@ -188,3 +188,22 @@ E7 (redistribuir) é a própria fila da empresa e não há ação de redistribui
 (2) erros de formulário aparecem na página de erro do Next, não inline;
 (3) o convite não é transacional entre autenticação e perfil (há limpeza, mas
 uma falha rara pode deixar conta sem perfil).
+
+## 12. Black list da empresa (pedido do Rodnei, 14/10/2026)
+
+O admin da empresa **cadastra os candidatos problemáticos** e vê **só a black list dele**. Isso substitui, para a empresa, a decisão de manter a black list apenas global (que continua existindo, da plataforma).
+
+| Regra | Detalhe |
+|---|---|
+| Quem cadastra | Admin da empresa (capability `blacklist.empresa`); admin da plataforma segue com a global |
+| Quem é visto | Só as entradas da própria empresa; nenhuma outra empresa vê a lista |
+| Como cadastra | Escolhendo um candidato da empresa **ou** informando o telefone (vale antes de a pessoa se cadastrar); motivo obrigatório |
+| Efeito | A pessoa **não consegue se candidatar** às vagas da empresa nem receber convite dela |
+| Mensagem ao candidato | Neutra ("não foi possível enviar sua candidatura"); não revela empresa nem motivo |
+| Outras empresas | Nada muda: a pessoa continua podendo se candidatar |
+| Liberar | O admin da empresa libera; o histórico fica (quem, quando) e tudo é auditado |
+| Banco de talentos | Quem a empresa bloqueou não aparece para o time dela |
+
+**LGPD:** o motivo é dado pessoal; fica restrito à empresa que cadastrou, com auditoria. O titular pode pedir acesso e contestação pelo canal de privacidade.
+
+**Limites conhecidos:** o bloqueio por telefone depende de o candidato informar o mesmo número no perfil; troca de número escapa. Candidato bloqueado na empresa A continua visível e convidável por outras empresas.

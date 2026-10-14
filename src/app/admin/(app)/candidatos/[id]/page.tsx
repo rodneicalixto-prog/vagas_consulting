@@ -10,6 +10,7 @@ import { statusLabel, statusPillClass, safeHttpUrl, STATUS_CANDIDATURA_EM_ABERTO
 import type { Enums } from "@/lib/supabase/types";
 import type { ExperienciaProfissional } from "@/app/experiencias/actions";
 import { atualizarStatusCandidatura } from "./actions";
+import { bloquearNaEmpresa } from "../../blacklist/actions";
 import { formatarTelefoneBR, linkWhatsApp } from "@/lib/whatsapp";
 import { alterarBlacklist } from "../actions";
 
@@ -357,6 +358,33 @@ export default async function CandidatoDetalhePage({
             );
           })()}
         </div>
+
+        {can(role, "blacklist.empresa") && (
+          <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
+            <h3 className="mb-1 text-sm font-extrabold text-text">Black list da empresa</h3>
+            <p className="mb-3 text-[11.5px] text-text-2">
+              Só vale para a sua empresa: a pessoa deixa de poder se candidatar às suas vagas e receber convites.
+            </p>
+            <form action={bloquearNaEmpresa} className="flex flex-wrap items-end gap-2.5">
+              <input type="hidden" name="candidate_id" value={id} />
+              <label className="flex flex-1 flex-col gap-1">
+                <span className="text-[10px] font-bold text-text-2">Motivo (obrigatório)</span>
+                <input
+                  name="motivo"
+                  required
+                  minLength={3}
+                  className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]"
+                />
+              </label>
+              <SubmitButton
+                pendingLabel="Salvando..."
+                className="rounded-lg bg-danger px-4 py-2 text-[12px] font-extrabold text-white"
+              >
+                Colocar na black list da empresa
+              </SubmitButton>
+            </form>
+          </div>
+        )}
 
         {can(role, "platform.data") && (
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5">

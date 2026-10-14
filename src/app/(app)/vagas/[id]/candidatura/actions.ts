@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { ApplyJobSchema, type ApplyJobInput } from "@/lib/validation/schemas";
 
 export async function enviarCandidatura(jobId: string, respostas: Record<string, boolean>) {
@@ -32,6 +34,16 @@ export async function enviarCandidatura(jobId: string, respostas: Record<string,
       error:
         "Complete seu perfil (telefone e endereço) antes de se candidatar — sem currículo, é isso que a empresa recebe.",
     };
+  }
+
+  // Black list da empresa: a mensagem não revela o motivo nem a empresa.
+  const { data: vaga } = await createAdminClient()
+    .from("jobs")
+    .select("company_id")
+    .eq("id", validatedJobId)
+    .maybeSingle();
+  if (await bloqueadoNaEmpresa(vaga?.company_id, { id: user.id, telefone: profile?.telefone })) {
+    return { error: "Não foi possível enviar sua candidatura para esta vaga." };
   }
 
   const { error } = await supabase.from("applications").insert({
