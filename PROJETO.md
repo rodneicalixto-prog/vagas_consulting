@@ -1336,6 +1336,13 @@ sessões futuras.
     se chamar **Cancelar vaga** e encerradas aparecem como Canceladas,
     com "Reabrir como rascunho". Sem migration (status `pausada` já
     existia). Sem paginação: até 500 vagas por carga.
+99. **Candidatos e Empresas no mesmo modelo compacto (14/10/2026)**:
+    Candidatos viram cascata empresa → vaga → candidatos (etapa, dias na
+    etapa, validação e ações em uma linha), com chips por situação, busca
+    e grupo "Cadastrados sem candidatura". Empresas viram lista compacta
+    com vagas abertas, operadores usados/limite (oculto do operador),
+    filtros e "+ Cadastrar empresa" recolhido. Sem migration; até 3000
+    candidaturas e 300 empresas por carga.
 
 ## 3. Escopo do MVP (revisado)
 
