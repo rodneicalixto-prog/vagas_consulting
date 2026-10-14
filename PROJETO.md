@@ -964,6 +964,20 @@ sessões futuras.
     convites pelo Rodnei (deixado por último), cron/pausa (15/10 após 02:00
     UTC), backup agendado (19/10), teste de restauração.
 
+57. **Verificação de saúde do app do candidato e logo (14/10/2026)**:
+    app saudável (páginas públicas 200, protegidas 307, PWA ok, cabeçalhos
+    de segurança ok, sem runtime errors em 24h, banco ACTIVE_HEALTHY). Dados:
+    1 vaga publicada (efetiva), 0 temporárias, 2 perfis, 0 completos.
+    Advisors do Supabase: `arquivo_automatico_vagas` com search_path mutável
+    (WARN, correção pendente), 4 tabelas RLS sem política (esperado),
+    proteção de senha vazada (exige Pro). **Correção do registro:** a
+    suspeita de "icon-32.png 404" era erro meu (testei `/icons/icon-32.png`;
+    o caminho real `/icon-32.png` responde 200). **Logo:** o Rodnei enviou
+    "SOS Consulting — Método Previsa" (cobre/preto); o logo oficial do app é
+    "Vagas Consulting" (V azul-marinho e dourado, `logomarca.png`, igual ao
+    `brand-mark.tsx`). Os ícones gerados a partir do logo errado foram
+    revertidos antes de qualquer commit. Nada foi publicado.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
