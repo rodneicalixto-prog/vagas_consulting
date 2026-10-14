@@ -903,6 +903,17 @@ sessões futuras.
     conta Google o Rodnei quer manter o backup definitivamente (dados
     pessoais). Commit local, sem push.
 
+51. **Backup semanal agendado (14/10/2026)**: tarefa "Backup Vagas
+    Consulting" criada no Agendador de Tarefas do Windows (domingo 03:00,
+    log em `backups\log.txt`), saída do `schtasks`: "ÊXITO: a tarefa
+    agendada foi criada corretamente". Requisito do Rodnei de segunda cópia
+    do banco fora do Supabase: **atendido para os dados do schema `public`**;
+    `auth.users` e Storage seguem fora. Primeiro arquivo no Drive:
+    `vagas-consulting_2026-10-14-17-22.json.gz`. A tarefa só roda com o
+    computador ligado. Pendente: conferir a primeira execução agendada
+    (domingo 19/10/2026), teste de restauração trimestral, conta Google
+    definitiva do backup. Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
