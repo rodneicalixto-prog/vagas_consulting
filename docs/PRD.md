@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do código real do repositório (`vagas_consulting`),
@@ -138,3 +138,16 @@ Estas não têm resposta em nenhum `.md` do repositório nem no `PROJETO.md`
 4. Prazo/critério pra decidir retomar a fase "Agente de IA + WhatsApp"
    (seção 8.0 do `PROJETO.md`) — Rodnei disse explicitamente que não é
    pra começar sem sinal dele.
+
+## Atualização v1.5 (14/10/2026) — núcleo da carteira em produção
+
+- **Em produção:** carteira por atendente, vagas confidenciais, banco de
+  talentos filtrado, convite de 72 h, ranking de candidaturas e linha do
+  tempo da candidatura (commit `770ab29`).
+- **Decisões do Rodnei:** operador não publica nem encerra vaga publicada
+  (só admin/superadmin); contato do candidato só com candidatura em
+  andamento; convite vencido libera o candidato; candidato pode concorrer a
+  várias vagas e empresas; **black list segue global** (por empresa fica
+  para uma versão futura).
+- **Em aberto:** teste de isolamento com operadores reais (Athenas e ePró);
+  black list por empresa contratante.

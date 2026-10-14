@@ -1,6 +1,6 @@
 # Fluxo do App (App Flow)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir da árvore de rotas real em `src/app/`.
@@ -128,3 +128,15 @@ cadastro.
 `/onboarding` cobre o fluxo inicial; aceite de termos tratado como
 consentimento separado (`consents`, ver `TRD.md` → LGPD), não como
 checkbox genérico.
+
+## Atualização v1.5 (14/10/2026) — novas rotas
+
+| Rota | Quem | Função |
+|---|---|---|
+| `/admin/carteira` | superadmin | Atribuir operador a empresa; liberar confidenciais |
+| `/admin/talentos` | operador, admin, superadmin | Banco de talentos em resumo; convidar para vaga da carteira (72 h) |
+| `/admin/ranking` | admin, superadmin | Candidatos com mais candidaturas, vagas disputadas, volume por empresa |
+| `/processos/[id]` | candidato | Linha do tempo da candidatura até Aprovado/Não aprovado |
+
+Regras de fluxo: convite vencido sem resposta encerra como cancelado e libera
+novo convite; o resultado de uma candidatura não impede nova candidatura.

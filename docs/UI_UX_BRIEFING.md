@@ -1,6 +1,6 @@
 # Briefing de UI e UX
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir de `src/app/globals.css`, `src/app/manifest.ts`
@@ -170,3 +170,15 @@ Ações recomendadas (não executadas): escurecer `--color-text-3` (≈ `#6b7280
 ou mais escuro); usar texto navy em fundos dourados; usar dourado-3 em vez
 de dourado para texto sobre fundo claro; escurecer levemente sucesso/teal
 quando usados sobre seus fundos `-bg`.
+
+## Atualização v1.5 (14/10/2026) — telas novas
+
+- **Carteira:** tabela operador × empresa com ações "liberar/revogar
+  confidenciais" e "remover da carteira".
+- **Talentos:** cartões de resumo (nome, cargo, cidade, disponibilidade) com
+  seletor de vaga e botão Convidar; sem dados de contato.
+- **Ranking:** quatro totais no topo e três listas (candidatos, vagas,
+  empresas).
+- **Linha do tempo:** lista vertical com ponto por etapa, etapa atual em
+  destaque e aviso de resultado ao final.
+- Selo "Confidencial" nas vagas e "Empresa confidencial" para o candidato.

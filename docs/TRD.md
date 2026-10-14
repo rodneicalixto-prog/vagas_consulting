@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -146,3 +146,15 @@ aplicadas em transações separadas. O arquivo original em
 `supabase/migrations/0018_...sql` continua como estava — **considerar
 atualizá-lo ou adicionar uma nota**, porque ele não reflete mais como o
 schema foi de fato aplicado em produção.
+
+## Atualização v1.5 (14/10/2026) — escopo e testes
+
+- Barreira única do painel: `src/lib/auth/escopo.ts` (o painel usa a chave
+  de serviço, então a RLS não protege). Toda página/ação nova do operador
+  passa por ele; auditoria de 14/10 cobriu todas as telas de `admin/(app)`.
+- Sigilo do candidato em `src/lib/sigilo.ts`; a tela de candidatura não pede
+  mais o nome da empresa confidencial ao navegador.
+- Testes unitários sem dependência nova: `npm test` (node:test, 18 casos em
+  `src/lib/__tests__`). Fora de cobertura: funções que consultam o banco.
+- Limitação conhecida: filtros por lista de UUIDs (`.in`) podem truncar com
+  milhares de vagas visíveis (falha fechada, não vaza dado).

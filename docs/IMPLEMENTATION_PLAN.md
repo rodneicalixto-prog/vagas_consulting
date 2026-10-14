@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > O app já está construído (18 migrations, 15+ commits, em produção). Este
@@ -118,3 +118,12 @@ modelo genérico. A disciplina que vale é a que já está registrada no
 `CLAUDE.md` do projeto: qualquer ação técnica relevante concluída vai pro
 log cronológico do `PROJETO.md` (seção 2.2), e nada é publicado/alterado
 em produção sem autorização explícita sua no momento da ação.
+
+## Etapa 7 — status em 14/10/2026
+
+Passos 1 a 5 concluídos e em produção, mais banco de talentos, ranking,
+linha do tempo e testes unitários. **Falta o passo 6:** cadastrar Athenas e
+ePró, criar os 2 operadores e rodar o roteiro manual de isolamento (aguarda
+o Rodnei). Backlog seguinte: black list por empresa; revelar a empresa por
+`revelada_em` na lista de processos; aplicar a mesma barreira de escopo em
+qualquer tela nova.

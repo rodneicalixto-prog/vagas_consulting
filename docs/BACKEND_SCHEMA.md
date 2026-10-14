@@ -1,6 +1,6 @@
 # Schema do Backend
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.4 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Gerado a partir do schema **real** do Supabase (`tfipbxjslpxbaybpxsql`,
@@ -186,3 +186,12 @@ Sem política RLS para usuário comum (acesso só pelo servidor).
 - Desativar a atribuição corta o acesso sem apagar histórico.
 - Alterações de atribuição e de `confidencial` vão para `audit_log`.
 - Retenção: sem mudança.
+
+## Atualização v1.5 (14/10/2026)
+
+Sem migration nova desde a `0023` (`jobs.confidencial` e
+`company_assignments`, aplicada em produção). O histórico de etapas da
+candidatura vem de `audit_log` (`candidatura_status_alterado`); novas ações
+auditadas: `carteira_atribuida`, `carteira_removida`,
+`carteira_confidenciais_liberadas/revogadas`, `convite_vencido_encerrado`,
+`vaga_marcada/desmarcada_confidencial`.
