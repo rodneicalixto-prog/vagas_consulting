@@ -169,5 +169,4 @@ Não há job/cron pra isso além do arquivamento de vagas.]
 
 18 migrations em `supabase/migrations/`, aplicadas sequencialmente.
 `0003_seed_dados_exemplo.sql` populou dados de exemplo (não confirmado se
-ainda ativo em produção ou se foi limpo — [A PREENCHER] se precisar
-confirmar).
+ainda ativo em produção ou se foi limpo — **Confirmado em produção em 14/10/2026:** 1 empresa, 1 vaga (publicada), 2 perfis e nenhuma empresa com nome de seed — o seed de exemplo foi limpo).

@@ -49,7 +49,7 @@ Web responsiva, instalável como PWA (`manifest.ts`, `sw.js`,
 | Vercel | Hospedagem, deploy, cron | Ativo |
 | Vercel Cron | Arquivamento diário de vagas expiradas (`/api/cron/archive-jobs`) | Ativo — corrigido em 28/09/2026 |
 | Meta Graph API (Lead Ads) | Webhook de leads via anúncios | Endpoint pronto, **inerte** até `META_LEADS_VERIFY_TOKEN`/`META_APP_SECRET`/`META_PAGE_ACCESS_TOKEN` serem configurados |
-| Agente de IA para currículo | Extrai dados de PDF/imagem anexado | Ativo (`src/lib/ai/curriculo.ts`, via pacote `ai`) — [A PREENCHER: qual modelo/provider exatamente está configurado — não está documentado fora do código] |
+| Agente de IA para currículo | Extrai dados de PDF/imagem anexado | Ativo (`src/lib/ai/curriculo.ts`, via pacote `ai`) — modelo `anthropic/claude-sonnet-5` via `generateObject` do pacote `ai` (AI Gateway), confirmado em `src/lib/ai/curriculo.ts` em 14/10/2026 |
 | Evolution API + n8n (WhatsApp) | Canal de triagem/vídeo-entrevista | Planejado, não iniciado |
 
 ## Arquitetura

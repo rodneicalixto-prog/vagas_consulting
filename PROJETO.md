@@ -821,6 +821,13 @@ sessões futuras.
     Pendente: teste manual de `/admin/auditoria` e candidatura; 1º disparo
     do cron (02:00 UTC); Leaked Password Protection; 22 `[A PREENCHER]`.
 
+43. **4 dos 22 `[A PREENCHER]` resolvidos a partir de fatos (14/10/2026)**:
+    modelo de IA do currículo (`anthropic/claude-sonnet-5`, `curriculo.ts`),
+    conteúdo de `/admin/estrategico`, build da Vercel OK (crash só no
+    Windows local) e seed de exemplo limpo em produção (1 empresa, 1 vaga,
+    2 perfis). Restam 18, todos dependem de decisão do Rodnei (PRD 3, TRD 3,
+    UI/UX 7, App Flow 2, Plano 2, Schema 1). Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

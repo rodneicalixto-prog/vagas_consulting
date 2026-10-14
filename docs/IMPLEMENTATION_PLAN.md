@@ -46,7 +46,7 @@ arquivamento automático.
 | CSRF | ✅ Implementado |
 | Validação de entrada (Zod) | ⚠️ Implementada, mas com **erro de tipo real** (`errorMap` descontinuado no Zod 4) — `tsc --noEmit` falha em `src/lib/validation/schemas.ts` e `src/lib/security/audit.ts` |
 | `npm audit` | ✅ 0 vulnerabilidades |
-| Build de produção local (Windows) | ❌ **Falhando** neste ambiente — Turbopack crasha (`TurbopackInternalError`, processo nativo sai com `0xc0000142`) ao compilar `globals.css`. Não confirmado se afeta o build da Vercel (Linux) — [A PREENCHER: rodar/checar o log do último deploy real pra confirmar se é só um problema deste Windows local] |
+| Build de produção local (Windows) | ❌ **Falhando** neste ambiente — Turbopack crasha (`TurbopackInternalError`, processo nativo sai com `0xc0000142`) ao compilar `globals.css`. Não confirmado se afeta o build da Vercel (Linux) — **Resolvido em 14/10/2026:** os deploys da Vercel (Linux) `dpl_2hZKt…` e `dpl_29M4S…` terminaram `READY`; o crash é só deste Windows local |
 | Recuperação de senha | ❌ Não implementada |
 | MFA administrativo | ❌ Não implementado (campo decorativo) |
 | Testes automatizados de autorização | ❌ Não implementados |

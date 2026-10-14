@@ -50,7 +50,7 @@
 | `/admin/blacklist` | Candidatos com restrição |
 | `/admin/denuncias` | Moderação de denúncias |
 | `/admin/lgpd` | Solicitações LGPD do titular |
-| `/admin/estrategico` | [A PREENCHER: página existe no código — qual conteúdo/métricas exatas mostra? Não documentado] |
+| `/admin/estrategico` | Painel estratégico: KPIs de empresas cadastradas, instalações do app, leads, candidatos e contratações fechadas; séries dos últimos 70 dias (leads/candidatos), distribuição de candidaturas, vagas por modalidade e financeiro de prestações (confirmado em `src/app/admin/(app)/estrategico/page.tsx`, 14/10/2026) |
 | `/admin/acesso` | Convite e gestão de contas administrativas |
 | `/admin/acesso-negado` | Tela de acesso negado por papel |
 
