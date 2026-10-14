@@ -135,7 +135,7 @@ O admin da empresa **cria e acompanha vagas sigilosas** da própria empresa.
 
 | # | Tema | Decisão |
 |---|---|---|
-| E1 | Operadores em aberto | Resposta recebida: "4". **Interpretação a confirmar:** limite inicial de **4 operadores por empresa**? (ver pendências) |
+| E1 | Operadores em aberto | **Confirmado:** é o **limite total de operadores** da empresa; "em aberto" = limite − em uso. O número é configurável por empresa pelo superadmin; **valor padrão sugerido para empresa nova: 4** (a ajustar caso a caso) |
 | E2 | Quem define o limite por empresa | **Somente o superadmin** (não o admin da plataforma) |
 | E3 | Vagas confidenciais da própria empresa | **Sim** (e cria/acompanha sigilosas, §9) |
 | E4 | Publicação de vaga | **Regra atual**: admin da plataforma publica; admin da empresa não publica |
@@ -155,3 +155,7 @@ O admin da empresa **cria e acompanha vagas sigilosas** da própria empresa.
 
 1. **E1**: confirmar se "4" é o limite inicial de operadores por empresa.
 2. **E9 (decidido em 14/10/2026: sim, o admin da empresa concede e retira o acesso de confiança dos operadores da própria empresa, com auditoria `carteira_confidenciais_liberadas/revogadas`; superadmin continua podendo em qualquer empresa).** Texto original: **E9**: quem concede o acesso de confiança a operadores da empresa (recomendação: o admin da empresa, com auditoria).
+
+### Fechamento (14/10/2026)
+
+Todas as decisões E1 a E9 estão respondidas. A **Fase 1** está pronta para construir, com **limite por empresa sem valor fixo no código** (coluna `max_operadores`, padrão 4 para empresa nova, editável só pelo superadmin). A migration só será aplicada com o "sim" explícito do Rodnei.

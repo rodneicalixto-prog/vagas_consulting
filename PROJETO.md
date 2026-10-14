@@ -1288,6 +1288,10 @@ sessões futuras.
 92. **E9 decidida (14/10/2026)**: o admin da empresa concede e retira o
     acesso de confiança (vagas sigilosas) dos operadores da própria
     empresa, com auditoria. Única pendência do admin da empresa: E1.
+93. **E1 fechada (14/10/2026)**: "operadores em aberto" é o limite total
+    de operadores da empresa (limite − em uso), configurável pelo
+    superadmin; padrão sugerido 4 para empresa nova. Spec do admin da
+    empresa completa (E1-E9); Fase 1 aguarda ordem e "sim" da migration.
 
 ## 3. Escopo do MVP (revisado)
 
