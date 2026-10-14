@@ -29,6 +29,18 @@ export const convitePillClass: Record<StatusConvite, string> = {
 /** Convites que ainda aguardam resposta do candidato. */
 export const CONVITES_ABERTOS: StatusConvite[] = ["ofertado", "visualizado"];
 
+/** Convites que ainda ocupam a vaga para o candidato (impedem um novo convite). */
+export const CONVITES_ATIVOS: StatusConvite[] = [
+  "ofertado",
+  "visualizado",
+  "aceito",
+  "confirmado",
+  "em_execucao",
+];
+
+/** Convites que a operação ainda pode cancelar. */
+export const CONVITES_CANCELAVEIS: StatusConvite[] = ["ofertado", "visualizado", "aceito", "confirmado"];
+
 /** O enum não tem "expirado": o estado é calculado pela validade. */
 export function conviteExpirado(c: { status: StatusConvite; validade: string | null }): boolean {
   return (

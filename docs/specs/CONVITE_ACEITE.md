@@ -60,6 +60,17 @@ depende de definir também **quem cria** o convite.
 | P4 | Depois do aceite, a operação precisa confirmar antes de valer? | Sim (`aceito` → `confirmado`) |
 | P5 | Como o candidato fica sabendo do convite: só dentro do app (aba Convites + aviso), ou também por mensagem em `/mensagens`? | Dentro do app agora; WhatsApp na fase de IA |
 
+## Garantias adicionadas após o code review (14/10/2026)
+
+- **Um convite ativo por candidato e vaga**, garantido por índice único
+  parcial no banco (`0022`): ofertado, visualizado, aceito, confirmado e
+  em_execucao ocupam a vaga; recusado, cancelado, concluído e ocorrência
+  liberam novo convite.
+- **Aceitar** revalida: vaga ainda publicada, candidato fora da black list e
+  prazo (`validade`) na própria escrita. Recusar continua sempre possível.
+- **Confirmar/cancelar** (operação) só audita se o UPDATE de fato mudou o
+  convite; se outra pessoa mudou antes, mostra erro e não registra nada.
+
 ## Critérios de aceite
 1. Candidato com convite `ofertado` vê o convite em `/convites` e abre o detalhe.
 2. Aceitar/recusar muda o status e grava `resposta_em`; repetir a ação é recusado.

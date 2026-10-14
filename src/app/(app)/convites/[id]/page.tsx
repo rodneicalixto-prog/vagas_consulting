@@ -27,6 +27,8 @@ const MENSAGENS: Record<string, { texto: string; tom: "ok" | "erro" }> = {
   recusar: { texto: "Convite recusado. Obrigado por avisar.", tom: "ok" },
   "ja-respondido": { texto: "Este convite já foi respondido.", tom: "erro" },
   expirado: { texto: "O prazo para responder este convite terminou.", tom: "erro" },
+  "vaga-encerrada": { texto: "Esta vaga não está mais disponível.", tom: "erro" },
+  indisponivel: { texto: "Não foi possível aceitar este convite. Fale com a equipe.", tom: "erro" },
 };
 
 export default async function ConviteDetalhePage({

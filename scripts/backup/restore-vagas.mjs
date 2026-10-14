@@ -66,7 +66,9 @@ async function contar(tabela) {
 }
 
 // 1) Destino precisa estar vazio
-for (const t of SOMENTE.length ? [] : ["profiles", "jobs", "companies"]) {
+// Carga completa: destino inteiro vazio. Carga parcial (RESTORE_ONLY): as
+// tabelas escolhidas precisam estar vazias — nunca mescla em projeto real.
+for (const t of SOMENTE.length ? SOMENTE : ["profiles", "jobs", "companies"]) {
   if ((await contar(t)) > 0) {
     console.error(`RECUSADO: ${t} do destino não está vazio. Use um projeto novo.`);
     process.exit(2);

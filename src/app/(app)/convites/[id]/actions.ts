@@ -29,7 +29,7 @@ export async function responderConvite(formData: FormData) {
   // só o dono enxerga o convite.
   const { data: convite } = await supabase
     .from("invites")
-    .select("id, candidate_id, status, validade")
+    .select("id, candidate_id, status, validade, jobs(status)")
     .eq("id", inviteId)
     .maybeSingle();
 
@@ -43,7 +43,24 @@ export async function responderConvite(formData: FormData) {
     redirect(`/convites/${inviteId}?erro=expirado`);
   }
 
+  // Só aceita se a vaga continua publicada (RLS esconde vaga não publicada, e
+  // o join volta nulo) e o candidato não foi para a black list depois do envio.
+  if (acao === "aceitar") {
+    if (convite.jobs?.status !== "publicada") {
+      redirect(`/convites/${inviteId}?erro=vaga-encerrada`);
+    }
+    const { data: perfil } = await supabase
+      .from("profiles")
+      .select("blacklisted")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (perfil?.blacklisted) {
+      redirect(`/convites/${inviteId}?erro=indisponivel`);
+    }
+  }
+
   const novoStatus = acao === "aceitar" ? "aceito" : "recusado";
+  const agora = new Date().toISOString();
 
   // Escrita pelo cliente admin, só depois das verificações acima. Evita abrir
   // política de UPDATE ao candidato no banco. A condição de status no WHERE
@@ -54,11 +71,13 @@ export async function responderConvite(formData: FormData) {
     .update({
       status: novoStatus,
       motivo: acao === "recusar" ? motivo : null,
-      resposta_em: new Date().toISOString(),
+      resposta_em: agora,
     })
     .eq("id", inviteId)
     .eq("candidate_id", user.id)
     .in("status", CONVITES_ABERTOS)
+    // revalida a validade na própria escrita (fecha a janela entre ler e gravar)
+    .or(`validade.is.null,validade.gt.${agora}`)
     .select("id")
     .maybeSingle();
 

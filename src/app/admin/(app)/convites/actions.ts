@@ -11,6 +11,7 @@ import {
   type DecideInviteInput,
 } from "@/lib/validation/schemas";
 import { logAudit } from "@/lib/security/audit";
+import { CONVITES_ATIVOS, CONVITES_CANCELAVEIS } from "@/lib/convites";
 
 export async function criarConvite(formData: FormData) {
   const { user } = await requireInternalUser("pipeline.manage");
@@ -29,14 +30,19 @@ export async function criarConvite(formData: FormData) {
   if (!vaga || vaga.status !== "publicada") throw new Error("A vaga precisa estar publicada.");
   if (vaga.modalidade !== "temporaria") throw new Error("Convite direto vale apenas para vaga temporária.");
 
-  const { data: existente } = await admin
+  // limit(1) em vez de maybeSingle: com 2+ linhas o maybeSingle erra e a guarda
+  // deixaria de valer. A garantia definitiva é o índice único parcial
+  // (migration 0022); esta checagem só dá a mensagem amigável.
+  const { data: existentes } = await admin
     .from("invites")
     .select("id")
     .eq("candidate_id", candidateId)
     .eq("job_id", jobId)
-    .in("status", ["ofertado", "visualizado", "aceito", "confirmado", "em_execucao"])
-    .maybeSingle();
-  if (existente) throw new Error("Este candidato já tem um convite ativo para esta vaga.");
+    .in("status", CONVITES_ATIVOS)
+    .limit(1);
+  if (existentes && existentes.length > 0) {
+    throw new Error("Este candidato já tem um convite ativo para esta vaga.");
+  }
 
   const validade = new Date(Date.now() + horas * 3600_000).toISOString();
   const { data: convite, error } = await admin
@@ -44,6 +50,9 @@ export async function criarConvite(formData: FormData) {
     .insert({ candidate_id: candidateId, job_id: jobId, status: "ofertado", validade })
     .select("id")
     .single();
+  if (error?.code === "23505") {
+    throw new Error("Este candidato já tem um convite ativo para esta vaga.");
+  }
   if (error || !convite) throw new Error("Não foi possível criar o convite.");
 
   await logAudit({
@@ -70,12 +79,22 @@ export async function decidirConvite(formData: FormData) {
   const permitido =
     acao === "confirmar"
       ? antes.status === "aceito"
-      : ["ofertado", "visualizado", "aceito", "confirmado"].includes(antes.status);
+      : CONVITES_CANCELAVEIS.includes(antes.status);
   if (!permitido) throw new Error("Esta ação não vale para o estado atual do convite.");
 
   const novo = acao === "confirmar" ? "confirmado" : "cancelado";
-  const { error } = await admin.from("invites").update({ status: novo }).eq("id", inviteId).eq("status", antes.status);
+  const { data: atualizado, error } = await admin
+    .from("invites")
+    .update({ status: novo })
+    .eq("id", inviteId)
+    .eq("status", antes.status)
+    .select("id");
   if (error) throw new Error("Não foi possível atualizar o convite.");
+  // Outra pessoa mudou o convite entre a leitura e a escrita: nada foi
+  // alterado, então também não se registra auditoria de algo que não ocorreu.
+  if (!atualizado || atualizado.length === 0) {
+    throw new Error("O convite mudou de situação enquanto você decidia. Atualize a página.");
+  }
 
   await logAudit({
     ator_id: user.id,

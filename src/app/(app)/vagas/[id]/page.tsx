@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONVITES_ABERTOS } from "@/lib/convites";
 import { exibirRemuneracao } from "@/lib/money";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -36,7 +37,7 @@ export default async function VagaDetalhePage({
         .select("id")
         .eq("job_id", vaga.id)
         .eq("candidate_id", user.id)
-        .in("status", ["ofertado", "visualizado"])
+        .in("status", CONVITES_ABERTOS)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle()

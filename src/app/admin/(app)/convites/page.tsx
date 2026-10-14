@@ -1,7 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { SubmitButton } from "@/components/form-buttons";
-import { conviteExpirado, conviteLabel, formatPrazo } from "@/lib/convites";
+import { CONVITES_CANCELAVEIS, conviteExpirado, conviteLabel, formatPrazo } from "@/lib/convites";
 import { criarConvite, decidirConvite } from "./actions";
 
 export default async function ConvitesAdminPage() {
@@ -136,7 +136,7 @@ export default async function ConvitesAdminPage() {
                             </SubmitButton>
                           </form>
                         )}
-                        {["ofertado", "visualizado", "aceito", "confirmado"].includes(c.status) && (
+                        {CONVITES_CANCELAVEIS.includes(c.status) && (
                           <form action={decidirConvite}>
                             <input type="hidden" name="invite_id" value={c.id} />
                             <input type="hidden" name="acao" value="cancelar" />

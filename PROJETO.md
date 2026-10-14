@@ -1082,6 +1082,23 @@ sessões futuras.
     Verificação: 5 casos de cálculo, `tsc`/`eslint` sem erros, `next build`
     OK. Não publicado. Commit local.
 
+67. **Correções do code review aplicadas (14/10/2026)**, aprovadas pelo
+    Rodnei ("sim, corrigir os do review"). Review nível alto sobre
+    7f49271..729270f: 9 achados, sem falha de autorização/IDOR. Corrigidos
+    (5): (1) `decidirConvite` só audita se o UPDATE afetou linha; (3)
+    convite duplicado — checagem com `limit(1)` + **migration 0022**
+    (`invites_ativo_unico`, índice único parcial) **aplicada em produção**
+    como `convite_ativo_unico`; (4) aceitar revalida vaga publicada,
+    blacklist e validade na escrita; (6) `restore-vagas.mjs` com
+    `RESTORE_ONLY` também exige tabelas-alvo vazias; (9) listas de status
+    centralizadas em `src/lib/convites.ts`. Validação: `tsc`/`eslint` sem
+    erros, `next build` OK; índice testado em transação desfeita
+    (duplicado bloqueado, novo convite após recusa permitido); 0 duplicados
+    ativos antes de criar o índice. **Não corrigidos (decisão pendente):**
+    (2) auditoria não atômica com o UPDATE; (5) lista admin limitada a 500
+    perfis; (7) mutação "visualizado" no render; (8) criar perfil junto com
+    a conta (causa raiz). Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

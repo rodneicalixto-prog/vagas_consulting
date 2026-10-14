@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONVITES_ABERTOS } from "@/lib/convites";
 import { createClient } from "@/lib/supabase/server";
 import { statusLabel, statusPillClass, statusProgress } from "@/lib/format";
 import { Card, Pill } from "@/components/ui";
@@ -21,7 +22,7 @@ export default async function ProcessosPage() {
     .from("invites")
     .select("id", { count: "exact", head: true })
     .eq("candidate_id", user!.id)
-    .in("status", ["ofertado", "visualizado"]);
+    .in("status", CONVITES_ABERTOS);
 
   const andamento = (candidaturas ?? []).filter(
     (c) => !STATUS_ENCERRADOS.includes(c.status as (typeof STATUS_ENCERRADOS)[number]),
