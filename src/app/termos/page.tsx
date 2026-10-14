@@ -1,17 +1,29 @@
-import { BackHeader, Card } from "@/components/ui";
-import { IconCheck } from "@/components/icons";
-import { saveConsentsAndContinue } from "./actions";
+import { Card } from "@/components/ui";
+import { IconCheck, IconChevronLeft } from "@/components/icons";
+import { saveConsentsAndContinue, sairDoCadastro } from "./actions";
+import { CanaisAlertas } from "./canais-alertas";
 
-const canais = [
-  { name: "canal_whatsapp", label: "WhatsApp" },
-  { name: "canal_email", label: "E-mail" },
-  { name: "canal_sms", label: "SMS" },
-] as const;
-
-export default function TermosPage() {
+export default async function TermosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erro?: string }>;
+}) {
+  const sp = await searchParams;
   return (
     <form action={saveConsentsAndContinue} className="mx-auto flex min-h-dvh max-w-xl flex-col">
-      <BackHeader title="Termos e privacidade" backHref="/login" />
+      <div className="flex items-center gap-3 px-5 pt-6 pb-3 md:px-8 md:pt-8">
+        <button
+          type="submit"
+          formAction={sairDoCadastro}
+          formNoValidate
+          aria-label="Voltar ao início"
+          title="Voltar ao início (sai do cadastro)"
+          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg border border-border bg-surface"
+        >
+          <IconChevronLeft />
+        </button>
+        <h1 className="text-[16px] font-extrabold text-navy md:text-lg">Termos e privacidade</h1>
+      </div>
 
       <div className="flex flex-1 flex-col gap-4 px-5 pb-4 md:px-8">
         <Card>
@@ -70,18 +82,7 @@ export default function TermosPage() {
             &ldquo;Quero receber alertas de vagas e oportunidades compatíveis
             com meu perfil.&rdquo;
           </p>
-          {canais.map(({ name, label }) => (
-            <label
-              key={name}
-              className="group flex cursor-pointer items-center justify-between border-t border-border py-2.5 first:border-t-0"
-            >
-              <span className="text-[13px] font-semibold">{label}</span>
-              <input type="checkbox" name={name} className="peer sr-only" />
-              <span className="relative h-[22px] w-[38px] rounded-full bg-border transition-colors peer-checked:bg-gold">
-                <span className="absolute top-0.5 left-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition-all peer-checked:left-[18px]" />
-              </span>
-            </label>
-          ))}
+          <CanaisAlertas erroTelegram={sp.erro === "telegram"} />
           <p className="text-[11.5px] leading-relaxed text-text-3">
             Essa escolha é opcional. Você pode alterar os canais ou cancelar
             os alertas a qualquer momento em{" "}

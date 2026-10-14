@@ -324,6 +324,7 @@ export type Database = {
       }
       consents: {
         Row: {
+          identificador: string | null
           canal: string | null
           created_at: string
           estado: string
@@ -334,6 +335,7 @@ export type Database = {
           versao_texto: string | null
         }
         Insert: {
+          identificador?: string | null
           canal?: string | null
           created_at?: string
           estado?: string
@@ -344,6 +346,7 @@ export type Database = {
           versao_texto?: string | null
         }
         Update: {
+          identificador?: string | null
           canal?: string | null
           created_at?: string
           estado?: string

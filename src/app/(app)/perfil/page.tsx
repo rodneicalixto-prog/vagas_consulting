@@ -45,13 +45,15 @@ export default async function PerfilPage() {
     supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle(),
     supabase
       .from("consents")
-      .select("finalidade, canal, estado")
+      .select("finalidade, canal, estado, identificador")
       .eq("user_id", user!.id)
       .order("created_at", { ascending: false }),
   ]);
 
   const nome = profile?.nome_completo ?? user!.email ?? "Candidato";
   const consentsList = consents ?? [];
+  const telegramCadastrado =
+    consentsList.find((c) => c.canal === "telegram" && c.identificador)?.identificador ?? null;
 
   return (
     <div className="flex flex-col gap-5 px-5 pb-8 pt-6 md:px-8 md:pt-8">
@@ -122,6 +124,17 @@ export default async function PerfilPage() {
               initialOn={ultimoEstado(consentsList, "alertas_vagas", "sms")}
             />
           </div>
+          {telegramCadastrado && (
+            <div className="border-t border-border">
+              <ConsentToggle
+                finalidade="alertas_vagas"
+                canal="telegram"
+                label="Alertas de vagas — Telegram"
+                caption={`ID informado: ${telegramCadastrado}`}
+                initialOn={ultimoEstado(consentsList, "alertas_vagas", "telegram")}
+              />
+            </div>
+          )}
           <div className="border-t border-border">
             <ConsentToggle
               finalidade="marketing"

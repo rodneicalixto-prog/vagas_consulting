@@ -1306,6 +1306,17 @@ sessões futuras.
     (`/experiencias`) ganharam o link "Voltar" para a etapa anterior
     (`/termos` e `/onboarding`); os Termos já tinham. Achado: a tela do
     Passo 2 só avisa o erro no rodapé; vale revisar o aviso por campo.
+96. **Termos: Voltar real, Telegram e "aceitar todos" (14/10/2026)**:
+    o Voltar do Termos levava a /login, que devolvia o usuário logado ao
+    cadastro (parecia não fazer nada); agora sai da conta e vai ao início.
+    Novo canal Telegram nos alertas, com pedido do @usuário ou ID numérico
+    (validado) guardado em `consents.identificador` (migration 0025,
+    aplicada). Chave "Aceitar todos os canais" marca os quatro com um
+    clique; **não vem pré-marcado** (LGPD exige ato do titular). Perfil
+    mostra o Telegram se houver ID. Entrega pelo Telegram depende do bot,
+    ainda não criado (spec de comunicação, Fase 6). Dúvida em aberto: o
+    pedido "ao aceitar, todos os dados deveriam ser preenchidos" também
+    pode se referir a pré-preencher nome/telefone no Passo 2.
 
 ## 3. Escopo do MVP (revisado)
 

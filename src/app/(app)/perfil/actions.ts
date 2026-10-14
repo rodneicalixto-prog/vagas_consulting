@@ -20,8 +20,25 @@ export async function setConsent(
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  // Reativar um canal com identificador (Telegram) reaproveita o último informado.
+  let identificador: string | null = null;
+  if (validatedConcedido && validatedCanal === "telegram") {
+    const { data: anterior } = await supabase
+      .from("consents")
+      .select("identificador")
+      .eq("user_id", user.id)
+      .eq("canal", "telegram")
+      .not("identificador", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    identificador = anterior?.[0]?.identificador ?? null;
+    // Sem identificador não há como entregar: não registra consentimento vazio.
+    if (!identificador) return;
+  }
+
   await supabase.from("consents").insert({
     user_id: user.id,
+    identificador,
     finalidade: validatedFinalidade,
     canal: validatedCanal,
     estado: validatedConcedido ? "concedido" : "revogado",
