@@ -42,6 +42,7 @@ const NAV: NavItem[] = [
   { href: "/admin/lgpd", label: "LGPD", roles: ["superadmin", "admin"] },
   { href: "/admin/auditoria", label: "Auditoria", roles: ["superadmin", "admin"] },
   { href: "/admin/operadores", label: "Operadores", roles: ["admin_empresa", "superadmin", "admin"] },
+  { href: "/admin/integracoes", label: "Integrações", roles: ["superadmin", "admin_empresa"] },
   { href: "/admin/carteira", label: "Carteira", roles: ["superadmin"] },
   { href: "/admin/acesso", label: "Acesso", roles: ["superadmin"] },
   { href: "/admin/estrategico", label: "Estratégico", roles: ["superadmin"] },

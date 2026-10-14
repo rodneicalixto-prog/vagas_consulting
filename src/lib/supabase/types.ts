@@ -278,6 +278,68 @@ export type Database = {
           },
         ]
       }
+      integration_credentials: {
+        Row: {
+          ativo: boolean
+          company_id: string | null
+          config: Json
+          created_at: string
+          criado_por: string | null
+          escopo: string
+          id: string
+          provedor: string
+          segredo_cifrado: string | null
+          status: string
+          status_msg: string | null
+          teto_mensal_usd: number | null
+          testado_em: string | null
+          ultimos4: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          company_id?: string | null
+          config?: Json
+          created_at?: string
+          criado_por?: string | null
+          escopo: string
+          id?: string
+          provedor: string
+          segredo_cifrado?: string | null
+          status?: string
+          status_msg?: string | null
+          teto_mensal_usd?: number | null
+          testado_em?: string | null
+          ultimos4?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          company_id?: string | null
+          config?: Json
+          created_at?: string
+          criado_por?: string | null
+          escopo?: string
+          id?: string
+          provedor?: string
+          segredo_cifrado?: string | null
+          status?: string
+          status_msg?: string | null
+          teto_mensal_usd?: number | null
+          testado_em?: string | null
+          ultimos4?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_credentials_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_assignments: {
         Row: {
           papel: string

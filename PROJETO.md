@@ -1351,6 +1351,15 @@ sessões futuras.
     da empresa, com mensagem neutra. Plataforma segue com a global.
     Atalho na ficha do candidato; talentos omite os bloqueados. Spec
     `ADMIN_DA_EMPRESA.md` §12.
+101. **Integrações, Fase A (14/10/2026)**: resposta à dúvida do Rodnei
+    ("não vi onde entra o WhatsApp Evolution, e-mail, SMS, Telegram, chaves
+    das LLMs") — estavam só na spec. Migration 0027 aplicada
+    (`integration_credentials`); tela `/admin/integracoes` com cofre
+    AES-256-GCM, "Testar conexão" por provedor, escopo plataforma ou empresa
+    (BYOK de IA, instância do WhatsApp por empresa) e proteção contra SSRF.
+    **Pendente do Rodnei:** variável `INTEGRATIONS_ENCRYPTION_KEY` na Vercel
+    (sem ela a tela avisa e não grava). Spec `specs/INTEGRACOES.md`.
+    47 testes. Não há envio de mensagem ainda (Fase B/inbox).
 
 ## 3. Escopo do MVP (revisado)
 
