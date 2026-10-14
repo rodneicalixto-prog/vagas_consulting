@@ -1156,6 +1156,20 @@ sessões futuras.
     Carteira, selo Confidencial), Schema (`company_assignments`,
     `jobs.confidencial`) e Plano (Etapa 7, 6 passos). Índice `docs/README.md`
     em 1.4. Commit local, sem push.
+74. **Núcleo da carteira por atendente construído (14/10/2026)**: migration
+    0023 aplicada em produção (`jobs.confidencial`, `company_assignments`).
+    Helper único `src/lib/auth/escopo.ts` (admin/superadmin veem tudo;
+    operador só empresas atribuídas e ativas; confidenciais só com acesso de
+    confiança) aplicado em vagas, candidatos, convites, empresas e visão
+    geral. Operador não vê prestações/valores, leads, black list nem valida
+    candidato (capabilities `finance.read`/`platform.data`). Nova tela
+    `/admin/carteira` (superadmin) para atribuir/remover operador e liberar
+    confidenciais, tudo em `audit_log`. Candidato vê "Empresa confidencial"
+    até a etapa de entrevista (`src/lib/sigilo.ts`). tsc, eslint e build
+    passam. **Limitação conhecida:** o sigilo do candidato é aplicado na
+    renderização, não contra consulta direta ao PostgREST. **Pendente:**
+    teste de isolamento com dois operadores reais (Athenas e ePró) e push
+    mediante "sim, dar o push". Commit local 271d02e.
 
 ## 3. Escopo do MVP (revisado)
 
