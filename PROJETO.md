@@ -1109,6 +1109,17 @@ sessões futuras.
     pelo Rodnei; apagar `testes-vagas` + `supabase logout`; decidir achados
     2, 5, 7 e 8 do review; cron 15/10 após 02:00 UTC; backup agendado 19/10.
 
+69. **Diagnóstico: carteira por atendente, aluguel e white-label
+    (14/10/2026)**, a pedido do Rodnei. Documento
+    `docs/DIAGNOSTICO_MULTIUSUARIO_WHITELABEL.md`. Achados: perfis
+    `superadmin/admin/operador` e flag `ativo` já existem; **não há carteira**
+    (companies sem responsável; operador vê tudo; 32 telas usam chave de
+    serviço sem filtro) e **não há tenant** (0 colunas, 21 políticas RLS só
+    candidato × operação). Marca fixa em 6 arquivos. Recomendação: Fase 1
+    carteira (tabela `company_assignments` + filtro único), depois marca
+    configurável e provisionamento por instalação (single-tenant); multi-
+    tenant só com demanda. 6 decisões pendentes do Rodnei. Nada construído.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
