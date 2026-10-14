@@ -1099,6 +1099,16 @@ sessões futuras.
     perfis; (7) mutação "visualizado" no render; (8) criar perfil junto com
     a conta (causa raiz). Commit local, sem push.
 
+68. **Push das correções do review + deploy (14/10/2026)**: autorizado pelo
+    Rodnei ("sim, dar o push"). `729270f..44c517c` em `main`. Deploy
+    `dpl_A7NGLL6utHBM9z3X6r6PveVJFPxg` `READY`; `/login`, `/admin/login`,
+    `/onboarding` 200; `/convites`, `/admin/convites`, `/inicio`, `/vagas`
+    307 para login sem sessão; sem runtime errors em 1h. Tudo de hoje está
+    publicado (convites, R$ fixo, 4 correções do candidato, barra de perfil,
+    correções do review, `0021`/`0022`). Pendente: teste do candidato logado
+    pelo Rodnei; apagar `testes-vagas` + `supabase logout`; decidir achados
+    2, 5, 7 e 8 do review; cron 15/10 após 02:00 UTC; backup agendado 19/10.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
