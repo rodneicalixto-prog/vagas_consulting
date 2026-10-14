@@ -1130,6 +1130,17 @@ sessões futuras.
     de aceite). Pendentes D1 (operador publica vaga?), D2 (operador é da
     empresa cliente?), D3 (vê valores?). Nada construído.
 
+71. **Decisões D1–D3 da carteira por atendente (14/10/2026)**, respondidas
+    pelo Rodnei: **D1** operador não publica (vaga fica em rascunho até
+    admin/superadmin publicar); **D2** operador é funcionário da empresa
+    cliente (padrão) **ou profissional do Rodnei**, sobretudo em gerência,
+    altos cargos e vagas **sigilosas**; **D3** valores/prestações só admin.
+    Novo requisito: **vaga confidencial** e **operador de confiança**
+    (`jobs.confidencial`, `company_assignments.acessa_confidenciais`).
+    Spec `docs/specs/CARTEIRA_ATENDENTE.md` v0.2. Pendentes D5 (sigilo
+    esconde da operação da empresa?) e D6 (candidato não vê o nome da
+    empresa?). Nada construído.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

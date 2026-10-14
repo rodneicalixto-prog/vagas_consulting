@@ -1,6 +1,6 @@
 # Especificação — Carteira por atendente (Fase 1)
 
-> **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec v0.1 (proposta) · **Data:** 14/10/2026 · **Status:** aguardando 3 decisões do Rodnei antes de construir (regra dos seis documentos)
+> **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec v0.2 · **Data:** 14/10/2026 · **Status:** D1–D3 decididas; falta confirmar o sigilo de vagas (D5/D6) e o aval para construir
 
 ## 1. Contexto e objetivo
 
@@ -31,12 +31,12 @@ Regra única: o operador só vê dados cujo `company_id` esteja na sua carteira 
 |---|---|---|
 | Visão geral | Só indicadores da sua carteira | |
 | Empresas | **Só leitura** das suas | Aprovar/cadastrar empresa: admin e superadmin |
-| Cadastro de vagas | Cria e acompanha vagas **das suas empresas** | Publicar: ver decisão D1 |
+| Cadastro de vagas | Cria e acompanha vagas **das suas empresas**; a vaga fica em **rascunho** até admin/superadmin publicar (D1, decidido) | |
 | Candidatos | Só quem se candidatou ou foi convidado a vaga **das suas empresas** | Nunca a base inteira |
 | Convites | Das vagas das suas empresas | |
 | Minha agenda | Já é por dono | Sem mudança |
 | Agenda da equipe | Não | Já é só superadmin |
-| Prestações | Não (ver D3) | Contém valores de serviço |
+| Prestações | **Não** (decidido: só admin e superadmin) | Contém valores de serviço |
 | Leads, Black list, Denúncias, LGPD, Auditoria, Acesso, Estratégico | Não | Dados da plataforma; admin e superadmin |
 
 ## 4. Modelo de dados
@@ -113,11 +113,38 @@ tela (ver §7).
 | 4 | Tela **Carteira** + convite de conta operadora com atribuição | Fluxo ponta a ponta |
 | 5 | Cadastrar Athenas e ePró, criar os 2 operadores e conferir isolamento | Roteiro manual do Rodnei |
 
-## 9. Decisões pendentes
+## 8.1 Vagas confidenciais e operador de confiança (novo, de D2)
 
+O Rodnei indicou que o operador pode ser **funcionário da empresa cliente** (a
+proposta padrão) **ou um profissional dele**, sobretudo em vagas de **gerência
+e altos cargos**, que exigem **sigilo** da empresa interessada. Isso pede dois
+conceitos que cabem no mesmo modelo:
+
+| Conceito | Proposta |
+|---|---|
+| **Operador de confiança** | `company_assignments.acessa_confidenciais boolean default false`. O profissional do Rodnei recebe `true`; o funcionário da empresa cliente recebe `false` |
+| **Vaga confidencial** | `jobs.confidencial boolean default false`. Só admin, superadmin e operadores com `acessa_confidenciais` veem a vaga, suas candidaturas e convites |
+| **Anonimato ao candidato** (opcional, ver D6) | Em vaga confidencial o app mostra "Empresa confidencial" no lugar do nome |
+
+Como o vínculo é N:N, o mesmo profissional de confiança pode ser atribuído às
+**duas** empresas (Athenas e ePró) sem criar outro tipo de conta.
+
+## 9. Decisões
+
+### Decididas (14/10/2026)
+| # | Pergunta | Decisão |
+|---|---|---|
+| D1 | Operador publica a vaga? | **Não.** Fica em rascunho até admin/superadmin publicar |
+| D2 | Quem é o operador? | **Funcionário da empresa cliente (padrão) ou profissional do Rodnei**, este principalmente em gerência, altos cargos e vagas sigilosas |
+| D3 | Operador vê prestações e valores? | **Não.** Só admin (e superadmin) |
+
+### Pendentes
 | # | Pergunta | Sugestão |
 |---|---|---|
-| **D1** | O operador **publica** a vaga ou ela fica em rascunho até admin/superadmin publicar? | Como o Rodnei capta e valida as vagas, **só admin/superadmin publicam** (como hoje); o operador cadastra e acompanha |
-| **D2** | O operador é **funcionário da própria empresa cliente** (Athenas/ePró) ou da sua equipe? | Se for da empresa cliente, ele só vê **candidatos que se candidataram àquela empresa** e o app deve registrar o aceite do candidato para compartilhar dados (já há o aviso "o que será enviado à empresa") |
-| **D3** | O operador vê **prestações/valores**? | Não: só admin e superadmin |
-| D4 | Quem pode **reatribuir** carteira? | Só superadmin |
+| D5 | "Sigilo" significa que a vaga **não pode ser vista pelo operador funcionário da empresa**, apenas por você, admin e o profissional de confiança? | Sim (campo `confidencial` + `acessa_confidenciais`) |
+| D6 | Em vaga confidencial o **candidato** também não deve ver o nome da empresa? | Sim, mostrar "Empresa confidencial" até a etapa de entrevista |
+
+### Menores (já com sugestão)
+| # | Pergunta | Sugestão |
+|---|---|---|
+| D4 | Quem **reatribui** carteira? | Só superadmin |
