@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { sanitizarDestino } from "@/lib/destino";
+import { consumirDestino, guardarDestino } from "@/lib/destino-cookie";
 
 export type AuthState = { error: string | null; info?: string };
 
@@ -19,7 +21,9 @@ export async function login(
     return { error: "E-mail ou senha incorretos." };
   }
 
-  redirect("/inicio");
+  // Volta para a vaga (ou página) de onde a pessoa veio, se houver.
+  const destino = sanitizarDestino(formData.get("next")) ?? (await consumirDestino());
+  redirect(destino ?? "/inicio");
 }
 
 export async function signup(
@@ -32,6 +36,9 @@ export async function signup(
   if (password.length < 6) {
     return { error: "A senha precisa ter pelo menos 6 caracteres." };
   }
+
+  // Lembra a vaga escolhida durante o cadastro (termos, perfil, currículo).
+  await guardarDestino(formData.get("next"));
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({ email, password });

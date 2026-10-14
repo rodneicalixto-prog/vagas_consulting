@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { consumirDestino } from "@/lib/destino-cookie";
 import { createClient } from "@/lib/supabase/server";
 import { extrairDadosCurriculo, type CurriculoExtraido } from "@/lib/ai/curriculo";
 
@@ -117,5 +118,5 @@ export async function salvarExperiencias(
   }
   if (!atualizado || atualizado.length === 0) redirect("/onboarding");
 
-  redirect("/inicio");
+  redirect((await consumirDestino()) ?? "/inicio");
 }

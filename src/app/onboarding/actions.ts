@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { consumirDestino } from "@/lib/destino-cookie";
 import { createClient } from "@/lib/supabase/server";
 import type { Enums } from "@/lib/supabase/types";
 import { avaliarPerfil } from "@/lib/perfil";
@@ -64,5 +65,6 @@ export async function saveProfile(input: SaveProfileInput) {
     perfil_completo_pct: perfilCompletoPct,
   });
 
-  redirect("/inicio");
+  // Cadastro completo: volta para a vaga escolhida, se houver.
+  redirect((await consumirDestino()) ?? "/inicio");
 }

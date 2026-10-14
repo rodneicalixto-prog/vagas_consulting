@@ -1317,6 +1317,15 @@ sessões futuras.
     ainda não criado (spec de comunicação, Fase 6). Dúvida em aberto: o
     pedido "ao aceitar, todos os dados deveriam ser preenchidos" também
     pode se referir a pré-preencher nome/telefone no Passo 2.
+97. **Vitrine pública e modo visitante (14/10/2026)**: pergunta do
+    Rodnei ("como cadastro meus dados se nem sei se tem a vaga?") revelou
+    que o cadastro era um portão antes das vagas. `/vagas` e `/vagas/<id>`
+    passam a ser públicos (só publicada e no prazo; confidencial mascarada
+    no servidor); candidatar exige conta e volta à mesma vaga (`next` +
+    cookie, com `sanitizarDestino`); cadastro incompleto vê home e vagas e
+    é levado à etapa que falta ao agir. Voltar do Termos agora vai à
+    home. Spec `docs/specs/VITRINE_PUBLICA.md`. 37 testes; teste de
+    fumaça local. Pendente: SEO da vaga, busca real e paginação.
 
 ## 3. Escopo do MVP (revisado)
 

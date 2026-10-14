@@ -4,6 +4,7 @@ import { CONVITES_ABERTOS } from "@/lib/convites";
 import { exibirRemuneracao } from "@/lib/money";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { modalidadeLabel, modalidadeTagClass } from "@/lib/format";
 import { Tag } from "@/components/ui";
 import { IconChevronLeft, IconHeart, IconShare } from "@/components/icons";
@@ -15,14 +16,17 @@ export default async function VagaDetalhePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const supabase = await createClient();
-  const { data: vaga } = await supabase
+  // Leitura pública no servidor: só vaga publicada e dentro do prazo.
+  const { data: vaga } = await createAdminClient()
     .from("jobs")
     .select(
       "id, titulo, local, modalidade, remuneracao_texto, descricao, regras, confidencial, companies(nome_fantasia, razao_social)",
     )
     .eq("id", id)
     .eq("status", "publicada")
+    .or(`expira_em.is.null,expira_em.gt.${new Date().toISOString()}`)
     .maybeSingle();
 
   if (!vaga) notFound();
@@ -88,10 +92,16 @@ export default async function VagaDetalhePage({
           </div>
         )}
         <Link
-          href={convite ? `/convites/${convite.id}` : `/vagas/${vaga.id}/candidatura`}
+          href={
+            convite
+              ? `/convites/${convite.id}`
+              : user
+                ? `/vagas/${vaga.id}/candidatura`
+                : `/login?next=${encodeURIComponent(`/vagas/${vaga.id}/candidatura`)}`
+          }
           className="flex-1 rounded-xl bg-gold py-3.5 text-center text-[14px] font-extrabold text-[#1c1508]"
         >
-          {convite ? "Responder convite" : "Candidatar-se"}
+          {convite ? "Responder convite" : user ? "Candidatar-se" : "Entrar para se candidatar"}
         </Link>
       </div>
     </div>

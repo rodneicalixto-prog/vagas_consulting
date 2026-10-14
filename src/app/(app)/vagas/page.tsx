@@ -1,20 +1,27 @@
 import { nomeEmpresa } from "@/lib/sigilo";
 import Link from "next/link";
 import { exibirRemuneracao } from "@/lib/money";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { modalidadeLabel, modalidadeTagClass, timeAgo, companyInitial } from "@/lib/format";
 import { Tag } from "@/components/ui";
 import { IconSearch, IconFilter, IconHeart } from "@/components/icons";
 
+function agoraIso(): string {
+  return new Date().toISOString();
+}
+
 export default async function VagasPage() {
-  const supabase = await createClient();
-  const { data: vagas } = await supabase
+  // Vitrine pública: leitura no servidor, só vaga publicada e dentro do prazo.
+  // O nome da empresa é mascarado (vaga confidencial) antes de ir ao HTML.
+  const { data: vagas } = await createAdminClient()
     .from("jobs")
     .select(
       "id, titulo, local, modelo_trabalho, modalidade, remuneracao_texto, publicada_em, confidencial, companies(nome_fantasia, razao_social)",
     )
     .eq("status", "publicada")
-    .order("publicada_em", { ascending: false });
+    .or(`expira_em.is.null,expira_em.gt.${agoraIso()}`)
+    .order("publicada_em", { ascending: false })
+    .limit(200);
 
   return (
     <div className="flex flex-col gap-4 pb-8 pt-6 md:pt-8">

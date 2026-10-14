@@ -1,10 +1,16 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { Suspense, useActionState, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { BrandMark, Wordmark } from "@/components/brand-mark";
 import { login, signup, type AuthState } from "./actions";
 
 const initialState: AuthState = { error: null };
+
+function CampoDestino() {
+  const next = useSearchParams().get("next") ?? "";
+  return <input type="hidden" name="next" value={next} />;
+}
 
 export default function LoginPage() {
   const [tab, setTab] = useState<"entrar" | "criar">("entrar");
@@ -50,6 +56,9 @@ export default function LoginPage() {
           </div>
 
           <form action={tab === "entrar" ? loginAction : signupAction} className="flex flex-col gap-4">
+            <Suspense fallback={null}>
+              <CampoDestino />
+            </Suspense>
             <label className="flex flex-col gap-1.5">
               <span className="text-xs font-bold text-text-2">E-mail</span>
               <input

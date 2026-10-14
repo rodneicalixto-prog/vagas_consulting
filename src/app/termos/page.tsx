@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { Card } from "@/components/ui";
 import { IconCheck, IconChevronLeft } from "@/components/icons";
-import { saveConsentsAndContinue, sairDoCadastro } from "./actions";
+import { saveConsentsAndContinue } from "./actions";
 import { CanaisAlertas } from "./canais-alertas";
 
 export default async function TermosPage({
@@ -12,16 +13,13 @@ export default async function TermosPage({
   return (
     <form action={saveConsentsAndContinue} className="mx-auto flex min-h-dvh max-w-xl flex-col">
       <div className="flex items-center gap-3 px-5 pt-6 pb-3 md:px-8 md:pt-8">
-        <button
-          type="submit"
-          formAction={sairDoCadastro}
-          formNoValidate
+        <Link
+          href="/inicio"
           aria-label="Voltar ao início"
-          title="Voltar ao início (sai do cadastro)"
           className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg border border-border bg-surface"
         >
           <IconChevronLeft />
-        </button>
+        </Link>
         <h1 className="text-[16px] font-extrabold text-navy md:text-lg">Termos e privacidade</h1>
       </div>
 

@@ -3,17 +3,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-/**
- * "Voltar" do primeiro passo do cadastro: a pessoa já está autenticada, então
- * voltar para /login a devolveria ao cadastro (o proxy a redireciona de
- * volta). Sair da conta é o retorno real à tela inicial.
- */
-export async function sairDoCadastro() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
-}
-
 export async function saveConsentsAndContinue(formData: FormData) {
   const supabase = await createClient();
   const {

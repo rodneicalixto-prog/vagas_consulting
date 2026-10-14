@@ -32,6 +32,13 @@ export default async function InicioPage() {
   const primeiroNome = profile?.nome_completo?.split(" ")[0] ?? "candidato";
   const { pct, faltando } = avaliarPerfil(profile);
 
+  // Cadastro pendente: a home continua aberta; candidatar exige completar.
+  const experiencias = Array.isArray(profile?.experiencias_profissionais)
+    ? profile.experiencias_profissionais
+    : [];
+  const cadastroPendente = !profile || (!profile.nunca_trabalhou && experiencias.length === 0);
+  const destinoCadastro = !profile ? "/onboarding" : "/experiencias";
+
   return (
     <div className="flex flex-col gap-6 px-5 pb-8 pt-6 md:px-8 md:pt-8">
       <div className="flex items-center justify-between">
@@ -43,6 +50,20 @@ export default async function InicioPage() {
           <IconBell />
         </div>
       </div>
+
+      {cadastroPendente && (
+        <Link
+          href={destinoCadastro}
+          className="flex items-center justify-between gap-3 rounded-2xl border border-gold/40 bg-gold-bg px-4 py-3.5"
+        >
+          <span className="text-[12.5px] font-bold leading-snug text-gold-3">
+            Complete seu cadastro para se candidatar às vagas.
+          </span>
+          <span className="shrink-0 rounded-lg bg-gold px-3 py-1.5 text-[12px] font-extrabold text-[#1c1508]">
+            Completar
+          </span>
+        </Link>
+      )}
 
       <div className="rounded-2xl bg-gradient-to-br from-navy-3 to-navy-2 p-[18px] text-white">
         <div className="text-[12.5px] font-bold opacity-85">Seu perfil está {pct}% completo</div>

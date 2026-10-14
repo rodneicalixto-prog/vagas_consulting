@@ -20,8 +20,15 @@ const navItems = [
   { href: "/perfil", label: "Perfil", icon: IconUser },
 ];
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  visitante = false,
+}: {
+  children: React.ReactNode;
+  visitante?: boolean;
+}) {
   const pathname = usePathname();
+  const itens = visitante ? navItems.filter((i) => i.href === "/vagas") : navItems;
 
   const isActive = (href: string) => pathname?.startsWith(href);
 
@@ -34,7 +41,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Wordmark />
         </div>
         <nav className="flex flex-col gap-1 px-3">
-          {navItems.map(({ href, label, icon: Icon }) => (
+          {itens.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -49,11 +56,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </nav>
-        <form action={signOut} className="mt-auto px-3 pb-5">
-          <button className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm font-semibold text-text-2 hover:bg-navy-bg hover:text-navy">
-            Sair
-          </button>
-        </form>
+        {visitante ? (
+          <Link
+            href={`/login?next=${encodeURIComponent(pathname || "/vagas")}`}
+            className="mx-3 mt-auto mb-5 rounded-xl bg-gold px-3.5 py-2.5 text-center text-sm font-extrabold text-[#1c1508]"
+          >
+            Entrar ou criar conta
+          </Link>
+        ) : (
+          <form action={signOut} className="mt-auto px-3 pb-5">
+            <button className="w-full rounded-xl border border-border px-3.5 py-2.5 text-sm font-semibold text-text-2 hover:bg-navy-bg hover:text-navy">
+              Sair
+            </button>
+          </form>
+        )}
       </aside>
 
       {/* Content */}
@@ -64,7 +80,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Bottom nav — mobile only */}
         <nav className="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-surface px-2 pb-[max(10px,env(safe-area-inset-bottom))] pt-2.5 md:hidden">
-          {navItems.map(({ href, label, icon: Icon }) => (
+          {itens.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -76,6 +92,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {label}
             </Link>
           ))}
+          {visitante && (
+            <Link
+              href={`/login?next=${encodeURIComponent(pathname || "/vagas")}`}
+              className="flex flex-1 flex-col items-center gap-1 py-1 text-[10px] font-extrabold text-gold-3"
+            >
+              <IconUser size={20} />
+              Entrar
+            </Link>
+          )}
         </nav>
       </div>
     </div>

@@ -11,8 +11,17 @@ const PUBLIC_PATHS = [
   "/api/webhooks",
 ];
 
+// Vitrine pública: /vagas e /vagas/<id> (nunca /vagas/<id>/candidatura).
+const VAGA_PUBLICA = /^\/vagas(\/[^/]+)?\/?$/;
+
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  // O layout do candidato precisa saber a rota para liberar o "modo visitante".
+  const comPath = () => {
+    const h = new Headers(request.headers);
+    h.set("x-pathname", request.nextUrl.pathname);
+    return h;
+  };
+  let supabaseResponse = NextResponse.next({ request: { headers: comPath() } });
 
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,7 +33,7 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          supabaseResponse = NextResponse.next({ request });
+          supabaseResponse = NextResponse.next({ request: { headers: comPath() } });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );
@@ -39,11 +48,14 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAdmin = pathname.startsWith("/admin");
-  const isPublic = pathname === "/" || PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  const isPublic =
+    pathname === "/" || VAGA_PUBLICA.test(pathname) || PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = isAdmin ? "/admin/login" : "/login";
+    // Candidato volta para onde estava (ex.: a vaga) depois de entrar.
+    url.search = isAdmin ? "" : `?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
     return NextResponse.redirect(url);
   }
 
