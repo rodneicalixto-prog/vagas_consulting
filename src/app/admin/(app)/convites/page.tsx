@@ -90,7 +90,7 @@ export default async function ConvitesAdminPage() {
               type="number"
               min={1}
               max={168}
-              defaultValue={24}
+              defaultValue={72}
               className="rounded-lg border border-border px-3 py-2 text-[13px] font-normal"
             />
           </label>

@@ -110,6 +110,11 @@ export async function decidirVaga(formData: FormData) {
   const admin = createAdminClient();
   const { data: before } = await admin.from("jobs").select("*").eq("id", jobId).single();
 
+  // Vaga já publicada só sai do ar por admin/superadmin (decisão do Rodnei).
+  if (before?.status === "publicada" && acao !== "publicar") {
+    await requireInternalUser("jobs.publish");
+  }
+
   const status = acao === "publicar" ? "publicada" : acao === "encerrar" ? "encerrada" : "rascunho";
 
   const { data: after, error } = await admin

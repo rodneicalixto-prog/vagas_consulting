@@ -170,6 +170,18 @@ Ajustes de 14/10/2026 (Rodnei):
   mais candidaturas (e em quantas empresas), vagas mais disputadas e volume
   por empresa; KPI de candidaturas dos últimos 7 dias na visão geral.
 
+Decisões adicionais de 14/10/2026 (Rodnei):
+
+- **Encerrar/despublicar vaga já publicada: só admin e superadmin.**
+- **Prazo padrão do convite no formulário de Convites: 72 h.**
+- **Linha do tempo por candidatura** (`/processos/[id]`): mostra a etapa
+  atual e o histórico até o desfecho (Aprovado = contratado; Não aprovado =
+  rejeitada/reprovado pelo cliente). O resultado **não impede** nova
+  candidatura, inclusive na mesma empresa; só a black list impede.
+- **"Revelado fica revelado":** se a candidatura já chegou à entrevista (ou
+  além), o nome da empresa confidencial continua visível na linha do tempo
+  mesmo após o desfecho.
+
 Critérios de aceite: (a) operador sem carteira não convida; (b) operador não
 convida para vaga de outra empresa nem para vaga confidencial sem acesso;
 (c) a lista nunca devolve telefone/e-mail/endereço/currículo ao operador;

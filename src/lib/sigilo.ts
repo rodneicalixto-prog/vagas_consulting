@@ -10,6 +10,11 @@ export const EMPRESA_CONFIDENCIAL = "Empresa confidencial";
 /** Etapas da candidatura em que a identidade da empresa é revelada. */
 const ETAPAS_QUE_REVELAM = new Set(["entrevista", "teste", "proposta", "contratado"]);
 
+/** A etapa informada já revela a identidade da empresa? */
+export function revelaEmpresa(status: string): boolean {
+  return ETAPAS_QUE_REVELAM.has(status);
+}
+
 type Empresa = { nome_fantasia: string | null; razao_social: string } | null | undefined;
 
 export function nomeEmpresa(

@@ -1203,6 +1203,18 @@ sessões futuras.
     publicada; revelação do nome da empresa após reprovação; filtros por
     lista de UUIDs podem truncar com milhares de vagas (fail-closed).
     **Pendente:** push.
+78. **Decisões do Rodnei e linha do tempo da candidatura (14/10/2026)**:
+    encerrar/despublicar vaga publicada passou a exigir admin/superadmin;
+    prazo padrão do formulário de Convites agora 72 h; nova tela
+    `/processos/[id]` com a linha do tempo de cada candidatura (etapa
+    atual, histórico a partir do `audit_log`, desfecho Aprovado/Não
+    aprovado) e aviso de que o resultado não impede nova candidatura. Nome
+    de empresa confidencial, uma vez revelado (entrevista ou além), segue
+    visível na linha do tempo. Corrigido: `reprovado_cliente` aparecia em
+    "Em andamento" em Meus processos. **Ainda aberto:** a black list é
+    global (admin da plataforma), não por empresa contratante; fazer por
+    empresa exige tabela e tela novas (ver pergunta ao Rodnei).
+    **Pendente:** push.
 
 ## 3. Escopo do MVP (revisado)
 

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { statusLabel, statusPillClass, statusProgress } from "@/lib/format";
 import { Card, Pill } from "@/components/ui";
 
-const STATUS_ENCERRADOS = ["rejeitada", "desistente", "expirada", "contratado"] as const;
+const STATUS_ENCERRADOS = ["rejeitada", "reprovado_cliente", "desistente", "expirada", "contratado"] as const;
 
 export default async function ProcessosPage() {
   const supabase = await createClient();
@@ -64,7 +64,8 @@ export default async function ProcessosPage() {
             </div>
             <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-3.5">
               {andamento.map((c) => (
-                <Card key={c.id} className="flex flex-col gap-2">
+                <Link key={c.id} href={`/processos/${c.id}`}>
+                <Card className="flex flex-col gap-2">
                   <div className="flex items-start justify-between gap-2.5">
                     <div>
                       <h4 className="text-[13.5px] font-extrabold">{c.jobs?.titulo}</h4>
@@ -85,6 +86,7 @@ export default async function ProcessosPage() {
                     ))}
                   </div>
                 </Card>
+                </Link>
               ))}
             </div>
           </>
@@ -97,7 +99,8 @@ export default async function ProcessosPage() {
             </div>
             <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-3.5">
               {encerrados.map((c) => (
-                <Card key={c.id} className="flex flex-col gap-2 opacity-70">
+                <Link key={c.id} href={`/processos/${c.id}`}>
+                <Card className="flex flex-col gap-2 opacity-70">
                   <div className="flex items-start justify-between gap-2.5">
                     <div>
                       <h4 className="text-[13.5px] font-extrabold">{c.jobs?.titulo}</h4>
@@ -108,6 +111,7 @@ export default async function ProcessosPage() {
                     <Pill className={statusPillClass[c.status]}>{statusLabel[c.status]}</Pill>
                   </div>
                 </Card>
+                </Link>
               ))}
             </div>
           </>
