@@ -51,6 +51,23 @@ propriedades da tarefa).
 4. **Um backup que nunca foi restaurado não é backup:** faça o teste em um
    projeto Supabase descartável e registre o resultado em `PROJETO.md`.
 
+## Lições da primeira configuração (14/10/2026)
+
+- **Conta errada = `storageQuotaExceeded`.** O navegador padrão do Windows
+  pode estar logado em outra conta Google (cheia). Confira com
+  `rclone about gdrive:`: `Free: off` significa conta sem espaço.
+  Reconecte com `rclone config reconnect gdrive:`; se o navegador abrir na
+  conta errada, copie o link `http://127.0.0.1:53682/auth?...` do
+  PowerShell e cole no Chrome da conta certa.
+- **Escopo `drive.file`:** ao reconectar, o rclone tenta listar Drives
+  compartilhados e mostra `ACCESS_TOKEN_SCOPE_INSUFFICIENT`. É inofensivo;
+  o token já foi salvo. Confirme com `rclone about gdrive:`.
+- **Aviso do `client_id` compartilhado:** o rclone avisa que o `client_id`
+  dele será aposentado em 2026. Se o envio parar de funcionar, crie um
+  `client_id` próprio no Google Cloud (grátis).
+- **Conta usada:** a conta autorizada no rclone em 14/10/2026 tinha 15 GiB
+  com 13,6 GiB livres. Primeiro envio bem-sucedido em 14/10/2026 às 14:23.
+
 ## Limites conhecidos
 
 - **Auth:** `auth.users` (e-mails/senhas) não está no schema `public` e **não

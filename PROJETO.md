@@ -892,6 +892,17 @@ sessões futuras.
     `rclone config` (login do Rodnei), agendar no Task Scheduler e testar
     restauração a cada 3 meses. Commit local, sem push.
 
+50. **Primeiro backup enviado ao Google Drive (14/10/2026)**: instalado
+    rclone (`winget`), remote `gdrive` reconectado em uma conta com 13,6 GiB
+    livres (a primeira conta autorizada, rodneicalixto@gmail.com, está sem
+    espaço: 9,5 GiB Drive + 29 GiB Gmail/Fotos > 15 GiB →
+    `storageQuotaExceeded`). Rodado `scripts/backup/backup-vagas.mjs`:
+    18 tabelas, saída final "Enviado para gdrive:Backups Vagas Consulting".
+    Lições registradas em `docs/BACKUP.md`. Pendente: agendar a tarefa
+    semanal (schtasks), teste de restauração trimestral, e decidir em qual
+    conta Google o Rodnei quer manter o backup definitivamente (dados
+    pessoais). Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
