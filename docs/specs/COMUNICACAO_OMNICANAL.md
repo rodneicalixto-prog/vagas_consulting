@@ -170,7 +170,7 @@ credencial no repositório (variáveis de ambiente).
 | E3 | Provedor de e-mail | **Resend como candidato**; ainda não avaliado pelo Rodnei (avaliar custo, entregabilidade e domínio antes de contratar) |
 | E4 | SMS e Telegram | **Depois da Fase 5**; uso como reforço quando o candidato para de responder, **por vontade do operador** (não automático) |
 | E5 | Modelos de IA | **OpenAI e Claude**, e **Groq**, por conta do superadmin no início. A plataforma deve ficar **pronta para cada empresa cadastrar a própria chave** (BYOK) |
-| E6 | Modo sugestão do agente | Explicado em 14/10; decisão **pendente** (ver abaixo) |
+| E6 | Modo sugestão do agente | **Aprovado:** começa em sugestão (rascunho que o operador aprova, edita ou descarta); autonomia **gradual**, conforme o agente aprende |
 | E7 | Disparo | **Operador só 1 a 1**; massa apenas admin |
 | E8 | Guarda das conversas | **12 meses no Supabase** (após o encerramento da candidatura); depois, arquivo no **Google Drive** sem prazo definido. Ressalva LGPD abaixo |
 
@@ -192,13 +192,27 @@ credencial no repositório (variáveis de ambiente).
 - **Número por empresa:** `channel_accounts` já prevê uma conta por empresa;
   o operador só usa a conta da empresa da conversa.
 
+### Escada de autonomia do agente (proposta, a validar)
+
+| Nível | O agente pode | Entra quando |
+|---|---|---|
+| 0 | Só sugerir; o operador aprova cada mensagem | Início |
+| 1 | Enviar sozinho confirmações simples (recebi, horário, lembrete de entrevista) | 90% das sugestões desse tipo aprovadas sem edição em 2 semanas |
+| 2 | Enviar sozinho respostas a dúvidas frequentes da vaga | Mesma métrica, por tipo, sem reclamação |
+| 3 | Conduzir a triagem inicial inteira e entregar ao operador na última etapa | Revisão do Rodnei com amostra de conversas |
+
+Regras: a promoção é **por tipo de mensagem e por empresa**; qualquer
+reclamação, erro grave ou pedido de humano **volta o tipo ao nível 0**;
+o painel mostra, por tipo, aprovadas sem edição, editadas e descartadas;
+só o superadmin muda o nível. Toda edição do operador vira exemplo de
+aprendizado para o roteiro daquela empresa.
+
 ### Pendentes
 
 1. Teto mensal de custo (valor) e se há teto por empresa.
 2. "Grock" é **Groq** (modelos Llama, o que o n8n do Rodnei já usa) ou **xAI
    Grok**? A spec assume Groq.
 3. Avaliação do Resend (custo e domínio de envio).
-4. Modo sugestão do agente (E6).
 5. **Arquivo "eterno" no Drive e a LGPD:** guardar dado pessoal sem prazo
    conflita com o princípio da necessidade/limitação. Proposta: no Drive,
    guardar a conversa **sem identificação direta** (nome, telefone e e-mail

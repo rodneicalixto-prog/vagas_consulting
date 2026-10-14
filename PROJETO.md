@@ -1236,6 +1236,10 @@ sessões futuras.
     empresa (BYOK, cifrada); operador só 1 a 1. Guarda: 12 meses
     no Supabase e depois Drive. Pendentes: teto mensal, Groq×Grok, modo
     sugestão (E6) e retenção do arquivo no Drive (LGPD).
+83. **Agente em modo sugestão e autonomia gradual (14/10/2026)**: aprovado
+    pelo Rodnei. O agente escreve rascunho; o operador aprova, edita ou
+    descarta. Autonomia sobe por tipo de mensagem e por empresa conforme
+    a taxa de aprovação sem edição (escada de níveis 0-3 na spec).
 
 ## 3. Escopo do MVP (revisado)
 
