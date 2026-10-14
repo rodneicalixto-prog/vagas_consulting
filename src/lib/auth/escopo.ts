@@ -33,7 +33,7 @@ export const obterEscopo = cache(async (userId: string, role: InternalRole): Pro
   const admin = createAdminClient();
   const { data } = await admin
     .from("company_assignments")
-    .select("company_id, acessa_confidenciais")
+    .select("company_id, acessa_confidenciais, papel")
     .eq("user_id", userId)
     .eq("ativo", true);
 
@@ -41,7 +41,10 @@ export const obterEscopo = cache(async (userId: string, role: InternalRole): Pro
   return {
     todos: false,
     empresas: linhas.map((l) => l.company_id),
-    confidenciais: linhas.filter((l) => l.acessa_confidenciais).map((l) => l.company_id),
+    // Admin da empresa vê as vagas sigilosas da própria empresa (E3).
+    confidenciais: linhas
+      .filter((l) => l.acessa_confidenciais || l.papel === "admin_empresa")
+      .map((l) => l.company_id),
   };
 });
 

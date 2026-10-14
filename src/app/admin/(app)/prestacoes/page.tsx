@@ -1,5 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requireInternalUser } from "@/lib/auth/internal";
+import { redirect } from "next/navigation";
+import { can, requireInternalUser } from "@/lib/auth/internal";
+import { empresasParaFiltro, obterEscopo } from "@/lib/auth/escopo";
 import { criarPrestacao, atualizarPagamento } from "./actions";
 import { SubmitButton } from "@/components/form-buttons";
 import { IconCheck, IconBell, IconChecklist } from "@/components/icons";
@@ -19,22 +21,40 @@ const STATUS_ICON: Record<string, { icon: React.ReactNode; className: string }> 
 };
 
 export default async function PrestacoesPage() {
-  await requireInternalUser("finance.read");
+  const { user, role } = await requireInternalUser();
+  // Admin/superadmin gerenciam tudo; admin da empresa só LÊ a própria empresa.
+  const podeGerir = can(role, "finance.read");
+  if (!podeGerir && !can(role, "finance.empresa")) redirect("/admin/acesso-negado");
   const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
 
-  const [{ data: engagements }, { data: candidatosContratados }, { data: perfis }] = await Promise.all([
-    admin
-      .from("service_engagements")
-      .select("id, candidate_id, modalidade, data_inicio, data_fim, valor, periodicidade, status_pagamento, companies(razao_social)")
-      .order("created_at", { ascending: false }),
-    admin
-      .from("applications")
-      .select("id, candidate_id, status, jobs(titulo, modalidade, companies(razao_social))")
-      .eq("status", "contratado")
-      .order("created_at", { ascending: false })
-      .limit(50),
-    admin.from("profiles").select("id, nome_completo"),
+  let consultaEngagements = admin
+    .from("service_engagements")
+    .select("id, candidate_id, modalidade, data_inicio, data_fim, valor, periodicidade, status_pagamento, companies(razao_social)");
+  if (!podeGerir) consultaEngagements = consultaEngagements.in("company_id", empresasParaFiltro(escopo));
+
+  const [{ data: engagements }, { data: candidatosContratados }] = await Promise.all([
+    consultaEngagements.order("created_at", { ascending: false }),
+    podeGerir
+      ? admin
+          .from("applications")
+          .select("id, candidate_id, status, jobs(titulo, modalidade, companies(razao_social))")
+          .eq("status", "contratado")
+          .order("created_at", { ascending: false })
+          .limit(50)
+      : Promise.resolve({ data: [] as never[] }),
   ]);
+
+  // Nomes: só dos candidatos que aparecem na tela.
+  const idsNomes = [
+    ...new Set([
+      ...(engagements ?? []).map((e) => e.candidate_id),
+      ...(candidatosContratados ?? []).map((a) => a.candidate_id),
+    ]),
+  ];
+  const { data: perfis } = idsNomes.length
+    ? await admin.from("profiles").select("id, nome_completo").in("id", idsNomes)
+    : { data: [] as { id: string; nome_completo: string }[] };
 
   const nomeById = new Map((perfis ?? []).map((p) => [p.id, p.nome_completo]));
 
@@ -43,11 +63,12 @@ export default async function PrestacoesPage() {
       <div className="shrink-0 px-4 md:px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Prestações de serviço</h1>
         <p className="mt-1 text-xs text-text-2">
-          Controle de datas de início/saída e pagamentos — todas as modalidades
+          {podeGerir ? "Controle de datas de início/saída e pagamentos — todas as modalidades" : "Prestações da sua empresa — somente leitura"}
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
+        {podeGerir && (
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
           <h3 className="mb-3 text-sm font-extrabold text-text">Registrar nova prestação</h3>
           {!candidatosContratados || candidatosContratados.length === 0 ? (
@@ -90,6 +111,7 @@ export default async function PrestacoesPage() {
             </form>
           )}
         </div>
+        )}
 
         {!engagements || engagements.length === 0 ? (
           <p className="mt-10 text-center text-sm text-text-2">Nenhuma prestação de serviço registrada.</p>
@@ -131,6 +153,7 @@ export default async function PrestacoesPage() {
                       {e.periodicidade ? ` · ${e.periodicidade}` : ""}
                     </p>
 
+                    {podeGerir && (
                     <form action={atualizarPagamento} className="mt-3 flex flex-wrap items-end gap-2.5">
                       <input type="hidden" name="id" value={e.id} />
                       <label className="flex flex-col gap-1">
@@ -153,6 +176,7 @@ export default async function PrestacoesPage() {
                         Salvar
                       </SubmitButton>
                     </form>
+                    )}
                   </div>
                 </div>
               );

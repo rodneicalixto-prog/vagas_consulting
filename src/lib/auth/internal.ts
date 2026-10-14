@@ -2,8 +2,9 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
-export type InternalRole = "superadmin" | "admin" | "operador";
+export type InternalRole = "superadmin" | "admin" | "admin_empresa" | "operador";
 
 export type Capability =
   | "dashboard.read"
@@ -17,7 +18,9 @@ export type Capability =
   | "companies.approve" // cadastrar/aprovar empresa (admin e superadmin)
   | "finance.read" // prestações e valores (admin e superadmin)
   | "platform.data" // leads, black list e dados da plataforma (admin e superadmin)
-  | "carteira.manage"; // atribuir operadores a empresas (superadmin)
+  | "carteira.manage" // atribuir operadores a empresas e definir limites (superadmin)
+  | "operadores.manage" // convidar/ativar/desativar operadores da própria empresa (admin da empresa)
+  | "finance.empresa"; // prestações da própria empresa, somente leitura (admin da empresa)
 
 const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
   superadmin: [
@@ -45,6 +48,16 @@ const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
     "companies.approve",
     "finance.read",
     "platform.data",
+  ],
+  // Admin da empresa: operador + gestão dos próprios operadores. Não publica
+  // vaga (E4), não aprova empresa e só lê prestações da própria empresa (E5).
+  admin_empresa: [
+    "dashboard.read",
+    "companies.manage",
+    "jobs.manage",
+    "pipeline.manage",
+    "operadores.manage",
+    "finance.empresa",
   ],
   operador: ["dashboard.read", "companies.manage", "jobs.manage", "pipeline.manage"],
 };
@@ -79,7 +92,20 @@ export async function requireInternalUser(capability?: Capability) {
     redirect("/admin/acesso-negado");
   }
 
-  const role = normalizeInternalRole(account.perfil);
+  let role = normalizeInternalRole(account.perfil);
+
+  // Admin da empresa = operador com atribuição ativa de papel admin_empresa.
+  if (role === "operador") {
+    const { data: atribuicao } = await createAdminClient()
+      .from("company_assignments")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("papel", "admin_empresa")
+      .eq("ativo", true)
+      .limit(1);
+    if (atribuicao && atribuicao.length > 0) role = "admin_empresa";
+  }
+
   if (capability && !can(role, capability)) redirect("/admin/acesso-negado");
 
   return { user, account, role };

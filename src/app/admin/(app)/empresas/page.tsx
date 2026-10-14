@@ -1,7 +1,7 @@
 import { Pagination } from "@/components/Pagination";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { criarEmpresa, decidirEmpresa } from "./actions";
-import { requireInternalUser } from "@/lib/auth/internal";
+import { can, requireInternalUser } from "@/lib/auth/internal";
 import { empresasParaFiltro, obterEscopo } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 
@@ -22,7 +22,7 @@ export default async function ModeracaoEmpresasPage({
   const { user, role } = await requireInternalUser("companies.manage");
   const admin = createAdminClient();
   const escopo = await obterEscopo(user.id, role);
-  const somenteLeitura = role === "operador";
+  const somenteLeitura = !can(role, "companies.approve");
   const { page: paginaParam } = await searchParams;
 
   const page = Math.max(1, parseInt(paginaParam || "1", 10));

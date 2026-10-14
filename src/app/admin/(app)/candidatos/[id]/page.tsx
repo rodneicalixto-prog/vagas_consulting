@@ -2,7 +2,7 @@ import Link from "next/link";
 import { avaliarPerfil } from "@/lib/perfil";
 import { notFound, redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requireInternalUser } from "@/lib/auth/internal";
+import { can, requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 import { SubmitButton } from "@/components/form-buttons";
@@ -358,7 +358,7 @@ export default async function CandidatoDetalhePage({
           })()}
         </div>
 
-        {role !== "operador" && (
+        {can(role, "platform.data") && (
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
           <h3 className="mb-1 text-sm font-extrabold text-text">Black list</h3>
           {profile.blacklisted ? (

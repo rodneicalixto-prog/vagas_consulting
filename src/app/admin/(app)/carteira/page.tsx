@@ -1,7 +1,13 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { SubmitButton } from "@/components/form-buttons";
-import { atribuirOperador, alternarConfidenciais, desativarAtribuicao } from "./actions";
+import { calcularVagasOperador, rotuloVagasOperador } from "@/lib/operadores";
+import {
+  atribuirOperador,
+  alternarConfidenciais,
+  desativarAtribuicao,
+  definirLimiteOperadores,
+} from "./actions";
 
 export default async function CarteiraPage() {
   await requireInternalUser("carteira.manage");
@@ -16,12 +22,12 @@ export default async function CarteiraPage() {
       .order("nome_exibicao"),
     admin
       .from("companies")
-      .select("id, razao_social, nome_fantasia")
+      .select("id, razao_social, nome_fantasia, max_operadores")
       .eq("status", "aprovada")
       .order("razao_social"),
     admin
       .from("company_assignments")
-      .select("id, company_id, user_id, ativo, acessa_confidenciais, created_at")
+      .select("id, company_id, user_id, papel, ativo, acessa_confidenciais, created_at")
       .eq("ativo", true)
       .order("created_at", { ascending: true }),
   ]);
@@ -30,6 +36,13 @@ export default async function CarteiraPage() {
     (operadores ?? []).map((o) => [o.user_id, o.nome_exibicao ?? `Operador #${o.user_id.slice(0, 8)}`]),
   );
   const nomeEmpresa = new Map((empresas ?? []).map((e) => [e.id, e.nome_fantasia ?? e.razao_social]));
+
+  // Operadores ativos por empresa (o admin da empresa não conta).
+  const emUsoPorEmpresa = new Map<string, number>();
+  for (const a of atribuicoes ?? []) {
+    if (a.papel === "admin_empresa") continue;
+    emUsoPorEmpresa.set(a.company_id, (emUsoPorEmpresa.get(a.company_id) ?? 0) + 1);
+  }
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -73,6 +86,46 @@ export default async function CarteiraPage() {
           </SubmitButton>
         </form>
 
+        <div className="mb-6 overflow-hidden rounded-2xl border border-border bg-surface">
+          <div className="border-b border-border px-5 py-3 text-[10.5px] font-extrabold uppercase text-text-3">
+            Vagas de operador por empresa
+          </div>
+          {(empresas ?? []).length === 0 && (
+            <div className="px-5 py-6 text-xs text-text-2">Nenhuma empresa aprovada.</div>
+          )}
+          {(empresas ?? []).map((e) => {
+            const v = calcularVagasOperador(e.max_operadores ?? 0, emUsoPorEmpresa.get(e.id) ?? 0);
+            return (
+              <div
+                key={e.id}
+                className="flex flex-wrap items-center gap-3 border-b border-border px-5 py-3 text-[12px] last:border-none"
+              >
+                <div className="min-w-40 flex-1 font-bold text-text">{nomeEmpresa.get(e.id)}</div>
+                <div className={v.cheio ? "font-semibold text-danger" : "text-text-2"}>{rotuloVagasOperador(v)}</div>
+                <form action={definirLimiteOperadores} className="flex items-center gap-2">
+                  <input type="hidden" name="company_id" value={e.id} />
+                  <label className="flex items-center gap-1.5 text-[11px] text-text-2">
+                    Limite
+                    <input
+                      type="number"
+                      name="limite"
+                      min={0}
+                      max={500}
+                      step={1}
+                      required
+                      defaultValue={v.limite}
+                      className="w-20 rounded-lg border border-border bg-bg px-2 py-1.5 text-[12px]"
+                    />
+                  </label>
+                  <SubmitButton pendingLabel="..." className="text-[11px] font-bold text-navy underline">
+                    Salvar limite
+                  </SubmitButton>
+                </form>
+              </div>
+            );
+          })}
+        </div>
+
         {(operadores ?? []).length === 0 && (
           <p className="mb-4 rounded-xl bg-navy-bg px-4 py-3 text-xs text-text-2">
             Nenhum operador ativo ainda. Convide um em <b>Acesso</b> com o perfil Operador.
@@ -94,7 +147,11 @@ export default async function CarteiraPage() {
               key={a.id}
               className="grid grid-cols-4 items-center gap-3 border-b border-border px-5 py-3 text-[12px] last:border-none"
             >
-              <div className="font-bold text-text">{nomeOperador.get(a.user_id) ?? `#${a.user_id.slice(0, 8)}`}</div>
+              <div className="font-bold text-text">{nomeOperador.get(a.user_id) ?? `#${a.user_id.slice(0, 8)}`}
+                {a.papel === "admin_empresa" && (
+                  <span className="ml-1.5 text-[10px] font-extrabold uppercase text-gold">Admin da empresa</span>
+                )}
+              </div>
               <div className="text-text-2">{nomeEmpresa.get(a.company_id) ?? "—"}</div>
               <form action={alternarConfidenciais}>
                 <input type="hidden" name="assignment_id" value={a.id} />

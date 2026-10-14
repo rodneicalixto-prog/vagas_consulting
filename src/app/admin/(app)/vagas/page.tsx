@@ -2,7 +2,7 @@ import { Pagination } from "@/components/Pagination";
 import { exibirRemuneracao } from "@/lib/money";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { alternarConfidencial, decidirVaga } from "./actions";
-import { requireInternalUser } from "@/lib/auth/internal";
+import { can, requireInternalUser } from "@/lib/auth/internal";
 import { empresasParaFiltro, filtroConfidencialJobs, obterEscopo } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 import { CriarVagaForm } from "./criar-vaga-form";
@@ -15,6 +15,7 @@ export default async function CadastroDeVagasPage({
   const { role, user } = await requireInternalUser("jobs.manage");
   const admin = createAdminClient();
   const escopo = await obterEscopo(user.id, role);
+  const podePublicar = can(role, "jobs.publish");
   const { page: paginaParam } = await searchParams;
 
   const page = Math.max(1, parseInt(paginaParam || "1", 10));
@@ -91,6 +92,8 @@ export default async function CadastroDeVagasPage({
             <div className="flex flex-col gap-4">
             {jobs.map((job) => {
               const company = Array.isArray(job.companies) ? job.companies[0] : job.companies;
+              // Vaga publicada só sai do ar por quem tem jobs.publish.
+              const podeDecidir = podePublicar || job.status !== "publicada";
               return (
                 <div key={job.id} className="rounded-2xl border border-border bg-surface p-5">
                   <div className="flex items-center gap-2.5">
@@ -155,23 +158,27 @@ export default async function CadastroDeVagasPage({
                       className="rounded-lg border border-border bg-bg px-3 py-2 text-[12px]"
                     />
                     <div className="flex gap-2.5">
-                      <SubmitButton
-                        name="acao"
-                        value="corrigir"
-                        pendingLabel="Salvando..."
-                        className="flex-1 rounded-lg border border-border bg-bg py-2.5 text-[12px] font-extrabold text-text-2"
-                      >
-                        Voltar a rascunho
-                      </SubmitButton>
-                      <SubmitButton
-                        name="acao"
-                        value="encerrar"
-                        pendingLabel="Salvando..."
-                        className="flex-1 rounded-lg bg-danger py-2.5 text-[12px] font-extrabold text-white"
-                      >
-                        Encerrar
-                      </SubmitButton>
-                      {role !== "operador" && (
+                      {podeDecidir && (
+                        <SubmitButton
+                          name="acao"
+                          value="corrigir"
+                          pendingLabel="Salvando..."
+                          className="flex-1 rounded-lg border border-border bg-bg py-2.5 text-[12px] font-extrabold text-text-2"
+                        >
+                          Voltar a rascunho
+                        </SubmitButton>
+                      )}
+                      {podeDecidir && (
+                        <SubmitButton
+                          name="acao"
+                          value="encerrar"
+                          pendingLabel="Salvando..."
+                          className="flex-1 rounded-lg bg-danger py-2.5 text-[12px] font-extrabold text-white"
+                        >
+                          Encerrar
+                        </SubmitButton>
+                      )}
+                      {podePublicar && (
                         <SubmitButton
                           name="acao"
                           value="publicar"

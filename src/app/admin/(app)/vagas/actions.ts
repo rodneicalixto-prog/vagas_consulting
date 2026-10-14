@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirEmpresa, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
@@ -16,7 +17,7 @@ export async function criarVaga(formData: FormData) {
   // Carteira: o operador só cadastra vaga em empresa atribuída e ativa.
   const escopo = await obterEscopo(user.id, role);
   exigirEmpresa(escopo, validated.company_id);
-  if (role === "operador") {
+  if (!escopo.todos) {
     const { data: empresa } = await createAdminClient()
       .from("companies")
       .select("status")
@@ -26,7 +27,7 @@ export async function criarVaga(formData: FormData) {
       throw new Error("A empresa precisa estar aprovada para cadastrar vagas.");
     }
   }
-  // Só admin/superadmin marcam vaga como confidencial.
+  // Admin, superadmin e admin da empresa marcam vaga como confidencial.
   const confidencial = role !== "operador" && formData.get("confidencial") === "on";
 
   const { company_id: companyId, titulo, modalidade, local, descricao, requisitos, remuneracao_texto: remuneracao } = validated;
@@ -64,9 +65,13 @@ export async function criarVaga(formData: FormData) {
   revalidatePath("/admin");
 }
 
-/** Marca/desmarca vaga confidencial. Só admin e superadmin. */
+/**
+ * Marca/desmarca vaga confidencial. Admin, superadmin e admin da empresa
+ * (este só nas vagas da própria empresa, garantido por exigirVaga).
+ */
 export async function alternarConfidencial(formData: FormData) {
-  const { user, role } = await requireInternalUser("companies.approve");
+  const { user, role } = await requireInternalUser("jobs.manage");
+  if (role === "operador") redirect("/admin/acesso-negado");
   const jobId = String(formData.get("job_id") ?? "");
   const valor = formData.get("valor") === "true";
   if (!/^[0-9a-f-]{36}$/.test(jobId)) throw new Error("Vaga inválida.");

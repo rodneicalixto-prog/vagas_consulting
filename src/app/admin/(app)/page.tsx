@@ -93,7 +93,9 @@ export default async function AdminOverviewPage({
   const sp = await searchParams;
   const admin = createAdminClient();
   const escopo = await obterEscopo(user.id, role);
-  const ehOperador = role === "operador";
+  const ehAdminEmpresa = role === "admin_empresa";
+  // Operador e admin da empresa: sem denúncias nem dados da plataforma.
+  const ehOperador = role === "operador" || ehAdminEmpresa;
 
   const periodo = parsePeriodo(sp.periodo);
   const agora = agoraMs();
@@ -380,7 +382,7 @@ export default async function AdminOverviewPage({
       <div className="shrink-0 px-4 md:px-9 pt-7">
         <h1 className="text-xl font-extrabold text-text">Visão geral</h1>
         <p className="mt-1 text-xs text-text-2">
-          {ehOperador ? "Indicadores da sua carteira" : "Indicadores de todas as empresas"} · clique em um card para ver
+          {ehAdminEmpresa ? "Indicadores da sua empresa" : ehOperador ? "Indicadores da sua carteira" : "Indicadores de todas as empresas"} · clique em um card para ver
           os dados
         </p>
 
@@ -431,7 +433,7 @@ export default async function AdminOverviewPage({
           <Kpi label="Vagas em aberto" value={abertas.length} href={link({ detalhe: "vagas_abertas" })} ativo={detalhe === "vagas_abertas"} />
           <Kpi label="Vagas preenchidas" value={preenchidas.length} href={link({ detalhe: "vagas_preenchidas" })} ativo={detalhe === "vagas_preenchidas"} />
           <Kpi
-            label={ehOperador ? "Candidatos da carteira" : "Candidatos cadastrados"}
+            label={ehAdminEmpresa ? "Candidatos da sua empresa" : ehOperador ? "Candidatos da carteira" : "Candidatos cadastrados"}
             value={totalCadastrados}
             href="/admin/candidatos"
           />

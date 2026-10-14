@@ -68,7 +68,7 @@ export default async function ContatosPage({
         <h1 className="text-xl font-extrabold text-text">Contatos</h1>
         <p className="mt-1 text-xs text-text-2">
           Nome, telefone, vaga e etapa. Toque no telefone para abrir a conversa no WhatsApp.
-          {role === "operador" &&
+          {role !== "superadmin" && role !== "admin" &&
             " O telefone aparece enquanto o candidato tem candidatura em andamento na sua carteira."}
         </p>
       </div>

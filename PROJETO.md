@@ -1292,6 +1292,15 @@ sessões futuras.
     de operadores da empresa (limite − em uso), configurável pelo
     superadmin; padrão sugerido 4 para empresa nova. Spec do admin da
     empresa completa (E1-E9); Fase 1 aguarda ordem e "sim" da migration.
+94. **Admin da empresa, Fase 1 construída (14/10/2026)**: migration 0024
+    aplicada (limite `max_operadores` padrão 4, `papel` na atribuição,
+    gatilho do limite, um admin por empresa). Papel `admin_empresa` como
+    operador com atribuição de papel admin (sem alterar enum). Telas
+    `/admin/operadores` e limite na Carteira; convite de admin da empresa
+    em Acesso; botões das telas existentes ajustados por capacidade;
+    prestações em leitura da própria empresa. Construído por 3 agentes em
+    paralelo e revisado: corrigido risco de convidar e-mail de candidato.
+    33 testes; trava do banco validada. Sem teste manual com operador real.
 
 ## 3. Escopo do MVP (revisado)
 

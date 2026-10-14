@@ -179,6 +179,7 @@ export type Database = {
       }
       companies: {
         Row: {
+          max_operadores: number
           cnpj: string | null
           created_at: string
           decidido_em: string | null
@@ -194,6 +195,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          max_operadores?: number
           cnpj?: string | null
           created_at?: string
           decidido_em?: string | null
@@ -209,6 +211,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          max_operadores?: number
           cnpj?: string | null
           created_at?: string
           decidido_em?: string | null
@@ -227,6 +230,7 @@ export type Database = {
       }
       company_assignments: {
         Row: {
+          papel: string
           acessa_confidenciais: boolean
           ativo: boolean
           company_id: string
@@ -236,6 +240,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          papel?: string
           acessa_confidenciais?: boolean
           ativo?: boolean
           company_id: string
@@ -245,6 +250,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          papel?: string
           acessa_confidenciais?: boolean
           ativo?: boolean
           company_id?: string

@@ -159,3 +159,32 @@ O admin da empresa **cria e acompanha vagas sigilosas** da própria empresa.
 ### Fechamento (14/10/2026)
 
 Todas as decisões E1 a E9 estão respondidas. A **Fase 1** está pronta para construir, com **limite por empresa sem valor fixo no código** (coluna `max_operadores`, padrão 4 para empresa nova, editável só pelo superadmin). A migration só será aplicada com o "sim" explícito do Rodnei.
+
+## 11. Fase 1 construída e em produção (14/10/2026)
+
+**Modelo implementado (difere da proposta inicial em um ponto):** o admin da
+empresa **não** é valor novo do enum `admin_perfil`. É um usuário de perfil
+`operador` com atribuição ativa de `papel = 'admin_empresa'` em
+`company_assignments` (índice único: uma pessoa, uma empresa). Evita alterar
+enum em produção e mantém o escopo por empresa já existente.
+
+| Entrega | Onde |
+|---|---|
+| Migration `0024_admin_empresa.sql` (aplicada) | `companies.max_operadores` (padrão 4), `company_assignments.papel`, índice único do admin, gatilho do limite |
+| Papel e capabilities | `src/lib/auth/internal.ts` (`admin_empresa`, `operadores.manage`, `finance.empresa`) |
+| Escopo da empresa inteira com sigilosas | `src/lib/auth/escopo.ts` |
+| Tela Operadores (convite, ativar, desativar, acesso de confiança, contador) | `/admin/operadores` |
+| Limite por empresa (só superadmin) e convite de admin da empresa | `/admin/carteira`, `/admin/acesso` |
+| Ajuste dos botões e telas por capacidade | vagas, candidatos, empresas, dashboard, agenda da equipe, prestações (leitura da empresa) |
+| Testes | `src/lib/__tests__/operadores.test.mjs`; trava do banco testada com transação revertida |
+
+**Segurança verificada:** a empresa vem sempre da sessão; o gatilho do banco
+recusa passar do limite (testado: `limite_operadores_excedido`); convidar
+e-mail que já é de candidato ou de outro perfil é recusado e a conta dele
+nunca é apagada pela limpeza de erro.
+
+**Limitações conhecidas:** (1) candidatura não tem dono individual, então
+E7 (redistribuir) é a própria fila da empresa e não há ação de redistribuir;
+(2) erros de formulário aparecem na página de erro do Next, não inline;
+(3) o convite não é transacional entre autenticação e perfil (há limpeza, mas
+uma falha rara pode deixar conta sem perfil).

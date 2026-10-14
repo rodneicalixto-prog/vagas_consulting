@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { obterEscopo } from "@/lib/auth/escopo";
 
 const STATUS_LABEL: Record<string, string> = {
   agendado: "Agendado",
@@ -30,20 +31,42 @@ function formatarDataHora(iso: string) {
 }
 
 export default async function AgendaEquipePage() {
-  const { role } = await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   if (role === "operador") redirect("/admin/agenda");
 
   const admin = createAdminClient();
+  const ehAdminEmpresa = role === "admin_empresa";
+
+  // Admin da empresa: só responsáveis da própria empresa (operadores com
+  // atribuição ativa nas mesmas empresas) + ele mesmo.
+  let idsEquipe: string[] | null = null;
+  if (ehAdminEmpresa) {
+    const escopo = await obterEscopo(user.id, role);
+    const { data: atrib } = escopo.empresas.length
+      ? await admin
+          .from("company_assignments")
+          .select("user_id")
+          .in("company_id", escopo.empresas)
+          .eq("ativo", true)
+      : { data: [] as { user_id: string }[] };
+    idsEquipe = [...new Set([user.id, ...(atrib ?? []).map((a) => a.user_id)])];
+  }
 
   const seteDiasAtras = dataDeCorte(7);
 
+  let consultaCompromissos = admin
+    .from("compromissos")
+    .select("id, titulo, tipo, descricao, inicio, fim, status, responsavel_id")
+    .gte("inicio", seteDiasAtras);
+  let consultaEquipe = admin.from("admin_users").select("user_id, nome_exibicao, perfil");
+  if (idsEquipe) {
+    consultaCompromissos = consultaCompromissos.in("responsavel_id", idsEquipe);
+    consultaEquipe = consultaEquipe.in("user_id", idsEquipe);
+  }
+
   const [{ data: compromissos }, { data: equipe }] = await Promise.all([
-    admin
-      .from("compromissos")
-      .select("id, titulo, tipo, descricao, inicio, fim, status, responsavel_id")
-      .gte("inicio", seteDiasAtras)
-      .order("inicio", { ascending: true }),
-    admin.from("admin_users").select("user_id, nome_exibicao, perfil").order("nome_exibicao"),
+    consultaCompromissos.order("inicio", { ascending: true }),
+    consultaEquipe.order("nome_exibicao"),
   ]);
 
   const nomePorResponsavel = new Map(
@@ -60,7 +83,9 @@ export default async function AgendaEquipePage() {
           </Link>
         </div>
         <p className="mt-1 text-xs text-text-2">
-          Todos os compromissos de todos os operadores/administradores — últimos 7 dias em diante
+          {ehAdminEmpresa
+            ? "Compromissos da equipe da sua empresa — últimos 7 dias em diante"
+            : "Todos os compromissos de todos os operadores/administradores — últimos 7 dias em diante"}
         </p>
       </div>
 

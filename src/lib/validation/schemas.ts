@@ -84,9 +84,16 @@ export const SetConsentSchema = z.object({
 // Admin: Acesso
 export const InviteAdminSchema = z.object({
   email: z.string().email("Email inválido"),
-  perfil: z.enum(["admin", "operador"], { error: "Perfil deve ser admin ou operador" }),
+  perfil: z.enum(["admin", "operador", "admin_empresa"], {
+    error: "Perfil deve ser admin, operador ou admin da empresa",
+  }),
   nome: z.string().nullable().optional(),
   telefone: z.string().nullable().optional(),
+  // Obrigatório quando perfil = admin_empresa (conferido na action).
+  company_id: z.string().uuid("Empresa inválida").optional().or(z.literal("")),
+}).refine((v) => v.perfil !== "admin_empresa" || (v.company_id && v.company_id.length > 0), {
+  error: "Selecione a empresa do admin da empresa",
+  path: ["company_id"],
 });
 
 // Convites (vaga temporária)

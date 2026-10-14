@@ -83,7 +83,7 @@ export default async function AgendaEntrevistasPage({
           </Link>
         </div>
         <p className="mt-1 text-xs text-text-2">
-          {role === "operador"
+          {role !== "superadmin" && role !== "admin"
             ? "Entrevistas das vagas da sua carteira e as que você marcou"
             : "Entrevistas de todas as empresas"}
         </p>

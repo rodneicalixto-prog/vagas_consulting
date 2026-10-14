@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requireInternalUser } from "@/lib/auth/internal";
+import { can, requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { validarCandidato } from "./actions";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
@@ -98,7 +98,7 @@ export default async function CandidatosPage() {
             >
               Visualizar
             </Link>
-            {role !== "operador" && (
+            {can(role, "platform.data") && (
             <form action={validarCandidato}>
               <input type="hidden" name="candidate_id" value={row.id} />
               <input type="hidden" name="acao" value="aprovar" />
@@ -111,7 +111,7 @@ export default async function CandidatosPage() {
               </button>
             </form>
             )}
-            {role !== "operador" && (
+            {can(role, "platform.data") && (
             <form action={validarCandidato}>
               <input type="hidden" name="candidate_id" value={row.id} />
               <input type="hidden" name="acao" value="reprovar" />
