@@ -6,7 +6,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 import { SubmitButton } from "@/components/form-buttons";
-import { statusLabel, statusPillClass, safeHttpUrl } from "@/lib/format";
+import { statusLabel, statusPillClass, safeHttpUrl, STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
 import type { ExperienciaProfissional } from "@/app/experiencias/actions";
 import { atualizarStatusCandidatura } from "./actions";
@@ -88,12 +88,16 @@ export default async function CandidatoDetalhePage({
 
   let idsCandidaturas: string[] | null = null;
   let idsConvites: string[] | null = null;
+  let candidaturasEmAndamento: number | null = null;
   if (vagasIds) {
     const [{ data: apps }, { data: invs }] = await Promise.all([
-      client.from("applications").select("id").eq("candidate_id", id).in("job_id", vagasIds),
+      client.from("applications").select("id, status").eq("candidate_id", id).in("job_id", vagasIds),
       client.from("invites").select("id").eq("candidate_id", id).in("job_id", vagasIds),
     ]);
     idsCandidaturas = (apps ?? []).map((a) => a.id);
+    candidaturasEmAndamento = (apps ?? []).filter((a) =>
+      STATUS_CANDIDATURA_EM_ABERTO.includes(a.status),
+    ).length;
     idsConvites = (invs ?? []).map((i) => i.id);
   }
   const NENHUM = "00000000-0000-0000-0000-000000000000";
@@ -133,7 +137,7 @@ export default async function CandidatoDetalhePage({
 
   // Operador: contato e currículo só depois que o candidato se candidata a
   // vaga da carteira (convite sozinho libera o perfil, não o contato).
-  const contatoRestrito = idsCandidaturas !== null && idsCandidaturas.length === 0;
+  const contatoRestrito = candidaturasEmAndamento !== null && candidaturasEmAndamento === 0;
   const profile = contatoRestrito
     ? { ...perfilBruto, telefone: null, endereco: null, curriculo_url: null }
     : perfilBruto;

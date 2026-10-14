@@ -46,10 +46,13 @@ export default async function TalentosPage({
     consultaVagas = consultaVagas.in("company_id", empresasParaFiltro(escopo)).or(filtroConfidencialJobs(escopo));
   }
 
-  const [{ data: talentos, count }, { data: vagas }] = await Promise.all([
-    consulta.order("nome_completo").range(offset, offset + limit - 1),
-    consultaVagas.order("titulo"),
-  ]);
+  const semCarteira = !escopo.todos && escopo.empresas.length === 0;
+  const [{ data: talentos, count }, { data: vagas }] = semCarteira
+    ? [{ data: [], count: 0 }, { data: [] }]
+    : await Promise.all([
+        consulta.order("nome_completo").range(offset, offset + limit - 1),
+        consultaVagas.order("titulo"),
+      ]);
 
   const totalPages = Math.ceil((count || 0) / limit);
 
@@ -82,7 +85,12 @@ export default async function TalentosPage({
           </button>
         </form>
 
-        {(vagas ?? []).length === 0 && (
+        {semCarteira && (
+          <p className="mb-4 rounded-xl bg-gold-bg px-4 py-3 text-xs text-text-2">
+            Você ainda não tem empresa atribuída. Peça ao superadmin para incluir você em uma carteira.
+          </p>
+        )}
+        {!semCarteira && (vagas ?? []).length === 0 && (
           <p className="mb-4 rounded-xl bg-navy-bg px-4 py-3 text-xs text-text-2">
             Não há vaga temporária publicada na sua carteira para convidar. Publique uma vaga (ou peça a um admin) para
             liberar o botão Convidar.

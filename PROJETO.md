@@ -1190,6 +1190,19 @@ sessões futuras.
     mais candidaturas e em quantas empresas, vagas mais disputadas, volume
     por empresa; KPI "Candidaturas (7 dias)" na visão geral. Spec v0.4
     atualizada. tsc, eslint e build passam. **Pendente:** push.
+77. **Revisão em paralelo e correções (14/10/2026)**: três agentes
+    (segurança, cobertura do escopo, testes) sobre o diff da carteira.
+    Corrigido: Minha agenda listava e vinculava candidaturas de outras
+    empresas (agora só vagas da carteira, com `exigirVaga` na criação);
+    e-mail na lista de candidatos só após candidatura; contato no detalhe
+    só com candidatura **em andamento**; sigilo da candidatura deixou de
+    pedir o nome da empresa confidencial ao navegador; banco de talentos
+    vazio para operador sem carteira; operador só cria vaga em empresa
+    aprovada. Testes: 18 unitários em `src/lib/__tests__` (`npm test`).
+    **Não corrigido por decisão de produto:** operador poder encerrar vaga
+    publicada; revelação do nome da empresa após reprovação; filtros por
+    lista de UUIDs podem truncar com milhares de vagas (fail-closed).
+    **Pendente:** push.
 
 ## 3. Escopo do MVP (revisado)
 

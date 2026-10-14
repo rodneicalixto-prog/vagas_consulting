@@ -16,6 +16,16 @@ export async function criarVaga(formData: FormData) {
   // Carteira: o operador só cadastra vaga em empresa atribuída e ativa.
   const escopo = await obterEscopo(user.id, role);
   exigirEmpresa(escopo, validated.company_id);
+  if (role === "operador") {
+    const { data: empresa } = await createAdminClient()
+      .from("companies")
+      .select("status")
+      .eq("id", validated.company_id)
+      .maybeSingle();
+    if (empresa?.status !== "aprovada") {
+      throw new Error("A empresa precisa estar aprovada para cadastrar vagas.");
+    }
+  }
   // Só admin/superadmin marcam vaga como confidencial.
   const confidencial = role !== "operador" && formData.get("confidencial") === "on";
 

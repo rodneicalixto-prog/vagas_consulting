@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
-import { candidatosVisiveis, obterEscopo } from "@/lib/auth/escopo";
+import { candidatosVisiveis, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { validarCandidato } from "./actions";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 
@@ -38,10 +38,22 @@ export default async function CandidatosPage() {
     admin.auth.admin.listUsers({ perPage: 1000 }),
   ]);
 
+  // Operador: e-mail só de quem já se candidatou a vaga da carteira
+  // (convite sozinho libera o perfil, não o contato).
+  const vagasIds = await vagasVisiveis(escopo);
+  let comCandidatura: Set<string> | null = null;
+  if (vagasIds) {
+    const { data: apps } = await admin
+      .from("applications")
+      .select("candidate_id")
+      .in("job_id", vagasIds);
+    comCandidatura = new Set((apps ?? []).map((a) => a.candidate_id));
+  }
+
   const emailById = new Map(usersPage?.users.map((u) => [u.id, u.email]) ?? []);
   const candidatos: CandidatoRow[] = (profiles ?? []).map((p) => ({
     ...p,
-    email: emailById.get(p.id) ?? "—",
+    email: comCandidatura && !comCandidatura.has(p.id) ? "—" : (emailById.get(p.id) ?? "—"),
   }));
 
   const columns: DataTableColumn[] = [

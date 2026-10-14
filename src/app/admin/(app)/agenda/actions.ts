@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 
 export async function criarCompromisso(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   const admin = createAdminClient();
 
   const titulo = String(formData.get("titulo") ?? "").trim();
@@ -19,6 +20,18 @@ export async function criarCompromisso(formData: FormData) {
 
   if (!titulo || !dataInicio || !horaInicio) {
     throw new Error("Preencha título, data e horário de início.");
+  }
+
+  if (tipo === "entrevista" && applicationId) {
+    // Carteira: a candidatura vinculada precisa ser de vaga do escopo.
+    if (!/^[0-9a-f-]{36}$/i.test(applicationId)) throw new Error("Candidatura inválida.");
+    const { data: app } = await admin
+      .from("applications")
+      .select("job_id")
+      .eq("id", applicationId)
+      .maybeSingle();
+    if (!app) throw new Error("Candidatura inválida.");
+    await exigirVaga(await obterEscopo(user.id, role), app.job_id);
   }
 
   const inicio = new Date(`${dataInicio}T${horaInicio}`).toISOString();

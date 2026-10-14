@@ -33,21 +33,26 @@ export default function CandidaturaPage({
 
   useEffect(() => {
     const supabase = createClient();
-    supabase
-      .from("jobs")
-      .select("id, titulo, local, confidencial, companies(nome_fantasia, razao_social)")
-      .eq("id", id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) {
-          setVaga({
-            id: data.id,
-            titulo: data.titulo,
-            empresa: nomeEmpresa(data.companies, data.confidencial),
-            local: data.local ?? "",
-          });
-        }
-      });
+    // Sigilo: a empresa só é pedida ao navegador quando a vaga NÃO é
+    // confidencial; assim o nome real nem chega na resposta de rede.
+    (async () => {
+      const { data } = await supabase
+        .from("jobs")
+        .select("id, titulo, local, confidencial")
+        .eq("id", id)
+        .maybeSingle();
+      if (!data) return;
+      let empresa = nomeEmpresa(null, true);
+      if (!data.confidencial) {
+        const { data: comEmpresa } = await supabase
+          .from("jobs")
+          .select("companies(nome_fantasia, razao_social)")
+          .eq("id", id)
+          .maybeSingle();
+        empresa = nomeEmpresa(comEmpresa?.companies, false);
+      }
+      setVaga({ id: data.id, titulo: data.titulo, empresa, local: data.local ?? "" });
+    })();
   }, [id]);
 
   const onSubmit = () => {

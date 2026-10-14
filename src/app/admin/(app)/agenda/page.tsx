@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import { criarCompromisso, atualizarStatusCompromisso, excluirCompromisso } from "./actions";
@@ -34,6 +35,13 @@ function formatarDataHora(iso: string) {
 export default async function AgendaPage() {
   const { user, role } = await requireInternalUser("pipeline.manage");
   const admin = createAdminClient();
+  // Carteira: o seletor de candidaturas só oferece vagas do escopo.
+  const vagasIds = await vagasVisiveis(await obterEscopo(user.id, role));
+  let consultaCandidaturas = admin
+    .from("applications")
+    .select("id, candidate_id, status, jobs(titulo, companies(razao_social, nome_fantasia))")
+    .in("status", STATUS_CANDIDATURA_EM_ABERTO);
+  if (vagasIds) consultaCandidaturas = consultaCandidaturas.in("job_id", vagasIds);
 
   const [{ data: compromissos }, { data: candidaturasAbertas }] = await Promise.all([
     admin
@@ -41,12 +49,7 @@ export default async function AgendaPage() {
       .select("id, titulo, tipo, descricao, inicio, fim, status, application_id")
       .eq("responsavel_id", user.id)
       .order("inicio", { ascending: true }),
-    admin
-      .from("applications")
-      .select("id, candidate_id, status, jobs(titulo, companies(razao_social, nome_fantasia))")
-      .in("status", STATUS_CANDIDATURA_EM_ABERTO)
-      .order("created_at", { ascending: false })
-      .limit(50),
+    consultaCandidaturas.order("created_at", { ascending: false }).limit(50),
   ]);
 
   const candidateIds = [...new Set((candidaturasAbertas ?? []).map((c) => c.candidate_id))];

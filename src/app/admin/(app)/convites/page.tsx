@@ -27,8 +27,8 @@ export default async function ConvitesAdminPage() {
     .select("id, titulo, companies(nome_fantasia, razao_social)")
     .eq("status", "publicada")
     .eq("modalidade", "temporaria");
-  // Carteira: operador só vê convites/vagas da carteira e convida quem já
-  // tem candidatura ou convite em vaga visível.
+  // Carteira: operador só vê convites/vagas da carteira; o seletor lista
+  // candidatos aprovados (banco de talentos, sem contato).
   if (vagasIds) consultaConvites = consultaConvites.in("job_id", vagasIds);
   if (candidatosIds) consultaCandidatos = consultaCandidatos.eq("status_validacao", "aprovado");
   if (!escopo.todos) {
