@@ -1215,6 +1215,11 @@ sessões futuras.
     global (admin da plataforma), não por empresa contratante; fazer por
     empresa exige tabela e tela novas (ver pergunta ao Rodnei).
     **Pendente:** push.
+79. **Projeto de teste apagado (14/10/2026)**: o Rodnei apagou o projeto
+    `testes-vagas` (ref `tfkdobclqfnuqxfbqjwt`, org Plataforma_calixto), que
+    guardava cópia com dados reais. Confirmado pelo painel da organização
+    (só resta o projeto do Priscilla Klein). **Pendente:** `npx supabase
+    logout` — a CLI ainda estava autenticada na verificação seguinte.
 
 ## 3. Escopo do MVP (revisado)
 
