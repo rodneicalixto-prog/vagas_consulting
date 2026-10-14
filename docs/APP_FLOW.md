@@ -1,6 +1,6 @@
 # Fluxo do App (App Flow)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir da árvore de rotas real em `src/app/`.
@@ -65,8 +65,7 @@
 
 - Candidato recebe convite direto pra temporário (`invites`) sem passar
   pelo fluxo de candidatura — aceita/recusa/confirma pelo próprio fluxo de
-  `/processos` ou mensagens. [A PREENCHER: confirmar se há tela dedicada
-  pra aceite de convite ou se é só via mensagens.]
+  `/processos` ou mensagens. [A PREENCHER: o Rodnei ainda não definiu (14/10/2026) se haverá tela dedicada de aceite de convite]
 - Candidato reprovado (`status = reprovado_cliente`) ou desistente —
   estado terminal, sem retomada automática.
 - Admin corrige vaga em vez de publicar/encerrar (`acao: "corrigir"` em
@@ -85,10 +84,7 @@
 
 - Sem internet: `offline.html` (fallback do service worker).
 - Sem permissão administrativa: `/admin/acesso-negado`.
-- [A PREENCHER: telas de "nenhuma vaga encontrada", "nenhuma candidatura
-  ainda" etc. existem no componente mas não foram inventariadas
-  individualmente aqui — não é possível confirmar cobertura completa sem
-  ler cada componente de UI a fundo.]
+- **Inventário de estados vazios feito** — ver Anexo A de `UI_UX_BRIEFING.md` (14/10/2026).
 
 ## Primeiro uso
 

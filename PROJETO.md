@@ -828,6 +828,19 @@ sessões futuras.
     2 perfis). Restam 18, todos dependem de decisão do Rodnei (PRD 3, TRD 3,
     UI/UX 7, App Flow 2, Plano 2, Schema 1). Commit local, sem push.
 
+44. **Respostas do Rodnei aplicadas aos 6 documentos, v1.2 (14/10/2026)**:
+    operação anterior = planilha; KPI inicial = vagas cadastradas +
+    interações de candidatos + apps baixados; próxima fase = agente de IA +
+    WhatsApp; sem bot-protection aceito no início; staging = previews da
+    Vercel (domínio próprio possível); sem referência visual externa;
+    decisões de documentar tokens tipográficos, definir breakpoints, meta
+    WCAG 2.1 AA e auditoria de acessibilidade; sem política/job de retenção.
+    Gerados: Anexo A (inventário de 33 telas e estados vazios) e Anexo B
+    (contraste da paleta) em `docs/UI_UX_BRIEFING.md`. Achado: `text-3`
+    (#9aa0a8) e dourado sobre branco falham AA. Restam 5 campos abertos
+    (metas numéricas, SLA/backup em linguagem simples, aceite de convite,
+    ativos visuais, responsáveis do backlog). Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

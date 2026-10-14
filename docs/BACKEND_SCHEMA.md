@@ -1,6 +1,6 @@
 # Schema do Backend
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Gerado a partir do schema **real** do Supabase (`tfipbxjslpxbaybpxsql`,
@@ -161,9 +161,7 @@ correções pendentes.
 ## Retenção e exclusão
 
 Tratado via `privacy_requests` (tipo `eliminacao`) e campo `blacklisted`
-em `profiles` (soft — não é exclusão de dados). [A PREENCHER: existe
-política formal de retenção (ex.: apagar currículo N meses após rejeição)?
-Não há job/cron pra isso além do arquivamento de vagas.]
+em `profiles` (soft — não é exclusão de dados). **Sem política de retenção e sem job de limpeza** (Rodnei, 14/10/2026: não há job). Decisão de política adiada.
 
 ## Migração e dados iniciais
 

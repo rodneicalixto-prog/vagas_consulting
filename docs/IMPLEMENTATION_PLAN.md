@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > O app já está construído (18 migrations, 15+ commits, em produção). Este
@@ -50,7 +50,7 @@ arquivamento automático.
 | Recuperação de senha | ❌ Não implementada |
 | MFA administrativo | ❌ Não implementado (campo decorativo) |
 | Testes automatizados de autorização | ❌ Não implementados |
-| Acessibilidade auditada | [A PREENCHER — não há registro] |
+| Acessibilidade auditada | **Auditoria aprovada para agendar** (Rodnei, 14/10/2026); meta WCAG 2.1 AA; ainda não executada |
 
 ## Etapa 6 — Lançamento ✅ Em produção
 

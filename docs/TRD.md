@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -84,19 +84,16 @@ Next.js (Vercel) ── Server Actions / Route Handlers
   `audit_log`).
 - Vercel BotID foi **removido** (commit `c35cc5f`) — suspeito de causar
   "This page couldn't load" em produção; sem substituto de bot-protection
-  ativo hoje. [A PREENCHER: aceitar esse risco ou buscar alternativa?]
+  ativo hoje. **Decisão (14/10/2026): risco aceito no início**; revisar quando houver abuso de cadastro.
 
 ## Metas de desempenho e confiabilidade
 
-[A PREENCHER — pergunta: existe meta formal de tempo de resposta,
-disponibilidade (SLA) ou política de backup do banco além do backup padrão
-do Supabase Free? Não está registrado em nenhum `.md`.]
+[A PREENCHER — pergunta reformulada: o app precisa garantir um tempo máximo de carregamento, ficar no ar quase sempre e ter cópia de segurança do banco além da automática do Supabase gratuito? Não está registrado em nenhum `.md`.]
 
 ## Ambientes e entrega
 
 - Único ambiente de produção observado (`main` → deploy automático Vercel).
-- [A PREENCHER: existe ambiente de staging/preview usado de fato, ou só os
-  preview deployments automáticos de PR da Vercel?]
+- Hoje só os **preview deployments automáticos da Vercel**. O Rodnei indicou (14/10/2026) que é possível contratar um domínio próprio para staging; ainda não contratado.
 - Sem pipeline de CI com testes automatizados — `npm run lint` e
   `npm run build` são os únicos checks conhecidos, rodados manualmente.
 

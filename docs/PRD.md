@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do código real do repositório (`vagas_consulting`),
@@ -31,16 +31,11 @@ vaga diretamente, elas solicitam e a equipe interna cadastra e publica.
 
 ## Problema e solução improvisada de hoje
 
-[A PREENCHER — pergunta: antes do Vagas Consulting, como a operação
-funcionava? Planilha, WhatsApp, outro sistema? Isso não está registrado em
-nenhum `.md` do projeto.]
+**Antes do app:** a operação era feita em **planilha** (resposta do Rodnei, 14/10/2026).
 
 ## Objetivo e medida de sucesso
 
-[A PREENCHER — pergunta: qual é o sinal de sucesso do MVP? Nº de vagas
-publicadas/mês, nº de contratações fechadas, tempo médio candidatura→
-contratação, ou outro? O `PROJETO.md` documenta o *escopo* funcional mas não
-registra uma métrica-alvo.]
+**Sinal de sucesso (decisão de 14/10/2026):** indicador combinado, no início, de **vagas cadastradas**, **interações de candidatos** (candidaturas) e **volume de apps baixados** (`app_install_events`). Metas numéricas: [A PREENCHER: valores-alvo mensais].
 
 ## Funcionalidades principais
 
@@ -62,7 +57,7 @@ registra uma métrica-alvo.]
 | Arquivamento automático de vagas expiradas (cron diário) | Higiene do catálogo | Média | ✅ Construído — **estava quebrado em produção até 28/09/2026 (migration nunca aplicada), corrigido nesta sessão** |
 | Recuperação de senha | Acesso básico esperado | Essencial | ❌ **Não implementado** |
 | MFA administrativo | Segurança do painel (PII de candidatos) | Alta | ❌ **Não implementado** (campo `mfa_ativo` existe na UI, sem fluxo real) |
-| Agente de IA + WhatsApp (Evolution API + n8n) para triagem/vídeo-entrevista | Expande canal de atendimento | [A PREENCHER] | ⬜ Planejado, não iniciado (ver `PROJETO.md` seção 8.0) — Rodnei pediu explicitamente pra não começar sem plano próprio |
+| Agente de IA + WhatsApp (Evolution API + n8n) para triagem/vídeo-entrevista | Expande canal de atendimento | Próxima fase (Rodnei, 14/10/2026) | ⬜ Planejado, não iniciado (ver `PROJETO.md` seção 8.0) — Rodnei pediu explicitamente pra não começar sem plano próprio |
 
 ## Fora da versão 1
 

@@ -1,6 +1,6 @@
 # Briefing de UI e UX
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.2 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir de `src/app/globals.css`, `src/app/manifest.ts`
@@ -10,15 +10,11 @@
 
 Candidatos a vagas efetivas/PJ/temporárias e equipe interna de RH/operação.
 Três adjetivos observados no design real: **sóbrio, confiável, corporativo**
-(paleta navy + dourado, tipografia geométrica limpa). [A PREENCHER: confirmar
-se esses três adjetivos são os pretendidos ou se há um briefing de marca
-diferente — não está documentado fora do CSS.]
+(paleta navy + dourado, tipografia geométrica limpa). Observado no design; o Rodnei não confirmou o uso pretendido (14/10/2026) — manter como está até haver briefing de marca.
 
 ## Produtos de referência
 
-[A PREENCHER — pergunta: quais apps/sites foram usados como referência
-visual? Não há registro disso em nenhum `.md`; a logomarca (`logomarca.png`,
-na pasta pai do projeto) foi o único ativo de marca recebido.]
+**Nenhuma referência visual externa** (resposta do Rodnei, 14/10/2026).
 
 ## Paleta de cores (extraída de `globals.css`)
 
@@ -48,9 +44,7 @@ na pasta pai do projeto) foi o único ativo de marca recebido.]
 ## Tipografia
 
 Família: **Manrope**, com fallback `"Segoe UI", Arial, sans-serif`
-(`--font-sans`). [A PREENCHER: escala de tamanhos de título/corpo não está
-centralizada em tokens CSS — segue as classes utilitárias do Tailwind
-diretamente nos componentes, não há uma escala documentada à parte.]
+(`--font-sans`). **Decisão (14/10/2026): documentar a escala tipográfica em tokens** — pendente de execução. Hoje segue as classes utilitárias do Tailwind direto nos componentes.
 
 ## Componentes
 
@@ -63,27 +57,16 @@ componentes especializados: `data-table.tsx` (com paginação, ver
 
 ## Regras de layout
 
-[A PREENCHER: grid, breakpoints e espaçamento seguem o padrão default do
-Tailwind 4 — não há customização de breakpoint documentada em
-`tailwind.config` (o projeto usa `@theme inline` direto no CSS, sem arquivo
-de config Tailwind separado). Se há uma intenção específica de
-grid/breakpoint além do padrão, preciso que você descreva.]
+**Decisão (14/10/2026): definir grid e breakpoints próprios** — pendente de execução. Hoje vale o padrão do Tailwind 4 (sm 640, md 768, lg 1024, xl 1280, 2xl 1536 px).
 
 ## Notas por tela
 
 Não centralizado em documento — cada página (`page.tsx`) implementa sua
-própria hierarquia visual. [A PREENCHER: se você quer um inventário
-tela-a-tela de conteúdo principal/hierarquia, isso exige ler os ~45
-arquivos de página individualmente; me diga se vale o esforço ou se as
-telas já publicadas como protótipo (links no `PROJETO.md` da pasta raiz)
-já cobrem essa necessidade.]
+própria hierarquia visual. **Decisão (14/10/2026): inventário tela a tela feito** — ver Anexo A.
 
 ## Acessibilidade
 
-[A PREENCHER — pergunta: existe meta formal de contraste (WCAG AA/AAA),
-navegação por teclado ou uso de leitor de tela testado? Não há registro
-disso em nenhum `.md` nem indício de auditoria de acessibilidade no
-histórico de commits.]
+**Meta (14/10/2026): WCAG 2.1 AA.** Contraste da paleta verificado no Anexo B; navegação por teclado e leitor de tela ainda não testados.
 
 ## Estados de interação
 
@@ -98,5 +81,79 @@ componente em `ui.tsx` e `form-buttons.tsx`, sem um guia central.
 - ✅ Logo recebida (`logomarca.png`, pasta pai do repositório).
 - Ícones PWA: `public/icons/icon-192.png`, `icon-512.png`,
   `icon-512-maskable.png`, `icon-32.png` — já existem no projeto.
-- [A PREENCHER: existe algum ativo visual pendente — ilustrações, prints de
-  referência — que ainda não foi entregue?]
+- Ainda não definido (Rodnei não sabe, 14/10/2026) — [A PREENCHER: reavaliar após o inventário do Anexo A].
+
+
+## Anexo A — Inventário de telas e estados vazios (14/10/2026)
+
+Gerado a partir de `src/app/**/page.tsx`. A coluna "Estado vazio" é o texto
+encontrado no código; "—" significa que não há mensagem de estado vazio
+detectada na página (pode haver em componente filho).
+
+| Rota | Título (h1 / função) | Estado vazio |
+|---|---|---|
+| `/ (landing)` | — | — |
+| `/login` | Login do candidato | — |
+| `/onboarding` | Complete seu perfil | — |
+| `/experiencias` | Currículo e experiências | — |
+| `/termos` | Termos e consentimento | — |
+| `/inicio` | Início do candidato | Nenhuma vaga publicada no momento. |
+| `/vagas` | Vagas | Nenhuma vaga publicada no momento. |
+| `/vagas/[id]` | Detalhe da vaga | — |
+| `/vagas/[id]/candidatura` | Candidatura | — |
+| `/processos` | Meus processos | — |
+| `/mensagens` | Mensagens | — |
+| `/perfil` | Perfil | — |
+| `/perfil/dados-pessoais` | Dados pessoais | — |
+| `/perfil/documentos` | Documentos | — |
+| `/perfil/preferencias-vaga` | Preferências de vaga | — |
+| `/admin/login` | Login administrativo | — |
+| `/admin` | Visão geral | Nenhuma empresa aguardando. / Nenhuma solicitação aguardando. |
+| `/admin/empresas` | Empresas | Nenhuma empresa cadastrada. |
+| `/admin/vagas` | Cadastro de vagas | Nenhuma vaga cadastrada. |
+| `/admin/candidatos` | Candidatos | Nenhum candidato cadastrado. |
+| `/admin/candidatos/[id]` | Perfil do candidato | Nenhuma candidatura ainda. |
+| `/admin/leads` | Leads (app instalado) | Nenhum lead ainda. |
+| `/admin/estrategico` | Estratégico | Nenhuma candidatura ainda. |
+| `/admin/prestacoes` | Prestações de serviço | Nenhuma candidatura marcada como Contratado ainda. / Nenhuma prestação de serviço registrada. |
+| `/admin/agenda` | Minha agenda | Nenhum compromisso agendado. |
+| `/admin/agenda/equipe` | Agenda da equipe | Nenhum compromisso no período. |
+| `/admin/denuncias` | Denúncias | Nenhuma denúncia aberta. / Nenhuma denúncia fechada ainda. |
+| `/admin/blacklist` | Black list | — |
+| `/admin/lgpd` | LGPD | Nenhuma solicitação aberta. / Nenhuma ainda. |
+| `/admin/auditoria` | Auditoria | Nenhum registro ainda. |
+| `/admin/acesso` | Acesso e permissões | — |
+| `/admin/acesso-negado` | Acesso não autorizado | — |
+
+Páginas auditadas: 32. Lacuna conhecida: telas do candidato sem estado vazio
+detectado (`/processos`, `/mensagens`, `/perfil/documentos`) — verificar nos
+componentes antes de dar como cobertas.
+
+## Anexo B — Contraste da paleta (WCAG 2.1 AA, 14/10/2026)
+
+AA exige 4,5:1 para texto normal e 3:1 para texto grande (≥ 24 px, ou
+≥ 18,66 px em negrito).
+
+| Combinação | Razão | Resultado |
+|---|---|---|
+| texto `#14171c` sobre fundo `#faf8f4` | 16,93 | ✅ AA |
+| texto-2 `#5c6470` sobre fundo / superfície | 5,64 / 5,98 | ✅ AA |
+| **texto-3 `#9aa0a8` sobre fundo / superfície** | **2,48 / 2,64** | ❌ falha — não usar para texto informativo |
+| branco sobre navy `#101d33` | 16,86 | ✅ AA |
+| dourado `#b8924c` sobre navy | 5,82 | ✅ AA |
+| dourado-2 `#d9b877` sobre navy | 8,89 | ✅ AA |
+| navy sobre dourado | 5,82 | ✅ AA |
+| **dourado `#b8924c` sobre branco** | **2,89** | ❌ falha — não usar como texto sobre fundo claro |
+| **branco sobre dourado** | **2,89** | ❌ falha — botão dourado deve ter texto navy |
+| dourado-3 `#8f6f37` sobre branco | 4,67 | ✅ AA |
+| perigo `#b3492f` sobre branco / sobre perigo-bg | 5,37 / 4,63 | ✅ AA |
+| sucesso `#3f7a5c` sobre branco | 5,06 | ✅ AA |
+| sucesso sobre sucesso-bg `#eaf3ec` | 4,47 | ⚠️ só texto grande |
+| teal `#3f7a86` sobre branco | 4,84 | ✅ AA |
+| teal sobre teal-bg `#e7f0f1` | 4,18 | ⚠️ só texto grande |
+| dourado-3 sobre dourado-bg `#f6ecd9` | 3,98 | ⚠️ só texto grande |
+
+Ações recomendadas (não executadas): escurecer `--color-text-3` (≈ `#6b7280`
+ou mais escuro); usar texto navy em fundos dourados; usar dourado-3 em vez
+de dourado para texto sobre fundo claro; escurecer levemente sucesso/teal
+quando usados sobre seus fundos `-bg`.
