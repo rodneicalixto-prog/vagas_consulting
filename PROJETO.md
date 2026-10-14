@@ -1220,6 +1220,12 @@ sessões futuras.
     guardava cópia com dados reais. Confirmado pelo painel da organização
     (só resta o projeto do Priscilla Klein). **Concluído:** `npx supabase logout` feito pelo
     Rodnei e confirmado (`AccessTokenRequiredError` na CLI).
+80. **Specs novas aguardando decisão (14/10/2026)**: `docs/specs/
+    DASHBOARD_OPERADOR.md` v0.1 (hierarquia, cards clicáveis, kanban, tempo
+    de vaga em aberto, filtros; decisões E1-E6) e `docs/specs/
+    COMUNICACAO_OMNICANAL.md` v0.1 (inbox único com WhatsApp, e-mail, SMS e
+    Telegram, agente recrutador de IA com regras de parada; decisões
+    E1-E8). Nada construído nem contratado; migrations só com "sim".
 
 ## 3. Escopo do MVP (revisado)
 
