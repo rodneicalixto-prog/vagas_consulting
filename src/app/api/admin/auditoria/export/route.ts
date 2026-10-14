@@ -5,7 +5,7 @@ import { AuditLogQuerySchema, AuditLogQueryInput } from "@/lib/validation/schema
 
 export async function GET(req: NextRequest) {
   try {
-    const { user } = await requireInternalUser("auditoria.view");
+    const { user } = await requireInternalUser("audit.read");
 
     const searchParams = req.nextUrl.searchParams;
     const query = {

@@ -40,14 +40,14 @@ export default async function AuditoriaPage({
               </div>
               {logs.map((log: any) => (
                 <div key={log.id} className="grid grid-cols-5 gap-3 border-b border-border px-5 py-3 text-[12px] last:border-none">
-                  <div className="text-text-2">{new Date(log.criado_em).toLocaleString("pt-BR")}</div>
+                  <div className="text-text-2">{new Date(log.created_at).toLocaleString("pt-BR")}</div>
                   <div className="text-text-2">{log.ator_id ? `#${log.ator_id.slice(0, 8)}` : "Sistema"}</div>
                   <div className="font-bold text-navy">{log.acao}</div>
                   <div className="text-text-2">
                     {log.objeto_tipo} {log.objeto_id ? `#${log.objeto_id.slice(0, 8)}` : ""}
                   </div>
                   <div className="text-text-2 truncate">
-                    {log.detalhes ? JSON.stringify(log.detalhes).slice(0, 30) : "—"}
+                    {log.depois ? JSON.stringify(log.depois).slice(0, 30) : "—"}
                   </div>
                 </div>
               ))}

@@ -10,7 +10,7 @@ export const CreateCompanySchema = z.object({
 
 export const DecideCompanySchema = z.object({
   company_id: z.string().uuid("ID da empresa inválido"),
-  acao: z.enum(["aprovar", "rejeitar", "corrigir"], { errorMap: () => ({ message: "Ação deve ser aprovar, rejeitar ou corrigir" }) }),
+  acao: z.enum(["aprovar", "rejeitar", "corrigir"], { error: "Ação deve ser aprovar, rejeitar ou corrigir" }),
   motivo: z.string().nullable().optional(),
 });
 
@@ -18,7 +18,7 @@ export const DecideCompanySchema = z.object({
 export const CreateJobSchema = z.object({
   company_id: z.string().uuid("ID da empresa inválido"),
   titulo: z.string().min(2, "Título deve ter ao menos 2 caracteres"),
-  modalidade: z.enum(["efetiva", "pj", "temporaria"], { errorMap: () => ({ message: "Modalidade deve ser efetiva, pj ou temporaria" }) }),
+  modalidade: z.enum(["efetiva", "pj", "temporaria"], { error: "Modalidade deve ser efetiva, pj ou temporaria" }),
   local: z.string().nullable().optional(),
   descricao: z.string().nullable().optional(),
   requisitos: z.string().nullable().optional(),
@@ -27,7 +27,7 @@ export const CreateJobSchema = z.object({
 
 export const DecideJobSchema = z.object({
   job_id: z.string().uuid("ID da vaga inválido"),
-  acao: z.enum(["publicar", "encerrar", "corrigir"], { errorMap: () => ({ message: "Ação deve ser publicar, encerrar ou corrigir" }) }),
+  acao: z.enum(["publicar", "encerrar", "corrigir"], { error: "Ação deve ser publicar, encerrar ou corrigir" }),
   motivo: z.string().nullable().optional(),
 });
 
@@ -52,7 +52,7 @@ export const UpdateJobPreferencesSchema = z.object({
 // Candidatura
 export const ApplyJobSchema = z.object({
   job_id: z.string().uuid("ID da vaga inválido"),
-  respostas: z.record(z.boolean(), { errorMap: () => ({ message: "Respostas devem ser boolean" }) }),
+  respostas: z.record(z.string(), z.boolean(), { error: "Respostas devem ser boolean" }),
 });
 
 // Consentimento
@@ -65,7 +65,7 @@ export const SetConsentSchema = z.object({
 // Admin: Acesso
 export const InviteAdminSchema = z.object({
   email: z.string().email("Email inválido"),
-  perfil: z.enum(["admin", "operador"], { errorMap: () => ({ message: "Perfil deve ser admin ou operador" }) }),
+  perfil: z.enum(["admin", "operador"], { error: "Perfil deve ser admin ou operador" }),
   nome: z.string().nullable().optional(),
   telefone: z.string().nullable().optional(),
 });

@@ -1,5 +1,5 @@
-import { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { Json } from "@/lib/supabase/types";
 
 export interface AuditOptions {
   ator_id: string;
@@ -19,10 +19,11 @@ export async function logAudit(options: AuditOptions): Promise<void> {
     acao: options.acao,
     objeto_tipo: options.objeto_tipo,
     objeto_id: options.objeto_id,
-    antes: options.antes || null,
-    depois: options.depois || null,
-    detalhes: options.detalhes || null,
-    criado_em: new Date().toISOString(),
+    antes: (options.antes ?? null) as Json | null,
+    // audit_log não tem coluna "detalhes": quando existem, vão junto em "depois".
+    depois: (options.detalhes
+      ? { valor: options.depois ?? null, detalhes: options.detalhes }
+      : (options.depois ?? null)) as Json | null,
   });
 
   if (error) {
@@ -59,11 +60,11 @@ export async function getAuditLogs(query: AuditLogQuery) {
   if (query.acao) q = q.eq("acao", query.acao);
   if (query.objeto_tipo) q = q.eq("objeto_tipo", query.objeto_tipo);
   if (query.ator_id) q = q.eq("ator_id", query.ator_id);
-  if (query.data_inicio) q = q.gte("criado_em", query.data_inicio);
-  if (query.data_fim) q = q.lte("criado_em", query.data_fim);
+  if (query.data_inicio) q = q.gte("created_at", query.data_inicio);
+  if (query.data_fim) q = q.lte("created_at", query.data_fim);
 
   const { data, error, count } = await q
-    .order("criado_em", { ascending: false })
+    .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (error) throw error;
@@ -78,14 +79,14 @@ export async function getAuditLogs(query: AuditLogQuery) {
 }
 
 export function auditLogsToCSV(logs: any[]): string {
-  const headers = ["Data", "Ação", "Tipo", "ID", "Ator", "Detalhes"];
+  const headers = ["Data", "Ação", "Tipo", "ID", "Ator", "Depois"];
   const rows = logs.map((log) => [
-    new Date(log.criado_em).toLocaleString("pt-BR"),
+    new Date(log.created_at).toLocaleString("pt-BR"),
     log.acao,
     log.objeto_tipo,
     log.objeto_id,
     log.ator_id,
-    log.detalhes ? JSON.stringify(log.detalhes) : "",
+    log.depois ? JSON.stringify(log.depois) : "",
   ]);
 
   const csv = [

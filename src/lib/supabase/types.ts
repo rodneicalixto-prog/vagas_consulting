@@ -362,6 +362,7 @@ export type Database = {
           decidido_em: string | null
           decidido_por: string | null
           descricao: string | null
+          expira_em: string | null
           id: string
           local: string | null
           modalidade: Database["public"]["Enums"]["modalidade_vaga"]
@@ -382,6 +383,7 @@ export type Database = {
           decidido_em?: string | null
           decidido_por?: string | null
           descricao?: string | null
+          expira_em?: string | null
           id?: string
           local?: string | null
           modalidade: Database["public"]["Enums"]["modalidade_vaga"]
@@ -404,6 +406,7 @@ export type Database = {
           decidido_em?: string | null
           decidido_por?: string | null
           descricao?: string | null
+          expira_em?: string | null
           id?: string
           local?: string | null
           modalidade?: Database["public"]["Enums"]["modalidade_vaga"]
@@ -840,7 +843,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      arquivo_automatico_vagas: {
+        Args: never
+        Returns: {
+          id: string
+          status_novo: Database["public"]["Enums"]["status_vaga"]
+          titulo: string
+        }[]
+      }
     }
     Enums: {
       admin_perfil: "superadmin" | "admin" | "operador"
@@ -890,6 +900,7 @@ export type Database = {
         | "encerrada"
         | "rejeitada"
         | "suspensa"
+        | "arquivada"
       tipo_denuncia:
         | "cobranca_indevida"
         | "discriminacao"
@@ -1081,6 +1092,7 @@ export const Constants = {
         "encerrada",
         "rejeitada",
         "suspensa",
+        "arquivada",
       ],
       tipo_denuncia: [
         "cobranca_indevida",

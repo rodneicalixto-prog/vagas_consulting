@@ -37,7 +37,7 @@ export async function enviarCandidatura(jobId: string, respostas: Record<string,
   const { error } = await supabase.from("applications").insert({
     job_id: validatedJobId,
     candidate_id: user.id,
-    respostas: validatedRespostas,
+    respostas: validatedRespostas as Record<string, boolean>,
     origem: "app_candidato",
   });
 
