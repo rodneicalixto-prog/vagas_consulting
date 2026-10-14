@@ -858,6 +858,14 @@ sessões futuras.
     do ar"; entrou no backlog como 🔴 junto com a rotina de backup externo.
     `[A PREENCHER]` restantes nos 6 documentos: 0. Commit local, sem push.
 
+47. **Push de 7cbec07 + deploy (14/10/2026)**: autorizado pelo Rodnei
+    ("Sim"). `184e0b7..7cbec07` em `main`. Deploy
+    `dpl_45WKNvsuo6VqybRKa2LnVaBqk2jr` `READY` em `sosvagas.sosmkt.com.br`;
+    `/login` 200, `/admin/login` 200, `/` 307; sem runtime errors em 1h.
+    Inclui migrations 0018/0019 corrigidas, lint zerado e contraste do
+    `text-3`. Commit `3f36c00` (docs v1.3) permanece local, aguardando
+    novo "sim".
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
