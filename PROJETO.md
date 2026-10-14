@@ -1301,6 +1301,11 @@ sessões futuras.
     prestações em leitura da própria empresa. Construído por 3 agentes em
     paralelo e revisado: corrigido risco de convidar e-mail de candidato.
     33 testes; trava do banco validada. Sem teste manual com operador real.
+95. **Voltar nas etapas do cadastro (14/10/2026)**: pedido do Rodnei ao
+    ver o Passo 2 sem retorno. Passos 2 (`/onboarding`) e 3
+    (`/experiencias`) ganharam o link "Voltar" para a etapa anterior
+    (`/termos` e `/onboarding`); os Termos já tinham. Achado: a tela do
+    Passo 2 só avisa o erro no rodapé; vale revisar o aviso por campo.
 
 ## 3. Escopo do MVP (revisado)
 

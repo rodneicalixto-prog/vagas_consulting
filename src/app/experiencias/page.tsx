@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import Link from "next/link";
+import { IconChevronLeft } from "@/components/icons";
 import { processarCurriculo, salvarExperiencias, type ExperienciaProfissional } from "./actions";
 
 const EXPERIENCIA_VAZIA: ExperienciaProfissional = {
@@ -71,6 +73,12 @@ export default function ExperienciasPage() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-xl flex-col">
       <div className="flex flex-col gap-3.5 px-5 pt-6 md:px-8 md:pt-8">
+        <Link
+          href="/onboarding"
+          className="flex w-fit items-center gap-1.5 text-[12.5px] font-bold text-navy"
+        >
+          <IconChevronLeft size={14} /> Voltar
+        </Link>
         <div className="flex gap-1.5">
           <div className="h-1 flex-1 rounded-full bg-gold" />
           <div className="h-1 flex-1 rounded-full bg-gold" />
