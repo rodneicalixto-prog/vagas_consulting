@@ -90,6 +90,12 @@ vínculo) **não é alterada**: o canal "no app" a mapeia para o inbox.
 
 ## 7. Agente recrutador de IA
 
+> **Decisão do Rodnei (14/10/2026):** depois de sincronizado, o agente
+> conduz **todo o processo inicial**; o operador entra **só na última etapa**.
+> Isso substitui a premissa de que o operador move o candidato na triagem e
+> será detalhado (etapas do agente, ponto de entrega ao operador, quem move
+> cada etapa) quando o agente for construído (Fase 3).
+
 **Faz:** primeiro contato; confirma interesse e disponibilidade; coleta dados
 faltantes do perfil; aplica perguntas eliminatórias já cadastradas na vaga;
 envia link de teste; marca entrevista na agenda; responde dúvidas

@@ -1226,6 +1226,9 @@ sessões futuras.
     COMUNICACAO_OMNICANAL.md` v0.1 (inbox único com WhatsApp, e-mail, SMS e
     Telegram, agente recrutador de IA com regras de parada; decisões
     E1-E8). Nada construído nem contratado; migrations só com "sim".
+81. **Kanban adiado (14/10/2026)**: por decisão do Rodnei, o arrastar
+    cartão só será definido com o agente de IA, que conduzirá o processo
+    inicial; o operador entra na última etapa. Kanban nasce só leitura.
 
 ## 3. Escopo do MVP (revisado)
 

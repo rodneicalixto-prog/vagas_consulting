@@ -61,6 +61,12 @@ cada card (ver §5).
 6. **Tabelas premium** — ordenação, busca, paginação, exportar CSV
    (apenas campos que o papel já enxerga).
 
+> **Decisão do Rodnei (14/10/2026): mover cartão fica adiado.** Quem conduz
+> a triagem inicial será o **agente de IA** e o operador entra só na última
+> etapa. O Kanban nasce **somente leitura** (colunas e contagens); o arrastar
+> e soltar e quem pode mover cada etapa são definidos junto com a construção
+> do agente (`COMUNICACAO_OMNICANAL.md` §7).
+
 ## 5. Filtros
 
 Período (hoje, 7 dias, 30 dias, 90 dias, mês atual, personalizado), empresa
@@ -109,7 +115,7 @@ Sugestões, em ordem de valor para o operador:
 |---|---|---|
 | 0 | Aprovar esta spec e as decisões do §10 | Não |
 | 1 | Dashboard com cards, filtros, gráficos, tabelas, tempo de vaga em aberto, setor = segmento | Não |
-| 2 | Kanban com arrastar e soltar + auditoria | Não |
+| 2 | Kanban **somente leitura** (arrastar fica para depois do agente de IA) | Não |
 | 3 | Etapa **Exame médico** + cards dela | **Sim** (enum, aditiva) |
 | 4 | Fila "Precisa de ação hoje", alertas, comparativo, metas | Opcional (`jobs.preenchida_em`, `jobs.setor`) |
 
