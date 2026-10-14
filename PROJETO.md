@@ -1360,6 +1360,14 @@ sessões futuras.
     **Pendente do Rodnei:** variável `INTEGRATIONS_ENCRYPTION_KEY` na Vercel
     (sem ela a tela avisa e não grava). Spec `specs/INTEGRACOES.md`.
     47 testes. Não há envio de mensagem ainda (Fase B/inbox).
+102. **Chave-mestra das integrações gerada (14/10/2026)**: autorizada pelo
+    Rodnei. Gerada com `crypto.randomBytes(32)` e guardada em arquivo
+    local fora do repositório (`Documents\VagasConsulting-segredos`); o
+    valor nunca foi exibido nem commitado. O conector da Vercel não tem
+    permissão de variáveis (403), então o cadastro de
+    `INTEGRATIONS_ENCRYPTION_KEY` na Vercel (tipo sensível, Production) e
+    o novo deploy ficam com o Rodnei. **Fazer cópia em gerenciador de
+    senhas**: sem a chave, os segredos gravados não podem ser lidos.
 
 ## 3. Escopo do MVP (revisado)
 
