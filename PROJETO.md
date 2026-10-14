@@ -1271,6 +1271,11 @@ sessões futuras.
     e fala com o superadmin (não atende candidato); o admin edita o
     roteiro do agente da empresa, com versionamento e sem poder mudar
     autonomia, chave ou teto. Revisar com white-label.
+89. **Spec do admin da empresa (14/10/2026)**: `docs/specs/
+    ADMIN_DA_EMPRESA.md` v0.1. Hierarquia de 4 níveis (superadmin, admin
+    da plataforma, admin da empresa, operador) e limite contratado de
+    operadores por empresa com contador "em uso / em aberto". Nada
+    construído; migration só com "sim". Decisões E1-E8 aguardam o Rodnei.
 
 ## 3. Escopo do MVP (revisado)
 
