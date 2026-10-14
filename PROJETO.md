@@ -945,6 +945,15 @@ sessões futuras.
     padrões sugeridos. Pendente: Rodnei validar P1–P5 e testar em tela;
     push/deploy só com "sim". Commit local.
 
+55. **Verificação de backup (14/10/2026)**: criado
+    `scripts/backup/verify-backup.mjs` (somente leitura; compara o
+    `.json.gz` mais recente com o banco, sem imprimir dados). Executado
+    sobre `vagas-consulting_2026-10-14-17-22.json.gz`: 18/18 tabelas
+    conferem, "backup íntegro". Teste de **restauração** completo continua
+    pendente (exige projeto Supabase descartável do Rodnei). Push de
+    `1ea573f` (fluxo de convites) foi **bloqueado pelo Claude Code** por não
+    haver "sim" explícito; aguardando confirmação. Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

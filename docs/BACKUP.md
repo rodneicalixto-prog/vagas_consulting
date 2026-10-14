@@ -41,6 +41,17 @@ O computador precisa estar ligado nesse horário. Se não estiver, a tarefa
 roda na próxima inicialização (ative "executar assim que possível" nas
 propriedades da tarefa).
 
+## Verificar um backup (rápido, sem restaurar)
+
+```powershell
+node --env-file=.env.local scripts/backup/verify-backup.mjs
+```
+
+Abre o `.json.gz` mais recente de `backups\`, valida a estrutura e compara a
+contagem de linhas de cada tabela com o banco ao vivo (o banco pode ter mais
+linhas que o backup, nunca menos). Resultado esperado: `RESULTADO: backup
+íntegro.` Não substitui o teste de restauração abaixo.
+
 ## Restaurar (teste a cada 3 meses)
 
 1. Baixar o `.json.gz` do Drive e descompactar (`7z x` ou `gzip -d`).
