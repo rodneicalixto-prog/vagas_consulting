@@ -1120,6 +1120,16 @@ sessões futuras.
     configurável e provisionamento por instalação (single-tenant); multi-
     tenant só com demanda. 6 decisões pendentes do Rodnei. Nada construído.
 
+70. **Spec da Fase 1 — carteira por atendente (14/10/2026)**: o Rodnei
+    definiu: admin vê tudo (como o superadmin); operador vê só a conta/empresa
+    atribuída e ativa, cadastra vagas e atende candidatos. Contexto real: 2
+    empresas (**Athenas** e **ePró Estética**, CNPJs e ramos diferentes), 1
+    operador por empresa; o Rodnei capta vagas, faz tratativas pela IA e
+    delega ao operador. Escrito `docs/specs/CARTEIRA_ATENDENTE.md` (tabela
+    `company_assignments`, helper único de escopo, matriz de acesso, critérios
+    de aceite). Pendentes D1 (operador publica vaga?), D2 (operador é da
+    empresa cliente?), D3 (vê valores?). Nada construído.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
