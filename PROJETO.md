@@ -1276,6 +1276,10 @@ sessões futuras.
     da plataforma, admin da empresa, operador) e limite contratado de
     operadores por empresa com contador "em uso / em aberto". Nada
     construído; migration só com "sim". Decisões E1-E8 aguardam o Rodnei.
+90. **Vagas sigilosas no admin da empresa (14/10/2026)**: decidido que o
+    admin da empresa cria e acompanha vagas sigilosas da própria empresa;
+    spec §9 ADMIN_DA_EMPRESA.md. Pendente E9: quem concede o acesso de
+    confiança a operadores da empresa.
 
 ## 3. Escopo do MVP (revisado)
 

@@ -54,7 +54,7 @@ Regras:
 |---|---|
 | Visão geral | Dashboard **só da empresa**, de todos os operadores dela |
 | Operadores | Lista, convida, ativa, desativa, vê carga de cada um (candidatos em andamento, tempo de resposta) |
-| Vagas | Cria e acompanha vagas da empresa; **publicação** conforme decisão E4 |
+| Vagas | Cria e acompanha vagas da empresa, **inclusive as sigilosas (confidenciais)**; **publicação** conforme decisão E4 |
 | Candidatos e contatos | Da empresa, com a mesma regra de contato do operador |
 | Agenda | Equipe da própria empresa (entrevistas, por etapa, entregas) |
 | Agente de IA | Edita roteiro e FAQ do agente **da empresa** (versionado); não muda chave, teto nem autonomia |
@@ -107,9 +107,26 @@ admin; (e) todas as ações geram auditoria.
 |---|---|---|
 | E1 | "Operadores em aberto" = vagas de operador ainda livres dentro do limite contratado? | Sim, como na seção 3 |
 | E2 | Quem define o limite por empresa? | Superadmin e admin da plataforma, com auditoria |
-| E3 | O admin da empresa vê vagas confidenciais da própria empresa? | Sim (a vaga é da empresa dele) |
+| E3 | O admin da empresa vê vagas confidenciais da própria empresa? | **Decidido (14/10/2026): sim, e também cria e acompanha vagas sigilosas** |
 | E4 | Admin da empresa publica vaga ou segue a regra "admin da plataforma publica"? | Segue a regra atual no início; liberar publicação por empresa depois |
 | E5 | Admin da empresa vê prestações e valores da própria empresa? | Só leitura, só da empresa |
 | E6 | Um admin pode administrar mais de uma empresa? | Não; uma pessoa, uma empresa (o profissional de confiança continua como operador em várias) |
 | E7 | Ao desativar operador, o que acontece com os candidatos em andamento dele? | Voltam à fila da empresa e o admin redistribui |
 | E8 | Existe cobrança por operador extra? | A definir com o plano comercial (white-label) |
+
+## 9. Vagas sigilosas no admin da empresa (decidido em 14/10/2026)
+
+O admin da empresa **cria e acompanha vagas sigilosas** da própria empresa.
+
+| Regra | Detalhe |
+|---|---|
+| Criar | Pode marcar `confidencial` ao cadastrar vaga **da sua empresa** (hoje só admin e superadmin marcam) |
+| Acompanhar | Vê a vaga, candidaturas, convites, funil e tempo em aberto da vaga sigilosa |
+| Quem mais vê | Só operadores da empresa com acesso de confiança (`acessa_confidenciais`); o operador comum não vê a vaga, as candidaturas nem as contagens |
+| Candidato | Continua vendo "Empresa confidencial" até a etapa de entrevista |
+| Mudar o sigilo | Admin da empresa pode marcar e desmarcar nas vagas da própria empresa; toda mudança é auditada (`vaga_marcada/desmarcada_confidencial`) |
+| Limite | Não vê vaga sigilosa de outra empresa, nem a lista de quais empresas existem |
+
+**Pontos de atenção:** (1) os totais do dashboard do operador comum não devem revelar a existência de vaga sigilosa (já garantido pelo filtro de escopo); (2) o agente da empresa trata a vaga sigilosa sem citar o nome da empresa antes da etapa permitida.
+
+**Decisão nova pedida (E9):** o admin da empresa pode **conceder ou retirar** o acesso de confiança de um operador da própria empresa, ou isso continua só com o superadmin? Recomendação: o admin da empresa concede, com auditoria, porque o sigilo é dele.
