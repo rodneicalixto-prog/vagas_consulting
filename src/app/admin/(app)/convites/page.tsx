@@ -30,7 +30,7 @@ export default async function ConvitesAdminPage() {
   // Carteira: operador só vê convites/vagas da carteira e convida quem já
   // tem candidatura ou convite em vaga visível.
   if (vagasIds) consultaConvites = consultaConvites.in("job_id", vagasIds);
-  if (candidatosIds) consultaCandidatos = consultaCandidatos.in("id", candidatosIds);
+  if (candidatosIds) consultaCandidatos = consultaCandidatos.eq("status_validacao", "aprovado");
   if (!escopo.todos) {
     consultaVagas = consultaVagas
       .in("company_id", empresasParaFiltro(escopo))

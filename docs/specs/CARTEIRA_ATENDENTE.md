@@ -142,6 +142,26 @@ conceitos que cabem no mesmo modelo:
 Como o vínculo é N:N, o mesmo profissional de confiança pode ser atribuído às
 **duas** empresas (Athenas e ePró) sem criar outro tipo de conta.
 
+## 8.2 Banco de talentos filtrado (D7, aprovado em 14/10/2026)
+
+O operador precisa trazer candidatos novos para a vaga da empresa dele, sem
+receber a base inteira. Decisão do Rodnei: **opção 2**.
+
+| Regra | Detalhe |
+|---|---|
+| Tela | `/admin/talentos` (admin, superadmin e operador) |
+| Quem aparece | Só candidato **aprovado** e fora da black list |
+| O que o operador vê | Nome, título profissional, cidade, disponibilidade e modalidades desejadas. **Sem** e-mail, telefone, endereço, documentos ou currículo |
+| Ação | "Convidar" para vaga **temporária publicada da própria carteira** (mesmo fluxo e validações do convite) |
+| Contato completo | Só depois que o candidato **se candidata** a vaga da carteira. Convite sozinho libera o perfil, mas não o contato |
+| Auditoria | Convite já grava `convite_criado` em `audit_log` |
+| Fora do escopo | Exportar a lista; operador editar perfil de candidato |
+
+Critérios de aceite: (a) operador sem carteira não convida; (b) operador não
+convida para vaga de outra empresa nem para vaga confidencial sem acesso;
+(c) a lista nunca devolve telefone/e-mail/endereço/currículo ao operador;
+(d) candidato reprovado, pendente ou na black list não aparece.
+
 ## 9. Decisões
 
 ### Decididas (14/10/2026)

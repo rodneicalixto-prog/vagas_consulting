@@ -12,31 +12,30 @@ import {
 } from "@/lib/validation/schemas";
 import { logAudit } from "@/lib/security/audit";
 import { CONVITES_ATIVOS, CONVITES_CANCELAVEIS } from "@/lib/convites";
-import { candidatosVisiveis, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
+import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 
 export async function criarConvite(formData: FormData) {
   const { user, role } = await requireInternalUser("pipeline.manage");
   const { candidate_id: candidateId, job_id: jobId, validade_horas: horas } =
     validateFormData<CreateInviteInput>(CreateInviteSchema, formData);
 
-  // Carteira: a vaga precisa estar no escopo e, para o operador, o candidato
-  // precisa já ter candidatura/convite em vaga visível (nunca a base inteira).
+  // Carteira: a vaga precisa estar no escopo. O candidato vem do banco de
+  // talentos (aprovado); o operador não recebe contato, só o convite.
   const escopo = await obterEscopo(user.id, role);
   await exigirVaga(escopo, jobId);
-  const visiveis = await candidatosVisiveis(escopo);
-  if (visiveis && !visiveis.includes(candidateId)) {
-    throw new Error("Este candidato não está na sua carteira.");
-  }
 
   const admin = createAdminClient();
 
   const [{ data: candidato }, { data: vaga }] = await Promise.all([
-    admin.from("profiles").select("id, blacklisted").eq("id", candidateId).maybeSingle(),
+    admin.from("profiles").select("id, blacklisted, status_validacao").eq("id", candidateId).maybeSingle(),
     admin.from("jobs").select("id, status, modalidade").eq("id", jobId).maybeSingle(),
   ]);
 
   if (!candidato) throw new Error("Candidato não encontrado.");
   if (candidato.blacklisted) throw new Error("Candidato está na black list e não pode receber convite.");
+  if (!escopo.todos && candidato.status_validacao !== "aprovado") {
+    throw new Error("Só é possível convidar candidatos aprovados.");
+  }
   if (!vaga || vaga.status !== "publicada") throw new Error("A vaga precisa estar publicada.");
   if (vaga.modalidade !== "temporaria") throw new Error("Convite direto vale apenas para vaga temporária.");
 

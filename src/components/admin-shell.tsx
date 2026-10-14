@@ -12,6 +12,7 @@ const NAV = [
   { href: "/admin/empresas", label: "Empresas" },
   { href: "/admin/vagas", label: "Cadastro de vagas" },
   { href: "/admin/candidatos", label: "Candidatos" },
+  { href: "/admin/talentos", label: "Talentos" },
   { href: "/admin/convites", label: "Convites" },
   { href: "/admin/agenda", label: "Minha agenda" },
   { href: "/admin/agenda/equipe", label: "Agenda da equipe", roles: ["superadmin"] },

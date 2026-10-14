@@ -103,7 +103,7 @@ export default async function CandidatoDetalhePage({
       : null;
 
   const [
-    { data: profile, curriculoIndisponivel },
+    { data: perfilBruto, curriculoIndisponivel },
     { data: authUser },
     { data: applications },
     { data: mensagens },
@@ -129,7 +129,14 @@ export default async function CandidatoDetalhePage({
       })(),
     ]);
 
-  if (!profile) notFound();
+  if (!perfilBruto) notFound();
+
+  // Operador: contato e currículo só depois que o candidato se candidata a
+  // vaga da carteira (convite sozinho libera o perfil, não o contato).
+  const contatoRestrito = idsCandidaturas !== null && idsCandidaturas.length === 0;
+  const profile = contatoRestrito
+    ? { ...perfilBruto, telefone: null, endereco: null, curriculo_url: null }
+    : perfilBruto;
 
   await client.from("audit_log").insert({
     ator_id: admin.id,
@@ -235,10 +242,12 @@ export default async function CandidatoDetalhePage({
           )}
         </div>
         <p className="mt-1 text-xs text-text-2">
-          {authUser.user?.email ?? "—"} · {profile.telefone ?? "sem telefone"} ·{" "}
-          {profile.cidade ?? "sem cidade"}
+          {contatoRestrito
+            ? "Contato liberado após a candidatura"
+            : `${authUser.user?.email ?? "—"} · ${profile.telefone ?? "sem telefone"}`}{" "}
+          · {profile.cidade ?? "sem cidade"}
         </p>
-        {!profile.telefone?.trim() || !profile.endereco?.trim() ? (
+        {!contatoRestrito && (!profile.telefone?.trim() || !profile.endereco?.trim()) ? (
           <p className="mt-1.5 rounded-lg bg-danger-bg px-2.5 py-1.5 text-[11px] font-semibold text-danger">
             Cadastro incompleto (telefone/endereço) — candidato anterior à exigência de dados obrigatórios.
           </p>

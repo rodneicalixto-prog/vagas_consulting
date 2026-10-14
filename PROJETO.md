@@ -1170,6 +1170,16 @@ sessões futuras.
     renderização, não contra consulta direta ao PostgREST. **Pendente:**
     teste de isolamento com dois operadores reais (Athenas e ePró) e push
     mediante "sim, dar o push". Commit local 271d02e.
+75. **Banco de talentos filtrado para o operador (14/10/2026, decisão D7 do
+    Rodnei, opção 2)**: spec `CARTEIRA_ATENDENTE.md` v0.4 (§8.2) e tela
+    `/admin/talentos`. Lista só candidatos aprovados e fora da black list,
+    em resumo (nome, cargo, cidade, disponibilidade, modalidades), com
+    busca por nome/cargo e cidade. Operador convida para vaga temporária
+    publicada da própria carteira; nunca recebe e-mail, telefone,
+    endereço ou currículo antes de o candidato se candidatar (detalhe do
+    candidato mascara o contato). `criarConvite` passou a exigir candidato
+    aprovado para operador. tsc, eslint e build passam. **Pendente:**
+    push (aguarda "sim, dar o push") e teste manual com operador real.
 
 ## 3. Escopo do MVP (revisado)
 
