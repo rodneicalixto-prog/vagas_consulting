@@ -140,3 +140,16 @@ kanban; (e) filtro de período muda cards, gráficos e tabelas juntos.
 - E1 a E6 aprovadas com as recomendações da tabela.
 - **Fase 1 construída** (14/10/2026): cards clicáveis com detalhe, filtros de período e empresa, funil, evolução semanal, setores, situação das vagas, tempo das vagas em aberto com semáforo, quadro de candidaturas somente leitura. O card "Aguardando exame médico" aparece desativado até a Fase 3.
 - **Modo calendário na Minha agenda** (pedido do Rodnei): calendário mensal; clicar em um dia preenche a data do novo compromisso; alternância Calendário/Lista.
+
+### Agenda em cascata (pedido do Rodnei, 14/10/2026)
+
+No menu, **Agenda** vira um grupo que abre em cascata:
+
+| Subitem | Quem | O que mostra |
+|---|---|---|
+| Minha agenda | Todos | Compromissos próprios, calendário e formulário |
+| Entrevistas | Todos | Entrevistas: operador vê as da carteira e as que marcou; admin e superadmin veem todas |
+| Por etapa | Todos | Candidatos nas etapas Entrevista, Teste e Proposta com a data da próxima entrevista; quem ainda não tem data fica destacado |
+| Agenda da equipe | Admin e superadmin | Compromissos de toda a equipe |
+
+**Pendente:** "agenda de entregas" aguarda o Rodnei dizer o que são as entregas (prazo de entregar candidatos ao cliente, entrega de documentos ou prazo da vaga).

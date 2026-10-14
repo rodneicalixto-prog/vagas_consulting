@@ -7,15 +7,31 @@ import { BrandMark, Wordmark } from "@/components/brand-mark";
 import { adminSignOut } from "@/app/admin/actions";
 import type { InternalRole } from "@/lib/auth/internal";
 
-const NAV = [
+type NavItem = {
+  href: string;
+  label: string;
+  exact?: boolean;
+  roles?: string[];
+  children?: { href: string; label: string; exact?: boolean; roles?: string[] }[];
+};
+
+const NAV: NavItem[] = [
   { href: "/admin", label: "Visão geral", exact: true },
   { href: "/admin/empresas", label: "Empresas" },
   { href: "/admin/vagas", label: "Cadastro de vagas" },
   { href: "/admin/candidatos", label: "Candidatos" },
   { href: "/admin/talentos", label: "Talentos" },
   { href: "/admin/convites", label: "Convites" },
-  { href: "/admin/agenda", label: "Minha agenda" },
-  { href: "/admin/agenda/equipe", label: "Agenda da equipe", roles: ["superadmin"] },
+  {
+    href: "/admin/agenda",
+    label: "Agenda",
+    children: [
+      { href: "/admin/agenda", label: "Minha agenda", exact: true },
+      { href: "/admin/agenda/entrevistas", label: "Entrevistas" },
+      { href: "/admin/agenda/etapas", label: "Por etapa" },
+      { href: "/admin/agenda/equipe", label: "Agenda da equipe", roles: ["superadmin", "admin"] },
+    ],
+  },
   { href: "/admin/ranking", label: "Ranking", roles: ["superadmin", "admin"] },
   { href: "/admin/leads", label: "Leads", roles: ["superadmin", "admin"] },
   { href: "/admin/prestacoes", label: "Prestações", roles: ["superadmin", "admin"] },
@@ -46,9 +62,12 @@ export function AdminShell({
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
-  const current = NAV.find((item) =>
-    item.exact ? pathname === item.href : pathname.startsWith(item.href),
-  );
+  const [abertos, setAbertos] = useState<Record<string, boolean>>({});
+  const todos = NAV.flatMap((item) => [item, ...(item.children ?? [])]);
+  // O item mais específico (maior href) que casa com a rota atual.
+  const current = todos
+    .filter((item) => (item.exact ? pathname === item.href : pathname.startsWith(item.href)))
+    .sort((a, b) => b.href.length - a.href.length)[0];
 
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
@@ -61,6 +80,42 @@ export function AdminShell({
     <nav className="flex flex-col gap-0.5">
       {visibleNav.map((item) => {
         const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+        if (item.children) {
+          // Cascata: abre sozinha dentro da seção; o clique no título só recolhe/expande.
+          const filhos = item.children.filter((c) => !c.roles || c.roles.includes(role));
+          const aberto = pathname.startsWith(item.href) || abertos[item.href] === true;
+          return (
+            <div key={item.href} className="flex flex-col gap-0.5">
+              <button
+                type="button"
+                onClick={() => setAbertos((a) => ({ ...a, [item.href]: !aberto }))}
+                aria-expanded={aberto}
+                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-left text-[13px] font-bold ${
+                  active ? "text-white" : "text-white/60 hover:text-white/85"
+                }`}
+              >
+                <span>{item.label}</span>
+                <span className="text-[10px]">{aberto ? "▾" : "▸"}</span>
+              </button>
+              {aberto &&
+                filhos.map((c) => {
+                  const ativoFilho = c.exact ? pathname === c.href : pathname.startsWith(c.href);
+                  return (
+                    <Link
+                      key={c.href}
+                      href={c.href}
+                      onClick={onNavigate}
+                      className={`ml-3 rounded-lg border-l border-white/10 px-3 py-2 text-[12.5px] font-bold ${
+                        ativoFilho ? "bg-white/10 text-white" : "text-white/55 hover:text-white/85"
+                      }`}
+                    >
+                      {c.label}
+                    </Link>
+                  );
+                })}
+            </div>
+          );
+        }
         return (
           <Link
             key={item.href}

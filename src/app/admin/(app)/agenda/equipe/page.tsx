@@ -31,7 +31,7 @@ function formatarDataHora(iso: string) {
 
 export default async function AgendaEquipePage() {
   const { role } = await requireInternalUser("pipeline.manage");
-  if (role !== "superadmin") redirect("/admin/agenda");
+  if (role === "operador") redirect("/admin/agenda");
 
   const admin = createAdminClient();
 

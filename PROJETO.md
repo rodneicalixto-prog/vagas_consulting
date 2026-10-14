@@ -1247,6 +1247,12 @@ sessões futuras.
     clicáveis, filtros de período/empresa, funil, evolução, setores,
     tempo de vaga em aberto, quadro somente leitura) e modo calendário
     na Minha agenda. 24 testes unitários. Sem migration.
+85. **Agenda em cascata e teto por empresa (14/10/2026)**: menu Agenda
+    agora abre em cascata (Minha agenda, Entrevistas, Por etapa, Agenda da
+    equipe); a Agenda da equipe passou a valer também para admin. Entrevistas
+    respeitam a carteira do operador; Por etapa lista candidatos em
+    entrevista/teste/proposta com a próxima data. Teto de IA de US$ 100 é
+    **por empresa**. "Agenda de entregas" aguarda definição do Rodnei.
 
 ## 3. Escopo do MVP (revisado)
 
