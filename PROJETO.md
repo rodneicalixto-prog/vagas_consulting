@@ -866,6 +866,20 @@ sessões futuras.
     `text-3`. Commit `3f36c00` (docs v1.3) permanece local, aguardando
     novo "sim".
 
+48. **Decisões de disponibilidade/backup e 1º export (14/10/2026)**:
+    Rodnei decidiu manter o plano **Supabase Free** e guardar o backup no
+    **Google Drive** (conta rodneicalixto@gmail.com, pasta "Backups Vagas
+    Consulting", id `1EbtsUfuDxB8Ok3u15NWiBAIFXE7YsgoD`). Push de
+    `7cbec07..76d2ad9` (docs v1.3 + log) feito. Export de dados do banco
+    gerado (18 tabelas, 7 com dados, ~47 KB compactos; contém PII de
+    perfis/consentimentos) e salvo só localmente; o **upload para o Drive
+    foi bloqueado pelo classificador de permissões** do Claude Code e não foi
+    contornado. Pendente: o Rodnei decidir como subir (arrastar os arquivos
+    locais ou liberar permissão). Hipótese a verificar: com o cron de
+    arquivamento rodando diariamente, o projeto Free deixa de pausar por
+    inatividade — conferir nos próximos dias. Leaked Password Protection
+    exige plano Pro (não disponível no Free).
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
