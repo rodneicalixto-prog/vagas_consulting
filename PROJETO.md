@@ -1253,6 +1253,20 @@ sessões futuras.
     respeitam a carteira do operador; Por etapa lista candidatos em
     entrevista/teste/proposta com a próxima data. Teto de IA de US$ 100 é
     **por empresa**. "Agenda de entregas" aguarda definição do Rodnei.
+86. **Contatos e telefone como link do WhatsApp (14/10/2026)**: nova aba
+    `/admin/contatos` (nome, telefone, vaga, etapa; busca; auditoria de
+    abertura); telefone do candidato vira link `wa.me` no detalhe e nos
+    contatos; operador só vê telefone com candidatura em andamento. Prazo
+    final do Drive confirmado em 5 anos. Link passa a abrir o inbox da
+    plataforma quando a Fase 1 da comunicação existir.
+87. **Agenda de entregas e hierarquia de agentes (14/10/2026)**: a agenda
+    de entregas é o prazo de entregar candidatos ao cliente por vaga
+    (`expira_em`), em `/admin/agenda/entregas` com calendário, semáforo e
+    edição auditada do prazo. Corrigido bug de telefone: número
+    internacional (`+1…`) virava brasileiro no link do WhatsApp; 28
+    testes. Spec da comunicação ganhou a hierarquia: **agente por empresa**
+    (isolado, chave e teto próprios) e **agente mor** do superadmin
+    (política-piso, supervisão, sem falar com candidato por padrão).
 
 ## 3. Escopo do MVP (revisado)
 

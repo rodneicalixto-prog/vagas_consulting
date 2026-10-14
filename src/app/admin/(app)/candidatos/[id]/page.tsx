@@ -10,6 +10,7 @@ import { statusLabel, statusPillClass, safeHttpUrl, STATUS_CANDIDATURA_EM_ABERTO
 import type { Enums } from "@/lib/supabase/types";
 import type { ExperienciaProfissional } from "@/app/experiencias/actions";
 import { atualizarStatusCandidatura } from "./actions";
+import { formatarTelefoneBR, linkWhatsApp } from "@/lib/whatsapp";
 import { alterarBlacklist } from "../actions";
 
 const STATUS_OPCOES: Enums<"status_candidatura">[] = [
@@ -246,9 +247,26 @@ export default async function CandidatoDetalhePage({
           )}
         </div>
         <p className="mt-1 text-xs text-text-2">
-          {contatoRestrito
-            ? "Contato liberado após a candidatura"
-            : `${authUser.user?.email ?? "—"} · ${profile.telefone ?? "sem telefone"}`}{" "}
+          {contatoRestrito ? (
+            "Contato liberado após a candidatura"
+          ) : (
+            <>
+              {authUser.user?.email ?? "—"} ·{" "}
+              {linkWhatsApp(profile.telefone) ? (
+                <a
+                  href={linkWhatsApp(profile.telefone)!}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-bold text-success underline"
+                  title="Abrir conversa no WhatsApp"
+                >
+                  {formatarTelefoneBR(profile.telefone)}
+                </a>
+              ) : (
+                (profile.telefone ?? "sem telefone")
+              )}
+            </>
+          )}{" "}
           · {profile.cidade ?? "sem cidade"}
         </p>
         {!contatoRestrito && (!profile.telefone?.trim() || !profile.endereco?.trim()) ? (

@@ -225,3 +225,51 @@ aprendizado para o roteiro daquela empresa.
 - (registro anterior, substituído) **Teto mensal de custo de IA: US$ 100** (assumido como teto da plataforma no conjunto; se for por empresa, o Rodnei indica). Ao atingir 80% avisa o superadmin; ao atingir 100% o agente pausa e volta ao modo sugestão manual.
 - **Provedor:** Groq (confirmado, não xAI Grok), além de OpenAI e Claude.
 - **Retenção (E8): os dois mecanismos.** Supabase guarda 12 meses; depois a conversa vai ao Drive **pseudonimizada** (nome, telefone e e-mail trocados por um **código estável por candidato**, sem a chave no Drive) e **com prazo final** (proposta: 5 anos, a confirmar). O código estável permite o histórico que o Rodnei quer (há quanto tempo procura emprego, quantas reprovações) sem expor a identidade. Dado pseudonimizado ainda é dado pessoal: a **tabela de correspondência código↔pessoa fica só no Supabase** e, a pedido do titular, é apagada, o que desfaz o vínculo no Drive.
+
+### Contatos e link do WhatsApp (14/10/2026)
+
+- **Prazo final no Drive: 5 anos** (confirmado pelo Rodnei).
+- **Telefone como link:** em toda tela com telefone do candidato, o número é um link `wa.me` que abre a conversa no WhatsApp. Quando o inbox da plataforma existir (Fase 1), o mesmo link passa a abrir a conversa **dentro** da plataforma, com o histórico.
+- **Aba Contatos (`/admin/contatos`):** nome, telefone, vaga e etapa de todos os candidatos, com busca por nome ou telefone, para identificar quem liga e para quem ligar. Admin e superadmin veem toda a base; o operador vê só candidatos da carteira e **o telefone só enquanto há candidatura em andamento**. Cada abertura da lista grava auditoria.
+- **Ponto de atenção:** candidato reprovado que volta a ligar não terá o telefone visível ao operador (regra de contato). Se isso atrapalhar o atendimento, o Rodnei decide estender a janela (ex.: 30 dias após o encerramento).
+
+### Hierarquia de agentes: um por empresa e o agente mor (pedido do Rodnei, 14/10/2026)
+
+| Agente | Escopo | Faz | Não faz |
+|---|---|---|---|
+| **Agente da empresa** | Uma empresa cliente | Conversa com os candidatos daquela empresa; roteiro, tom, perguntas eliminatórias e dúvidas frequentes próprios; propõe respostas ao operador (modo sugestão) | Ver dados de outra empresa; afrouxar regra do agente mor; mudar etapa sozinho |
+| **Agente mor** (superadmin) | A plataforma toda | Define a política global; supervisiona todos os agentes; audita conversas por amostra; detecta anomalias, custo e queda de qualidade; sugere ajustes de roteiro; responde ao superadmin | Falar com candidato (por padrão); alterar dado de empresa sem o superadmin |
+
+**Regras de herança**
+1. A política do agente mor é o **piso**: regras de parada, LGPD, limites e
+   linguagem proibida **não podem ser removidas** pela empresa; ela só pode
+   **restringir mais**.
+2. Cada agente de empresa tem **contexto, memória e base de conhecimento
+   isolados**; o agente mor lê **agregados e amostras**, nunca mistura o
+   conteúdo de uma empresa em outra.
+3. **Chave e teto por empresa:** cada agente usa a chave da empresa (se houver)
+   ou a do superadmin, com teto de US$ 100/mês por empresa. O agente mor tem
+   teto próprio, separado.
+4. **Autonomia por agente:** a escada de níveis 0 a 3 vale por agente de
+   empresa e por tipo de mensagem; só o superadmin promove.
+5. **Sigilo:** agente de empresa nunca revela empresa de vaga confidencial
+   antes da etapa permitida.
+
+**Quem controla**
+| Papel | Agente da empresa | Agente mor |
+|---|---|---|
+| Superadmin | Cria, configura, pausa, muda autonomia | Configura, pausa, vê tudo |
+| Admin | Vê histórico e métricas; edita roteiro e FAQ (a confirmar) | Não acessa |
+| Operador | Aprova, edita ou descarta sugestões; vê o status | Não acessa |
+
+**Modelo de dados proposto:** `ai_agents` (escopo plataforma|empresa,
+empresa, nome, ativo, nível de autonomia, referência da chave, teto mensal),
+`ai_agent_policies` (versões da política e do roteiro, com quem aprovou),
+`ai_agent_runs` (já previsto: entrada, saída, decisão, custo, agente).
+
+**Fases:** agente da empresa na Fase 3 (modo sugestão); agente mor na Fase 4,
+primeiro só como supervisor e relatório para o superadmin.
+
+**Decisões pedidas:** (1) o agente mor só supervisiona e fala com o
+superadmin, como recomendado, ou também atende candidatos? (2) o admin pode
+editar o roteiro de uma empresa?

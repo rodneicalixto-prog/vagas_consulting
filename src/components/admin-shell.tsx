@@ -20,6 +20,7 @@ const NAV: NavItem[] = [
   { href: "/admin/empresas", label: "Empresas" },
   { href: "/admin/vagas", label: "Cadastro de vagas" },
   { href: "/admin/candidatos", label: "Candidatos" },
+  { href: "/admin/contatos", label: "Contatos" },
   { href: "/admin/talentos", label: "Talentos" },
   { href: "/admin/convites", label: "Convites" },
   {
@@ -29,6 +30,7 @@ const NAV: NavItem[] = [
       { href: "/admin/agenda", label: "Minha agenda", exact: true },
       { href: "/admin/agenda/entrevistas", label: "Entrevistas" },
       { href: "/admin/agenda/etapas", label: "Por etapa" },
+      { href: "/admin/agenda/entregas", label: "Entregas" },
       { href: "/admin/agenda/equipe", label: "Agenda da equipe", roles: ["superadmin", "admin"] },
     ],
   },

@@ -152,4 +152,13 @@ No menu, **Agenda** vira um grupo que abre em cascata:
 | Por etapa | Todos | Candidatos nas etapas Entrevista, Teste e Proposta com a data da próxima entrevista; quem ainda não tem data fica destacado |
 | Agenda da equipe | Admin e superadmin | Compromissos de toda a equipe |
 
-**Pendente:** "agenda de entregas" aguarda o Rodnei dizer o que são as entregas (prazo de entregar candidatos ao cliente, entrega de documentos ou prazo da vaga).
+**Definido:** "agenda de entregas" = prazo de entregar candidatos ao cliente por vaga (campo de expiração da vaga). Construída em `/admin/agenda/entregas` (14/10/2026). Texto antigo: "agenda de entregas" aguarda o Rodnei dizer o que são as entregas (prazo de entregar candidatos ao cliente, entrega de documentos ou prazo da vaga).
+
+### Agenda de entregas (14/10/2026)
+
+`/admin/agenda/entregas`: calendário e tabela das vagas publicadas com o prazo
+de entrega (`jobs.expira_em`), dias restantes com semáforo (vermelho até 3
+dias ou vencida, amarelo até 7, verde acima), candidaturas e quantas estão em
+andamento. Quem tem acesso à vaga pode definir ou limpar o prazo (auditado);
+operador só nas vagas da carteira. Vaga vencida é arquivada pela rotina diária
+já existente.
