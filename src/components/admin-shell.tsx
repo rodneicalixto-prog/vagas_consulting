@@ -50,6 +50,7 @@ const NAV: NavItem[] = [
 const PERFIL_LABEL: Record<string, string> = {
   superadmin: "Superadministrador",
   admin: "Administrador",
+  admin_empresa: "Administrador da empresa",
   operador: "Operador",
 };
 
