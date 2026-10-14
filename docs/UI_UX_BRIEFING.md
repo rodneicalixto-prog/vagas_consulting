@@ -138,13 +138,13 @@ AA exige 4,5:1 para texto normal e 3:1 para texto grande (≥ 24 px, ou
 |---|---|---|
 | texto `#14171c` sobre fundo `#faf8f4` | 16,93 | ✅ AA |
 | texto-2 `#5c6470` sobre fundo / superfície | 5,64 / 5,98 | ✅ AA |
-| **texto-3 `#9aa0a8` sobre fundo / superfície** | **2,48 / 2,64** | ❌ falha — não usar para texto informativo |
+| texto-3 `#626a75` (antes `#9aa0a8`, 2,48) sobre fundo / superfície | 5,2 / 5,5 | ✅ AA — corrigido em 14/10/2026 |
 | branco sobre navy `#101d33` | 16,86 | ✅ AA |
 | dourado `#b8924c` sobre navy | 5,82 | ✅ AA |
 | dourado-2 `#d9b877` sobre navy | 8,89 | ✅ AA |
 | navy sobre dourado | 5,82 | ✅ AA |
-| **dourado `#b8924c` sobre branco** | **2,89** | ❌ falha — não usar como texto sobre fundo claro |
-| **branco sobre dourado** | **2,89** | ❌ falha — botão dourado deve ter texto navy |
+| dourado `#b8924c` sobre branco | 2,89 | ✅ não é usado como texto: só em barras, toggles e fundo de botão |
+| texto `#1c1508` (usado nos botões) sobre dourado | 6,25 | ✅ AA — branco sobre dourado não é usado |
 | dourado-3 `#8f6f37` sobre branco | 4,67 | ✅ AA |
 | perigo `#b3492f` sobre branco / sobre perigo-bg | 5,37 / 4,63 | ✅ AA |
 | sucesso `#3f7a5c` sobre branco | 5,06 | ✅ AA |

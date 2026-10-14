@@ -841,6 +841,14 @@ sessões futuras.
     (metas numéricas, SLA/backup em linguagem simples, aceite de convite,
     ativos visuais, responsáveis do backlog). Commit local, sem push.
 
+45. **Correção de contraste (14/10/2026)**, autorizada pelo Rodnei:
+    `--color-text-3` de `#9aa0a8` (2,5:1, falhava AA) para `#626a75`
+    (≈5,2:1 no fundo, ≈4,7:1 nos fundos tintados) em `globals.css`; afeta
+    53 usos de `text-text-3`. Verificado no código que o dourado nunca é
+    texto sobre fundo claro e que os botões já usam texto `#1c1508` sobre
+    dourado (6,25:1) — esses dois itens do Anexo B eram falso alarme.
+    Falta verificar visualmente em produção após o push. Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
