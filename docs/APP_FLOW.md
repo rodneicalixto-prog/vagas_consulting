@@ -75,6 +75,16 @@
 - Em `/perfil/documentos` sem arquivo há duas saídas: anexar currículo ou
   **preencher o currículo no app** (`/experiencias`).
 
+## Completude do perfil (regra, 14/10/2026)
+
+Calculada **na hora** (`src/lib/perfil.ts`), nunca de número gravado. 9 itens
+de peso igual: nome, cidade, telefone, endereço, idade, modelo de trabalho,
+modalidades desejadas, disponibilidade e experiência (ou "Nunca trabalhei").
+Currículo anexado não conta (é opcional). O Início mostra o percentual e a
+lista do que falta, com atalho para a tela certa. O painel admin usa o mesmo
+cálculo. A coluna `perfil_completo_pct` fica apenas como espelho gravado no
+cadastro.
+
 ## Jornadas alternativas
 
 - Candidato recebe convite direto pra temporário (`invites`) sem passar

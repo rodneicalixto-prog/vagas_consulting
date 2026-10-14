@@ -1070,6 +1070,18 @@ sessões futuras.
     app". Verificação: `tsc` e `eslint` sem erros, `next build` OK. Não
     publicado. Commit local.
 
+66. **Barra de perfil calculada na hora (14/10/2026)**, a pedido do Rodnei
+    ("a barra não está sincronizada com a realidade"; aprovado: "sim,
+    calcular na hora"). Causa: `perfil_completo_pct` era um número gravado
+    só no onboarding (fórmulas diferentes ao longo do tempo: 88% e 86% no
+    banco) e nenhuma tela de edição o recalculava. Correção: função única
+    `avaliarPerfil` em `src/lib/perfil.ts` (9 itens), usada no Início
+    (percentual + "Falta: …" + atalho), no painel admin e no onboarding;
+    campo **Idade** (opcional, 14–100) adicionado a Dados pessoais para o
+    item ser completável. Sem migration; coluna mantida como espelho.
+    Verificação: 5 casos de cálculo, `tsc`/`eslint` sem erros, `next build`
+    OK. Não publicado. Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

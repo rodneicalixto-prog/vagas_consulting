@@ -15,6 +15,11 @@ export async function atualizarDadosPessoais(formData: FormData) {
   const cidade = String(formData.get("cidade") ?? "").trim();
   const telefone = String(formData.get("telefone") ?? "").trim();
   const endereco = String(formData.get("endereco") ?? "").trim();
+  const idadeBruta = String(formData.get("idade") ?? "").trim();
+  const idadeNumero = idadeBruta ? Number(idadeBruta) : null;
+  if (idadeNumero !== null && (!Number.isInteger(idadeNumero) || idadeNumero < 14 || idadeNumero > 100)) {
+    throw new Error("Informe uma idade entre 14 e 100 anos.");
+  }
 
   if (!nomeCompleto || !cidade || !telefone || !endereco) {
     throw new Error("Nome, cidade, telefone e endereço são obrigatórios.");
@@ -24,7 +29,7 @@ export async function atualizarDadosPessoais(formData: FormData) {
   // histórico de terceirizadoras já preenchidos em outras telas.
   const { data: atualizado, error } = await supabase
     .from("profiles")
-    .update({ nome_completo: nomeCompleto, cidade, telefone, endereco })
+    .update({ nome_completo: nomeCompleto, cidade, telefone, endereco, idade: idadeNumero })
     .eq("id", user.id)
     .select("id");
 

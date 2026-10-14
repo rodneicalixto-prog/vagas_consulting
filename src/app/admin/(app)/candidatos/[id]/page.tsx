@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { avaliarPerfil } from "@/lib/perfil";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
@@ -42,7 +43,7 @@ async function buscarPerfilComCurriculoAssinado(client: ReturnType<typeof create
   const result = await client
     .from("profiles")
     .select(
-      "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou",
+      "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou, idade",
     )
     .eq("id", id)
     .maybeSingle();
@@ -240,7 +241,7 @@ export default async function CandidatoDetalhePage({
             </div>
             <div>
               <div className="text-[10px] font-bold uppercase text-text-3">Perfil completo</div>
-              <div className="text-text-2">{profile.perfil_completo_pct ?? 0}%</div>
+              <div className="text-text-2">{avaliarPerfil(profile).pct}%</div>
             </div>
             <div>
               <div className="text-[10px] font-bold uppercase text-text-3">Currículo</div>

@@ -13,7 +13,7 @@ export default async function DadosPessoaisPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nome_completo, cidade, telefone, endereco")
+    .select("nome_completo, cidade, telefone, endereco, idade")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -61,6 +61,19 @@ export default async function DadosPessoaisPage() {
             required
             defaultValue={profile?.endereco ?? ""}
             placeholder="Rua, número, bairro, cidade"
+            className="rounded-lg border border-border bg-white px-3.5 py-3 text-sm outline-none focus:border-navy"
+          />
+        </label>
+
+        <label className="flex flex-col gap-1.5">
+          <span className="text-xs font-bold text-text-2">Idade</span>
+          <input
+            name="idade"
+            type="number"
+            inputMode="numeric"
+            min={14}
+            max={100}
+            defaultValue={profile?.idade ?? ""}
             className="rounded-lg border border-border bg-white px-3.5 py-3 text-sm outline-none focus:border-navy"
           />
         </label>

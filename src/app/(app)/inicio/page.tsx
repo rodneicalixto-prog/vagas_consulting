@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Tag, Pill, Card } from "@/components/ui";
 import { IconBell, IconBriefcase } from "@/components/icons";
 import { modalidadeLabel, modalidadeTagClass, statusLabel, statusPillClass } from "@/lib/format";
+import { avaliarPerfil } from "@/lib/perfil";
 
 export default async function InicioPage() {
   const supabase = await createClient();
@@ -28,6 +29,7 @@ export default async function InicioPage() {
   ]);
 
   const primeiroNome = profile?.nome_completo?.split(" ")[0] ?? "candidato";
+  const { pct, faltando } = avaliarPerfil(profile);
 
   return (
     <div className="flex flex-col gap-6 px-5 pb-8 pt-6 md:px-8 md:pt-8">
@@ -42,18 +44,29 @@ export default async function InicioPage() {
       </div>
 
       <div className="rounded-2xl bg-gradient-to-br from-navy-3 to-navy-2 p-[18px] text-white">
-        <div className="text-[12.5px] font-bold opacity-85">
-          Seu perfil está {profile?.perfil_completo_pct ?? 0}% completo
+        <div className="text-[12.5px] font-bold opacity-85">Seu perfil está {pct}% completo</div>
+        <div
+          className="my-2.5 h-1.5 overflow-hidden rounded-full bg-white/20"
+          role="progressbar"
+          aria-valuenow={pct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Perfil completo"
+        >
+          <div className="h-full rounded-full bg-gold-2" style={{ width: `${pct}%` }} />
         </div>
-        <div className="my-2.5 h-1.5 overflow-hidden rounded-full bg-white/20">
-          <div
-            className="h-full rounded-full bg-gold-2"
-            style={{ width: `${profile?.perfil_completo_pct ?? 0}%` }}
-          />
-        </div>
-        <Link href="/perfil" className="text-[12.5px] font-extrabold text-gold-2">
-          Completar perfil →
-        </Link>
+        {faltando.length > 0 ? (
+          <>
+            <div className="mb-2 text-[11.5px] opacity-85">
+              Falta: {faltando.map((i) => i.label).join(", ")}
+            </div>
+            <Link href={faltando[0].href} className="text-[12.5px] font-extrabold text-gold-2">
+              Completar perfil →
+            </Link>
+          </>
+        ) : (
+          <div className="text-[12.5px] font-extrabold text-gold-2">Perfil completo ✓</div>
+        )}
       </div>
 
       <section className="flex flex-col gap-2.5">

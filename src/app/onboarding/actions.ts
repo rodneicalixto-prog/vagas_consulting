@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Enums } from "@/lib/supabase/types";
+import { avaliarPerfil } from "@/lib/perfil";
 
 export type HistoricoTerceirizadora = {
   empresa: string;
@@ -36,17 +37,18 @@ export async function saveProfile(input: SaveProfileInput) {
     throw new Error("Nome, cidade, telefone e endereço são obrigatórios.");
   }
 
-  const camposPreenchidos = [
-    input.nomeCompleto,
-    input.idade,
-    input.cidade,
-    input.telefone,
-    input.endereco,
-    input.modeloTrabalho.length > 0,
-    input.modalidades.length > 0,
-    input.disponibilidade,
-  ].filter(Boolean).length;
-  const perfilCompletoPct = Math.round((camposPreenchidos / 8) * 100);
+  // Mesma função usada nas telas (o valor gravado é só um espelho; as telas
+  // calculam na hora). No onboarding ainda não há experiência informada.
+  const perfilCompletoPct = avaliarPerfil({
+    nome_completo: input.nomeCompleto,
+    idade: input.idade ? Number(input.idade) : null,
+    cidade: input.cidade,
+    telefone: input.telefone,
+    endereco: input.endereco,
+    modelo_trabalho: input.modeloTrabalho,
+    modalidades_desejadas: input.modalidades,
+    disponibilidade: input.disponibilidade,
+  }).pct;
 
   await supabase.from("profiles").upsert({
     id: user.id,
