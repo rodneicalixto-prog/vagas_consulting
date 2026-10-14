@@ -1,5 +1,8 @@
 # Auto-Arquivamento de Vagas Expiradas
 
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Especificação — auto-arquivamento de vagas v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+
+
 ## O Quê
 
 Sistema automático que **arquiva vagas** cuja data de expiração (`expira_em`) já passou. Vagas arquivadas ficam com `status = 'arquivada'` e desaparecem de listagens públicas/de candidatos.

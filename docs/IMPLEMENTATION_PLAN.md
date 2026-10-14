@@ -1,0 +1,95 @@
+# Plano de Implementação
+
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.1 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+
+
+> O app já está construído (18 migrations, 15+ commits, em produção). Este
+> documento é retroativo: mostra o que já foi feito por etapa, e trata o
+> "próximo passo" como o backlog real que restou — não um plano do zero.
+
+## Etapa 1 — Configuração do projeto ✅ Concluída
+
+Repositório `rodneicalixto-prog/vagas_consulting`, ambiente Next.js +
+Supabase + Vercel, deploy automático em `main`. Dependências em
+`package.json`. Nenhuma ação pendente aqui.
+
+## Etapa 2 — Dados e autenticação ✅ Concluída, com um item corrigido nesta sessão
+
+- Schema modelado e aplicado (18 migrations).
+- RLS habilitado, recursão em política corrigida (migration `0005`).
+- Auth via Supabase (e-mail/senha).
+- **Corrigido em 28/09/2026**: migration `0018` (auto-arquivamento de
+  vagas) nunca tinha sido aplicada em produção — a função que o cron
+  chamava não existia. Corrigida e aplicada nesta sessão (ver `TRD.md` →
+  "Bug técnico corrigido").
+- **Pendente**: recuperação de senha, MFA administrativo real (ver
+  `TRD.md`).
+
+## Etapa 3 — Jornada principal do usuário ✅ Concluída
+
+Cadastro/login → perfil/currículo (com IA) → busca de vaga → candidatura →
+acompanhamento em `/processos` → mensagens. Ponta a ponta validado em
+produção em 10/09/2026 com usuária real (perfil `admin`), conforme
+`PROJETO.md`.
+
+## Etapa 4 — Funcionalidades secundárias ✅ Concluída
+
+Agenda da equipe, prestações de temporários, auditoria com exportação,
+LGPD, denúncias, blacklist, leads via Meta Ads, paginação em tabelas admin,
+arquivamento automático.
+
+## Etapa 5 — Qualidade — ⚠️ Parcial, com pendências reais
+
+| Item | Status |
+|---|---|
+| Headers de segurança | ✅ Aplicados |
+| CSRF | ✅ Implementado |
+| Validação de entrada (Zod) | ⚠️ Implementada, mas com **erro de tipo real** (`errorMap` descontinuado no Zod 4) — `tsc --noEmit` falha em `src/lib/validation/schemas.ts` e `src/lib/security/audit.ts` |
+| `npm audit` | ✅ 0 vulnerabilidades |
+| Build de produção local (Windows) | ❌ **Falhando** neste ambiente — Turbopack crasha (`TurbopackInternalError`, processo nativo sai com `0xc0000142`) ao compilar `globals.css`. Não confirmado se afeta o build da Vercel (Linux) — [A PREENCHER: rodar/checar o log do último deploy real pra confirmar se é só um problema deste Windows local] |
+| Recuperação de senha | ❌ Não implementada |
+| MFA administrativo | ❌ Não implementado (campo decorativo) |
+| Testes automatizados de autorização | ❌ Não implementados |
+| Acessibilidade auditada | [A PREENCHER — não há registro] |
+
+## Etapa 6 — Lançamento ✅ Em produção
+
+App já está no ar (`vagas-consulting-umber.vercel.app`), com histórico de
+pelo menos um incidente de produção resolvido (painel `/admin` fora do ar
+em 10/09/2026, causa raiz: migration não aplicada + env var vazia — ver
+seção 10 do `PROJETO.md`). Sem plano formal de rollback documentado além
+do redeploy manual pela Vercel. Sem monitoramento/alerta configurado além
+de `get_runtime_errors` consultado manualmente.
+
+## Backlog real (por prioridade, a partir desta análise)
+
+1. 🔴 **Corrigir `errorMap` → `error` em `schemas.ts`** (Zod 4) — build
+   de produção com type-check estrito está quebrado.
+2. 🔴 **Confirmar se o Turbopack quebra o build da Vercel também**, ou se
+   é isolado deste ambiente Windows.
+3. 🟠 Implementar recuperação de senha.
+4. 🟠 Implementar MFA administrativo real (painel lida com PII de
+   candidatos).
+5. 🟡 Atualizar `supabase/migrations/0018_auto_arquivamento_vagas.sql`
+   pra refletir a correção aplicada nesta sessão (hoje o arquivo no repo
+   não bate mais com o que está em produção).
+6. 🟡 Decidir as 6 perguntas de negócio ainda abertas na seção 7 do
+   `PROJETO.md` (ver `PRD.md` → "Perguntas em aberto").
+7. 🟢 Atualizações de dependência de rotina (Next 16.3.4→16.3.6, React
+   19.2→19.3, etc. — sem vulnerabilidade associada).
+
+## Para cada tarefa do backlog
+
+[A PREENCHER: responsável/agente, entrada, entrega e "o que conta como
+pronto" para os itens 3–6 dependem de decisão sua — não vou atribuir prazo
+ou responsável sem confirmação, principalmente pro item 6 (decisões de
+negócio) e pro início da fase de WhatsApp/IA (`PROJETO.md` seção 8.0, que
+você pediu explicitamente pra não começar sem aviso seu).]
+
+## Antes de passar pra próxima etapa
+
+Este projeto já roda em produção — não há "próxima etapa" no sentido do
+modelo genérico. A disciplina que vale é a que já está registrada no
+`CLAUDE.md` do projeto: qualquer ação técnica relevante concluída vai pro
+log cronológico do `PROJETO.md` (seção 2.2), e nada é publicado/alterado
+em produção sem autorização explícita sua no momento da ação.
