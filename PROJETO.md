@@ -1180,6 +1180,16 @@ sessões futuras.
     candidato mascara o contato). `criarConvite` passou a exigir candidato
     aprovado para operador. tsc, eslint e build passam. **Pendente:**
     push (aguarda "sim, dar o push") e teste manual com operador real.
+76. **Ajustes do banco de talentos e ranking (14/10/2026, pedido do Rodnei)**:
+    convite do banco de talentos com prazo de **72 h**; **convite vencido
+    libera o candidato** (sai da carteira do operador e pode ser
+    reconvidado; o vencido é encerrado como `cancelado` e auditado em
+    `convite_vencido_encerrado`); candidato pode se candidatar a várias
+    vagas e empresas ao mesmo tempo (já era assim, só uma candidatura por
+    vaga). Nova tela `/admin/ranking` (admin/superadmin): candidatos com
+    mais candidaturas e em quantas empresas, vagas mais disputadas, volume
+    por empresa; KPI "Candidaturas (7 dias)" na visão geral. Spec v0.4
+    atualizada. tsc, eslint e build passam. **Pendente:** push.
 
 ## 3. Escopo do MVP (revisado)
 

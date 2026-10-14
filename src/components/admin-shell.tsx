@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/convites", label: "Convites" },
   { href: "/admin/agenda", label: "Minha agenda" },
   { href: "/admin/agenda/equipe", label: "Agenda da equipe", roles: ["superadmin"] },
+  { href: "/admin/ranking", label: "Ranking", roles: ["superadmin", "admin"] },
   { href: "/admin/leads", label: "Leads", roles: ["superadmin", "admin"] },
   { href: "/admin/prestacoes", label: "Prestações", roles: ["superadmin", "admin"] },
   { href: "/admin/blacklist", label: "Black list", roles: ["superadmin", "admin"] },

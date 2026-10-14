@@ -8,6 +8,10 @@ import {
   obterEscopo,
 } from "@/lib/auth/escopo";
 
+function haSeteDias(): string {
+  return new Date(Date.now() - 7 * 24 * 3600_000).toISOString();
+}
+
 export default async function AdminOverviewPage() {
   const { user, role } = await requireInternalUser("dashboard.read");
   const admin = createAdminClient();
@@ -50,6 +54,13 @@ export default async function AdminOverviewPage() {
     qFilaEmpresas.order("created_at", { ascending: true }).limit(5),
     qFilaVagas.order("created_at", { ascending: true }).limit(5),
   ]);
+  const seteDias = haSeteDias();
+  const { count: candidaturas7d } = ehOperador
+    ? { count: 0 }
+    : await admin
+        .from("applications")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", seteDias);
   const candidatosCadastrados = visiveis ? visiveis.filter((id) => !id.startsWith("00000000")).length : candidatosTodos;
 
   return (
@@ -70,6 +81,9 @@ export default async function AdminOverviewPage() {
             value={candidatosCadastrados ?? 0}
             href="/admin/candidatos"
           />
+          {!ehOperador && (
+            <Kpi label="Candidaturas (7 dias)" value={candidaturas7d ?? 0} href="/admin/ranking" />
+          )}
           {!ehOperador && (
             <Kpi label="Denúncias abertas" value={denunciasAbertas ?? 0} href="/admin/denuncias" alert />
           )}

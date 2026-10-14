@@ -114,7 +114,7 @@ export default async function TalentosPage({
               {(vagas ?? []).length > 0 && (
                 <form action={convidarDoBanco} className="mt-3 flex flex-wrap items-center gap-2">
                   <input type="hidden" name="candidate_id" value={t.id} />
-                  <input type="hidden" name="validade_horas" value="24" />
+                  <input type="hidden" name="validade_horas" value="72" />
                   <select
                     name="job_id"
                     required

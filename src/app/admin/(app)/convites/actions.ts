@@ -11,7 +11,7 @@ import {
   type DecideInviteInput,
 } from "@/lib/validation/schemas";
 import { logAudit } from "@/lib/security/audit";
-import { CONVITES_ATIVOS, CONVITES_CANCELAVEIS } from "@/lib/convites";
+import { CONVITES_ATIVOS, CONVITES_CANCELAVEIS, conviteExpirado } from "@/lib/convites";
 import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 
 export async function criarConvite(formData: FormData) {
@@ -44,13 +44,35 @@ export async function criarConvite(formData: FormData) {
   // (migration 0022); esta checagem só dá a mensagem amigável.
   const { data: existentes } = await admin
     .from("invites")
-    .select("id")
+    .select("id, status, validade")
     .eq("candidate_id", candidateId)
     .eq("job_id", jobId)
-    .in("status", CONVITES_ATIVOS)
-    .limit(1);
-  if (existentes && existentes.length > 0) {
+    .in("status", CONVITES_ATIVOS);
+
+  // Convite vencido (sem resposta no prazo) não conta como ativo: é encerrado
+  // aqui para liberar um novo convite ao mesmo candidato (índice único parcial).
+  const vencidos = (existentes ?? []).filter((c) => conviteExpirado({ status: c.status, validade: c.validade }));
+  const bloqueantes = (existentes ?? []).filter((c) => !vencidos.includes(c));
+  if (bloqueantes.length > 0) {
     throw new Error("Este candidato já tem um convite ativo para esta vaga.");
+  }
+  for (const v of vencidos) {
+    const { data: encerrado } = await admin
+      .from("invites")
+      .update({ status: "cancelado" })
+      .eq("id", v.id)
+      .eq("status", v.status)
+      .select("id");
+    if (encerrado && encerrado.length > 0) {
+      await logAudit({
+        ator_id: user.id,
+        acao: "convite_vencido_encerrado",
+        objeto_tipo: "invite",
+        objeto_id: v.id,
+        antes: { status: v.status, validade: v.validade },
+        depois: { status: "cancelado" },
+      });
+    }
   }
 
   const validade = new Date(Date.now() + horas * 3600_000).toISOString();

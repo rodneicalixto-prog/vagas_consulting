@@ -114,9 +114,18 @@ export async function candidatosVisiveis(e: Escopo): Promise<string[] | null> {
   const vagas = await vagasVisiveis(e);
   if (vagas === null) return null;
   const admin = createAdminClient();
+  // Convite vencido sem resposta não mantém o candidato na carteira: ele
+  // volta ao banco de talentos (resumo) e pode ser reconvidado.
+  const agora = new Date().toISOString();
   const [{ data: cands }, { data: convs }] = await Promise.all([
     admin.from("applications").select("candidate_id").in("job_id", vagas),
-    admin.from("invites").select("candidate_id").in("job_id", vagas),
+    admin
+      .from("invites")
+      .select("candidate_id")
+      .in("job_id", vagas)
+      .or(
+        `and(status.in.(ofertado,visualizado),validade.gte.${agora}),status.in.(aceito,confirmado,em_execucao,concluido,ocorrencia)`,
+      ),
   ]);
   const ids = new Set<string>([
     ...(cands ?? []).map((c) => c.candidate_id),

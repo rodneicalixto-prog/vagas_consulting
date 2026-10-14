@@ -157,6 +157,19 @@ receber a base inteira. Decisão do Rodnei: **opção 2**.
 | Auditoria | Convite já grava `convite_criado` em `audit_log` |
 | Fora do escopo | Exportar a lista; operador editar perfil de candidato |
 
+Ajustes de 14/10/2026 (Rodnei):
+
+- **Prazo do convite do banco de talentos: 72 horas** (antes 24 h).
+- **Convite vencido libera o candidato.** Sem resposta no prazo, o candidato
+  sai da carteira do operador (volta ao resumo do banco de talentos) e pode
+  ser reconvidado; o convite vencido é encerrado como `cancelado` e auditado
+  (`convite_vencido_encerrado`).
+- **Candidato se candidata a várias vagas e empresas ao mesmo tempo.** Não há
+  limite entre vagas; só uma candidatura por vaga.
+- **Ranking de candidaturas para o admin** em `/admin/ranking`: candidatos com
+  mais candidaturas (e em quantas empresas), vagas mais disputadas e volume
+  por empresa; KPI de candidaturas dos últimos 7 dias na visão geral.
+
 Critérios de aceite: (a) operador sem carteira não convida; (b) operador não
 convida para vaga de outra empresa nem para vaga confidencial sem acesso;
 (c) a lista nunca devolve telefone/e-mail/endereço/currículo ao operador;
