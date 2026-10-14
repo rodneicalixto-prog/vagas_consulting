@@ -43,3 +43,7 @@ next-env.d.ts
 
 # backups locais do banco (contêm dados pessoais)
 /backups/
+
+# metadados locais da CLI do Supabase (ref do projeto, tokens temporarios)
+/supabase/.temp/
+/supabase/.branches/

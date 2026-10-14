@@ -92,7 +92,10 @@ linhas que o backup, nunca menos). Resultado esperado: `RESULTADO: backup
    ```
 
 3. Esperado: `RESULTADO: restauração completa.` com `backup = restaurado`
-   em todas as tabelas.
+   em todas as tabelas. Para refazer só algumas tabelas (destino já
+   parcialmente preenchido): `$env:RESTORE_ONLY="profiles"`.
+   Para provar que o schema do teste é idêntico ao de produção:
+   `node --env-file=.env.local scripts/backup/diff-schema.mjs`.
 4. **Apague o projeto de teste** (contém dados pessoais reais).
 
 O script recusa rodar contra a produção e contra destino não vazio. Cria

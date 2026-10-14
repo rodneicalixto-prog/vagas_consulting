@@ -47,10 +47,15 @@ if (!file) {
   file = join("backups", todos[todos.length - 1]);
 }
 const dados = JSON.parse(gunzipSync(readFileSync(file)).toString("utf-8"));
-const tabelas = dados.tabelas || {};
+const SOMENTE = (process.env.RESTORE_ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
+const tabelas = Object.fromEntries(
+  Object.entries(dados.tabelas || {}).filter(([t]) => SOMENTE.length === 0 || SOMENTE.includes(t)),
+);
 console.log(`Backup: ${file} (gerado em ${dados.gerado_em})`);
 
-const H = { apikey: key, Authorization: `Bearer ${key}` };
+// Chaves novas (sb_secret_…) não são JWT: vão só em `apikey`. A service_role
+// legada (eyJ…) também vai em Authorization.
+const H = key.startsWith("sb_") ? { apikey: key } : { apikey: key, Authorization: `Bearer ${key}` };
 
 async function contar(tabela) {
   const r = await fetch(`${url}/rest/v1/${tabela}?select=*`, {
@@ -61,7 +66,7 @@ async function contar(tabela) {
 }
 
 // 1) Destino precisa estar vazio
-for (const t of ["profiles", "jobs", "companies"]) {
+for (const t of SOMENTE.length ? [] : ["profiles", "jobs", "companies"]) {
   if ((await contar(t)) > 0) {
     console.error(`RECUSADO: ${t} do destino não está vazio. Use um projeto novo.`);
     process.exit(2);
@@ -85,7 +90,7 @@ for (const linhas of Object.values(tabelas)) {
   }
 }
 let criados = 0;
-for (const id of ids) {
+for (const id of SOMENTE.length ? [] : ids) {
   const r = await fetch(`${url}/auth/v1/admin/users`, {
     method: "POST",
     headers: { ...H, "Content-Type": "application/json" },
@@ -103,6 +108,7 @@ console.log(`Contas placeholder criadas: ${criados}/${ids.size}`);
 // 3) Insere em várias passadas, respeitando dependências entre tabelas
 let pendentes = Object.entries(tabelas).filter(([, l]) => Array.isArray(l) && l.length > 0).map(([t]) => t);
 const resultado = {};
+const erros = {};
 for (let passada = 1; passada <= 6 && pendentes.length; passada++) {
   const proximas = [];
   for (const t of pendentes) {
@@ -114,7 +120,15 @@ for (let passada = 1; passada <= 6 && pendentes.length; passada++) {
         headers: { ...H, "Content-Type": "application/json", Prefer: "return=minimal,resolution=ignore-duplicates" },
         body: JSON.stringify(linhas.slice(i, i + 200)),
       });
-      if (!r.ok) ok = false;
+      if (!r.ok) {
+        ok = false;
+        try {
+          const e = await r.json();
+          erros[t] = `HTTP ${r.status} code=${e.code ?? "?"} message=${String(e.message ?? "").slice(0, 200)}`;
+        } catch {
+          erros[t] = `HTTP ${r.status}`;
+        }
+      }
     }
     if (ok) resultado[t] = "inserida";
     else proximas.push(t);
@@ -124,7 +138,7 @@ for (let passada = 1; passada <= 6 && pendentes.length; passada++) {
 
 // 4) Conferência
 let falhas = pendentes.length;
-for (const t of pendentes) console.log(`FALHA ${t}: não foi possível inserir (dependência/constraint)`);
+for (const t of pendentes) console.log(`FALHA ${t}: não foi possível inserir — ${erros[t] ?? "sem detalhe"}`);
 for (const [t, linhas] of Object.entries(tabelas)) {
   if (!Array.isArray(linhas)) continue;
   const n = await contar(t).catch(() => -1);

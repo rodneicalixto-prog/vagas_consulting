@@ -1004,6 +1004,23 @@ sessões futuras.
     teste (por CLI do Rodnei ou reautenticando o MCP com a outra org),
     rodar o script, registrar o resultado e apagar o projeto. Commit local.
 
+61. **Teste de restauração executado e achou defeito real (14/10/2026)**:
+    projeto de teste `testes-vagas` (ref `tfkdobclqfnuqxfbqjwt`, org
+    Plataforma_calixto, via Supabase CLI do Rodnei; **produção não foi
+    tocada**, contagens conferidas antes e depois). `db push` aplicou
+    0001–0020 sem erro. Restauração: tabelas com dados voltaram, **exceto
+    `profiles`** (PGRST204: coluna `idade` inexistente). Causa raiz: **deriva
+    de schema** — `profiles.idade` e `leads.latitude/longitude` existem em
+    produção (migrations avulsas de 09/09 `profiles_add_idade`,
+    `leads_add_geolocalizacao`) mas **não estavam em nenhuma migration do
+    repositório**, então reconstruir o banco pelas migrations dava schema
+    incompleto. Correção: `0021_alinha_schema_producao.sql` (idempotente,
+    no-op em produção) e `scripts/backup/diff-schema.mjs` para comparar
+    produção × teste. Também achada a trava do script (destino precisa estar
+    vazio; seeds da 0003 exigem limpeza). Pendente: aplicar 0021 no teste,
+    rodar diff e reexecutar a restauração de `profiles`; depois apagar o
+    projeto e `supabase logout`. Commit local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
