@@ -46,6 +46,11 @@ async function esquema({ url, key }) {
   return out;
 }
 
+// Versões diferentes do PostgREST descrevem `smallint` como "smallint" ou
+// "int32": são a mesma coluna. Tratamos o par como equivalente.
+const equivalente = (x, y) =>
+  x === y || (["smallint", "int32"].includes(x) && ["smallint", "int32"].includes(y));
+
 const [a, b] = await Promise.all([esquema(prod), esquema(test)]);
 let diffs = 0;
 const tabelas = new Set([...Object.keys(a), ...Object.keys(b)]);
@@ -56,7 +61,7 @@ for (const t of [...tabelas].sort()) {
   for (const c of [...cols].sort()) {
     if (!(c in b[t])) { console.log(`FALTA NO TESTE: ${t}.${c} (${a[t][c]})`); diffs++; }
     else if (!(c in a[t])) { console.log(`SÓ NO TESTE : ${t}.${c} (${b[t][c]})`); diffs++; }
-    else if (a[t][c] !== b[t][c]) { console.log(`TIPO DIFERENTE: ${t}.${c} prod=${a[t][c]} teste=${b[t][c]}`); diffs++; }
+    else if (!equivalente(a[t][c], b[t][c])) { console.log(`TIPO DIFERENTE: ${t}.${c} prod=${a[t][c]} teste=${b[t][c]}`); diffs++; }
   }
 }
 console.log(diffs === 0 ? "RESULTADO: schemas idênticos." : `RESULTADO: ${diffs} diferença(s).`);

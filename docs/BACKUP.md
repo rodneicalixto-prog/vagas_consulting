@@ -101,6 +101,19 @@ linhas que o backup, nunca menos). Resultado esperado: `RESULTADO: backup
 O script recusa rodar contra a produção e contra destino não vazio. Cria
 contas placeholder para as chaves de `auth.users` (limite conhecido).
 
+## Resultado do primeiro teste de restauração (14/10/2026)
+
+- Projeto de teste vazio (`testes-vagas`), schema por `supabase db push`
+  (migrations 0001–0021) e dados do backup `…2026-10-14-17-22.json.gz`.
+- Todas as 18 tabelas voltaram com contagens idênticas ao backup.
+- **Defeito encontrado e corrigido:** `profiles.idade` e `leads.latitude/
+  longitude` existiam em produção mas não nas migrations; corrigido pela
+  `0021`. Sem o teste, a restauração dos perfis falharia em um desastre.
+- **Limite confirmado:** as contas de login (`auth.users`) não fazem parte do
+  backup; foram recriadas como placeholders. Em um desastre real, os
+  candidatos precisariam recriar o acesso.
+- Próxima repetição recomendada: a cada 3 meses (jan/2027).
+
 ## Limites conhecidos
 
 - **Auth:** `auth.users` (e-mails/senhas) não está no schema `public` e **não

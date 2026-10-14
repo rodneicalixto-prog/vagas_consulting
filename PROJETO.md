@@ -1021,6 +1021,16 @@ sessões futuras.
     rodar diff e reexecutar a restauração de `profiles`; depois apagar o
     projeto e `supabase logout`. Commit local.
 
+62. **Restauração validada (14/10/2026)**: após a `0021` (aplicada só no
+    projeto de teste), `diff-schema` listou 3 diferenças `smallint` ×
+    `int32` (falsos positivos por versão do PostgREST; script ajustado) e a
+    restauração de `profiles` deu `OK 2/2`; resultado final
+    "restauração completa". Backup do Drive comprovadamente reconstrói o
+    banco. Limite: sem `auth.users`. Pendente: Rodnei apagar o projeto
+    `testes-vagas` e rodar `npx supabase logout`; decidir se a `0021` deve
+    ser aplicada em produção para registrar o histórico (no-op). Commit
+    local.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,
