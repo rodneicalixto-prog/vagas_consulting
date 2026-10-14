@@ -880,6 +880,18 @@ sessões futuras.
     inatividade — conferir nos próximos dias. Leaked Password Protection
     exige plano Pro (não disponível no Free).
 
+49. **Rotina de backup recorrente criada (14/10/2026)**, a pedido do
+    Rodnei: `scripts/backup/backup-vagas.mjs` + `docs/BACKUP.md`. Exporta
+    todas as tabelas `public` via API (service role em `.env.local`),
+    compacta em `.json.gz` e envia ao Drive com `rclone`; retenção 8 locais
+    e 90 dias no Drive; nunca imprime dados. Teste local OK: 18 tabelas,
+    contagens idênticas ao banco (59 linhas), arquivo de 4 KB; `rclone` não
+    está instalado, então o envio ao Drive ainda não foi testado. Dados
+    nunca passam pelo contexto da Claude. Limites: não cobre `auth.users`
+    nem Storage. `/backups/` no `.gitignore`. Pendente: instalar rclone,
+    `rclone config` (login do Rodnei), agendar no Task Scheduler e testar
+    restauração a cada 3 meses. Commit local, sem push.
+
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

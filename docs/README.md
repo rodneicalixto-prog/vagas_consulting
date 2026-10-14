@@ -18,7 +18,8 @@ documentos afetados, antes do código.
 | 5 | Schema do backend | [BACKEND_SCHEMA.md](BACKEND_SCHEMA.md) | 1.2 | v0.1.0 |
 | 6 | Plano de implementação | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | 1.3 | v0.1.0 |
 
-Complementar: [AUTO_ARCHIVE.md](AUTO_ARCHIVE.md) (especificação do cron de
+Complementar: [BACKUP.md](BACKUP.md) (rotina de backup no Drive) e
+[AUTO_ARCHIVE.md](AUTO_ARCHIVE.md) (especificação do cron de
 auto-arquivamento, migration `0018`).
 
 ## Pendências
