@@ -1,36 +1,56 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import {
+  candidatosVisiveis,
+  empresasParaFiltro,
+  filtroConfidencialJobs,
+  obterEscopo,
+} from "@/lib/auth/escopo";
 
 export default async function AdminOverviewPage() {
-  await requireInternalUser("dashboard.read");
+  const { user, role } = await requireInternalUser("dashboard.read");
   const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
+  const ehOperador = role === "operador";
+  const visiveis = await candidatosVisiveis(escopo);
+
+  // Carteira: para o operador, todos os números/filas valem só para a
+  // carteira ativa (e vagas confidenciais só com acesso de confiança).
+  let qEmpresasAtivas = admin.from("companies").select("id", { count: "exact", head: true }).eq("status", "aprovada");
+  let qVagasPublicadas = admin.from("jobs").select("id", { count: "exact", head: true }).eq("status", "publicada");
+  let qFilaEmpresas = admin
+    .from("companies")
+    .select("id, razao_social, nome_fantasia, status")
+    .in("status", ["em_analise", "ajustes"]);
+  let qFilaVagas = admin.from("jobs").select("id, titulo, modalidade").eq("status", "revisao");
+  if (!escopo.todos) {
+    const empresas = empresasParaFiltro(escopo);
+    qEmpresasAtivas = qEmpresasAtivas.in("id", empresas);
+    qFilaEmpresas = qFilaEmpresas.in("id", empresas);
+    qVagasPublicadas = qVagasPublicadas.in("company_id", empresas).or(filtroConfidencialJobs(escopo));
+    qFilaVagas = qFilaVagas.in("company_id", empresas).or(filtroConfidencialJobs(escopo));
+  }
 
   const [
     { count: empresasAtivas },
     { count: vagasPublicadas },
-    { count: candidatosCadastrados },
+    { count: candidatosTodos },
     { count: denunciasAbertas },
     { data: filaEmpresas },
     { data: filaVagas },
   ] = await Promise.all([
-    admin.from("companies").select("id", { count: "exact", head: true }).eq("status", "aprovada"),
-    admin.from("jobs").select("id", { count: "exact", head: true }).eq("status", "publicada"),
+    qEmpresasAtivas,
+    qVagasPublicadas,
     admin.from("profiles").select("id", { count: "exact", head: true }),
-    admin.from("reports").select("id", { count: "exact", head: true }).eq("status", "aberta"),
-    admin
-      .from("companies")
-      .select("id, razao_social, nome_fantasia, status")
-      .in("status", ["em_analise", "ajustes"])
-      .order("created_at", { ascending: true })
-      .limit(5),
-    admin
-      .from("jobs")
-      .select("id, titulo, modalidade")
-      .eq("status", "revisao")
-      .order("created_at", { ascending: true })
-      .limit(5),
+    // Denúncias são da plataforma: não entram na visão do operador.
+    ehOperador
+      ? Promise.resolve({ count: 0 })
+      : admin.from("reports").select("id", { count: "exact", head: true }).eq("status", "aberta"),
+    qFilaEmpresas.order("created_at", { ascending: true }).limit(5),
+    qFilaVagas.order("created_at", { ascending: true }).limit(5),
   ]);
+  const candidatosCadastrados = visiveis ? visiveis.filter((id) => !id.startsWith("00000000")).length : candidatosTodos;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -45,8 +65,14 @@ export default async function AdminOverviewPage() {
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Kpi label="Empresas ativas" value={empresasAtivas ?? 0} href="/admin/empresas" />
           <Kpi label="Vagas publicadas" value={vagasPublicadas ?? 0} href="/admin/vagas" />
-          <Kpi label="Candidatos cadastrados" value={candidatosCadastrados ?? 0} href="/admin/candidatos" />
-          <Kpi label="Denúncias abertas" value={denunciasAbertas ?? 0} href="/admin/denuncias" alert />
+          <Kpi
+            label={ehOperador ? "Candidatos da carteira" : "Candidatos cadastrados"}
+            value={candidatosCadastrados ?? 0}
+            href="/admin/candidatos"
+          />
+          {!ehOperador && (
+            <Kpi label="Denúncias abertas" value={denunciasAbertas ?? 0} href="/admin/denuncias" alert />
+          )}
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4">

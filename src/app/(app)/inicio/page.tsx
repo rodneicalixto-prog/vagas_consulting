@@ -1,3 +1,4 @@
+import { nomeEmpresa } from "@/lib/sigilo";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Tag, Pill, Card } from "@/components/ui";
@@ -15,13 +16,13 @@ export default async function InicioPage() {
     supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle(),
     supabase
       .from("jobs")
-      .select("id, titulo, local, modalidade, companies(nome_fantasia, razao_social)")
+      .select("id, titulo, local, modalidade, confidencial, companies(nome_fantasia, razao_social)")
       .eq("status", "publicada")
       .order("publicada_em", { ascending: false })
       .limit(3),
     supabase
       .from("applications")
-      .select("id, status, jobs(titulo, companies(nome_fantasia, razao_social))")
+      .select("id, status, jobs(titulo, confidencial, companies(nome_fantasia, razao_social))")
       .eq("candidate_id", user!.id)
       .in("status", ["recebida", "triagem", "entrevista", "teste", "proposta"])
       .order("created_at", { ascending: false })
@@ -89,7 +90,7 @@ export default async function InicioPage() {
                 </Tag>
                 <h4 className="text-[13.5px] font-extrabold leading-snug">{v.titulo}</h4>
                 <div className="text-[11.5px] font-semibold text-text-2">
-                  {v.companies?.nome_fantasia ?? v.companies?.razao_social}
+                  {nomeEmpresa(v.companies, v.confidencial)}
                 </div>
                 <div className="text-[11px] text-text-3">{v.local}</div>
               </Link>
@@ -117,7 +118,7 @@ export default async function InicioPage() {
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate text-[13px] font-extrabold">{c.jobs?.titulo}</h4>
                   <p className="truncate text-[11.5px] text-text-2">
-                    {c.jobs?.companies?.nome_fantasia ?? c.jobs?.companies?.razao_social}
+                    {nomeEmpresa(c.jobs?.companies, c.jobs?.confidencial, c.status)}
                   </p>
                 </div>
                 <Pill className={statusPillClass[c.status]}>{statusLabel[c.status]}</Pill>

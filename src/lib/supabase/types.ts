@@ -225,6 +225,44 @@ export type Database = {
         }
         Relationships: []
       }
+      company_assignments: {
+        Row: {
+          acessa_confidenciais: boolean
+          ativo: boolean
+          company_id: string
+          created_at: string
+          criado_por: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          acessa_confidenciais?: boolean
+          ativo?: boolean
+          company_id: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          acessa_confidenciais?: boolean
+          ativo?: boolean
+          company_id?: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_assignments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compromissos: {
         Row: {
           application_id: string | null
@@ -358,6 +396,7 @@ export type Database = {
       jobs: {
         Row: {
           company_id: string
+          confidencial: boolean
           created_at: string
           decidido_em: string | null
           decidido_por: string | null
@@ -379,6 +418,7 @@ export type Database = {
         }
         Insert: {
           company_id: string
+          confidencial?: boolean
           created_at?: string
           decidido_em?: string | null
           decidido_por?: string | null
@@ -402,6 +442,7 @@ export type Database = {
         }
         Update: {
           company_id?: string
+          confidencial?: boolean
           created_at?: string
           decidido_em?: string | null
           decidido_por?: string | null

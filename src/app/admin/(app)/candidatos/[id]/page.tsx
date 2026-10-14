@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { avaliarPerfil } from "@/lib/perfil";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { candidatosVisiveis, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 import { SubmitButton } from "@/components/form-buttons";
 import { statusLabel, statusPillClass, safeHttpUrl } from "@/lib/format";
@@ -75,8 +76,31 @@ export default async function CandidatoDetalhePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { user: admin } = await requireInternalUser("pipeline.manage");
+  const { user: admin, role } = await requireInternalUser("pipeline.manage");
   const client = createAdminClient();
+
+  // Carteira: operador só abre candidato com candidatura/convite em vaga do
+  // escopo e só enxerga as candidaturas e mensagens dessas vagas.
+  const escopo = await obterEscopo(admin.id, role);
+  const visiveis = await candidatosVisiveis(escopo);
+  if (visiveis && !visiveis.includes(id)) redirect("/admin/acesso-negado");
+  const vagasIds = await vagasVisiveis(escopo);
+
+  let idsCandidaturas: string[] | null = null;
+  let idsConvites: string[] | null = null;
+  if (vagasIds) {
+    const [{ data: apps }, { data: invs }] = await Promise.all([
+      client.from("applications").select("id").eq("candidate_id", id).in("job_id", vagasIds),
+      client.from("invites").select("id").eq("candidate_id", id).in("job_id", vagasIds),
+    ]);
+    idsCandidaturas = (apps ?? []).map((a) => a.id);
+    idsConvites = (invs ?? []).map((i) => i.id);
+  }
+  const NENHUM = "00000000-0000-0000-0000-000000000000";
+  const filtroMensagens =
+    idsCandidaturas && idsConvites
+      ? `application_id.in.(${(idsCandidaturas.length ? idsCandidaturas : [NENHUM]).join(",")}),invite_id.in.(${(idsConvites.length ? idsConvites : [NENHUM]).join(",")})`
+      : null;
 
   const [
     { data: profile, curriculoIndisponivel },
@@ -86,17 +110,23 @@ export default async function CandidatoDetalhePage({
   ] = await Promise.all([
       buscarPerfilComCurriculoAssinado(client, id),
       client.auth.admin.getUserById(id),
-      client
-        .from("applications")
-        .select("id, status, created_at, jobs(titulo, modalidade, companies(nome_fantasia, razao_social))")
-        .eq("candidate_id", id)
-        .order("created_at", { ascending: false }),
-      client
-        .from("messages")
-        .select("id, conteudo, created_at, remetente_id, lida")
-        .or(`remetente_id.eq.${id},destinatario_id.eq.${id}`)
-        .order("created_at", { ascending: false })
-        .limit(50),
+      (() => {
+        let q = client
+          .from("applications")
+          .select("id, status, created_at, jobs(titulo, modalidade, companies(nome_fantasia, razao_social))")
+          .eq("candidate_id", id);
+        if (vagasIds) q = q.in("job_id", vagasIds);
+        return q.order("created_at", { ascending: false });
+      })(),
+      (() => {
+        let q = client
+          .from("messages")
+          .select("id, conteudo, created_at, remetente_id, lida")
+          .or(`remetente_id.eq.${id},destinatario_id.eq.${id}`);
+        // Operador: só mensagens ligadas às candidaturas/convites da carteira.
+        if (filtroMensagens) q = q.or(filtroMensagens);
+        return q.order("created_at", { ascending: false }).limit(50);
+      })(),
     ]);
 
   if (!profile) notFound();
@@ -297,6 +327,7 @@ export default async function CandidatoDetalhePage({
           })()}
         </div>
 
+        {role !== "operador" && (
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5">
           <h3 className="mb-1 text-sm font-extrabold text-text">Black list</h3>
           {profile.blacklisted ? (
@@ -338,6 +369,7 @@ export default async function CandidatoDetalhePage({
             </form>
           )}
         </div>
+        )}
 
         <div className="mb-6">
           <h3 className="mb-3 text-sm font-extrabold text-text">Candidaturas ({candidaturas.length})</h3>

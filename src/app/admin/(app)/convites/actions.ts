@@ -12,11 +12,21 @@ import {
 } from "@/lib/validation/schemas";
 import { logAudit } from "@/lib/security/audit";
 import { CONVITES_ATIVOS, CONVITES_CANCELAVEIS } from "@/lib/convites";
+import { candidatosVisiveis, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 
 export async function criarConvite(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   const { candidate_id: candidateId, job_id: jobId, validade_horas: horas } =
     validateFormData<CreateInviteInput>(CreateInviteSchema, formData);
+
+  // Carteira: a vaga precisa estar no escopo e, para o operador, o candidato
+  // precisa já ter candidatura/convite em vaga visível (nunca a base inteira).
+  const escopo = await obterEscopo(user.id, role);
+  await exigirVaga(escopo, jobId);
+  const visiveis = await candidatosVisiveis(escopo);
+  if (visiveis && !visiveis.includes(candidateId)) {
+    throw new Error("Este candidato não está na sua carteira.");
+  }
 
   const admin = createAdminClient();
 
@@ -67,12 +77,18 @@ export async function criarConvite(formData: FormData) {
 }
 
 export async function decidirConvite(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   const { invite_id: inviteId, acao } = validateFormData<DecideInviteInput>(DecideInviteSchema, formData);
 
   const admin = createAdminClient();
-  const { data: antes } = await admin.from("invites").select("id, status").eq("id", inviteId).maybeSingle();
+  const { data: antes } = await admin
+    .from("invites")
+    .select("id, status, job_id")
+    .eq("id", inviteId)
+    .maybeSingle();
   if (!antes) throw new Error("Convite não encontrado.");
+  // Carteira: a vaga do convite precisa estar no escopo.
+  await exigirVaga(await obterEscopo(user.id, role), antes.job_id);
 
   // Transições permitidas pela operação:
   //   aceito -> confirmado   |   ofertado/visualizado/aceito/confirmado -> cancelado

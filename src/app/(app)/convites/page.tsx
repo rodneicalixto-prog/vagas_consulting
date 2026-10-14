@@ -1,3 +1,4 @@
+import { nomeEmpresa } from "@/lib/sigilo";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Pill, BackHeader } from "@/components/ui";
@@ -17,7 +18,7 @@ export default async function ConvitesPage() {
 
   const { data: convites } = await supabase
     .from("invites")
-    .select("id, status, validade, created_at, jobs(titulo, local, companies(nome_fantasia, razao_social))")
+    .select("id, status, validade, created_at, jobs(titulo, local, confidencial, companies(nome_fantasia, razao_social))")
     .eq("candidate_id", user!.id)
     .order("created_at", { ascending: false });
 
@@ -33,7 +34,7 @@ export default async function ConvitesPage() {
           <div>
             <h4 className="text-[13.5px] font-extrabold">{c.jobs?.titulo}</h4>
             <div className="text-[11.5px] text-text-2">
-              {c.jobs?.companies?.nome_fantasia ?? c.jobs?.companies?.razao_social}
+              {nomeEmpresa(c.jobs?.companies, c.jobs?.confidencial)}
               {c.jobs?.local ? ` · ${c.jobs.local}` : ""}
             </div>
             {CONVITES_ABERTOS.includes(c.status) && !expirado && (

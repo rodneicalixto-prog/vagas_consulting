@@ -1,3 +1,4 @@
+import { nomeEmpresa } from "@/lib/sigilo";
 import Link from "next/link";
 import { exibirRemuneracao } from "@/lib/money";
 import { createClient } from "@/lib/supabase/server";
@@ -10,7 +11,7 @@ export default async function VagasPage() {
   const { data: vagas } = await supabase
     .from("jobs")
     .select(
-      "id, titulo, local, modelo_trabalho, modalidade, remuneracao_texto, publicada_em, companies(nome_fantasia, razao_social)",
+      "id, titulo, local, modelo_trabalho, modalidade, remuneracao_texto, publicada_em, confidencial, companies(nome_fantasia, razao_social)",
     )
     .eq("status", "publicada")
     .order("publicada_em", { ascending: false });
@@ -36,7 +37,7 @@ export default async function VagasPage() {
       <div className="flex flex-col gap-3 px-5 md:grid md:grid-cols-2 md:px-8 md:gap-4">
         {vagas && vagas.length > 0 ? (
           vagas.map((v) => {
-            const empresa = v.companies?.nome_fantasia ?? v.companies?.razao_social ?? "Empresa";
+            const empresa = nomeEmpresa(v.companies, v.confidencial, null, "Empresa");
             const remoto = v.modelo_trabalho === "remoto";
             return (
               <Link

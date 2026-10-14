@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import type { Enums } from "@/lib/supabase/types";
 
 const STATUS_VALIDOS: Enums<"status_candidatura">[] = [
@@ -19,7 +20,8 @@ const STATUS_VALIDOS: Enums<"status_candidatura">[] = [
 ];
 
 export async function atualizarStatusCandidatura(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
+  const escopo = await obterEscopo(user.id, role);
 
   const applicationId = String(formData.get("application_id"));
   const candidateId = String(formData.get("candidate_id"));
@@ -32,6 +34,9 @@ export async function atualizarStatusCandidatura(formData: FormData) {
 
   const admin = createAdminClient();
   const { data: before } = await admin.from("applications").select("*").eq("id", applicationId).single();
+  if (!before) throw new Error("Candidatura não encontrada.");
+  // Carteira: a vaga da candidatura precisa estar no escopo do usuário.
+  await exigirVaga(escopo, before.job_id);
 
   const { data: after, error } = await admin
     .from("applications")

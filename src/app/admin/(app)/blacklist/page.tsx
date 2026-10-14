@@ -5,7 +5,7 @@ import { DataTable, type DataTableColumn, type DataTableRow } from "@/components
 import { alterarBlacklist } from "../candidatos/actions";
 
 export default async function BlacklistPage() {
-  await requireInternalUser("pipeline.manage");
+  await requireInternalUser("platform.data");
   const admin = createAdminClient();
 
   const { data: profiles } = await admin

@@ -5,7 +5,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 
 export async function validarCandidato(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  // Validação e black list valem para a plataforma inteira (todas as
+  // empresas), então não são do operador de uma carteira.
+  const { user } = await requireInternalUser("platform.data");
   const candidateId = String(formData.get("candidate_id"));
   const acao = String(formData.get("acao")); // "aprovar" | "reprovar"
 
@@ -42,7 +44,7 @@ export async function validarCandidato(formData: FormData) {
 }
 
 export async function alterarBlacklist(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  const { user } = await requireInternalUser("platform.data");
   const candidateId = String(formData.get("candidate_id"));
   const acao = String(formData.get("acao")); // "adicionar" | "remover"
   const motivo = String(formData.get("motivo") ?? "").trim();

@@ -13,7 +13,11 @@ export type Capability =
   | "pipeline.manage"
   | "privacy.manage"
   | "audit.read"
-  | "users.manage";
+  | "users.manage"
+  | "companies.approve" // cadastrar/aprovar empresa (admin e superadmin)
+  | "finance.read" // prestações e valores (admin e superadmin)
+  | "platform.data" // leads, black list e dados da plataforma (admin e superadmin)
+  | "carteira.manage"; // atribuir operadores a empresas (superadmin)
 
 const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
   superadmin: [
@@ -25,6 +29,10 @@ const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
     "privacy.manage",
     "audit.read",
     "users.manage",
+    "companies.approve",
+    "finance.read",
+    "platform.data",
+    "carteira.manage",
   ],
   admin: [
     "dashboard.read",
@@ -34,6 +42,9 @@ const CAPABILITIES: Record<InternalRole, readonly Capability[]> = {
     "pipeline.manage",
     "privacy.manage",
     "audit.read",
+    "companies.approve",
+    "finance.read",
+    "platform.data",
   ],
   operador: ["dashboard.read", "companies.manage", "jobs.manage", "pipeline.manage"],
 };

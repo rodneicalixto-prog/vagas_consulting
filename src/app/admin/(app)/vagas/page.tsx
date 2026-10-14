@@ -1,33 +1,48 @@
 import { Pagination } from "@/components/Pagination";
 import { exibirRemuneracao } from "@/lib/money";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { decidirVaga } from "./actions";
+import { alternarConfidencial, decidirVaga } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { empresasParaFiltro, filtroConfidencialJobs, obterEscopo } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 import { CriarVagaForm } from "./criar-vaga-form";
 
 export default async function CadastroDeVagasPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const { role } = await requireInternalUser("jobs.manage");
+  const { role, user } = await requireInternalUser("jobs.manage");
   const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
+  const { page: paginaParam } = await searchParams;
 
-  const page = Math.max(1, parseInt(searchParams.page || "1", 10));
+  const page = Math.max(1, parseInt(paginaParam || "1", 10));
   const limit = 10;
   const offset = (page - 1) * limit;
 
+  let consultaVagas = admin
+    .from("jobs")
+    .select(
+      "id, titulo, modalidade, status, descricao, requisitos, remuneracao_texto, local, company_id, confidencial, companies(razao_social)",
+      { count: "exact" },
+    );
+  let consultaEmpresas = admin
+    .from("companies")
+    .select("id, razao_social, nome_fantasia")
+    .eq("status", "aprovada");
+  // Carteira: operador só vê as empresas atribuídas (e vagas confidenciais só
+  // com acesso de confiança).
+  if (!escopo.todos) {
+    consultaVagas = consultaVagas
+      .in("company_id", empresasParaFiltro(escopo))
+      .or(filtroConfidencialJobs(escopo));
+    consultaEmpresas = consultaEmpresas.in("id", empresasParaFiltro(escopo));
+  }
+
   const [{ data: jobs, count }, { data: companies }] = await Promise.all([
-    admin
-      .from("jobs")
-      .select(
-        "id, titulo, modalidade, status, descricao, requisitos, remuneracao_texto, local, company_id, companies(razao_social)",
-        { count: "exact" },
-      )
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1),
-    admin.from("companies").select("id, razao_social, nome_fantasia").eq("status", "aprovada").order("razao_social"),
+    consultaVagas.order("created_at", { ascending: false }).range(offset, offset + limit - 1),
+    consultaEmpresas.order("razao_social"),
   ]);
 
   const totalPages = Math.ceil((count || 0) / limit);
@@ -57,7 +72,11 @@ export default async function CadastroDeVagasPage({
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
-        <CriarVagaForm companies={companies ?? []} defaultsByCompany={defaultsByCompany} />
+        <CriarVagaForm
+          companies={companies ?? []}
+          defaultsByCompany={defaultsByCompany}
+          podeConfidencial={role !== "operador"}
+        />
 
         <div className="flex justify-between items-center my-4">
           <p className="text-xs text-text-2">
@@ -80,6 +99,11 @@ export default async function CadastroDeVagasPage({
                     </span>
                     <h3 className="text-[14px] font-extrabold text-text">{job.titulo}</h3>
                     <span className="text-[10px] font-bold uppercase text-text-3">{job.status}</span>
+                    {job.confidencial && (
+                      <span className="rounded-md bg-danger-bg px-2 py-1 text-[9.5px] font-extrabold uppercase text-danger">
+                        Confidencial
+                      </span>
+                    )}
                     {job.status === "publicada" && (
                       <a
                         href={`/vagas/${job.id}`}
@@ -107,6 +131,19 @@ export default async function CadastroDeVagasPage({
                     <p className="mt-1 text-[11.5px] text-text-2">
                       <b className="text-text">Remuneração:</b> {exibirRemuneracao(job.remuneracao_texto)}
                     </p>
+                  )}
+
+                  {role !== "operador" && (
+                    <form action={alternarConfidencial} className="mt-3">
+                      <input type="hidden" name="job_id" value={job.id} />
+                      <input type="hidden" name="valor" value={job.confidencial ? "false" : "true"} />
+                      <SubmitButton
+                        pendingLabel="Salvando..."
+                        className="text-[11px] font-bold text-navy underline"
+                      >
+                        {job.confidencial ? "Remover confidencialidade" : "Marcar como confidencial"}
+                      </SubmitButton>
+                    </form>
                   )}
 
                   <form action={decidirVaga} className="mt-4 flex flex-col gap-2.5">

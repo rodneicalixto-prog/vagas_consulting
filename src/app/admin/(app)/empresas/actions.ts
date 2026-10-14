@@ -8,7 +8,7 @@ import { CreateCompanySchema, DecideCompanySchema, CreateCompanyInput, DecideCom
 import { logAudit, logDelete } from "@/lib/security/audit";
 
 export async function criarEmpresa(formData: FormData) {
-  const { user } = await requireInternalUser("companies.manage");
+  const { user } = await requireInternalUser("companies.approve");
 
   const input = validateFormData<CreateCompanyInput>(CreateCompanySchema, formData);
   const cnpj = input.cnpj?.replace(/\D/g, "") || null;
@@ -43,7 +43,7 @@ export async function criarEmpresa(formData: FormData) {
 }
 
 export async function decidirEmpresa(formData: FormData) {
-  const { user } = await requireInternalUser("companies.manage");
+  const { user } = await requireInternalUser("companies.approve");
 
   const input = validateFormData<DecideCompanyInput>(DecideCompanySchema, formData);
 

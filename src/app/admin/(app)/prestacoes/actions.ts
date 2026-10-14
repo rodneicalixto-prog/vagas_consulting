@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 
 export async function criarPrestacao(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  const { user } = await requireInternalUser("finance.read");
 
   const applicationId = String(formData.get("application_id"));
   const dataInicio = String(formData.get("data_inicio"));
@@ -53,7 +53,7 @@ export async function criarPrestacao(formData: FormData) {
 }
 
 export async function atualizarPagamento(formData: FormData) {
-  const { user } = await requireInternalUser("pipeline.manage");
+  const { user } = await requireInternalUser("finance.read");
 
   const id = String(formData.get("id"));
   const status_pagamento = String(formData.get("status_pagamento"));

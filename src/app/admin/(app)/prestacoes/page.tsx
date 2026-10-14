@@ -19,7 +19,7 @@ const STATUS_ICON: Record<string, { icon: React.ReactNode; className: string }> 
 };
 
 export default async function PrestacoesPage() {
-  await requireInternalUser("pipeline.manage");
+  await requireInternalUser("finance.read");
   const admin = createAdminClient();
 
   const [{ data: engagements }, { data: candidatosContratados }, { data: perfis }] = await Promise.all([

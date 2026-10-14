@@ -2,6 +2,7 @@ import { Pagination } from "@/components/Pagination";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { criarEmpresa, decidirEmpresa } from "./actions";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { empresasParaFiltro, obterEscopo } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
@@ -16,18 +17,24 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
 export default async function ModeracaoEmpresasPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }>;
 }) {
-  await requireInternalUser("companies.manage");
+  const { user, role } = await requireInternalUser("companies.manage");
   const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
+  const somenteLeitura = role === "operador";
+  const { page: paginaParam } = await searchParams;
 
-  const page = Math.max(1, parseInt(searchParams.page || "1", 10));
+  const page = Math.max(1, parseInt(paginaParam || "1", 10));
   const limit = 10;
   const offset = (page - 1) * limit;
 
-  const { data: companies, count } = await admin
+  let consulta = admin
     .from("companies")
-    .select("id, razao_social, nome_fantasia, cnpj, endereco, status", { count: "exact" })
+    .select("id, razao_social, nome_fantasia, cnpj, endereco, status", { count: "exact" });
+  // Carteira: operador só vê as empresas atribuídas e ativas.
+  if (!escopo.todos) consulta = consulta.in("id", empresasParaFiltro(escopo));
+  const { data: companies, count } = await consulta
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -43,6 +50,7 @@ export default async function ModeracaoEmpresasPage({
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
+        {!somenteLeitura && (
         <form action={criarEmpresa} className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-5 md:grid-cols-2">
           <h2 className="text-sm font-extrabold text-text md:col-span-2">Cadastrar empresa</h2>
           <input name="razao_social" required placeholder="Razão social" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
@@ -56,6 +64,7 @@ export default async function ModeracaoEmpresasPage({
             Cadastrar empresa
           </SubmitButton>
         </form>
+        )}
 
         <div className="flex justify-between items-center mb-4">
           <p className="text-xs text-text-2">
@@ -89,6 +98,7 @@ export default async function ModeracaoEmpresasPage({
                     {c.cnpj ? `CNPJ ${c.cnpj}` : "CNPJ não informado"} · {c.endereco ?? "endereço não informado"}
                   </p>
 
+                  {!somenteLeitura && (
                   <form action={decidirEmpresa} className="mt-4 flex flex-col gap-2.5">
                     <input type="hidden" name="company_id" value={c.id} />
                     <textarea
@@ -124,6 +134,7 @@ export default async function ModeracaoEmpresasPage({
                       </SubmitButton>
                     </div>
                   </form>
+                  )}
                 </details>
               );
             })}

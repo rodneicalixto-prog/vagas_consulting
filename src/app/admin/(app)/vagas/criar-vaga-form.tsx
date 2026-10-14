@@ -16,9 +16,11 @@ type VagaDefaults = {
 export function CriarVagaForm({
   companies,
   defaultsByCompany,
+  podeConfidencial = false,
 }: {
   companies: { id: string; razao_social: string; nome_fantasia: string | null }[];
   defaultsByCompany: Record<string, VagaDefaults>;
+  podeConfidencial?: boolean;
 }) {
   const [campos, setCampos] = useState<VagaDefaults>({
     modalidade: "",
@@ -130,6 +132,18 @@ export function CriarVagaForm({
         onChange={(e) => setCampos((c) => ({ ...c, requisitos: e.target.value }))}
         className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm"
       />
+      {podeConfidencial && (
+        <label className="flex items-start gap-2 text-[12.5px] md:col-span-2">
+          <input type="checkbox" name="confidencial" className="mt-0.5" />
+          <span>
+            <b className="text-text">Vaga confidencial</b>
+            <span className="block text-text-2">
+              Oculta do operador comum; o candidato vê &ldquo;Empresa confidencial&rdquo; até a etapa
+              de entrevista.
+            </span>
+          </span>
+        </label>
+      )}
       {preenchidoAutomaticamente && (
         <p className="text-[11px] font-semibold text-navy md:col-span-2">
           Campos preenchidos com base na última vaga cadastrada pra essa empresa — revise antes de

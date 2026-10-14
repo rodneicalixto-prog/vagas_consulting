@@ -1,5 +1,6 @@
 "use client";
 
+import { nomeEmpresa } from "@/lib/sigilo";
 import { useState, use, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -34,7 +35,7 @@ export default function CandidaturaPage({
     const supabase = createClient();
     supabase
       .from("jobs")
-      .select("id, titulo, local, companies(nome_fantasia, razao_social)")
+      .select("id, titulo, local, confidencial, companies(nome_fantasia, razao_social)")
       .eq("id", id)
       .maybeSingle()
       .then(({ data }) => {
@@ -42,7 +43,7 @@ export default function CandidaturaPage({
           setVaga({
             id: data.id,
             titulo: data.titulo,
-            empresa: data.companies?.nome_fantasia ?? data.companies?.razao_social ?? "",
+            empresa: nomeEmpresa(data.companies, data.confidencial),
             local: data.local ?? "",
           });
         }

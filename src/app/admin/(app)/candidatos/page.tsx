@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { candidatosVisiveis, obterEscopo } from "@/lib/auth/escopo";
 import { validarCandidato } from "./actions";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 
@@ -21,14 +22,19 @@ type CandidatoRow = {
 };
 
 export default async function CandidatosPage() {
-  await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
+  // Carteira: operador só vê quem se candidatou/foi convidado a vaga visível.
+  const visiveis = await candidatosVisiveis(escopo);
+
+  let consultaPerfis = admin
+    .from("profiles")
+    .select("id, nome_completo, cidade, titulo_profissional, modalidades_desejadas, status_validacao, blacklisted, created_at");
+  if (visiveis) consultaPerfis = consultaPerfis.in("id", visiveis);
 
   const [{ data: profiles }, { data: usersPage }] = await Promise.all([
-    admin
-      .from("profiles")
-      .select("id, nome_completo, cidade, titulo_profissional, modalidades_desejadas, status_validacao, blacklisted, created_at")
-      .order("created_at", { ascending: false }),
+    consultaPerfis.order("created_at", { ascending: false }),
     admin.auth.admin.listUsers({ perPage: 1000 }),
   ]);
 
@@ -80,6 +86,7 @@ export default async function CandidatosPage() {
             >
               Visualizar
             </Link>
+            {role !== "operador" && (
             <form action={validarCandidato}>
               <input type="hidden" name="candidate_id" value={row.id} />
               <input type="hidden" name="acao" value="aprovar" />
@@ -91,6 +98,8 @@ export default async function CandidatosPage() {
                 Aprovar
               </button>
             </form>
+            )}
+            {role !== "operador" && (
             <form action={validarCandidato}>
               <input type="hidden" name="candidate_id" value={row.id} />
               <input type="hidden" name="acao" value="reprovar" />
@@ -102,6 +111,7 @@ export default async function CandidatosPage() {
                 Reprovar
               </button>
             </form>
+            )}
           </div>
         ),
       },

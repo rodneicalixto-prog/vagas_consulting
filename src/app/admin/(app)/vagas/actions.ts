@@ -3,14 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { exigirEmpresa, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { validateFormData } from "@/lib/validation/validate-form";
 import { CreateJobSchema, DecideJobSchema, type CreateJobInput, type DecideJobInput } from "@/lib/validation/schemas";
 
 export async function criarVaga(formData: FormData) {
-  const { user } = await requireInternalUser("jobs.manage");
+  const { user, role } = await requireInternalUser("jobs.manage");
 
   // Validar com Zod
   const validated = validateFormData<CreateJobInput>(CreateJobSchema, formData);
+
+  // Carteira: o operador só cadastra vaga em empresa atribuída e ativa.
+  const escopo = await obterEscopo(user.id, role);
+  exigirEmpresa(escopo, validated.company_id);
+  // Só admin/superadmin marcam vaga como confidencial.
+  const confidencial = role !== "operador" && formData.get("confidencial") === "on";
 
   const { company_id: companyId, titulo, modalidade, local, descricao, requisitos, remuneracao_texto: remuneracao } = validated;
 
@@ -26,6 +33,7 @@ export async function criarVaga(formData: FormData) {
       requisitos: requisitos || null,
       remuneracao_texto: remuneracao || null,
       status: "rascunho",
+      confidencial,
       responsavel_id: user.id,
     })
     .select()
@@ -46,12 +54,48 @@ export async function criarVaga(formData: FormData) {
   revalidatePath("/admin");
 }
 
+/** Marca/desmarca vaga confidencial. Só admin e superadmin. */
+export async function alternarConfidencial(formData: FormData) {
+  const { user, role } = await requireInternalUser("companies.approve");
+  const jobId = String(formData.get("job_id") ?? "");
+  const valor = formData.get("valor") === "true";
+  if (!/^[0-9a-f-]{36}$/.test(jobId)) throw new Error("Vaga inválida.");
+
+  const escopo = await obterEscopo(user.id, role);
+  const vaga = await exigirVaga(escopo, jobId);
+
+  const admin = createAdminClient();
+  const { data: atualizada, error } = await admin
+    .from("jobs")
+    .update({ confidencial: valor })
+    .eq("id", jobId)
+    .select("id");
+  if (error || !atualizada || atualizada.length === 0) {
+    throw new Error("Não foi possível alterar a confidencialidade.");
+  }
+
+  await admin.from("audit_log").insert({
+    ator_id: user.id,
+    acao: valor ? "vaga_marcada_confidencial" : "vaga_desmarcada_confidencial",
+    objeto_tipo: "job",
+    objeto_id: jobId,
+    antes: { confidencial: vaga.confidencial },
+    depois: { confidencial: valor },
+  });
+
+  revalidatePath("/admin/vagas");
+}
+
 export async function decidirVaga(formData: FormData) {
   // Validar com Zod
   const validated = validateFormData<DecideJobInput>(DecideJobSchema, formData);
   const { job_id: jobId, acao, motivo } = validated;
 
-  const { user } = await requireInternalUser(acao === "publicar" ? "jobs.publish" : "jobs.manage");
+  const { user, role } = await requireInternalUser(acao === "publicar" ? "jobs.publish" : "jobs.manage");
+
+  // Carteira: a vaga precisa estar no escopo (e visível, se confidencial).
+  const escopo = await obterEscopo(user.id, role);
+  await exigirVaga(escopo, jobId);
 
   const admin = createAdminClient();
   const { data: before } = await admin.from("jobs").select("*").eq("id", jobId).single();

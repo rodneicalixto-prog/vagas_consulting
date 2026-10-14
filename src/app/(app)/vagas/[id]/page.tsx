@@ -1,3 +1,4 @@
+import { nomeEmpresa } from "@/lib/sigilo";
 import Link from "next/link";
 import { CONVITES_ABERTOS } from "@/lib/convites";
 import { exibirRemuneracao } from "@/lib/money";
@@ -18,7 +19,7 @@ export default async function VagaDetalhePage({
   const { data: vaga } = await supabase
     .from("jobs")
     .select(
-      "id, titulo, local, modalidade, remuneracao_texto, descricao, regras, companies(nome_fantasia, razao_social)",
+      "id, titulo, local, modalidade, remuneracao_texto, descricao, regras, confidencial, companies(nome_fantasia, razao_social)",
     )
     .eq("id", id)
     .eq("status", "publicada")
@@ -68,7 +69,7 @@ export default async function VagaDetalhePage({
         </Tag>
         <h2 className="mt-2 text-[18px] font-extrabold">{vaga.titulo}</h2>
         <div className="text-[12.5px] font-semibold text-text-2">
-          {vaga.companies?.nome_fantasia ?? vaga.companies?.razao_social} · {vaga.local}
+          {nomeEmpresa(vaga.companies, vaga.confidencial)} · {vaga.local}
         </div>
       </div>
 

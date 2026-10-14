@@ -1,3 +1,4 @@
+import { nomeEmpresa } from "@/lib/sigilo";
 import Link from "next/link";
 import { CONVITES_ABERTOS } from "@/lib/convites";
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +15,7 @@ export default async function ProcessosPage() {
 
   const { data: candidaturas } = await supabase
     .from("applications")
-    .select("id, status, created_at, jobs(titulo, companies(nome_fantasia, razao_social))")
+    .select("id, status, created_at, jobs(titulo, confidencial, companies(nome_fantasia, razao_social))")
     .eq("candidate_id", user!.id)
     .order("created_at", { ascending: false });
 
@@ -68,7 +69,7 @@ export default async function ProcessosPage() {
                     <div>
                       <h4 className="text-[13.5px] font-extrabold">{c.jobs?.titulo}</h4>
                       <div className="text-[11.5px] text-text-2">
-                        {c.jobs?.companies?.nome_fantasia ?? c.jobs?.companies?.razao_social}
+                        {nomeEmpresa(c.jobs?.companies, c.jobs?.confidencial, c.status)}
                       </div>
                     </div>
                     <Pill className={statusPillClass[c.status]}>{statusLabel[c.status]}</Pill>
@@ -101,7 +102,7 @@ export default async function ProcessosPage() {
                     <div>
                       <h4 className="text-[13.5px] font-extrabold">{c.jobs?.titulo}</h4>
                       <div className="text-[11.5px] text-text-2">
-                        {c.jobs?.companies?.nome_fantasia ?? c.jobs?.companies?.razao_social}
+                        {nomeEmpresa(c.jobs?.companies, c.jobs?.confidencial, c.status)}
                       </div>
                     </div>
                     <Pill className={statusPillClass[c.status]}>{statusLabel[c.status]}</Pill>

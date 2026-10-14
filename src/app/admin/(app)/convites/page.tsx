@@ -1,34 +1,54 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
+import {
+  candidatosVisiveis,
+  empresasParaFiltro,
+  filtroConfidencialJobs,
+  obterEscopo,
+  vagasVisiveis,
+} from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 import { CONVITES_CANCELAVEIS, conviteExpirado, conviteLabel, formatPrazo } from "@/lib/convites";
 import { criarConvite, decidirConvite } from "./actions";
 
 export default async function ConvitesAdminPage() {
-  await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
+  const vagasIds = await vagasVisiveis(escopo);
+  const candidatosIds = await candidatosVisiveis(escopo);
+
+  let consultaConvites = admin
+    .from("invites")
+    .select("id, status, validade, motivo, resposta_em, created_at, candidate_id, jobs(titulo)");
+  let consultaCandidatos = admin.from("profiles").select("id, nome_completo").eq("blacklisted", false);
+  let consultaVagas = admin
+    .from("jobs")
+    .select("id, titulo, companies(nome_fantasia, razao_social)")
+    .eq("status", "publicada")
+    .eq("modalidade", "temporaria");
+  // Carteira: operador só vê convites/vagas da carteira e convida quem já
+  // tem candidatura ou convite em vaga visível.
+  if (vagasIds) consultaConvites = consultaConvites.in("job_id", vagasIds);
+  if (candidatosIds) consultaCandidatos = consultaCandidatos.in("id", candidatosIds);
+  if (!escopo.todos) {
+    consultaVagas = consultaVagas
+      .in("company_id", empresasParaFiltro(escopo))
+      .or(filtroConfidencialJobs(escopo));
+  }
 
   const [{ data: convites }, { data: candidatos }, { data: vagas }] = await Promise.all([
-    admin
-      .from("invites")
-      .select("id, status, validade, motivo, resposta_em, created_at, candidate_id, jobs(titulo)")
-      .order("created_at", { ascending: false })
-      .limit(50),
-    admin
-      .from("profiles")
-      .select("id, nome_completo")
-      .eq("blacklisted", false)
-      .order("nome_completo")
-      .limit(500),
-    admin
-      .from("jobs")
-      .select("id, titulo, companies(nome_fantasia, razao_social)")
-      .eq("status", "publicada")
-      .eq("modalidade", "temporaria")
-      .order("titulo"),
+    consultaConvites.order("created_at", { ascending: false }).limit(50),
+    consultaCandidatos.order("nome_completo").limit(500),
+    consultaVagas.order("titulo"),
   ]);
 
-  const nomePorId = new Map((candidatos ?? []).map((c) => [c.id, c.nome_completo]));
+  // Nomes dos candidatos dos convites listados (independe do limite do seletor).
+  const idsConvites = [...new Set((convites ?? []).map((c) => c.candidate_id))];
+  const { data: nomes } = idsConvites.length
+    ? await admin.from("profiles").select("id, nome_completo").in("id", idsConvites)
+    : { data: [] as { id: string; nome_completo: string }[] };
+  const nomePorId = new Map((nomes ?? []).map((c) => [c.id, c.nome_completo]));
 
   return (
     <div className="flex h-full flex-col overflow-hidden">

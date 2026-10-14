@@ -3,7 +3,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 
 export default async function LeadsPage() {
-  await requireInternalUser("pipeline.manage");
+  await requireInternalUser("platform.data");
   const admin = createAdminClient();
 
   const { data: leads, count } = await admin

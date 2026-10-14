@@ -1,3 +1,4 @@
+import { nomeEmpresa } from "@/lib/sigilo";
 import { createClient } from "@/lib/supabase/server";
 
 function iniciais(nome: string) {
@@ -18,7 +19,7 @@ export default async function MensagensPage() {
   const { data: mensagens } = await supabase
     .from("messages")
     .select(
-      "id, conteudo, created_at, lida, remetente_id, application_id, applications(jobs(titulo, companies(nome_fantasia, razao_social)))",
+      "id, conteudo, created_at, lida, remetente_id, application_id, applications(status, jobs(titulo, confidencial, companies(nome_fantasia, razao_social)))",
     )
     .or(`remetente_id.eq.${user!.id},destinatario_id.eq.${user!.id}`)
     .order("created_at", { ascending: false });
@@ -30,10 +31,12 @@ export default async function MensagensPage() {
       {mensagens && mensagens.length > 0 ? (
         <div className="flex flex-col px-5 md:px-8">
           {mensagens.map((m, i) => {
-            const empresa =
-              m.applications?.jobs?.companies?.nome_fantasia ??
-              m.applications?.jobs?.companies?.razao_social ??
-              "Empresa";
+            const empresa = nomeEmpresa(
+              m.applications?.jobs?.companies,
+              m.applications?.jobs?.confidencial,
+              m.applications?.status,
+              "Empresa",
+            );
             return (
               <div
                 key={m.id}

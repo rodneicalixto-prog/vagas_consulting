@@ -1,3 +1,4 @@
+import { nomeEmpresa } from "@/lib/sigilo";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -49,7 +50,7 @@ export default async function ConviteDetalhePage({
   const { data: convite } = await supabase
     .from("invites")
     .select(
-      "id, candidate_id, status, validade, motivo, resposta_em, jobs(titulo, local, modalidade, remuneracao_texto, descricao, companies(nome_fantasia, razao_social))",
+      "id, candidate_id, status, validade, motivo, resposta_em, jobs(titulo, local, modalidade, remuneracao_texto, descricao, confidencial, companies(nome_fantasia, razao_social))",
     )
     .eq("id", id)
     .eq("candidate_id", user!.id)
@@ -75,7 +76,7 @@ export default async function ConviteDetalhePage({
   const expirado = conviteExpirado({ status, validade: convite.validade });
   const podeResponder = CONVITES_ABERTOS.includes(status) && !expirado;
   const msg = MENSAGENS[ok ?? erro ?? ""];
-  const empresa = convite.jobs?.companies?.nome_fantasia ?? convite.jobs?.companies?.razao_social;
+  const empresa = nomeEmpresa(convite.jobs?.companies, convite.jobs?.confidencial);
 
   return (
     <div className="flex flex-col gap-4 pb-8">
