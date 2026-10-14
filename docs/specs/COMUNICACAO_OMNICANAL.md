@@ -259,7 +259,7 @@ aprendizado para o roteiro daquela empresa.
 | Papel | Agente da empresa | Agente mor |
 |---|---|---|
 | Superadmin | Cria, configura, pausa, muda autonomia | Configura, pausa, vê tudo |
-| Admin | Vê histórico e métricas; edita roteiro e FAQ (a confirmar) | Não acessa |
+| Admin | Vê histórico e métricas; **edita roteiro e FAQ** (decidido) | Não acessa |
 | Operador | Aprova, edita ou descarta sugestões; vê o status | Não acessa |
 
 **Modelo de dados proposto:** `ai_agents` (escopo plataforma|empresa,
@@ -270,6 +270,12 @@ empresa, nome, ativo, nível de autonomia, referência da chave, teto mensal),
 **Fases:** agente da empresa na Fase 3 (modo sugestão); agente mor na Fase 4,
 primeiro só como supervisor e relatório para o superadmin.
 
-**Decisões pedidas:** (1) o agente mor só supervisiona e fala com o
-superadmin, como recomendado, ou também atende candidatos? (2) o admin pode
-editar o roteiro de uma empresa?
+**Decisões do Rodnei (14/10/2026):**
+1. **O agente mor só supervisiona e fala com o superadmin**; não atende
+   candidatos.
+2. **O admin pode editar o roteiro do agente de uma empresa** "no modelo de
+   hoje". Cuidados registrados: a edição respeita a política-piso do agente
+   mor (não remove regra de parada nem LGPD); cada alteração gera nova
+   **versão** do roteiro com autor e data, e o superadmin pode reverter; o
+   admin não muda o nível de autonomia nem a chave/teto (só o superadmin).
+   Revisar quando houver white-label ou operadores com perfil de gestão.

@@ -1267,6 +1267,10 @@ sessões futuras.
     testes. Spec da comunicação ganhou a hierarquia: **agente por empresa**
     (isolado, chave e teto próprios) e **agente mor** do superadmin
     (política-piso, supervisão, sem falar com candidato por padrão).
+88. **Decisões sobre agentes (14/10/2026)**: o agente mor só supervisiona
+    e fala com o superadmin (não atende candidato); o admin edita o
+    roteiro do agente da empresa, com versionamento e sem poder mudar
+    autonomia, chave ou teto. Revisar com white-label.
 
 ## 3. Escopo do MVP (revisado)
 
