@@ -215,3 +215,14 @@ Pendência: a `0021` (alinha schema) segue não aplicada (no-op documentado).
 `anexo_path`, `anexo_nome`, `anexo_mime`, `anexo_tamanho` e `resposta_a`
 (auto-referência, `on delete set null`). Bucket privado `conversas-anexos`
 (16 MB), sem políticas: acesso só pelo servidor com chave de serviço.
+
+### Migration 0031 — dono da conversa (15/10/2026, aplicada)
+
+`conversations.atendente_id` (referência a `auth.users`, `on delete set null`),
+`conversations.atribuida_em` e índice `(company_id, atendente_id)`.
+
+### Planejado — migration 0032, agente de IA (NÃO aplicada)
+
+Tabelas `ai_agents`, `ai_knowledge_notes`, `ai_suggestions` e `ai_agent_runs`,
+todas com RLS ligada e sem política pública. Campos em
+`specs/AGENTE_IA_FASE3.md` §4. Só será aplicada no passo 3A.

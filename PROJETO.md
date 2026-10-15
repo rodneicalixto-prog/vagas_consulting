@@ -1465,6 +1465,14 @@ sessões futuras.
     plataforma ou Superadmin (só o superadmin escolhe além de Operador;
     Superadmin exige confirmação de acesso total). A lista mostra a função e
     um bloco "Acesso à plataforma" lista admins e superadmins. Auditado.
+114. **Planejamento do agente de IA, Fase 3 (15/10/2026)**: aprovados pelo
+    Rodnei o piloto na SOS Vagas, Groq como padrão, modo sugestão e a
+    migration aditiva das tabelas do agente. Spec nova
+    `docs/specs/AGENTE_IA_FASE3.md` (passos 3A–3F, guardrails, base de
+    conhecimento por empresa e aprendizado com aprovação humana). Decisão
+    sobre o Obsidian: a base de conhecimento fica no banco por empresa
+    (fonte da verdade) com espelho opcional no Obsidian da SOS. Nada
+    construído ainda; migration 0032 prevista e não aplicada.
 
 ## 3. Escopo do MVP (revisado)
 

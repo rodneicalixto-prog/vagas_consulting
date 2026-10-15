@@ -327,3 +327,11 @@ A rota recusa (401) qualquer chamada sem a chave da plataforma.
   causar erro na Evolution, reenvia sem citar.
 - **Acesso:** `/api/admin/conversas/anexo/[id]` valida o escopo da empresa e
   redireciona para link temporário de 2 min; fora do escopo responde 404.
+
+### Fase 3 — planejamento aprovado (15/10/2026)
+
+Detalhado em `AGENTE_IA_FASE3.md`: piloto na SOS Vagas, Groq como padrão,
+modo sugestão, base de conhecimento por empresa (Obsidian como espelho
+opcional) e aprendizado com aprovação humana. O inbox já tem dono da
+conversa (`conversations.atendente_id`, migration `0031`), que define quem
+vê e decide cada sugestão.

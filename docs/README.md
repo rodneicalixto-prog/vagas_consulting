@@ -1,6 +1,6 @@
 # Documentação do Vagas Consulting
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Índice:** v1.2 · **Data:** 14/10/2026
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Índice:** v1.3 · **Data:** 14/10/2026
 
 Regra permanente (Rodnei, 14/10/2026): nenhum app é construído sem os seis
 documentos abaixo, versionados, vinculados ao projeto e à versão do app, e
@@ -44,5 +44,6 @@ construir algo que toque o banco, reconfirmar o schema real de produção
 | `specs/DASHBOARD_OPERADOR.md` | Dashboard, agenda em cascata, entregas |
 | `specs/COMUNICACAO_OMNICANAL.md` | WhatsApp, e-mail, SMS, Telegram, agentes de IA, inbox |
 | `specs/INTEGRACOES.md` | Cofre de chaves e teste de conexão |
+| `specs/AGENTE_IA_FASE3.md` | Agente de IA em modo sugestão, base de conhecimento e aprendizado (planejado) |
 | `specs/VITRINE_PUBLICA.md` | Vitrine pública e modo visitante |
 | `ROTEIRO_TESTE_ADMIN_EMPRESA.md` | Teste de 20 minutos do isolamento |

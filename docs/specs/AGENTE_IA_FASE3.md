@@ -1,0 +1,174 @@
+# Especificação — Agente de IA, Fase 3: modo sugestão e base de conhecimento (v0.1)
+
+> **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec Fase 3 v0.1 · **Data:** 15/10/2026
+> **Status:** planejamento aprovado pelo Rodnei (piloto na SOS Vagas, Groq, modo sugestão,
+> migration aditiva). **Nada deste documento foi construído ainda.**
+> Parte da regra dos seis documentos: este arquivo precede o código.
+> Complementa `COMUNICACAO_OMNICANAL.md` §7 (agente recrutador) e a hierarquia de agentes.
+
+## 1. Objetivo
+
+Dar ao atendente uma **sugestão de resposta** pronta em cada conversa, escrita a
+partir só dos dados da vaga e da base de conhecimento da empresa, que ele
+**aprova, edita ou descarta**. A IA agiliza; a pessoa decide e envia.
+
+Fora desta fase: envio automático, mover candidatura de etapa, agente mor
+conversando com candidato, disparo em massa.
+
+## 2. Decisões (Rodnei, 15/10/2026)
+
+| # | Decisão |
+|---|---|
+| F1 | **Piloto na SOS Vagas** (empresa da operação) antes de abrir para clientes |
+| F2 | **Groq** como provedor padrão do rascunho; OpenAI e Claude seguem disponíveis por empresa |
+| F3 | **Modo sugestão**: o agente nunca envia sozinho nesta fase |
+| F4 | Pode criar as **tabelas do agente** (migration aditiva) quando a construção começar |
+| F5 | Teto de **US$ 100/mês por empresa** (já decidido): aviso aos 80%, pausa aos 100% |
+| F6 | Cada empresa tem **base de conhecimento própria**; a da SOS guarda a política global |
+
+## 3. Como funciona
+
+```
+mensagem de entrada ──► webhook grava (já existe)
+                          │ conversa tem atendente ou está na fila de candidato
+                          ▼
+              gerar sugestão (assíncrono, fora do webhook)
+                          │ contexto = vaga + FAQ + roteiro + últimas mensagens
+                          ▼
+              ai_suggestions (pendente) ──► caixa "Sugestão do assistente"
+                          │                    Usar · Editar · Descartar
+                          ▼                    (quem envia é o atendente)
+              resultado registrado ──► alimenta o aprendizado (§7)
+```
+
+Regras de disparo: só quando há agente **ativo** para a empresa, a conversa
+não está descadastrada nem na black list, e o teto do mês não foi atingido.
+Uma sugestão por mensagem de entrada; se chegar outra antes de aprovar, a
+anterior é substituída.
+
+## 4. Modelo de dados (migration `0032`, aditiva, **não aplicada**)
+
+| Tabela | Campos principais |
+|---|---|
+| `ai_agents` | `company_id` (único), `nome`, `ativo`, `nivel_autonomia` (0 = sugestão), `provedor`, `modelo`, `tom`, `roteiro` (texto), `teto_mensal_usd`, `created_by` |
+| `ai_knowledge_notes` | `company_id`, `tipo` (`politica`, `roteiro`, `faq`, `vaga`, `licao`), `titulo`, `corpo_md`, `status` (`rascunho`, `aprovada`, `arquivada`), `versao`, `origem` (`manual`, `aprendizado`), `aprovada_por` |
+| `ai_suggestions` | `conversation_id`, `message_id` (gatilho), `agent_id`, `rascunho`, `estado` (`pendente`, `usada`, `editada`, `descartada`, `expirada`), `texto_final`, `decidida_por`, `decidida_em` |
+| `ai_agent_runs` | `agent_id`, `conversation_id`, `suggestion_id`, `provedor`, `modelo`, `tokens_in`, `tokens_out`, `custo_usd`, `latencia_ms`, `motivo_parada` |
+
+Todas com RLS ligada e sem política pública (acesso só pelo servidor, como o
+restante). Nada de texto de candidato em `audit_log`.
+
+## 5. Guardrails (valem para todo agente; piso da política global)
+
+1. **Só responde com base em fonte:** dados da vaga, FAQ aprovado e roteiro.
+   Sem fonte, a resposta é "vou passar para a equipe" e a sugestão é marcada
+   como `motivo_parada = sem_fonte`.
+2. **Assuntos que sempre vão para humano:** salário e proposta fora da vaga,
+   jurídico, reclamação, saúde, dado sensível, ameaça, pedido de remoção.
+3. **Nunca** reprova, aprova, muda etapa nem promete contratação.
+4. **Sigilo:** não revela empresa de vaga confidencial nem dado de outro
+   candidato ou outra empresa.
+5. **Identificação:** o texto sugerido, quando for a primeira mensagem, diz
+   que é um assistente virtual da empresa.
+6. **Descadastro e black list** bloqueiam a geração, não só o envio.
+7. Conteúdo recebido do candidato é **dado, não instrução** (proteção contra
+   injeção de prompt): o modelo nunca executa comandos vindos da mensagem.
+
+## 6. Interface
+
+- **Conversa:** caixa acima do campo de envio com o rascunho, o motivo
+  (fonte usada) e três botões: **Usar** (preenche o campo), **Editar**
+  (preenche e foca) e **Descartar** (pede motivo opcional). Só o atendente
+  da conversa vê e decide.
+- **Configuração do agente** (superadmin e admin da empresa): ligar/desligar,
+  tom, roteiro, perguntas eliminatórias, provedor e modelo. Nível de
+  autonomia, chave e teto: só o superadmin.
+- **Base de conhecimento:** lista de notas por tipo, com editor Markdown,
+  aprovação e histórico de versões.
+- **Painel do agente:** sugestões geradas, % usadas sem edição, % editadas,
+  % descartadas, custo do mês e consumo do teto.
+
+## 7. Base de conhecimento e aprendizado contínuo
+
+Pergunta do Rodnei: um **Obsidian por empresa e um para a SOS**, para o
+agente ficar mais ágil e aprender o tempo todo.
+
+**Decisão de arquitetura:** a fonte da verdade é uma **base de conhecimento
+por empresa no próprio banco** (`ai_knowledge_notes`: notas em Markdown, com
+título, tipo e links `[[nota]]`), editada no painel. O Obsidian entra como
+**espelho opcional de leitura** para a SOS (e para quem o superadmin
+autorizar), por exportação periódica das notas aprovadas.
+
+Por que não um cofre Obsidian local por empresa como fonte:
+
+| Motivo | Detalhe |
+|---|---|
+| O agente roda no servidor | Ele não lê o disco do computador de ninguém; precisaria de sincronização de arquivos |
+| Isolamento entre clientes | Notas em tabela com `company_id` seguem a mesma regra de escopo do resto; arquivos soltos, não |
+| LGPD | Dado de candidato em vault local escapa de retenção, apagamento e auditoria |
+| Cliente não usa Obsidian | Quem aluga o acesso edita pelo painel, não por app de notas |
+
+**Ciclo de aprendizado (sem treinar o modelo com conversa crua):**
+
+1. O atendente usa, edita ou descarta a sugestão.
+2. O sistema guarda a **diferença** (o que mudou e por quê, se informado).
+3. Padrões repetidos viram **lição candidata** (`tipo = licao`, `status = rascunho`),
+   com dado pessoal removido.
+4. Um humano (admin da empresa; na SOS, o superadmin) **aprova** a lição.
+5. Lição aprovada entra no contexto das próximas sugestões daquela empresa.
+6. O agente mor, na Fase 4, só lê agregados e propõe lições globais.
+
+Contexto enxuto: o agente recebe só as notas relevantes (busca por texto
+no início; embeddings depois, se a base crescer), para manter custo e
+latência baixos.
+
+## 8. Custo, desempenho e medição
+
+- Modelo econômico para rascunho (Groq); teto por empresa já definido.
+- Geração fora do webhook: o recebimento nunca espera a IA.
+- Registro em `ai_agent_runs` de tokens, custo e latência por execução.
+- Métricas de qualidade que decidem subir de nível: taxa de uso sem
+  edição por tipo de mensagem, descartes por motivo, tempo até a resposta.
+
+## 9. Segurança e LGPD
+
+- Chave de IA sempre pelo cofre; nunca no navegador nem em log.
+- O texto do candidato enviado ao provedor é o mínimo necessário (sem nome
+  completo, telefone ou e-mail no prompt, quando possível).
+- Sugestões e runs seguem a retenção das conversas (12 meses + pseudonimização).
+- Nenhum dado pessoal nas notas de aprendizado.
+- Apagamento a pedido do titular alcança sugestões e runs ligados à conversa.
+
+## 10. Plano de construção
+
+| Passo | Entrega | Migration | Aceite |
+|---|---|---|---|
+| 3A | Tabelas, cadastro do agente da SOS e CRUD da base de conhecimento | **0032** | Superadmin cria agente e notas; operador não acessa |
+| 3B | Serviço de geração (Groq via cofre), guardrails, `ai_agent_runs` e teto | — | Sugestão aparece em até 8 s; assunto de risco para; teto pausa |
+| 3C | Caixa de sugestão na conversa e painel do agente | — | Usar/Editar/Descartar gravam o estado; só o atendente vê |
+| 3D | Captura de edição e lições candidatas com aprovação | — | Lição aprovada entra no contexto; dado pessoal removido |
+| 3E | **Piloto de 2 semanas na SOS Vagas** e revisão com amostra | — | Relatório de uso, custo e descartes com decisão de continuar |
+| 3F | Abrir para empresas clientes (agente por empresa, chave própria) | — | Isolamento validado com teste entre duas empresas |
+
+Cada passo termina com tsc, eslint, build, testes, atualização deste
+documento e do `PROJETO.md`, e só então publica.
+
+## 11. Riscos
+
+| Risco | Mitigação |
+|---|---|
+| Resposta inventada | Só fonte aprovada; sem fonte, passa para humano; amostra revisada no piloto |
+| Vazamento entre empresas | Contexto e notas por `company_id`; teste de isolamento no 3F |
+| Injeção de prompt pela mensagem | Mensagem tratada como dado; guardrails fora do prompt do candidato |
+| Custo | Teto por empresa; modelo econômico; registro por execução |
+| Dependência de provedor | Provedor configurável por empresa; falha vira "sem sugestão", nunca bloqueia o inbox |
+| Operador confiar demais | Mostrar a fonte; métrica de descarte; subir de nível só com evidência |
+
+## 12. Perguntas ainda abertas
+
+1. **Idioma e tom da SOS:** formal ou próximo? (define o roteiro inicial.)
+2. **Quem aprova lições na SOS:** só o superadmin, ou a Priscilla também?
+3. **Espelho no Obsidian:** quer a exportação das notas aprovadas para o seu
+   vault da SOS já no 3D, ou depois do piloto?
+4. **Horário de resposta:** a sugestão é gerada o dia todo ou só em horário
+   comercial (relevante para custo e para a fase de envio automático)?
