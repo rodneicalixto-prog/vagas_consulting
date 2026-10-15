@@ -2220,3 +2220,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     'sem dado' nunca zero; leitura em conjunto; plano de ação (3 abertas).
     Marcador ?o= da divulgação agora gravado em applications.origem.
     Migration 0039. 128 testes. Pendente: análise por IA, PDF, custo por fonte.
+128. **3K: abordagem ativa (15/10/2026)**: rascunho por canal (nota, InMail,
+    e-mail, ligação) a partir do perfil colado, que não é gravado; filtro de
+    dado pessoal; verificação do §14.14 (bloqueio de tema pessoal e nota > 300);
+    2 follow-ups com lembrete em 'Precisa de ação agora' e /admin/abordagens;
+    encerramento apaga o conteúdo e fecha o contato. Migrations 0040 e 0041.
+    135 testes. Pendente: edição no app, leitura por URL.

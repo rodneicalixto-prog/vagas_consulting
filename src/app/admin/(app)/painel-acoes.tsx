@@ -61,7 +61,7 @@ export async function PainelDeAcoes({
 
   const vagasSemFiltroVazio = vagasIds !== null && vagasIds.length === 0;
 
-  const [fila, naoLidas, compromissosHoje, paradas, publicadas, entregas] = await Promise.all([
+  const [fila, naoLidas, compromissosHoje, paradas, publicadas, entregas, followups] = await Promise.all([
     contarConversas(false, true),
     contarConversas(true, false),
     admin
@@ -107,6 +107,14 @@ export async function PainelDeAcoes({
           if (vagasIds) q = q.in("id", vagasIds);
           return q.then((r) => r.count ?? 0);
         })(),
+    // Follow-ups de abordagem vencidos (só os do próprio usuário).
+    admin
+      .from("outreach_drafts")
+      .select("id", { count: "exact", head: true })
+      .eq("criado_por", userId)
+      .eq("estado", "enviada")
+      .lte("proximo_followup_em", new Date(agora).toISOString())
+      .then((r) => r.count ?? 0),
   ]);
 
   // Vagas publicadas há 5+ dias sem nenhuma candidatura.
@@ -159,6 +167,13 @@ export async function PainelDeAcoes({
       dica: "Publicadas e sem nenhuma candidatura",
       valor: semCandidatura,
       href: "/admin/vagas",
+    },
+    {
+      chave: "followups",
+      rotulo: "Follow-ups de abordagem",
+      dica: "Lembretes vencidos para você enviar",
+      valor: followups,
+      href: "/admin/abordagens",
     },
     {
       chave: "entregas",

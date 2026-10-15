@@ -880,6 +880,75 @@ export type Database = {
         }
         Relationships: []
       }
+      outreach_drafts: {
+        Row: {
+          angulo: string
+          assuntos: Json
+          canal: string
+          contato: string
+          contato_chave: string
+          created_at: string
+          criado_por: string
+          encerrada_em: string | null
+          enviada_em: string | null
+          estado: string
+          followups: Json
+          followups_feitos: number
+          id: string
+          job_id: string
+          proximo_followup_em: string | null
+          texto: string
+          tom: string
+          trecho_perfil: string
+          verificacoes: Json
+          updated_at: string
+        }
+        Insert: {
+          angulo?: string
+          assuntos?: Json
+          canal: string
+          contato: string
+          contato_chave: string
+          created_at?: string
+          criado_por: string
+          encerrada_em?: string | null
+          enviada_em?: string | null
+          estado?: string
+          followups?: Json
+          followups_feitos?: number
+          id?: string
+          job_id: string
+          proximo_followup_em?: string | null
+          texto?: string
+          tom?: string
+          trecho_perfil?: string
+          verificacoes?: Json
+          updated_at?: string
+        }
+        Update: {
+          angulo?: string
+          assuntos?: Json
+          canal?: string
+          contato?: string
+          contato_chave?: string
+          created_at?: string
+          criado_por?: string
+          encerrada_em?: string | null
+          enviada_em?: string | null
+          estado?: string
+          followups?: Json
+          followups_feitos?: number
+          id?: string
+          job_id?: string
+          proximo_followup_em?: string | null
+          texto?: string
+          tom?: string
+          trecho_perfil?: string
+          verificacoes?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string

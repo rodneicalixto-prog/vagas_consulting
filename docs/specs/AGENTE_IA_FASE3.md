@@ -1225,3 +1225,36 @@ de triagem, ficha e teste); data de fechamento da vaga é a última atualizaçã
 custo por fonte exige gasto por canal (não informado); análise por IA e PDF
 próprio ficam para depois (a página imprime); meta sugerida por volume não
 existe; diversidade segue fora por decisão pendente.
+
+### Passo 3K construído (15/10/2026): abordagem ativa
+
+Telas: **Vagas > Critérios > Abordagem ativa** (`/admin/vagas/[id]/abordagem`),
+o rascunho (`.../abordagem/[draftId]`) e **Follow-ups de abordagem**
+(`/admin/abordagens`, lembretes vencidos do próprio usuário, também como card em
+"Precisa de ação agora"). Migrations **0040** e **0041** (`outreach_drafts`;
+aditivas, RLS ligada).
+
+**Só redige.** Canais: nota de conexão do LinkedIn (limite duro de 300
+caracteres), InMail, e-mail e roteiro de ligação. WhatsApp frio fica de fora.
+
+| Garantia (§14.14) | Implementação |
+|---|---|
+| Só informação profissional | `filtrarPerfil` descarta frases com família, endereço, saúde, contato; texto que cita tema pessoal **bloqueia** |
+| Perfil não é guardado | só o texto, os follow-ups, o ângulo e um trecho de até 200 caracteres; tudo é apagado ao encerrar |
+| Ângulo sustentado | trecho literal do perfil conferido; sem conferir, aviso |
+| Começa pela pessoa e personalizada | primeira frase sem o cargo; detalhe real do perfil no texto |
+| Transparência | cargo e modelo no texto; faixa ausente em perfil técnico avisa |
+| CTA de baixo atrito | pedido de currículo ou muitos convites avisam |
+| Tamanho do canal | nota > 300 bloqueia; demais canais avisam |
+| 2 follow-ups e porta aberta | gerados junto; o último aceita o "não" e pede indicação |
+| Não fala mal do empregador | termos negativos avisam |
+
+**Ciclo:** rascunho → "já enviei" (calcula lembretes em 3 e 7 dias) →
+follow-up 1 e 2. Depois do 2º, sem resposta, o contato **encerra** e o texto
+some. "Pediu para não contatar" encerra de imediato. Índice único por vaga e
+contato impede nova abordagem do mesmo nome. Quem tem bloqueio na verificação
+não pode ser marcado como enviado.
+
+**Limites:** o texto não é editado na plataforma (copie e ajuste fora ou gere
+outro); a identificação do contato é só o nome (homônimos); não lê o perfil de
+URL, só texto colado.
