@@ -125,3 +125,12 @@ novo é o teste. Reatribuir uma linha a outro operador não move conversas já c
 - Filtro **Número** na lista (Todos ou um número), combinável com busca e com
   "Não lidas". O operador continua vendo só as próprias conversas e a fila de
   candidatos, em qualquer filtro.
+
+### 9.2 Troca do operador dono do número (15/10/2026)
+
+Ao editar o número e escolher outro operador, a opção **"passar também as
+conversas que já têm dono"** move todas as conversas do número para o novo
+operador (a contagem aparece ao salvar e vai para a auditoria
+`linha_whatsapp_atualizada`). Sem a opção, só as conversas sem dono mudam, e
+as que já estavam com outra pessoa ficam como estavam. Voltar o número para
+"compartilhado" não move nada: as conversas permanecem com quem as atende.

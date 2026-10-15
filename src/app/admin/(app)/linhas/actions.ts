@@ -37,7 +37,7 @@ async function contextoGestao() {
   return { user, role, escopo: await obterEscopo(user.id, role), admin: createAdminClient() };
 }
 
-export type EstadoLinha = { erro: string | null; ok: boolean; id: string | null };
+export type EstadoLinha = { erro: string | null; ok: boolean; id: string | null; info?: string | null };
 
 /** Cria a linha: instância na Evolution, webhook ligado e registro no banco. */
 export async function criarLinha(_a: EstadoLinha, formData: FormData): Promise<EstadoLinha> {
@@ -248,23 +248,41 @@ export async function salvarLinha(_a: EstadoLinha, formData: FormData): Promise<
       .eq("id", ctx.linha.id);
     if (error) return falha("Não foi possível salvar o número.");
 
-    // Linha passou a ser dedicada: conversas ainda sem dono vão para o operador.
+    // Linha dedicada: conversas ainda sem dono vão para o operador. Com a opção
+    // marcada, as que já tinham outro dono também (troca de responsável).
+    let transferidas = 0;
     if (operadorId) {
+      const agora = new Date().toISOString();
       await ctx.admin
         .from("conversations")
-        .update({ atendente_id: operadorId, atribuida_em: new Date().toISOString() })
+        .update({ atendente_id: operadorId, atribuida_em: agora })
         .eq("line_id", ctx.linha.id)
         .is("atendente_id", null);
+      if (formData.get("transferir") === "sim") {
+        const { data: movidas } = await ctx.admin
+          .from("conversations")
+          .update({ atendente_id: operadorId, atribuida_em: agora })
+          .eq("line_id", ctx.linha.id)
+          .not("atendente_id", "is", null)
+          .neq("atendente_id", operadorId)
+          .select("id");
+        transferidas = movidas?.length ?? 0;
+      }
     }
     await ctx.admin.from("audit_log").insert({
       ator_id: ctx.user.id,
       acao: "linha_whatsapp_atualizada",
       objeto_tipo: "company",
       objeto_id: ctx.linha.company_id,
-      depois: { line_id: ctx.linha.id, dedicada: !!operadorId, agente: modo, ativa },
+      depois: { line_id: ctx.linha.id, dedicada: !!operadorId, agente: modo, ativa, transferidas },
     });
     revalidatePath("/admin/linhas");
-    return { erro: null, ok: true, id: ctx.linha.id };
+    return {
+      erro: null,
+      ok: true,
+      id: ctx.linha.id,
+      info: transferidas > 0 ? `${transferidas} conversa(s) passaram para o novo operador.` : null,
+    };
   } catch (e) {
     if (ehRedirect(e)) throw e;
     return falha("Não foi possível salvar agora.");

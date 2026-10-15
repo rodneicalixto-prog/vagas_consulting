@@ -181,12 +181,16 @@ export function FormEditarLinha({
       <label className="flex items-center gap-2 self-end pb-2 text-[12.5px] font-bold text-text">
         <input type="checkbox" name="ativa" value="sim" defaultChecked={ativa} /> Ativa
       </label>
+      <label className="flex items-center gap-2 text-[12px] text-text-2 md:col-span-4">
+        <input type="checkbox" name="transferir" value="sim" />
+        Ao trocar o operador, passar também as conversas que já têm dono neste número para ele
+      </label>
       <div className="md:col-span-4 flex flex-wrap items-center gap-3">
         <button type="submit" disabled={env} className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-bold text-navy disabled:opacity-60">
           Salvar
         </button>
         {e.erro && <span role="alert" className="text-[12px] font-semibold text-danger">{e.erro}</span>}
-        {e.ok && <span className="text-[12px] font-semibold text-success">Salvo.</span>}
+        {e.ok && <span className="text-[12px] font-semibold text-success">Salvo. {e.info ?? ""}</span>}
       </div>
     </form>
   );
