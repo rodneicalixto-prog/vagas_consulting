@@ -198,7 +198,7 @@ Nada de texto de candidato envolvido neste passo.
 
 ## 14. Pacote de skills de recrutamento e seleção: inventário (15/10/2026)
 
-O Rodnei tem um pacote de skills de R&S. Recebidas até agora 9 skills e 1 modelo de uma décima (as demais
+O Rodnei tem um pacote de skills de R&S. Recebidas até agora 10 skills e 1 modelo de uma décima primeira (as demais
 serão inventariadas conforme chegarem). Regra: o **conteúdo** vira
 funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 
@@ -206,6 +206,7 @@ funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 |---|---|---|---|
 | `job-description` | **Vaga estruturada**: gerador de JD a partir do recado do gestor (texto ou áudio transcrito), reescrita para atrair mais e cortar requisito inflado, modelos júnior e liderança | 3O | **Base de todo o funil:** a JD sai em campos (obrigatórios, desejáveis, comportamentais, eliminatórios, senioridade, modelo, faixa) que alimentam divulgação, triagem, roteiro, testes e laudo. Sem critério discriminatório; requisito inflado é sinalizado |
 | `divulgacao-de-vaga` | **Gerador de divulgação** na vaga: texto pronto por canal (LinkedIn, Instagram, WhatsApp, portais, comunidades, interno), com 2 ganchos, briefing de arte e título otimizado para portal | 3N | Só redige (publicação é manual). Pergunta canal, perfil técnico/menos técnico e tom. Usa o link da vitrine pública com **marcador de origem por canal**, que alimenta a métrica de fontes (3M). Diagnóstico "vaga não atrai" aponta título, requisito inflado e canal errado |
+| `mestre-de-match` | **Match em um passo** (modo do 3G): cola a vaga e os currículos, o sistema **extrai os critérios da própria JD**, mostra para ajuste e devolve ranking, pontos fortes, gaps e recomendação por candidato | 3G (modo) e 3O (extração) | Mesmas garantias da triagem (§14.13). Na plataforma o "colar" some: a vaga e os candidatos já estão lá, é um botão. Os critérios extraídos podem ser **salvos na vaga estruturada** com um clique |
 | `triagem-de-curriculos` | **Módulo de triagem** na vaga: ranking com evidências, mini-parecer e corte sugerido | 3G | Critérios estruturados na vaga; pontuação no código; **triagem às cegas** (remover nome, foto, idade antes de enviar ao modelo); aviso de IA e direito à revisão (LGPD art. 20) |
 | `roteiro-de-entrevista` | **Roteiro e scorecard** por vaga/candidato: perguntas STAR e situacionais, "o que observar", escala 1 a 4, parecer; exportar Word/PDF | 3H | Liga com Agenda/Entrevistas e com os "pontos a validar" da triagem; lista de perguntas proibidas aplicada no código |
 | `devolutiva-candidatos` | **Devolutiva** de aprovação e reprovação, genérica ou com feedback, como rascunho na conversa | 3I | **Regra de envio precisa de ajuste:** hoje, depois da reprovação a candidatura deixa de estar "em andamento" e o envio é bloqueado. Propor exceção única de encerramento (devolutiva em até 30 dias da decisão), respeitando descadastro e black list |
@@ -776,3 +777,36 @@ descadastro e black list) é verificada **antes** de liberar o envio.
 só de equidade. Como ela exige coletar dado pessoal sensível (LGPD), fica fora
 da primeira entrega e só entra com decisão explícita do Rodnei, desenho de
 consentimento próprio e apenas em formato agregado.
+
+### 14.20 Mestre de match: match em um passo (skill recebida em 15/10/2026)
+
+Relação com os módulos já planejados: **não é um módulo novo**, é um segundo
+modo do 3G que reaproveita a extração de critérios do 3O.
+
+| Aspecto | Triagem com critérios (3G) | Match em um passo |
+|---|---|---|
+| Critérios | Já estruturados na vaga (3O) | Extraídos da JD colada ou da vaga cadastrada |
+| Confirmação | Não precisa | Mostra os critérios em duas linhas para ajuste antes de ranquear |
+| Quando usar | Vaga já cadastrada e padronizada | Vaga nova, recado do gestor ou JD solta |
+
+Saída (formato da skill, mantido):
+
+| Parte | Conteúdo |
+|---|---|
+| Critérios extraídos | Obrigatórios, desejáveis e comportamentais, com o que for eliminatório marcado e as **suposições** sinalizadas quando a JD for vaga |
+| Ranking | Posição, candidato, aderência (alta, média, baixa), obrigatórios x/y e resumo de uma linha |
+| Por candidato | Pontos fortes (com evidência do currículo), gaps (separando "não tem" de "não evidenciado") e recomendação **Entrevistar, Entrevistar com ressalva ou Não avançar**, com o porquê |
+| Sugestão de corte | Sempre como sugestão; a decisão é da pessoa |
+| Ações | Exportar em planilha e gerar perguntas de entrevista para os gaps de cada candidato (liga ao 3H) |
+
+Regras próprias deste modo:
+
+- A **recomendação do match** (entrevistar) é de triagem e é distinta da
+  recomendação da ficha da entrevista (avançar) e da do laudo (contratar): três
+  registros, três momentos.
+- Critérios extraídos pela IA **só valem depois de confirmados** pela pessoa;
+  a confirmação fica registrada, e pode ser salva como critérios da vaga.
+- Currículo ilegível é listado como "não foi possível ler" e não entra no
+  ranking, sem chute.
+- Valem os dez itens do §14.13 (triagem às cegas, evidência obrigatória,
+  eliminatório no código, revisão humana antes de mudar etapa).
