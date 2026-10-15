@@ -7,7 +7,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirEmpresa, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { validateFormData } from "@/lib/validation/validate-form";
 import { CreateJobSchema, DecideJobSchema, type CreateJobInput, type DecideJobInput } from "@/lib/validation/schemas";
-import { gerarTextoIA } from "@/lib/agente-servidor";
+import { gerarTextoIA, transcreverAudio } from "@/lib/agente-servidor";
 import { headers } from "next/headers";
 import {
   CANAIS,
@@ -460,5 +460,56 @@ export async function gerarDivulgacao(_anterior: EstadoDivulgacao, formData: For
     const digest = (e as { digest?: unknown } | null)?.digest;
     if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw e;
     return falha("Não foi possível gerar agora. Tente de novo.");
+  }
+}
+
+export type EstadoTranscricao = { erro: string | null; texto: string; segundos: number };
+
+const TAMANHO_MAX_AUDIO = 4 * 1024 * 1024;
+
+/**
+ * Transcreve o áudio do gestor para a pessoa conferir antes de gerar os
+ * critérios. O arquivo não é guardado; o texto só volta para a tela.
+ */
+export async function transcreverRecado(_anterior: EstadoTranscricao, formData: FormData): Promise<EstadoTranscricao> {
+  const falha = (erro: string): EstadoTranscricao => ({ erro, texto: "", segundos: 0 });
+  try {
+    const { user, role } = await requireInternalUser("jobs.manage");
+    const jobId = String(formData.get("job_id") ?? "");
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId)) return falha("Vaga inválida.");
+    const arq = formData.get("audio");
+    if (!(arq instanceof File) || arq.size === 0) return falha("Escolha o arquivo de áudio.");
+    if (arq.size > TAMANHO_MAX_AUDIO) return falha("O áudio passa de 4 MB. Corte ou comprima antes de enviar.");
+    const tipo = (arq.type || "").toLowerCase();
+    if (!tipo.startsWith("audio/") && tipo !== "video/mp4" && tipo !== "video/webm") {
+      return falha("Envie um arquivo de áudio (ogg, mp3, m4a, wav ou webm).");
+    }
+
+    const escopo = await obterEscopo(user.id, role);
+    await exigirVaga(escopo, jobId);
+    const admin = createAdminClient();
+    const { data: vaga } = await admin.from("jobs").select("id, company_id").eq("id", jobId).maybeSingle();
+    if (!vaga) return falha("Vaga não encontrada.");
+
+    const r = await transcreverAudio({
+      companyId: vaga.company_id,
+      bytes: new Uint8Array(await arq.arrayBuffer()),
+      mime: tipo,
+      nome: arq.name.slice(0, 80),
+    });
+    if (!r.ok) return falha(r.erro);
+
+    await admin.from("audit_log").insert({
+      ator_id: user.id,
+      acao: "vaga_audio_transcrito",
+      objeto_tipo: "job",
+      objeto_id: jobId,
+      depois: { segundos: Math.round(r.segundos) },
+    });
+    return { erro: null, texto: r.texto.slice(0, 6000), segundos: r.segundos };
+  } catch (e) {
+    const digest = (e as { digest?: unknown } | null)?.digest;
+    if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw e;
+    return falha("Não foi possível transcrever agora. Tente de novo.");
   }
 }

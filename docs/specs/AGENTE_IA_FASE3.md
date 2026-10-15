@@ -1289,3 +1289,23 @@ gravado: só o resultado da triagem. O número de arquivos lidos fica na auditor
 **Atenção de custo:** essa extração usa o AI Gateway do projeto, não a chave
 do cofre, então **não entra no teto mensal** do agente. Só roda para cadastro
 vazio, uma vez por candidatura (o resultado fica salvo).
+
+### Passo 3O-3 construído (15/10/2026): áudio do gestor transcrito
+
+Em **Critérios da vaga > Gerar critérios com IA**, o bloco "Áudio do gestor":
+escolha o arquivo (ogg, mp3, m4a, wav ou webm, até 4 MB), clique em
+**Transcrever áudio** e o texto entra no campo de origem para a pessoa **conferir
+e corrigir** antes de gerar a proposta de critérios (3O-2).
+
+- Usa a chave **OpenAI do cofre** (Whisper, português). Sem chave, a tela
+  avisa; nada quebra.
+- O **arquivo não é guardado**: só o texto volta para a tela. Auditoria
+  `vaga_audio_transcrito` guarda só os segundos.
+- Custo registrado em `ai_agent_runs` (motivo `transcricao`) e **dentro do teto
+  mensal** do agente; atingido o teto, a transcrição é recusada.
+- O texto transcrito passa pelo mesmo fluxo da proposta: só vale depois de
+  conferido e salvo, e a verificação de discriminação continua bloqueando.
+
+**Limites:** o áudio vem por upload (o corpo da ação do servidor limita a 4,5
+MB); ainda não há botão para puxar o áudio direto de uma conversa do WhatsApp;
+áudio longo pode passar do limite e precisa ser cortado.

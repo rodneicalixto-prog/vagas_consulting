@@ -1,9 +1,10 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { gerarCriteriosComIA, type EstadoGeracao } from "../actions";
+import { gerarCriteriosComIA, transcreverRecado, type EstadoGeracao, type EstadoTranscricao } from "../actions";
 
 const inicial: EstadoGeracao = { erro: null, ok: false };
+const inicialTranscricao: EstadoTranscricao = { erro: null, texto: "", segundos: 0 };
 
 const MODOS: { valor: string; rotulo: string; dica: string }[] = [
   { valor: "criar", rotulo: "Criar a partir do recado do gestor", dica: "Cole a mensagem, o e-mail ou o áudio transcrito." },
@@ -16,6 +17,15 @@ const MODOS: { valor: string; rotulo: string; dica: string }[] = [
 export function GerarComIA({ jobId }: { jobId: string }) {
   const [estado, acao, pendente] = useActionState(gerarCriteriosComIA, inicial);
   const [modo, setModo] = useState("criar");
+  const [texto, setTexto] = useState("");
+  const [transcricao, transcrever, transcrevendo] = useActionState(
+    async (anterior: EstadoTranscricao, fd: FormData) => {
+      const r = await transcreverRecado(anterior, fd);
+      if (r.texto) setTexto((atual) => (atual.trim() ? `${atual.trim()}\n\n${r.texto}` : r.texto));
+      return r;
+    },
+    inicialTranscricao,
+  );
   const dica = MODOS.find((m) => m.valor === modo)?.dica;
 
   return (
@@ -23,6 +33,29 @@ export function GerarComIA({ jobId }: { jobId: string }) {
       <summary className="cursor-pointer list-none px-5 py-3 text-[13px] font-extrabold text-navy">
         Gerar critérios com IA
       </summary>
+      <form action={transcrever} className="grid gap-2 border-t border-border p-5">
+        <input type="hidden" name="job_id" value={jobId} />
+        <span className="text-[10.5px] font-bold text-text-2">Áudio do gestor (opcional)</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <input type="file" name="audio" accept="audio/*,video/mp4,video/webm" className="text-[12px]" />
+          <button
+            type="submit"
+            disabled={transcrevendo}
+            className="rounded-xl border border-border bg-surface px-3 py-1.5 text-[12px] font-bold text-navy disabled:opacity-60"
+          >
+            {transcrevendo ? "Transcrevendo..." : "Transcrever áudio"}
+          </button>
+        </div>
+        {transcricao.erro && <p role="alert" className="text-[12px] font-semibold text-danger">{transcricao.erro}</p>}
+        {transcricao.texto && (
+          <p className="text-[12px] font-semibold text-success">
+            Áudio transcrito ({Math.round(transcricao.segundos)} s). Confira e corrija o texto abaixo antes de gerar.
+          </p>
+        )}
+        <p className="text-[11px] text-text-3">
+          Até 4 MB. O arquivo não é guardado; o áudio é enviado à OpenAI para transcrever e conta no teto mensal.
+        </p>
+      </form>
       <form action={acao} className="grid gap-3 border-t border-border p-5 md:grid-cols-2">
         <input type="hidden" name="job_id" value={jobId} />
         <label className="flex flex-col gap-1">
@@ -52,6 +85,8 @@ export function GerarComIA({ jobId }: { jobId: string }) {
           <span className="text-[10.5px] font-bold text-text-2">Texto de origem</span>
           <textarea
             name="texto"
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
             required
             minLength={20}
             maxLength={6000}

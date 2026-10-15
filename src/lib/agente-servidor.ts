@@ -660,3 +660,81 @@ export async function gerarTextoIA(p: {
   if (!resposta.texto) return { ok: false, erro: "A IA devolveu uma resposta vazia." };
   return { ok: true, texto: resposta.texto, provedor, modelo };
 }
+
+export type ResultadoTranscricao = { ok: true; texto: string; segundos: number } | { ok: false; erro: string };
+
+/** Whisper cobra por minuto de áudio; valor aproximado, só para o painel de custo. */
+const USD_POR_MINUTO_AUDIO = 0.006;
+
+/**
+ * Transcreve um áudio (recado do gestor) com a chave OpenAI do cofre. O
+ * arquivo não é gravado: só o texto volta para a pessoa conferir. O custo
+ * entra no teto mensal do agente da empresa.
+ */
+export async function transcreverAudio(p: {
+  companyId: string;
+  bytes: Uint8Array;
+  mime: string;
+  nome: string;
+}): Promise<ResultadoTranscricao> {
+  const admin = createAdminClient();
+  const { data: agente } = await admin.from("ai_agents").select("id, teto_mensal_usd").eq("company_id", p.companyId).maybeSingle();
+  if (agente) {
+    const { data: runs } = await admin
+      .from("ai_agent_runs")
+      .select("custo_usd")
+      .eq("agent_id", agente.id)
+      .gte("created_at", inicioDoMes())
+      .limit(5000);
+    const gasto = (runs ?? []).reduce((s, r) => s + Number(r.custo_usd ?? 0), 0);
+    if (gasto >= Number(agente.teto_mensal_usd)) {
+      return { ok: false, erro: "O teto mensal de custo de IA foi atingido." };
+    }
+  }
+  const chave = await chaveDoProvedor(p.companyId, "openai");
+  if (!chave) return { ok: false, erro: "Não há chave da OpenAI cadastrada (Integrações) para transcrever áudio." };
+
+  const form = new FormData();
+  form.append("file", new Blob([p.bytes as BlobPart], { type: p.mime || "audio/ogg" }), p.nome || "audio.ogg");
+  form.append("model", "whisper-1");
+  form.append("language", "pt");
+  form.append("response_format", "verbose_json");
+
+  const inicio = Date.now();
+  let r: Response;
+  try {
+    r = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${chave}` },
+      body: form,
+      signal: AbortSignal.timeout(90_000),
+    });
+  } catch (e) {
+    const tempo = e instanceof Error && (e.name === "TimeoutError" || e.name === "AbortError");
+    return {
+      ok: false,
+      erro: tempo ? "A transcrição demorou demais. Tente um áudio mais curto." : "Não foi possível falar com o provedor de voz.",
+    };
+  }
+  if (!r.ok) {
+    return { ok: false, erro: `O provedor de voz recusou o áudio (${await detalheDoErro(r)}).` };
+  }
+  const j = (await r.json()) as { text?: string; duration?: number };
+  const texto = (j.text ?? "").trim();
+  const segundos = Number.isFinite(j.duration) ? Number(j.duration) : 0;
+  if (!texto) return { ok: false, erro: "Não consegui entender o áudio. Digite o recado ou grave de novo." };
+
+  if (agente) {
+    await admin.from("ai_agent_runs").insert({
+      agent_id: agente.id,
+      provedor: "openai",
+      modelo: "whisper-1",
+      tokens_in: 0,
+      tokens_out: 0,
+      custo_usd: Math.round((segundos / 60) * USD_POR_MINUTO_AUDIO * 10000) / 10000,
+      latencia_ms: Date.now() - inicio,
+      motivo_parada: "transcricao",
+    });
+  }
+  return { ok: true, texto, segundos };
+}
