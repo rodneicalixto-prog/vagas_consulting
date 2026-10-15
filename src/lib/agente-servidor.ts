@@ -3,6 +3,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decifrar } from "@/lib/crypto-segredos";
 import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
+import { fonteDaSelecao, selecionarNotas } from "@/lib/recuperacao";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
 import { configEvolutionDaEmpresa, enviarTexto } from "@/lib/evolution";
@@ -423,11 +424,19 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
       texto: h.texto,
     }));
 
+  // Só as notas que casam com o que a pessoa perguntou (ou todas, se nada casar).
+  const consulta = hist
+    .filter((h) => h.autor === "candidato")
+    .slice(-3)
+    .map((h) => h.texto ?? "")
+    .join(" ");
+  const selecao = selecionarNotas(notas ?? [], consulta);
+
   const { system, user } = montarPrompt({
     nomeAgente: agente.nome,
     tom: agente.tom,
     roteiro: agente.roteiro,
-    notas: notas ?? [],
+    notas: selecao.notas,
     vaga,
     historico: hist,
   });
@@ -497,7 +506,7 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
     return;
   }
 
-  const fonte = (notas ?? []).map((n) => n.titulo).slice(0, 20);
+  const fonte = fonteDaSelecao(selecao.notas.map((n) => n.titulo).slice(0, 20), selecao.todas);
   if (vaga) fonte.unshift(`Vaga: ${vaga.titulo}`);
   const id = await registrar(texto.slice(0, 1500), null, { fonte });
   await registrarRun(id, null, resposta.tokensIn, resposta.tokensOut);

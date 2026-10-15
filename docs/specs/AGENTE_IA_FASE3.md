@@ -1421,3 +1421,26 @@ gestão), grava auditoria (`*_exportado_docx`) e responde sem cache.
 **Limites:** formatação simples (títulos, parágrafos e listas), sem tabelas
 nem logotipo; o laudo, o roteiro e os testes ainda não têm modelo de papel
 timbrado da empresa.
+
+### Recuperação de notas por pergunta e qualidade por nota (15/10/2026)
+
+**Mudança no agente (3A/3B):** em vez de enviar toda a base ao modelo, o agente
+envia só as notas que casam com o que a pessoa perguntou (as últimas 3
+mensagens do candidato). Sem migration.
+
+- **Recuperação lexical, no código** (`src/lib/recuperacao.ts`): termos
+  normalizados (sem acento, sem palavras vazias, singular e plural pelo
+  radical); título pesa 3, corpo pesa 1; até 8 notas por resposta.
+- **Fallback seguro:** base com até 8 notas, pergunta sem termos úteis ou nada
+  que case = **todas as notas**, como antes. A recuperação só reduz, nunca
+  cria um caso novo de "sem fonte" por si.
+- **Fonte da sugestão** passa a guardar só as notas realmente enviadas (ou o
+  marcador `__todas__` no fallback).
+- **Qualidade por nota** (painel `/admin/agente`): por nota, quantas respostas
+  decididas (90 dias) a incluíram e a taxa de **usadas sem edição**; abaixo de 5
+  respostas aparece "amostra pequena". Respostas do fallback não entram.
+
+**Limites:** é **correlação**: a nota estava presente, não há como provar que
+foi ela que sustentou a resposta. Casamento lexical não entende sinônimos
+(ex.: "salário" × "remuneração"); nesses casos o fallback evita perda, mas uma
+busca semântica (embeddings) seria o próximo passo, com custo e migration.

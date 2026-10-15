@@ -5,6 +5,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { empresaDaOperacao } from "@/lib/evolution";
 import { SubmitButton } from "@/components/form-buttons";
 import { ROTULO_TIPO, TIPOS_NOTA, type TipoNota } from "@/lib/agente";
+import { qualidadePorNota, type QualidadeNota } from "@/lib/recuperacao";
 import {
   detectarConflitos,
   estadoValidade,
@@ -108,6 +109,20 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
   if (filtro) q = q.eq("tipo", filtro);
   const { data: notas } = await q;
   const lista = notas ?? [];
+
+  // Qualidade por nota: respostas decididas (90 dias) em que a nota foi enviada ao modelo.
+  let qualidade = new Map<string, QualidadeNota>();
+  if (agente) {
+    const desde90 = new Date(agoraMs() - 90 * 86_400_000).toISOString();
+    const { data: decididas } = await admin
+      .from("ai_suggestions")
+      .select("estado, fonte")
+      .eq("agent_id", agente.id)
+      .in("estado", ["usada", "editada", "descartada"])
+      .gte("created_at", desde90)
+      .limit(3000);
+    qualidade = qualidadePorNota((decididas ?? []) as { estado: string; fonte: unknown }[]);
+  }
 
   // Confiabilidade da base: validade, revisão, conflito e cobertura.
   const hoje = hojeISO();
@@ -433,6 +448,17 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
                   )}
                   {n.dono_id && (
                     <span className="text-[10.5px] text-text-3">Dono: {nomeDono.get(n.dono_id) ?? "Equipe"}</span>
+                  )}
+                  {qualidade.get(n.titulo) && (
+                    <span
+                      className="text-[10.5px] text-text-3"
+                      title="Respostas decididas em que esta nota foi enviada ao modelo (correlação, não prova de uso)"
+                    >
+                      {qualidade.get(n.titulo)!.respostas} resposta(s)
+                      {qualidade.get(n.titulo)!.taxaSemEdicao !== null
+                        ? ` · ${qualidade.get(n.titulo)!.taxaSemEdicao}% sem edição`
+                        : " · amostra pequena"}
+                    </span>
                   )}
                   <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${STATUS_CLASSE[n.status]}`}>
                     {STATUS_ROTULO[n.status] ?? n.status}
