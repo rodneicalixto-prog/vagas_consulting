@@ -7,25 +7,20 @@ import { BrandMark, Wordmark } from "@/components/brand-mark";
 import { adminSignOut } from "@/app/admin/actions";
 import type { InternalRole } from "@/lib/auth/internal";
 
-type NavItem = {
-  href: string;
-  label: string;
-  exact?: boolean;
-  roles?: string[];
-  children?: { href: string; label: string; exact?: boolean; roles?: string[] }[];
-};
+type NavLink = { href: string; label: string; exact?: boolean; roles?: string[] };
+type NavGroup = { id: string; label: string; children: NavLink[] };
+type NavEntry = NavLink | NavGroup;
 
-const NAV: NavItem[] = [
+function ehGrupo(e: NavEntry): e is NavGroup {
+  return "children" in e;
+}
+
+// Poucas seções, cada uma abre em cascata: o menu cabe na tela sem rolar.
+const NAV: NavEntry[] = [
   { href: "/admin", label: "Visão geral", exact: true },
-  { href: "/admin/empresas", label: "Empresas" },
-  { href: "/admin/vagas", label: "Cadastro de vagas" },
-  { href: "/admin/candidatos", label: "Candidatos" },
-  { href: "/admin/contatos", label: "Contatos" },
   { href: "/admin/conversas", label: "Conversas" },
-  { href: "/admin/talentos", label: "Talentos" },
-  { href: "/admin/convites", label: "Convites" },
   {
-    href: "/admin/agenda",
+    id: "agenda",
     label: "Agenda",
     children: [
       { href: "/admin/agenda", label: "Minha agenda", exact: true },
@@ -35,18 +30,54 @@ const NAV: NavItem[] = [
       { href: "/admin/agenda/equipe", label: "Agenda da equipe", roles: ["superadmin", "admin", "admin_empresa"] },
     ],
   },
-  { href: "/admin/ranking", label: "Ranking", roles: ["superadmin", "admin"] },
-  { href: "/admin/leads", label: "Leads", roles: ["superadmin", "admin"] },
-  { href: "/admin/prestacoes", label: "Prestações", roles: ["superadmin", "admin", "admin_empresa"] },
-  { href: "/admin/blacklist", label: "Black list", roles: ["superadmin", "admin", "admin_empresa"] },
-  { href: "/admin/denuncias", label: "Denúncias", roles: ["superadmin", "admin"] },
-  { href: "/admin/lgpd", label: "LGPD", roles: ["superadmin", "admin"] },
-  { href: "/admin/auditoria", label: "Auditoria", roles: ["superadmin", "admin"] },
-  { href: "/admin/operadores", label: "Operadores", roles: ["admin_empresa", "superadmin", "admin"] },
-  { href: "/admin/integracoes", label: "Integrações", roles: ["superadmin", "admin_empresa"] },
-  { href: "/admin/carteira", label: "Carteira", roles: ["superadmin"] },
-  { href: "/admin/acesso", label: "Acesso", roles: ["superadmin"] },
-  { href: "/admin/estrategico", label: "Estratégico", roles: ["superadmin"] },
+  {
+    id: "pessoas",
+    label: "Candidatos",
+    children: [
+      { href: "/admin/candidatos", label: "Candidatos" },
+      { href: "/admin/contatos", label: "Contatos" },
+      { href: "/admin/talentos", label: "Talentos" },
+      { href: "/admin/convites", label: "Convites" },
+      { href: "/admin/ranking", label: "Ranking", roles: ["superadmin", "admin"] },
+    ],
+  },
+  {
+    id: "vagas",
+    label: "Empresas e vagas",
+    children: [
+      { href: "/admin/empresas", label: "Empresas" },
+      { href: "/admin/vagas", label: "Cadastro de vagas" },
+      { href: "/admin/operadores", label: "Operadores", roles: ["admin_empresa", "superadmin", "admin"] },
+    ],
+  },
+  {
+    id: "financeiro",
+    label: "Financeiro e dados",
+    children: [
+      { href: "/admin/prestacoes", label: "Prestações", roles: ["superadmin", "admin", "admin_empresa"] },
+      { href: "/admin/leads", label: "Leads", roles: ["superadmin", "admin"] },
+      { href: "/admin/blacklist", label: "Black list", roles: ["superadmin", "admin", "admin_empresa"] },
+    ],
+  },
+  {
+    id: "governanca",
+    label: "Governança",
+    children: [
+      { href: "/admin/denuncias", label: "Denúncias", roles: ["superadmin", "admin"] },
+      { href: "/admin/lgpd", label: "LGPD", roles: ["superadmin", "admin"] },
+      { href: "/admin/auditoria", label: "Auditoria", roles: ["superadmin", "admin"] },
+    ],
+  },
+  {
+    id: "plataforma",
+    label: "Plataforma",
+    children: [
+      { href: "/admin/integracoes", label: "Integrações", roles: ["superadmin", "admin_empresa"] },
+      { href: "/admin/carteira", label: "Carteira", roles: ["superadmin"] },
+      { href: "/admin/acesso", label: "Acesso", roles: ["superadmin"] },
+      { href: "/admin/estrategico", label: "Estratégico", roles: ["superadmin"] },
+    ],
+  },
 ];
 
 const PERFIL_LABEL: Record<string, string> = {
@@ -69,70 +100,74 @@ export function AdminShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [lastPathname, setLastPathname] = useState(pathname);
   const [abertos, setAbertos] = useState<Record<string, boolean>>({});
-  const todos = NAV.flatMap((item) => [item, ...(item.children ?? [])]);
-  // O item mais específico (maior href) que casa com a rota atual.
-  const current = todos
-    .filter((item) => (item.exact ? pathname === item.href : pathname.startsWith(item.href)))
-    .sort((a, b) => b.href.length - a.href.length)[0];
+  const todos: NavLink[] = NAV.flatMap((e) => (ehGrupo(e) ? e.children : [e]));
+  // O link mais específico (maior href) que casa com a rota atual.
+  const casa = (l: NavLink) => (l.exact ? pathname === l.href : pathname.startsWith(l.href));
+  const current = todos.filter(casa).sort((x, y) => y.href.length - x.href.length)[0];
 
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setDrawerOpen(false);
   }
 
-  const visibleNav = NAV.filter((item) => !item.roles || item.roles.includes(role));
+  const permitido = (l: { roles?: string[] }) => !l.roles || l.roles.includes(role);
 
   const navList = (onNavigate?: () => void) => (
-    <nav className="flex flex-col gap-0.5">
-      {visibleNav.map((item) => {
-        const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
-        if (item.children) {
-          // Cascata: abre sozinha dentro da seção; o clique no título só recolhe/expande.
-          const filhos = item.children.filter((c) => !c.roles || c.roles.includes(role));
-          const aberto = pathname.startsWith(item.href) || abertos[item.href] === true;
+    <nav className="flex min-h-0 flex-col gap-0.5">
+      {NAV.map((entrada) => {
+        if (!ehGrupo(entrada)) {
+          if (!permitido(entrada)) return null;
+          const ativo = entrada.exact ? pathname === entrada.href : pathname.startsWith(entrada.href);
           return (
-            <div key={item.href} className="flex flex-col gap-0.5">
-              <button
-                type="button"
-                onClick={() => setAbertos((a) => ({ ...a, [item.href]: !aberto }))}
-                aria-expanded={aberto}
-                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-left text-[13px] font-bold ${
-                  active ? "text-white" : "text-white/60 hover:text-white/85"
-                }`}
-              >
-                <span>{item.label}</span>
-                <span className="text-[10px]">{aberto ? "▾" : "▸"}</span>
-              </button>
-              {aberto &&
-                filhos.map((c) => {
-                  const ativoFilho = c.exact ? pathname === c.href : pathname.startsWith(c.href);
-                  return (
-                    <Link
-                      key={c.href}
-                      href={c.href}
-                      onClick={onNavigate}
-                      className={`ml-3 rounded-lg border-l border-white/10 px-3 py-2 text-[12.5px] font-bold ${
-                        ativoFilho ? "bg-white/10 text-white" : "text-white/55 hover:text-white/85"
-                      }`}
-                    >
-                      {c.label}
-                    </Link>
-                  );
-                })}
-            </div>
+            <Link
+              key={entrada.href}
+              href={entrada.href}
+              onClick={onNavigate}
+              className={`rounded-lg px-3 py-2 text-[12.5px] font-bold ${
+                ativo ? "bg-white/10 text-white" : "text-white/60 hover:text-white/85"
+              }`}
+            >
+              {entrada.label}
+            </Link>
           );
         }
+
+        const filhos = entrada.children.filter(permitido);
+        if (filhos.length === 0) return null;
+        const temAtivo = filhos.some(casa);
+        const aberto = abertos[entrada.id] ?? temAtivo;
         return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            className={`rounded-lg px-3 py-2.5 text-[13px] font-bold ${
-              active ? "bg-white/10 text-white" : "text-white/60 hover:text-white/85"
-            }`}
-          >
-            {item.label}
-          </Link>
+          <div key={entrada.id} className="flex flex-col">
+            <button
+              type="button"
+              onClick={() => setAbertos((a) => ({ ...a, [entrada.id]: !aberto }))}
+              aria-expanded={aberto}
+              className={`flex items-center justify-between rounded-lg px-3 py-2 text-left text-[12.5px] font-bold ${
+                temAtivo ? "text-white" : "text-white/60 hover:text-white/85"
+              }`}
+            >
+              <span>{entrada.label}</span>
+              <span className="text-[10px] opacity-70">{aberto ? "▾" : "▸"}</span>
+            </button>
+            {aberto && (
+              <div className="mb-1 ml-3 flex flex-col border-l border-white/10">
+                {filhos.map((c) => (
+                  <Link
+                    key={c.href}
+                    href={c.href}
+                    onClick={onNavigate}
+                    className={`rounded-r-lg px-3 py-1.5 text-[12px] font-semibold ${
+                      casa(c) && current?.href === c.href
+                        ? "bg-white/10 text-white"
+                        : "text-white/55 hover:text-white/85"
+                    }`}
+                  >
+                    {c.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         );
       })}
     </nav>
@@ -158,13 +193,13 @@ export function AdminShell({
   return (
     <div className="flex min-h-dvh flex-col bg-bg md:flex-row">
       {/* Sidebar — desktop/tablet */}
-      <aside className="hidden md:flex md:w-60 md:shrink-0 md:flex-col bg-[#0c1526] p-4.5 text-white">
+      <aside className="hidden md:flex md:h-dvh md:w-60 md:shrink-0 md:flex-col bg-[#0c1526] p-4.5 text-white">
         <div className="flex items-center gap-2.5 px-2 pb-1">
           <BrandMark size={24} />
           <Wordmark light />
         </div>
         <div className="px-2 pb-5 text-[9.5px] font-extrabold uppercase tracking-wide text-white/40">Admin</div>
-        {navList()}
+        <div className="min-h-0 flex-1 overflow-y-auto">{navList()}</div>
         {sidebarFooter}
       </aside>
 

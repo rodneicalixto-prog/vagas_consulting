@@ -2,11 +2,36 @@ import { z } from "zod";
 import { normalizarRemuneracao } from "@/lib/money";
 
 // Empresas
+const contatoEmpresa = {
+  telefone: z.string().nullable().optional(),
+  email_contato: z.string().nullable().optional(),
+  cep: z.string().nullable().optional(),
+  logradouro: z.string().nullable().optional(),
+  numero: z.string().nullable().optional(),
+  complemento: z.string().nullable().optional(),
+  bairro: z.string().nullable().optional(),
+  cidade: z.string().nullable().optional(),
+  uf: z.string().nullable().optional(),
+  responsavel_nome: z.string().min(2, "Informe o nome do responsável"),
+  responsavel_cargo: z.string().nullable().optional(),
+  responsavel_telefone: z.string().nullable().optional(),
+  responsavel_email: z.string().nullable().optional(),
+};
+
 export const CreateCompanySchema = z.object({
   razao_social: z.string().min(2, "Razão social deve ter ao menos 2 caracteres"),
   nome_fantasia: z.string().nullable().optional(),
   cnpj: z.string().refine((val) => !val || val.replace(/\D/g, "").length === 14, "CNPJ deve ter 14 dígitos"),
   endereco: z.string().nullable().optional(),
+  ...contatoEmpresa,
+});
+
+export const UpdateCompanySchema = z.object({
+  company_id: z.string().uuid("ID da empresa inválido"),
+  razao_social: z.string().min(2, "Razão social deve ter ao menos 2 caracteres"),
+  nome_fantasia: z.string().nullable().optional(),
+  cnpj: z.string().refine((val) => !val || val.replace(/\D/g, "").length === 14, "CNPJ deve ter 14 dígitos"),
+  ...contatoEmpresa,
 });
 
 export const DecideCompanySchema = z.object({
@@ -128,6 +153,7 @@ export const AuditLogQuerySchema = z.object({
 });
 
 export type CreateCompanyInput = z.infer<typeof CreateCompanySchema>;
+export type UpdateCompanyInput = z.infer<typeof UpdateCompanySchema>;
 export type DecideCompanyInput = z.infer<typeof DecideCompanySchema>;
 export type CreateJobInput = z.infer<typeof CreateJobSchema>;
 export type DecideJobInput = z.infer<typeof DecideJobSchema>;

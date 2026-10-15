@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { criarEmpresa, decidirEmpresa } from "./actions";
+import { atualizarEmpresa, criarEmpresa, decidirEmpresa } from "./actions";
+import { FormularioEmpresa } from "./formulario-empresa";
+import { formatarTelefoneBR } from "@/lib/whatsapp";
 import { can, requireInternalUser } from "@/lib/auth/internal";
 import { empresasParaFiltro, obterEscopo } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
@@ -39,7 +41,9 @@ export default async function ModeracaoEmpresasPage({
 
   let consulta = admin
     .from("companies")
-    .select("id, razao_social, nome_fantasia, cnpj, endereco, status, max_operadores")
+    .select(
+      "id, razao_social, nome_fantasia, cnpj, endereco, status, max_operadores, telefone, email_contato, cep, logradouro, numero, complemento, bairro, cidade, uf, responsavel_nome, responsavel_cargo, responsavel_telefone, responsavel_email",
+    )
     .order("nome_fantasia", { ascending: true, nullsFirst: false })
     .limit(LIMITE);
   // Carteira: operador só vê as empresas atribuídas e ativas.
@@ -133,21 +137,9 @@ export default async function ModeracaoEmpresasPage({
               <span>+ Cadastrar empresa</span>
               <span className="text-[11px] transition-transform group-open:rotate-90">▸</span>
             </summary>
-            <form
-              action={criarEmpresa}
-              className="grid gap-3 border-t border-border p-4 md:grid-cols-2"
-            >
-              <input name="razao_social" required placeholder="Razão social" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-              <input name="nome_fantasia" placeholder="Nome fantasia" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-              <input name="cnpj" inputMode="numeric" placeholder="CNPJ, somente números" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-              <input name="endereco" placeholder="Endereço" className="rounded-lg border border-border bg-bg px-3 py-2.5 text-sm" />
-              <SubmitButton
-                pendingLabel="Cadastrando..."
-                className="rounded-lg bg-navy px-4 py-2.5 text-sm font-extrabold text-white md:col-span-2"
-              >
-                Cadastrar empresa
-              </SubmitButton>
-            </form>
+            <div className="border-t border-border p-4">
+              <FormularioEmpresa action={criarEmpresa} rotuloBotao="Cadastrar empresa" />
+            </div>
           </details>
         )}
 
@@ -185,10 +177,33 @@ export default async function ModeracaoEmpresasPage({
                   </summary>
 
                   <div className="border-t border-border bg-bg/60 px-5 py-4">
-                    <p className="text-[11.5px] text-text-2">
-                      <b className="text-text">{c.razao_social}</b> ·{" "}
-                      {c.cnpj ? `CNPJ ${c.cnpj}` : "CNPJ não informado"} · {c.endereco ?? "endereço não informado"}
-                    </p>
+                    <div className="grid gap-x-6 gap-y-1 text-[11.5px] text-text-2 md:grid-cols-2">
+                      <p>
+                        <b className="text-text">{c.razao_social}</b>
+                        {c.cnpj ? ` · CNPJ ${c.cnpj}` : " · CNPJ não informado"}
+                      </p>
+                      <p>
+                        <b className="text-text">Telefone:</b>{" "}
+                        {c.telefone ? formatarTelefoneBR(c.telefone) : "não informado"}
+                        {c.email_contato ? ` · ${c.email_contato}` : ""}
+                      </p>
+                      <p className="md:col-span-2">
+                        <b className="text-text">Endereço:</b> {c.endereco ?? "não informado"}
+                      </p>
+                      <p className="md:col-span-2">
+                        <b className="text-text">Responsável:</b>{" "}
+                        {c.responsavel_nome
+                          ? [
+                              c.responsavel_nome,
+                              c.responsavel_cargo,
+                              c.responsavel_telefone ? formatarTelefoneBR(c.responsavel_telefone) : null,
+                              c.responsavel_email,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")
+                          : "não informado"}
+                      </p>
+                    </div>
                     <div className="mt-2 flex flex-wrap gap-4 text-[11.5px]">
                       <Link href="/admin/vagas" className="font-bold text-navy underline">
                         Ver vagas →
@@ -197,6 +212,22 @@ export default async function ModeracaoEmpresasPage({
                         Ver painel da empresa →
                       </Link>
                     </div>
+
+                    {!somenteLeitura && (
+                      <details className="group/edit mt-3 rounded-xl border border-border bg-surface">
+                        <summary className="cursor-pointer list-none px-4 py-2.5 text-[12px] font-extrabold text-navy">
+                          Editar dados, endereço e responsável
+                        </summary>
+                        <div className="border-t border-border p-4">
+                          <FormularioEmpresa
+                            action={atualizarEmpresa}
+                            companyId={c.id}
+                            rotuloBotao="Salvar dados da empresa"
+                            dados={c}
+                          />
+                        </div>
+                      </details>
+                    )}
 
                     {!somenteLeitura && (
                       <form action={decidirEmpresa} className="mt-3 flex flex-wrap items-center gap-2">

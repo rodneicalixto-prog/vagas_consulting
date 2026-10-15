@@ -179,6 +179,19 @@ export type Database = {
       }
       companies: {
         Row: {
+          telefone: string | null
+          email_contato: string | null
+          cep: string | null
+          logradouro: string | null
+          numero: string | null
+          complemento: string | null
+          bairro: string | null
+          cidade: string | null
+          uf: string | null
+          responsavel_nome: string | null
+          responsavel_cargo: string | null
+          responsavel_telefone: string | null
+          responsavel_email: string | null
           max_operadores: number
           cnpj: string | null
           created_at: string
@@ -195,6 +208,19 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          telefone?: string | null
+          email_contato?: string | null
+          cep?: string | null
+          logradouro?: string | null
+          numero?: string | null
+          complemento?: string | null
+          bairro?: string | null
+          cidade?: string | null
+          uf?: string | null
+          responsavel_nome?: string | null
+          responsavel_cargo?: string | null
+          responsavel_telefone?: string | null
+          responsavel_email?: string | null
           max_operadores?: number
           cnpj?: string | null
           created_at?: string
@@ -211,6 +237,19 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          telefone?: string | null
+          email_contato?: string | null
+          cep?: string | null
+          logradouro?: string | null
+          numero?: string | null
+          complemento?: string | null
+          bairro?: string | null
+          cidade?: string | null
+          uf?: string | null
+          responsavel_nome?: string | null
+          responsavel_cargo?: string | null
+          responsavel_telefone?: string | null
+          responsavel_email?: string | null
           max_operadores?: number
           cnpj?: string | null
           created_at?: string
