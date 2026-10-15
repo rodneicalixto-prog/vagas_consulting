@@ -2178,3 +2178,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     verificação e bloqueio de critério discriminatório valem sobre a
     proposta; teto, chave do cofre e custo no painel do agente. Sem migration
     nova. 84 testes. Próximo: 3N divulgação e áudio do gestor.
+121. **3N: divulgação da vaga (15/10/2026)**: texto por canal (LinkedIn,
+    Instagram, WhatsApp, portal, comunidade, interna, indicação) a partir dos
+    critérios; ganchos, briefing de arte, link com marcador de origem; checklist
+    em código com bloqueio de critério discriminatório; vaga confidencial não
+    cita a empresa. Só redige, publicação manual. Sem migration. 87 testes.
+    Pendente: leitura do marcador (3M) e diagnóstico 'vaga não atrai'.

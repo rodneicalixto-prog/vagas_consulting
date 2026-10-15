@@ -8,6 +8,17 @@ import { exigirEmpresa, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { validateFormData } from "@/lib/validation/validate-form";
 import { CreateJobSchema, DecideJobSchema, type CreateJobInput, type DecideJobInput } from "@/lib/validation/schemas";
 import { gerarTextoIA } from "@/lib/agente-servidor";
+import { headers } from "next/headers";
+import {
+  CANAIS,
+  canalValido,
+  divulgacaoDaResposta,
+  montarPromptDivulgacao,
+  tomEmpresaValido,
+  verificarDivulgacao,
+  type CanalId,
+} from "@/lib/divulgacao";
+import type { Verificacao } from "@/lib/vaga-estruturada";
 import {
   criteriosDaResposta,
   modoValido,
@@ -319,5 +330,135 @@ export async function gerarCriteriosComIA(_anterior: EstadoGeracao, formData: Fo
     const digest = (e as { digest?: unknown } | null)?.digest;
     if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw e;
     return { erro: "Não foi possível gerar agora. Tente de novo.", ok: false };
+  }
+}
+
+export type ResultadoCanal = {
+  canal: string;
+  rotulo: string;
+  titulo: string;
+  ganchos: string[];
+  texto: string;
+  briefing_arte: string;
+  copia: string;
+  verificacoes: Verificacao[];
+};
+export type EstadoDivulgacao = {
+  erro: string | null;
+  resultados: ResultadoCanal[];
+  suposicoes: string[];
+  link: string;
+};
+
+/**
+ * Gera o texto de divulgação por canal a partir dos critérios da vaga.
+ * Só redige: publicar e enviar são ações manuais fora da plataforma.
+ */
+export async function gerarDivulgacao(_anterior: EstadoDivulgacao, formData: FormData): Promise<EstadoDivulgacao> {
+  const falha = (erro: string): EstadoDivulgacao => ({ erro, resultados: [], suposicoes: [], link: "" });
+  try {
+    const { user, role } = await requireInternalUser("jobs.manage");
+    const jobId = String(formData.get("job_id") ?? "");
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId)) return falha("Vaga inválida.");
+
+    const canais = [...new Set(formData.getAll("canais").map(String))].filter(canalValido) as CanalId[];
+    if (canais.length === 0) return falha("Escolha pelo menos um canal.");
+    const tomBruto = String(formData.get("tom") ?? "tradicional");
+    if (!tomEmpresaValido(tomBruto)) return falha("Tom inválido.");
+    const perfilTecnico = String(formData.get("perfil") ?? "menos") === "tecnico";
+
+    const escopo = await obterEscopo(user.id, role);
+    await exigirVaga(escopo, jobId);
+
+    const admin = createAdminClient();
+    const { data: vaga } = await admin
+      .from("jobs")
+      .select(
+        "id, company_id, titulo, status, local, modelo_trabalho, modalidade, remuneracao_texto, descricao, confidencial, criterios, companies(nome_fantasia, razao_social)",
+      )
+      .eq("id", jobId)
+      .maybeSingle();
+    if (!vaga) return falha("Vaga não encontrada.");
+
+    const criterios = normalizarCriterios(vaga.criterios);
+    const emp = Array.isArray(vaga.companies) ? vaga.companies[0] : vaga.companies;
+    const mostrarFaixa = formData.get("mostrar_faixa") === "sim" && !!vaga.remuneracao_texto;
+
+    const cab = await headers();
+    const host = cab.get("x-forwarded-host") ?? cab.get("host");
+    const base = host ? `${host.startsWith("localhost") ? "http" : "https"}://${host}` : "";
+    const linkBase = `${base}/vagas/${vaga.id}`;
+
+    // Um link por canal, com marcador de origem (alimenta a métrica de fontes, 3M).
+    const comOrigem = (canal: string) => `${linkBase}?o=${canal}`;
+
+    const { system, user: prompt } = montarPromptDivulgacao({
+      canais,
+      perfilTecnico,
+      tom: tomBruto,
+      mostrarFaixa,
+      link: linkBase,
+      confidencial: vaga.confidencial,
+      empresa: emp?.nome_fantasia || emp?.razao_social || "a empresa",
+      vaga: {
+        titulo: vaga.titulo,
+        local: vaga.local,
+        modelo_trabalho: vaga.modelo_trabalho as string | null,
+        modalidade: vaga.modalidade as string | null,
+        remuneracao_texto: vaga.remuneracao_texto,
+        descricao: vaga.descricao,
+      },
+      criterios: {
+        rotina: criterios.rotina,
+        obrigatorios: criterios.obrigatorios,
+        desejaveis: criterios.desejaveis,
+        diferencial: criterios.diferencial,
+      },
+    });
+
+    const r = await gerarTextoIA({ companyId: vaga.company_id, system, user: prompt, json: true, maxTokens: 2200 });
+    if (!r.ok) return falha(r.erro);
+
+    const lido = divulgacaoDaResposta(r.texto, canais);
+    if (!lido) return falha("Não consegui ler a resposta da IA. Tente de novo.");
+
+    const resultados: ResultadoCanal[] = lido.textos.map((t) => {
+      const rotulo = CANAIS.find((c) => c.id === t.canal)?.rotulo ?? t.canal;
+      // Troca o link-base pelo link com o marcador do canal.
+      const texto = t.texto.split(linkBase).join(comOrigem(t.canal));
+      const final = { ...t, texto };
+      const copia = [t.titulo ? `${t.titulo}\n` : "", texto, t.briefing_arte ? `\n\nBriefing da arte: ${t.briefing_arte}` : ""]
+        .join("")
+        .trim();
+      return {
+        canal: t.canal,
+        rotulo,
+        titulo: t.titulo,
+        ganchos: t.ganchos,
+        texto,
+        briefing_arte: t.briefing_arte,
+        copia,
+        verificacoes: verificarDivulgacao(final, {
+          perfilTecnico,
+          temFaixa: !!vaga.remuneracao_texto,
+          mostrarFaixa,
+          vagaPublicada: vaga.status === "publicada",
+          link: comOrigem(t.canal),
+        }),
+      };
+    });
+
+    await admin.from("audit_log").insert({
+      ator_id: user.id,
+      acao: "vaga_divulgacao_gerada",
+      objeto_tipo: "job",
+      objeto_id: jobId,
+      depois: { canais: resultados.map((x) => x.canal), provedor: r.provedor, modelo: r.modelo },
+    });
+    return { erro: null, resultados, suposicoes: lido.suposicoes, link: linkBase };
+  } catch (e) {
+    const digest = (e as { digest?: unknown } | null)?.digest;
+    if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw e;
+    return falha("Não foi possível gerar agora. Tente de novo.");
   }
 }

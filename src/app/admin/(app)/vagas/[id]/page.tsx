@@ -64,6 +64,9 @@ export default async function CriteriosDaVagaPage({ params }: { params: Promise<
           ← Cadastro de vagas
         </Link>
         <h1 className="mt-2 text-xl font-extrabold text-text">Critérios da vaga</h1>
+        <Link href={`/admin/vagas/${id}/divulgacao`} className="mt-1 inline-block text-[11.5px] font-bold text-navy underline">
+          Gerar divulgação desta vaga →
+        </Link>
         <p className="mt-1 text-xs text-text-2">
           {vaga.titulo} · {nomeEmpresa}. Estes campos alimentam divulgação, triagem, roteiro de entrevista, testes e laudo.
         </p>

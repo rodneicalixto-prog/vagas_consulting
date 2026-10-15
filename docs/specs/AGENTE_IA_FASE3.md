@@ -993,3 +993,36 @@ qualidade**, o bloco "Gerar critérios com IA":
 
 **Fica para a próxima entrega:** áudio do gestor (transcrição) e geração do
 texto de divulgação (3N).
+
+### Passo 3N construído (15/10/2026): divulgação da vaga
+
+Tela **Vagas > Critérios > Gerar divulgação** (`/admin/vagas/[id]/divulgacao`).
+Parte dos critérios estruturados do 3O e gera o texto por canal.
+
+| Canal | Entrega |
+|---|---|
+| LinkedIn | Post em 1ª pessoa, 2 opções de gancho, hashtags, CTA sem link no corpo |
+| Instagram | Legenda, 2 ganchos, hashtags e briefing da arte |
+| WhatsApp / grupos | Curto, escaneável, link direto |
+| Portal (Gupy, Catho, Indeed) | Texto limpo sem markdown, título como o candidato busca |
+| Comunidade tech | Formato #vaga direto |
+| Vaga interna | Tom institucional, como se candidatar |
+| Indicação | Texto reencaminhável com assunto |
+
+**Regras:**
+- Opções: perfil técnico ou menos técnico, tom da empresa (descontraído,
+  tradicional, propósito) e mostrar ou não a faixa de remuneração.
+- Vaga confidencial: o prompt proíbe citar a empresa.
+- Cada canal recebe o link da vitrine com marcador de origem (`?o=canal`),
+  base da métrica de fontes (3M). **A leitura do marcador ainda não existe**:
+  entra no 3M.
+- Verificação em código (§14.12): critério discriminatório **bloqueia** o
+  texto; avisos para tamanho, markdown no portal, gancho longo, hashtags,
+  briefing da arte, CTA, link no LinkedIn, faixa em perfil técnico, clichê e
+  vaga ainda não publicada.
+- A plataforma só redige. Publicar é manual, fora da plataforma.
+- Nada é gravado em tabela nova; auditoria `vaga_divulgacao_gerada` (canais,
+  provedor, modelo; sem o texto).
+
+**Fica para depois:** diagnóstico "vaga não atrai" (precisa de dados de
+candidaturas, vem com o 3M) e leitura do marcador de origem.
