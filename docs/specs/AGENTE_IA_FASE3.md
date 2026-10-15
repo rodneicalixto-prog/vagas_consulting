@@ -1309,3 +1309,74 @@ e corrigir** antes de gerar a proposta de critérios (3O-2).
 **Limites:** o áudio vem por upload (o corpo da ação do servidor limita a 4,5
 MB); ainda não há botão para puxar o áudio direto de uma conversa do WhatsApp;
 áudio longo pode passar do limite e precisa ser cortado.
+
+### 3P — Carta-oferta: skill recebida e plano (15/10/2026)
+
+Skill `carta-oferta` recebida. Decisões de projeto:
+
+**O documento é montado no código, não pela IA.** A skill exige "nunca inventar
+valores", e a carta tem peso jurídico: cada campo vem do que a pessoa informou
+e o que faltar vira placeholder visível (`{SALÁRIO BRUTO}`). A IA não escreve
+nada neste módulo.
+
+| Campo (skill) | Origem |
+|---|---|
+| Empresa e quem assina | empresa da vaga (não confidencial) e campo "assinante" |
+| Candidato | candidatura (não digitado) |
+| Cargo, a quem reporta | título da vaga e campo |
+| Regime | sugerido pela modalidade da vaga (efetiva = CLT, pj = PJ, temporária); editável |
+| Salário bruto e pagamento | **digitado**; a faixa da vaga aparece só como referência, nunca preenche |
+| Variável, benefícios, extras | digitados (um item por linha) |
+| Modelo, local, jornada | sugeridos da vaga; editáveis |
+| Data de início, período de experiência | digitados |
+| Condições e validade | digitadas; **validade obrigatória** |
+| Próximos passos, contato, tom | digitados; tom descontraído ou formal |
+
+**Garantias:**
+- Salário sempre escrito como **bruto**, com periodicidade; variável separado do
+  fixo e dependente de regras.
+- Cláusula de **condicionamento** e **validade** sempre presentes.
+- Nada de promessa que não foi informada (carreira, aumento, promoção).
+- **Envio bloqueado** enquanto houver placeholder, sem validade ou com termo
+  discriminatório; aviso permanente para **revisão do DP/jurídico**.
+- Nota de confidencialidade (LGPD) no rodapé.
+- Acesso: quem criou e a gestão; valores nunca aparecem em listas gerais.
+- A plataforma **não envia**: a pessoa envia e marca. Marcar "enviada" registra
+  data e validade, move a candidatura para **Proposta** (só se estiver em etapa
+  anterior) e alimenta a aceitação de oferta do 3M.
+- Carta enviada é imutável; mudança vira nova versão.
+- Versão curta (mensagem ou e-mail) para comunicar a aprovação e anexar a carta.
+
+### Passo 3P construído (15/10/2026): carta-oferta
+
+Telas: **Vagas > Critérios > Carta-oferta** (`/admin/vagas/[id]/ofertas`),
+formulário (`.../ofertas/editar?app=...`) e a carta (`.../ofertas/[offerId]`).
+Migration **0042** (`offer_letters`; aditiva, RLS ligada).
+
+**Montada no código, sem IA.** Os campos da skill (empresa, assinante, cargo,
+regime, salário bruto, variável, benefícios, modelo, local, jornada, início,
+experiência, condições, validade, próximos passos, extras, tom) viram a carta
+no formato da skill; o que faltar aparece como `{CAMPO}` destacado.
+
+| Garantia da skill | Implementação |
+|---|---|
+| Nunca inventar valores | só o informado; a faixa da vaga aparece como referência e não preenche o salário |
+| Salário sem ambiguidade | formatado como R$ **bruto mensal**, com forma de pagamento; variável separado do fixo e dependente de regras |
+| Condicionar e dar validade | cláusulas sempre presentes; validade e condições **obrigatórias** para enviar |
+| Não prometer o que não foi dito | nenhum texto de carreira, aumento ou promoção é gerado (testado) |
+| Revisão do DP/jurídico | aviso permanente na tela |
+| LGPD | nota de confidencialidade no rodapé; acesso só de quem criou e da gestão |
+| Marcar placeholders | destaque na tela; **envio bloqueado** enquanto houver campo em branco |
+| Versão curta | mensagem para anexar a carta, com cargo, empresa e validade |
+| Exportar | impressão/PDF pelo navegador; Word fica para depois |
+
+**Fluxo:** montar → conferir → "já enviei" (registra data, move a candidatura
+para **Proposta** só se estava em etapa anterior e deixa a carta imutável) →
+"aceitou" ou "recusou". Mudança depois do envio vira nova versão. A plataforma
+não envia a carta nem marca contratado.
+
+**Ligação com o 3M:** ofertas enviadas e aceitas no mês alimentam a **aceitação
+de oferta** quando o campo manual está vazio.
+
+**Limites:** sem Word; sem assinatura eletrônica; modelo único (a skill); não
+valida cláusulas por tipo de contrato além do que a pessoa escreve.

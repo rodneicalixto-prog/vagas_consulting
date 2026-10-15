@@ -2231,3 +2231,4 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     com confirmação. 136 testes. Pendente: leitura do PDF anexado.
 130. **3G-3: currículo anexado na triagem (15/10/2026)**: fallback para cadastro vazio, só título e experiências, ilegível vira 'não foi possível ler'; fora do teto do agente (AI Gateway).
 131. **3O-3: áudio do gestor transcrito (15/10/2026)**: upload de até 4 MB, Whisper com a chave OpenAI do cofre, arquivo não guardado, texto conferido antes de gerar critérios; custo no teto do agente.
+132. **3P: carta-oferta (15/10/2026)**: skill recebida; carta montada no código, sem inventar valores, placeholders destacados e envio bloqueado enquanto faltar campo, validade ou condições; aviso de revisão do DP; envio registra Proposta no funil e alimenta a aceitação do 3M. Migration 0042. 142 testes. Pendente: Word, assinatura eletrônica.

@@ -949,6 +949,57 @@ export type Database = {
         }
         Relationships: []
       }
+      offer_letters: {
+        Row: {
+          application_id: string
+          created_at: string
+          criado_por: string
+          dados: Json
+          enviada_em: string | null
+          enviada_por: string | null
+          id: string
+          job_id: string
+          resposta_em: string | null
+          status: string
+          texto: string
+          updated_at: string
+          validade: string | null
+          versao: number
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          criado_por: string
+          dados?: Json
+          enviada_em?: string | null
+          enviada_por?: string | null
+          id?: string
+          job_id: string
+          resposta_em?: string | null
+          status?: string
+          texto?: string
+          updated_at?: string
+          validade?: string | null
+          versao?: number
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          criado_por?: string
+          dados?: Json
+          enviada_em?: string | null
+          enviada_por?: string | null
+          id?: string
+          job_id?: string
+          resposta_em?: string | null
+          status?: string
+          texto?: string
+          updated_at?: string
+          validade?: string | null
+          versao?: number
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string

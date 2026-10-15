@@ -71,13 +71,23 @@ export default async function IndicadoresPage({
   const jobIds = (vagas ?? []).map((v) => v.id);
 
   const vazio = { data: [] as never[] };
-  const [apps, tri, fic, res, metasRow, manualRow, planos] = await Promise.all([
+  const [apps, tri, fic, res, ofertas, metasRow, manualRow, planos] = await Promise.all([
     jobIds.length
       ? admin.from("applications").select("id, job_id, status, origem, created_at, updated_at").in("job_id", jobIds).limit(5000)
       : vazio,
     jobIds.length ? admin.from("job_screenings").select("application_id").in("job_id", jobIds).limit(5000) : vazio,
     jobIds.length ? admin.from("interview_scorecards").select("application_id").in("job_id", jobIds).limit(5000) : vazio,
     jobIds.length ? admin.from("assessment_results").select("application_id").in("job_id", jobIds).limit(5000) : vazio,
+    jobIds.length
+      ? admin
+          .from("offer_letters")
+          .select("status, enviada_em")
+          .in("job_id", jobIds)
+          .not("enviada_em", "is", null)
+          .gte("enviada_em", per.ini.toISOString())
+          .lt("enviada_em", per.fim.toISOString())
+          .limit(2000)
+      : vazio,
     admin.from("recruitment_goals").select("metas").eq("company_id", escolhida.id).maybeSingle(),
     admin.from("recruitment_monthly").select("valores").eq("company_id", escolhida.id).eq("periodo", per.inicioISO).maybeSingle(),
     admin
@@ -95,7 +105,15 @@ export default async function IndicadoresPage({
   for (const r of res.data as { application_id: string }[]) marca(r.application_id, 3);
 
   const metas = (metasRow.data?.metas ?? {}) as Metas;
-  const manual = (manualRow.data?.valores ?? {}) as Manual;
+  const manualDigitado = (manualRow.data?.valores ?? {}) as Manual;
+  // Ofertas registradas na plataforma completam o que não foi digitado.
+  const cartas = (ofertas.data ?? []) as { status: string }[];
+  const manual: Manual = {
+    ...manualDigitado,
+    ofertas_enviadas: manualDigitado.ofertas_enviadas ?? (cartas.length > 0 ? cartas.length : null),
+    ofertas_aceitas:
+      manualDigitado.ofertas_aceitas ?? (cartas.length > 0 ? cartas.filter((c) => c.status === "aceita").length : null),
+  };
   const r = calcular({
     vagas: (vagas ?? []) as VagaIn[],
     candidaturas: (apps.data ?? []) as CandidaturaIn[],
