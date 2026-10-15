@@ -166,7 +166,7 @@ credencial no repositório (variáveis de ambiente).
 | # | Tema | Decisão |
 |---|---|---|
 | E1 | Canal inicial de WhatsApp | **Evolution API já existente** (migrar para a API oficial depois, se necessário) |
-| E2 | Números | **Um número por empresa**, usado pelo operador daquela empresa |
+| E2 | Números | **Uma ou mais linhas por empresa**: compartilhada ou dedicada a um operador (ver `LINHAS_WHATSAPP.md`) |
 | E3 | Provedor de e-mail | **Resend como candidato**; ainda não avaliado pelo Rodnei (avaliar custo, entregabilidade e domínio antes de contratar) |
 | E4 | SMS e Telegram | **Depois da Fase 5**; uso como reforço quando o candidato para de responder, **por vontade do operador** (não automático) |
 | E5 | Modelos de IA | **OpenAI e Claude**, e **Groq**, por conta do superadmin no início. A plataforma deve ficar **pronta para cada empresa cadastrar a própria chave** (BYOK) |

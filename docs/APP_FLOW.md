@@ -185,3 +185,9 @@ conhecimento com confiabilidade e qualidade por nota).
 Sequência natural: critérios, divulgação, triagem, roteiro e ficha, testes,
 laudo, devolutiva ou carta-oferta; indicadores fecham o ciclo. Registro no
 funil: marcar a carta como enviada move a candidatura para Proposta.
+
+### Rotas de números de WhatsApp (15/10/2026)
+
+| Rota | Quem | Função |
+|---|---|---|
+| `/admin/linhas` | Superadmin; admin da empresa (a dele) | Criar número, QR code, estado, desconectar, editar, limite (só plataforma) |

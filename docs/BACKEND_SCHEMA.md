@@ -258,3 +258,15 @@ Dado novo em coluna existente: `applications.origem` passa a receber
 `divulgacao_<canal>` (linkedin, instagram, whatsapp, portal, comunidade,
 interna, indicacao) a partir do marcador `?o=` do link; o valor antigo
 `app_candidato` continua para quem chega sem marcador.
+
+### Migrations 0044 e 0045 — linhas de WhatsApp (15/10/2026, aplicadas)
+
+| Mudança | Para quê |
+|---|---|
+| `whatsapp_lines` (instância única, apelido, operador, agente, padrão, ativa) | um ou mais números por empresa, compartilhados ou dedicados |
+| `companies.max_linhas_whatsapp` (1 a 50, padrão 1) | limite comercial de números |
+| `conversations.line_id` e índice único `(company_id, canal, telefone, line_id)` com `NULLS NOT DISTINCT` | uma conversa por telefone e por linha |
+| Carga | cada instância cadastrada em Integrações virou a linha padrão da empresa |
+
+A `0044` trocou a unicidade por um índice com expressão, que não aceita o
+`upsert`; a `0045` a corrigiu para um índice sobre colunas.

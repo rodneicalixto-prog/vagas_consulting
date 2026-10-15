@@ -1,7 +1,7 @@
 # Especificação — Números de WhatsApp (linhas) por empresa e por operador
 
 > **Projeto:** Vagas Consulting · **Documento:** Spec das linhas v1.0 · **Data:** 15/10/2026
-> **Status:** em construção. Substitui a regra "um número por empresa" de
+> **Status:** construída (15/10/2026); aguarda o primeiro teste com a Evolution real. Substitui a regra "um número por empresa" de
 > `COMUNICACAO_OMNICANAL.md` (E2) por "uma ou mais linhas por empresa".
 > Decisão do Rodnei (15/10/2026): **os dois modelos valem**. Exemplo: cliente
 > com 6 números de RH, um por operador.
@@ -95,3 +95,25 @@ Tela **Números de WhatsApp** (`/admin/linhas`):
 - Meta Cloud API (oficial) como alternativa à Evolution.
 - Distribuição automática entre linhas (rodízio).
 - Envio de uma mesma campanha por várias linhas.
+
+## 9. Como ficou (15/10/2026)
+
+- **Banco:** migrations `0044` (linhas, limite por empresa, `conversations.line_id`)
+  e `0045` (unicidade por empresa, telefone e linha, com `NULLS NOT DISTINCT`).
+  O número que já existia (`sos_vagas`) virou a linha **padrão**, com as 4
+  conversas dentro dela.
+- **Tela:** `/admin/linhas` (menu Plataforma > Números de WhatsApp), para o
+  superadmin e o admin da empresa: criar, QR code com atualização, estado e
+  número lido da instância, desconectar, religar o recebimento, editar
+  (apelido, operador, modo do agente, ativa) e, só para a plataforma, o limite.
+- **Recebimento:** o webhook resolve a linha pela instância; conversa nova em
+  linha dedicada já nasce do operador dono do número.
+- **Envio:** inbox e agente enviam pela linha da conversa.
+- **Agente:** `desligado` não gera; `sugestao` nunca envia sozinho; linha
+  dedicada nunca é retomada nem devolvida à fila.
+- **Fila:** "devolver à fila" é recusado em conversa de número dedicado.
+
+**Limites:** a criação da instância, o QR e o webhook usam a API da Evolution
+v2 e **ainda não foram exercitados contra o servidor real**: o primeiro número
+novo é o teste. A listagem de conversas ainda não mostra de qual número cada
+uma veio. Reatribuir uma linha a outro operador não move conversas já com dono.
