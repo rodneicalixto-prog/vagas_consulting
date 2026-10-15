@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -23,6 +24,7 @@ function isRunningStandalone() {
 }
 
 export function InstallAppButton() {
+  const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(isRunningStandalone);
 
@@ -44,7 +46,8 @@ export function InstallAppButton() {
     };
   }, []);
 
-  if (installed || !deferredPrompt) return null;
+  // No painel o botão flutuante cobria o "Enviar" das conversas: fica só no site público.
+  if (installed || !deferredPrompt || pathname.startsWith("/admin")) return null;
 
   return (
     <button
