@@ -314,3 +314,17 @@ além do necessário).
 Toda proposta sai em duas folhas (candidato sem gabarito, aplicador com
 gabarito/rubrica), exportável em Word/PDF. Teste psicológico ou de
 personalidade não é gerado.
+
+**3L — Laudo do candidato** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Laudo só com os fatos (cargo exige × candidato se apresenta) | candidato e vaga; modo **A, só fatos** (sem recomendação) |
+| 2 | Laudo com recomendação de contratação | modo **B**; pontos fortes, melhoria e nota da prova podem ser digitados quando não houver registro |
+| 3 | Consolidar currículo, entrevista e teste num laudo único | busca automática do que já foi salvo em 3G, 3H e 3J; campo para anexar insumo externo |
+| 4 | Quadro comparativo entre finalistas | seleção de 2 ou mais candidatos da vaga; saída em quadro por competência |
+| 5 | Versão enxuta para o gestor | botão "resumo para o gestor" (só o essencial, sem dado de contato) |
+
+O modo (A ou B) é escolhido a cada laudo e respeitado à risca; no modo A
+nenhuma recomendação é gerada nem sugerida. Fonte e força da evidência
+aparecem em cada linha. Exportação em Word/PDF.
