@@ -115,5 +115,13 @@ Tela **Números de WhatsApp** (`/admin/linhas`):
 
 **Limites:** a criação da instância, o QR e o webhook usam a API da Evolution
 v2 e **ainda não foram exercitados contra o servidor real**: o primeiro número
-novo é o teste. A listagem de conversas ainda não mostra de qual número cada
-uma veio. Reatribuir uma linha a outro operador não move conversas já com dono.
+novo é o teste. Reatribuir uma linha a outro operador não move conversas já com dono.
+
+### 9.1 Número de origem na lista de conversas (15/10/2026)
+
+- Cada conversa mostra um chip com o **apelido do número** quando a empresa
+  tem mais de um; a conversa aberta mostra "Número: apelido" no cabeçalho
+  (a resposta sai por ele).
+- Filtro **Número** na lista (Todos ou um número), combinável com busca e com
+  "Não lidas". O operador continua vendo só as próprias conversas e a fila de
+  candidatos, em qualquer filtro.

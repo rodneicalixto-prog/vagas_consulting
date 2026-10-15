@@ -60,7 +60,7 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function ConversasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ c?: string; filtro?: string; q?: string; r?: string }>;
+  searchParams: Promise<{ c?: string; filtro?: string; q?: string; r?: string; l?: string }>;
 }) {
   const { user, role } = await requireInternalUser("pipeline.manage");
   const sp = await searchParams;
@@ -70,6 +70,8 @@ export default async function ConversasPage({
   const soNaoLidas = sp.filtro === "nao-lidas";
   const soFila = sp.filtro === "fila";
   const abertaId = sp.c && UUID.test(sp.c) ? sp.c : null;
+  // Filtro por número de WhatsApp (linha).
+  const linhaFiltro = sp.l && UUID.test(sp.l) ? sp.l : null;
 
   // Conversa aberta: carregada pelo id e validada no servidor.
   let aberta: {
@@ -80,11 +82,12 @@ export default async function ConversasPage({
     candidate_id: string | null;
     nao_lidas: number;
     atendente_id: string | null;
+    line_id: string | null;
   } | null = null;
   if (abertaId) {
     const { data } = await admin
       .from("conversations")
-      .select("id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas, atendente_id")
+      .select("id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas, atendente_id, line_id")
       .eq("id", abertaId)
       .maybeSingle();
     if (data) {
@@ -120,12 +123,13 @@ export default async function ConversasPage({
     ultima_msg_em: string | null;
     ultima_msg_previa: string | null;
     atendente_id: string | null;
+    line_id: string | null;
   }[] = [];
   if (!semCarteira) {
     let consulta = admin
       .from("conversations")
       .select(
-        "id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas, ultima_msg_em, ultima_msg_previa, atendente_id",
+        "id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas, ultima_msg_em, ultima_msg_previa, atendente_id, line_id",
       )
       .order("ultima_msg_em", { ascending: false, nullsFirst: false })
       .limit(200);
@@ -136,6 +140,7 @@ export default async function ConversasPage({
     }
     if (soNaoLidas) consulta = consulta.gt("nao_lidas", 0);
     if (soFila) consulta = consulta.is("atendente_id", null);
+    if (linhaFiltro) consulta = consulta.eq("line_id", linhaFiltro);
     if (q) {
       const digitos = q.replace(/\D/g, "");
       const partes = [`nome_contato.ilike.%${q}%`];
@@ -166,6 +171,22 @@ export default async function ConversasPage({
     ? await admin.from("admin_users").select("user_id, nome_exibicao").in("user_id", atendenteIds)
     : { data: [] as { user_id: string; nome_exibicao: string | null }[] };
   const nomeAtendente = new Map((atendentes ?? []).map((a) => [a.user_id, a.nome_exibicao || "Atendente"]));
+
+  // Números de WhatsApp das empresas da lista: o chip só aparece quando há mais de um.
+  const empresasDasLinhas = [...new Set([...empresaIds, ...(aberta ? [aberta.company_id] : [])])];
+  const { data: linhasBanco } = empresasDasLinhas.length
+    ? await admin
+        .from("whatsapp_lines")
+        .select("id, company_id, apelido, operador_id")
+        .in("company_id", empresasDasLinhas)
+        .eq("ativa", true)
+        .order("created_at", { ascending: true })
+    : { data: [] as { id: string; company_id: string; apelido: string; operador_id: string | null }[] };
+  const linhasLista = linhasBanco ?? [];
+  const apelidoLinha = new Map(linhasLista.map((l) => [l.id, l.apelido]));
+  const empresasComVariasLinhas = new Set(
+    empresasDasLinhas.filter((id) => linhasLista.filter((l) => l.company_id === id).length > 1),
+  );
   const ehGestao = role !== "operador";
 
   // Equipe da empresa, para a gestão transferir a conversa.
@@ -260,6 +281,7 @@ export default async function ConversasPage({
     if (filtro) p.set("filtro", filtro);
     if (q) p.set("q", q);
     if (r) p.set("r", r);
+    if (linhaFiltro) p.set("l", linhaFiltro);
     const s = p.toString();
     return `/admin/conversas${s ? `?${s}` : ""}`;
   };
@@ -312,6 +334,26 @@ export default async function ConversasPage({
               Não lidas
             </Link>
           </div>
+          {linhasLista.length > 1 && (
+            <div className="flex flex-wrap items-center gap-1 border-b border-border px-2 py-1.5 text-[11px] font-bold">
+              <span className="text-text-3">Número:</span>
+              <Link
+                href={`/admin/conversas${q ? `?q=${encodeURIComponent(q)}` : ""}`}
+                className={`rounded-full px-2.5 py-1 ${!linhaFiltro ? "bg-navy text-white" : "text-text-2"}`}
+              >
+                Todos
+              </Link>
+              {linhasLista.map((l) => (
+                <Link
+                  key={l.id}
+                  href={`/admin/conversas?l=${l.id}${q ? `&q=${encodeURIComponent(q)}` : ""}${soNaoLidas ? "&filtro=nao-lidas" : ""}`}
+                  className={`rounded-full px-2.5 py-1 ${linhaFiltro === l.id ? "bg-navy text-white" : "text-text-2"}`}
+                >
+                  {l.apelido}
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="min-h-0 flex-1 overflow-y-auto">
             {semCarteira && (
               <p className="px-3 py-4 text-xs text-text-2">
@@ -360,6 +402,11 @@ export default async function ConversasPage({
                       {nomeEmpresa.get(c.company_id) ?? "Empresa"}
                     </span>
                   )}
+                  {c.line_id && empresasComVariasLinhas.has(c.company_id) && apelidoLinha.get(c.line_id) && (
+                    <span className="mt-1 ml-1 inline-block max-w-full truncate rounded bg-navy-bg px-1.5 py-0.5 text-[10px] font-bold text-navy">
+                      {apelidoLinha.get(c.line_id)}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -405,6 +452,14 @@ export default async function ConversasPage({
                   {mostraEmpresa && empresaDaAberta && (
                     <span className="rounded bg-black/[0.05] px-1.5 py-0.5 text-[10px] font-bold text-text-2">
                       {empresaDaAberta}
+                    </span>
+                  )}
+                  {aberta.line_id && apelidoLinha.get(aberta.line_id) && (
+                    <span
+                      className="rounded bg-navy-bg px-1.5 py-0.5 text-[10px] font-bold text-navy"
+                      title="Número de WhatsApp desta conversa: a resposta sai por ele"
+                    >
+                      Número: {apelidoLinha.get(aberta.line_id)}
                     </span>
                   )}
                 </div>
