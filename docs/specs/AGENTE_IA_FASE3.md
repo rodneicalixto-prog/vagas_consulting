@@ -719,3 +719,22 @@ Regras:
   semelhante, com a rubrica; nota de cada candidato é registrada em formato
   estruturado (competência, nota 1 a 4) para alimentar o laudo (3L).
 - Resultados são sempre pela rubrica; nunca texto livre sem escala.
+
+### 14.17 Checklist do laudo: garantias do módulo 3L (recebido em 15/10/2026)
+
+| Item do checklist | Garantia no produto | Tipo |
+|---|---|---|
+| Tipo de laudo confirmado (só fatos × recomendação) | Escolha obrigatória antes de gerar; no modo A o bloco de recomendação não existe | Código, bloqueante |
+| Insumos reunidos | Lista automática do que há (3G, 3H, 3J, referências anexadas); laudo com poucos insumos mostra a limitação no topo | Código |
+| Matching competência a competência | Uma linha por competência da vaga, na ordem da vaga estruturada | Código |
+| Evidência e fonte em cada afirmação | Linha sem evidência e fonte não é emitida; vira "não avaliado" | Código, bloqueante |
+| "Não avaliado" quando falta evidência | Estado próprio com sugestão de como avaliar | Código |
+| Divergências entre fontes apontadas | Notas muito diferentes para a mesma competência entre fontes geram item em "divergências", sem escolher versão | Código |
+| Só competência ligada ao trabalho | Campos de entrada limitados a dados de trabalho; sem dado sensível (idade, gênero, foto) | Código |
+| Sem conclusão psicológica nem leitura de personalidade | Termos e conclusões desse tipo são filtrados e a saída é revisada por regra | Código + IA |
+| Recomendação apoiada na evidência | A justificativa só pode citar linhas do quadro; citação inexistente invalida a recomendação | Código |
+| Tom profissional e neutro | Revisão de tom antes de salvar; adjetivos valorativos sinalizados | IA + pessoa |
+
+Fechamento: laudo **assinado** pelo recrutador é imutável (nova versão em vez de
+edição) e fica acessível só ao atendente e à gestão. O candidato nunca recebe
+o laudo; para ele existe a devolutiva (3I).
