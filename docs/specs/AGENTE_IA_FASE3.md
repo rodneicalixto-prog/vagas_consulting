@@ -695,3 +695,27 @@ Divide-se em duas verificações do 3H: **antes** (ao gerar o roteiro) e
 Regra de consistência: o **mesmo roteiro** é usado para todos os candidatos de
 uma vaga (para comparar de forma justa); alterações viram nova versão do
 roteiro, com registro de quais entrevistas usaram cada versão.
+
+### 14.16 Checklist de testes e dinâmicas: instrumento válido e justo (recebido em 15/10/2026)
+
+Verificação do 3J antes de liberar o instrumento para aplicação:
+
+| Item do checklist | Como o sistema garante | Tipo |
+|---|---|---|
+| Competência-alvo definida antes de desenhar | Não gera sem competência-alvo escolhida | Código, bloqueante |
+| Mede de fato a competência | Cada questão e atividade aponta a competência que mede; sem vínculo, é removida | Código + IA |
+| Relevante para a função | Compara o conteúdo com as tarefas da vaga estruturada; conteúdo sem ligação gera aviso | IA + pessoa |
+| Esforço proporcional (sem trabalho grátis) | Tempo estimado limitado (case até 1 a 2 h); entrega aproveitável pela empresa gera aviso | Código |
+| Conteúdo neutro e acessível (PcD) | Lista de temas sensíveis (religião, política) bloqueia; campo de adaptações para PcD na folha do aplicador | Código + pessoa |
+| Gabarito ou rubrica 1 a 4 | Obrigatório; sem ele não libera | Código, bloqueante |
+| Dinâmica sem pegadinha, exposição ou humilhação | Lista de formatos proibidos (confissão de defeitos, constrangimento, pressão deliberada); aviso e remoção | Código |
+| Grade de observação por nível | Obrigatória em dinâmica, com comportamento nos níveis 1 a 4 | Código, bloqueante |
+| Folha do candidato separada da do aplicador | Dois documentos distintos; o do candidato nunca contém gabarito | **Código** |
+| Sem teste psicológico sem psicólogo | Tipos de teste de personalidade, perfil e projetivo **não existem** no sistema | Código, bloqueante |
+
+Regras:
+
+- O instrumento aprovado fica versionado e **reaproveitável** por vaga
+  semelhante, com a rubrica; nota de cada candidato é registrada em formato
+  estruturado (competência, nota 1 a 4) para alimentar o laudo (3L).
+- Resultados são sempre pela rubrica; nunca texto livre sem escala.
