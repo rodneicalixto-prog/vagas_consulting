@@ -5,9 +5,19 @@ import { decifrar } from "@/lib/crypto-segredos";
 import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
+import { configEvolutionDaEmpresa, enviarTexto } from "@/lib/evolution";
 import {
   MODELO_PADRAO,
+  atendeSozinho,
+  comIdentificacao,
+  ehEncerramento,
+  mensagemDeEncaminhamento,
+  pedeHumano,
   escolherModeloDisponivel,
+  corpoDaLicao,
+  ehLicaoSegura,
+  estadoDaSugestao,
+  tituloDaLicao,
   SINAL_ENCAMINHAR,
   assuntoDeRisco,
   custoEstimadoUsd,
@@ -155,7 +165,7 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   const [{ data: conversa }, { data: msg }] = await Promise.all([
     admin
       .from("conversations")
-      .select("id, company_id, candidate_id, telefone_normalizado")
+      .select("id, company_id, candidate_id, telefone_normalizado, atendente_id")
       .eq("id", conversationId)
       .maybeSingle(),
     admin
@@ -235,10 +245,82 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
     return data?.id ?? null;
   };
 
+  // Auto-envio só quando ninguém da equipe assumiu a conversa e o agente está em modo de atendimento.
+  const automatico = atendeSozinho(agente.nivel_autonomia) && conversa.atendente_id === null;
+
+  /** Envia pelo WhatsApp da empresa e registra a mensagem como do assistente. */
+  const enviarAgora = async (texto: string): Promise<boolean> => {
+    // Freio contra laço: no máximo 3 respostas automáticas em 10 minutos por conversa.
+    const desde = new Date(Date.now() - 10 * 60_000).toISOString();
+    const { count } = await admin
+      .from("conversation_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("conversation_id", conversa.id)
+      .eq("autor", "ia")
+      .gte("created_at", desde);
+    if ((count ?? 0) >= 3) return false;
+
+    const cfg = await configEvolutionDaEmpresa(conversa.company_id);
+    if (!cfg.ok) return false;
+
+    const { data: nova } = await admin
+      .from("conversation_messages")
+      .insert({
+        conversation_id: conversa.id,
+        direcao: "saida",
+        autor: "ia",
+        texto,
+        tipo: "texto",
+        status: "enviada",
+      })
+      .select("id")
+      .single();
+    if (!nova) return false;
+
+    const envio = await enviarTexto(cfg.config, conversa.telefone_normalizado, texto);
+    if (!envio.ok) {
+      await admin.from("conversation_messages").update({ status: "falhou", erro: envio.erro }).eq("id", nova.id);
+      return false;
+    }
+    if (envio.idMensagem) {
+      await admin.from("conversation_messages").update({ provedor_msg_id: envio.idMensagem }).eq("id", nova.id);
+    }
+    await admin
+      .from("conversations")
+      .update({ ultima_msg_em: new Date().toISOString(), ultima_msg_previa: texto.replace(/\s+/g, " ").slice(0, 80) })
+      .eq("id", conversa.id);
+    await admin.from("audit_log").insert({
+      ator_id: null,
+      acao: "agente_resposta_automatica",
+      objeto_tipo: "conversation",
+      objeto_id: conversa.id,
+      depois: { company_id: conversa.company_id, agente_id: agente.id },
+    });
+    return true;
+  };
+
+  /** Agradecimento ou encerramento não precisa de resposta. */
+  if (ehEncerramento(msg.texto)) return;
+
+  // Pedido explícito de falar com uma pessoa: encaminha e não gera resposta.
+  if (pedeHumano(msg.texto)) {
+    await registrar("", "pediu_humano");
+    if (automatico) {
+      await enviarAgora(
+        "Claro! Vou chamar uma pessoa da nossa equipe para continuar esta conversa com você. Obrigado pela paciência.",
+      );
+    }
+    return;
+  }
+
   // 1) Assunto de risco: vai direto para a pessoa, sem chamar a IA.
   const risco = assuntoDeRisco(msg.texto);
   if (risco) {
     await registrar("", `risco_${risco}`);
+    if (automatico) {
+      const aviso = mensagemDeEncaminhamento(`risco_${risco}`);
+      if (aviso) await enviarAgora(aviso);
+    }
     return;
   }
 
@@ -300,6 +382,10 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
 
   if ((notas ?? []).length === 0 && !vaga) {
     await registrar("", "sem_fonte");
+    if (automatico) {
+      const aviso = mensagemDeEncaminhamento("sem_fonte");
+      if (aviso) await enviarAgora(aviso);
+    }
     return;
   }
 
@@ -378,6 +464,10 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   if (!texto || texto.includes(SINAL_ENCAMINHAR)) {
     const id = await registrar("", "sem_fonte");
     await registrarRun(id, "sem_fonte", resposta.tokensIn, resposta.tokensOut);
+    if (automatico) {
+      const aviso = mensagemDeEncaminhamento("sem_fonte");
+      if (aviso) await enviarAgora(aviso);
+    }
     return;
   }
 
@@ -385,4 +475,90 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   if (vaga) fonte.unshift(`Vaga: ${vaga.titulo}`);
   const id = await registrar(texto.slice(0, 1500), null, { fonte });
   await registrarRun(id, null, resposta.tokensIn, resposta.tokensOut);
+
+  // Atendimento automático: envia a resposta e fecha a sugestão como "usada".
+  if (automatico && id) {
+    const { count: jaFalou } = await admin
+      .from("conversation_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("conversation_id", conversa.id)
+      .eq("autor", "ia");
+    const { data: emp } = await admin
+      .from("companies")
+      .select("nome_fantasia, razao_social")
+      .eq("id", conversa.company_id)
+      .maybeSingle();
+    const nomeEmpresa = emp?.nome_fantasia || emp?.razao_social || "empresa";
+    const final = comIdentificacao(texto.slice(0, 1500), nomeEmpresa, (jaFalou ?? 0) > 0);
+    if (await enviarAgora(final)) {
+      await admin
+        .from("ai_suggestions")
+        .update({ estado: "usada", texto_final: final, decidida_em: new Date().toISOString() })
+        .eq("id", id);
+    }
+  }
+}
+
+type Admin = ReturnType<typeof createAdminClient>;
+
+/**
+ * Aprende com a resposta humana: quando a equipe editou a sugestão ou
+ * respondeu algo que o agente não soube, a troca vira uma lição candidata
+ * (rascunho, sem dado pessoal) para o Rodnei aprovar. Nunca vira regra sozinha.
+ */
+export async function aprenderComResposta(
+  admin: Admin,
+  p: { companyId: string; conversationId: string; userId: string; resposta: string; sugestaoId: string | null },
+): Promise<void> {
+  const { data: agente } = await admin.from("ai_agents").select("id").eq("company_id", p.companyId).maybeSingle();
+  if (!agente) return;
+
+  const { data: ultima } = await admin
+    .from("conversation_messages")
+    .select("texto")
+    .eq("conversation_id", p.conversationId)
+    .eq("direcao", "entrada")
+    .eq("tipo", "texto")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!ultima) return;
+
+  let origem: "editada" | "parada" | null = null;
+  if (p.sugestaoId) {
+    const { data: s } = await admin.from("ai_suggestions").select("rascunho").eq("id", p.sugestaoId).maybeSingle();
+    if (s && s.rascunho && estadoDaSugestao(s.rascunho, p.resposta) === "editada") origem = "editada";
+  } else {
+    const { data: s } = await admin
+      .from("ai_suggestions")
+      .select("motivo_parada, created_at")
+      .eq("conversation_id", p.conversationId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const recente = s ? Date.now() - new Date(s.created_at).getTime() < 24 * 3_600_000 : false;
+    if (recente && s?.motivo_parada && ["sem_fonte", "pediu_humano"].includes(s.motivo_parada)) origem = "parada";
+  }
+  if (!origem) return;
+  if (!ehLicaoSegura(ultima.texto, p.resposta)) return;
+
+  const titulo = tituloDaLicao(ultima.texto);
+  const { data: igual } = await admin
+    .from("ai_knowledge_notes")
+    .select("id")
+    .eq("company_id", p.companyId)
+    .eq("titulo", titulo)
+    .neq("status", "arquivada")
+    .limit(1);
+  if (igual && igual.length > 0) return;
+
+  await admin.from("ai_knowledge_notes").insert({
+    company_id: p.companyId,
+    tipo: "licao",
+    titulo,
+    corpo_md: corpoDaLicao(ultima.texto, p.resposta, origem),
+    status: "rascunho",
+    origem: "aprendizado",
+    criado_por: p.userId,
+  });
 }

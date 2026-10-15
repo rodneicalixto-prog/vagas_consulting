@@ -2154,3 +2154,12 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     Primeiro teste real do agente: Groq retornou 404 de modelo; erro agora
     visível na conversa, modelo alternativo escolhido sozinho e provedor da
     SOS Vagas trocado para OpenAI por decisão do Rodnei.
+119. **Agente atende sozinho e aprende a cada atendimento (15/10/2026)**:
+    decisão do Rodnei (F11 e F12 no spec): a automação só vale se o agente
+    atender. Modo "Atende sozinho" (nível 2) com freios em código (risco,
+    sem fonte, pedido de humano, encerramento, identificação, anti-laço,
+    descadastro, black list, teto, equipe assumiu = sai de cena). Aprendizado:
+    edição da equipe e resposta humana a algo que o agente não soube viram
+    lição candidata sem dado pessoal, aprovada pelo Rodnei (Aprovar todas).
+    Provedor da SOS: OpenAI. Planejadas camadas de confiabilidade da base
+    (validade, conflito, cobertura, qualidade, dono). 80 testes.

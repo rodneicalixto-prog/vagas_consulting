@@ -13,6 +13,15 @@ import {
   montarPrompt,
   SINAL_ENCAMINHAR,
   escolherModeloDisponivel,
+  ehEncerramento,
+  pedeHumano,
+  comIdentificacao,
+  mensagemDeEncaminhamento,
+  atendeSozinho,
+  anonimizarTexto,
+  ehLicaoSegura,
+  tituloDaLicao,
+  corpoDaLicao,
 } from "../agente.ts";
 
 test("valida nota: título, tipo e tamanho", () => {
@@ -101,4 +110,33 @@ test("escolhe modelo de conversa disponível pela ordem de preferência", () => 
   assert.equal(escolherModeloDisponivel("groq", ids), "openai/gpt-oss-120b");
   assert.equal(escolherModeloDisponivel("groq", ["whisper-large-v3"]), null);
   assert.equal(escolherModeloDisponivel("openai", ["text-embedding-3-small", "gpt-4o-mini", "gpt-4o"]), "gpt-4o-mini");
+});
+
+test("lição aprendida: sem dado pessoal e só quando vale a pena", () => {
+  const limpo = anonimizarTexto("Me liga no (19) 99876-5432 ou joao@email.com, CPF 123.456.789-09, veja https://x.com/a");
+  assert.ok(!/99876|joao@|123\.456|x\.com/.test(limpo));
+  assert.ok(limpo.includes("[telefone]") && limpo.includes("[e-mail]") && limpo.includes("[CPF]") && limpo.includes("[link]"));
+  assert.equal(ehLicaoSegura("Vocês pagam vale transporte?", "Sim, a vaga inclui vale transporte e refeição."), true);
+  assert.equal(ehLicaoSegura("Ok obrigado", "Por nada, estamos à disposição aqui."), false);
+  assert.equal(ehLicaoSegura("Vou procurar um advogado", "Entendo, vamos conversar com a equipe."), false);
+  assert.equal(ehLicaoSegura("Qual o horário?", "Das 8h às 17h"), false);
+  assert.ok(tituloDaLicao("Vocês pagam vale transporte?").startsWith("Pergunta: "));
+  assert.ok(corpoDaLicao("Pergunta X longa aqui?", "Resposta Y completa aqui.", "parada").includes("não soube responder"));
+});
+
+test("atendimento automático: encerramento, pedido de humano e identificação", () => {
+  assert.equal(ehEncerramento("Ok"), true);
+  assert.equal(ehEncerramento("Obrigado!"), true);
+  assert.equal(ehEncerramento("👍"), true);
+  assert.equal(ehEncerramento("Qual o horário da entrevista?"), false);
+  assert.equal(pedeHumano("Quero falar com uma pessoa"), true);
+  assert.equal(pedeHumano("não quero falar com robô"), true);
+  assert.equal(pedeHumano("Qual o salário?"), false);
+  assert.equal(comIdentificacao("A vaga é presencial.", "SOS Vagas", false).startsWith("Olá! Sou o assistente virtual da SOS Vagas."), true);
+  assert.equal(comIdentificacao("A vaga é presencial.", "SOS Vagas", true), "A vaga é presencial.");
+  assert.equal(mensagemDeEncaminhamento("risco_ameaca"), null);
+  assert.equal(mensagemDeEncaminhamento("teto_mensal"), null);
+  assert.ok(mensagemDeEncaminhamento("sem_fonte"));
+  assert.equal(atendeSozinho(0), false);
+  assert.equal(atendeSozinho(2), true);
 });

@@ -7,6 +7,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, exigirEmpresa, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { conversaVisivelParaOperador } from "@/lib/conversas";
 import { estadoDaSugestao } from "@/lib/agente";
+import { aprenderComResposta } from "@/lib/agente-servidor";
 import {
   TAMANHO_MAX_ENVIO,
   extensaoDoMime,
@@ -273,6 +274,21 @@ export async function enviarMensagem(formData: FormData) {
           decidida_em: new Date().toISOString(),
         })
         .eq("id", sug.id);
+    }
+  }
+
+  // Aprendizado: resposta humana a algo que o agente não soube vira lição candidata.
+  if (!tipoAnexo) {
+    try {
+      await aprenderComResposta(admin, {
+        companyId,
+        conversationId: conversa.id,
+        userId: user.id,
+        resposta: texto,
+        sugestaoId,
+      });
+    } catch {
+      // aprender nunca atrapalha o envio
     }
   }
 

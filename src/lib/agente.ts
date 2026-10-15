@@ -240,3 +240,96 @@ export function escolherModeloDisponivel(provedor: ProvedorAgente, ids: string[]
   }
   return null;
 }
+
+// ---------------------------------------------------------------------------
+// 3B-auto: atendimento automático (o agente envia sozinho, com freios)
+// ---------------------------------------------------------------------------
+
+export const AUTONOMIA_SUGESTAO = 0;
+export const AUTONOMIA_ATENDE = 2;
+
+/** O agente envia sozinho? (nível 1 em diante) */
+export function atendeSozinho(nivel: number): boolean {
+  return nivel >= 1;
+}
+
+const ENCERRAMENTOS = new Set([
+  "ok", "okay", "blz", "beleza", "obrigado", "obrigada", "obg", "valeu", "vlw", "certo", "entendi",
+  "combinado", "perfeito", "tudo bem", "ta bom", "tá bom", "show", "otimo", "ótimo", "legal", "tchau",
+]);
+
+/** Mensagem que só encerra ou agradece: não precisa de resposta nem de sugestão. */
+export function ehEncerramento(texto: string): boolean {
+  const t = semAcentoMin(texto).replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  if (!t) return true; // só emoji ou pontuação
+  if (ENCERRAMENTOS.has(t)) return true;
+  // "ok obrigado", "valeu beleza": todas as palavras são de encerramento.
+  const palavras = t.split(" ");
+  return palavras.length <= 4 && palavras.every((w) => ENCERRAMENTOS.has(w));
+}
+
+/** Pedido explícito de falar com uma pessoa. */
+export function pedeHumano(texto: string): boolean {
+  const t = semAcentoMin(texto);
+  return /(falar|conversar|atendimento) com (um |uma |o |a )?(humano|pessoa|atendente|recrutador|recrutadora|alguem)|quero (um |uma )?(humano|atendente|pessoa)|nao quero (falar com )?(robo|bot|maquina)/.test(
+    t,
+  );
+}
+
+/** Garante a identificação como assistente na primeira mensagem automática. */
+export function comIdentificacao(texto: string, nomeEmpresa: string, jaSeIdentificou: boolean): string {
+  if (jaSeIdentificou) return texto;
+  if (/assistente virtual/i.test(texto)) return texto;
+  return `Olá! Sou o assistente virtual da ${nomeEmpresa}. ${texto}`;
+}
+
+/** Mensagem de encaminhamento quando o agente não pode responder. Nenhuma para ameaça. */
+export function mensagemDeEncaminhamento(motivo: string): string | null {
+  if (motivo === "risco_ameaca") return null;
+  if (motivo === "teto_mensal" || motivo.startsWith("erro_provedor") || motivo === "sem_chave") return null;
+  return "Recebi a sua mensagem e vou encaminhá-la para a nossa equipe, que retorna assim que possível. Obrigado pela paciência.";
+}
+
+// ---------------------------------------------------------------------------
+// 3D-lite: aprender a cada atendimento (lições candidatas, com aprovação humana)
+// ---------------------------------------------------------------------------
+
+/** Remove dado pessoal evidente do texto que vira lição (telefone, e-mail, CPF, CNPJ, link). */
+export function anonimizarTexto(s: string): string {
+  return s
+    .replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, "[e-mail]")
+    .replace(/https?:\/\/\S+/g, "[link]")
+    .replace(/\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b/g, "[CPF]")
+    .replace(/\b\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}\b/g, "[CNPJ]")
+    .replace(/(\+?55\s?)?\(?\d{2}\)?[\s.-]?9?\d{4}[\s.-]?\d{4}\b/g, "[telefone]")
+    .trim();
+}
+
+/** A troca merece virar lição? Evita ruído, assunto de risco e respostas vazias. */
+export function ehLicaoSegura(pergunta: string, resposta: string): boolean {
+  const q = pergunta.trim();
+  const a = resposta.trim();
+  if (q.length < 8 || a.length < 15) return false;
+  if (ehEncerramento(q) || pedeHumano(q)) return false;
+  if (assuntoDeRisco(q) || assuntoDeRisco(a)) return false;
+  return true;
+}
+
+export function tituloDaLicao(pergunta: string): string {
+  const base = anonimizarTexto(pergunta).replace(/\s+/g, " ").trim();
+  return `Pergunta: ${base.length > 90 ? `${base.slice(0, 89)}…` : base}`;
+}
+
+export function corpoDaLicao(pergunta: string, resposta: string, origem: "editada" | "parada"): string {
+  const q = anonimizarTexto(pergunta).trim();
+  const a = anonimizarTexto(resposta).trim();
+  return [
+    `**Pergunta do candidato:** ${q}`,
+    "",
+    `**Resposta da equipe:** ${a}`,
+    "",
+    origem === "editada"
+      ? "_Origem: a equipe editou a sugestão do assistente. Confira se vale como regra geral._"
+      : "_Origem: o assistente não soube responder e a equipe respondeu. Confira se vale como regra geral._",
+  ].join("\n");
+}

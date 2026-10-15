@@ -886,3 +886,70 @@ erro é de modelo, o sistema lista os modelos da conta, escolhe o melhor de
 conversa pela ordem de preferência e guarda a escolha no agente. **Decisão do
 Rodnei:** usar **OpenAI** como provedor da SOS Vagas (modelo padrão
 `gpt-4o-mini`, trocável no campo Modelo).
+
+### Decisão F11 (15/10/2026): o agente atende sozinho
+
+**Rodnei:** "o motivo maior de todo este trabalho é automatizar o recrutamento
+e seleção; se o profissional ficar o tempo todo validando, não preciso de
+automação." Esta decisão substitui a premissa de "sempre sugestão" da fase 3 e
+sobe o agente para o nível de autonomia 2 (a escada do §7 do spec de
+comunicação), com freios obrigatórios.
+
+**Modo de atendimento (por agente):** `Sugestão` (nível 0) ou `Atende sozinho`
+(nível 2). Configurado em Plataforma > Agente de IA, só superadmin.
+
+**Quando envia sozinho:** agente ligado, modo "atende sozinho", conversa **sem
+atendente** (ninguém da equipe assumiu), resposta **com fonte** e sem assunto
+de risco. Em qualquer outra situação cai em sugestão ou encaminhamento.
+
+**Freios (todos em código):**
+- Assunto de risco, ameaça, pedido de dado pessoal, jurídico, saúde: não
+  responde; encaminha à equipe (silêncio em caso de ameaça).
+- Sem fonte aprovada ou resposta `[ENCAMINHAR]`: avisa o candidato que a equipe
+  retorna e deixa a conversa marcada para a equipe.
+- Pedido explícito de falar com uma pessoa: encaminha na hora.
+- Agradecimento ou encerramento ("ok", "obrigado", emoji): não responde.
+- Primeira mensagem sempre se identifica como assistente virtual da empresa.
+- Máximo de 3 respostas automáticas em 10 minutos por conversa (anti-laço).
+- Descadastro (SAIR), black list, empresa cliente cadastrada e teto mensal
+  continuam bloqueando.
+- Quando alguém da equipe **assume** a conversa, o agente sai de cena.
+- "Agente ligado" desliga tudo de uma vez.
+- Cada resposta automática fica na auditoria e no histórico como autor
+  "Assistente", e a sugestão correspondente é marcada como usada.
+
+**Painel "Precisa de ação agora":** conversa em que o agente parou aparece para
+a equipe assumir.
+
+### Decisão F12 (15/10/2026): aprender a cada atendimento (3D inicial)
+
+Pedido do Rodnei: o agente deve aprender com cada atendimento, a partir de uma
+**base de conhecimento confiável**. Desenho:
+
+- **Fontes do aprendizado:** (a) a equipe edita a sugestão ou o texto
+  automático; (b) a equipe responde algo que o agente não soube (sem fonte ou
+  pediu humano). Em ambos o sistema cria uma **lição candidata** (pergunta e
+  resposta, **sem dado pessoal**: telefone, e-mail, CPF, CNPJ e links
+  removidos), em rascunho.
+- **Confiabilidade:** a lição só vira conhecimento depois de **aprovada pelo
+  Rodnei**. O painel avisa quantas esperam e permite "Aprovar todas" ou revisar
+  uma a uma. O agente nunca aprende sozinho a partir de conversa crua.
+- **Segurança da lição:** troca com assunto de risco, encerramento, pedido de
+  humano ou resposta curta demais não vira lição; título repetido não duplica.
+- **Ciclo:** lição aprovada entra no contexto das próximas respostas da empresa
+  (é uma nota aprovada do tipo "Lições aprendidas").
+
+### Requisito de confiabilidade da base de conhecimento (a evoluir)
+
+Pedido: "ter uma base de conhecimento confiável". Já garantido: só nota
+aprovada entra; edição reabre a aprovação; versão e autoria registradas;
+exportação para o Obsidian; lição sem dado pessoal. **Próximas camadas
+planejadas** (3D completo):
+
+| Camada | O que faz |
+|---|---|
+| Validade | Nota com data de revisão; vencida avisa e deixa de valer até revisar |
+| Conflito | Detecta notas que respondem a mesma pergunta de formas diferentes |
+| Cobertura | Lista as perguntas mais frequentes sem fonte (lacunas) |
+| Qualidade | Taxa de resposta com fonte, usadas sem edição e descartadas, por nota |
+| Dono | Cada nota com responsável pela revisão |

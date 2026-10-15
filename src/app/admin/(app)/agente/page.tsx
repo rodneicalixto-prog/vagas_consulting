@@ -5,7 +5,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { empresaDaOperacao } from "@/lib/evolution";
 import { SubmitButton } from "@/components/form-buttons";
 import { ROTULO_TIPO, TIPOS_NOTA, type TipoNota } from "@/lib/agente";
-import { criarAgente, mudarStatusNota, salvarAgente, salvarNota } from "./actions";
+import { aprovarLicoes, criarAgente, mudarStatusNota, salvarAgente, salvarNota } from "./actions";
 
 const STATUS_CLASSE: Record<string, string> = {
   rascunho: "bg-gold-bg text-gold-3",
@@ -75,6 +75,15 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
     }
   }
 
+  const { count: licoesPendentesBruto } = await admin
+    .from("ai_knowledge_notes")
+    .select("id", { count: "exact", head: true })
+    .eq("company_id", operacaoId)
+    .eq("tipo", "licao")
+    .eq("origem", "aprendizado")
+    .eq("status", "rascunho");
+  const licoesPendentes = licoesPendentesBruto ?? 0;
+
   const filtro = TIPOS_NOTA.find((t) => t === sp.tipo) ?? null;
   let q = admin
     .from("ai_knowledge_notes")
@@ -138,6 +147,13 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
               <span className="text-[10.5px] font-bold text-text-2">Modelo (vazio usa o padrão do provedor)</span>
               <input name="modelo" defaultValue={agente.modelo ?? ""} maxLength={80} className={CAMPO} />
             </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[10.5px] font-bold text-text-2">Modo de atendimento</span>
+              <select name="autonomia" defaultValue={agente.nivel_autonomia >= 1 ? "2" : "0"} className={CAMPO}>
+                <option value="0">Sugestão: a pessoa revisa e envia</option>
+                <option value="2">Atende sozinho: envia quando tem fonte e chama a equipe quando não sabe</option>
+              </select>
+            </label>
             <label className="flex items-end gap-2 pb-2 text-sm font-bold text-text">
               <input type="checkbox" name="ativo" value="sim" defaultChecked={agente.ativo} />
               Agente ligado
@@ -153,7 +169,7 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
                 Salvar agente
               </SubmitButton>
               <span className="text-[11.5px] text-text-2">
-                Nível de autonomia {agente.nivel_autonomia} (sugestão) · teto de US$ {Number(agente.teto_mensal_usd)}/mês.
+                Modo atual: {agente.nivel_autonomia >= 1 ? "atende sozinho" : "sugestão"} · teto de US$ {Number(agente.teto_mensal_usd)}/mês.
                 Ligado, ele gera uma sugestão por mensagem de candidato, só com notas aprovadas e a vaga em andamento.
               </span>
             </div>
@@ -181,6 +197,25 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
                 (tabela de preços do modelo); o contador oficial é o do provedor.
               </span>
             </div>
+          </div>
+        )}
+
+        {licoesPendentes > 0 && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold-2 bg-gold-bg px-5 py-3">
+            <span className="text-[12.5px] font-semibold text-gold-3">
+              {licoesPendentes} {licoesPendentes === 1 ? "lição nova" : "lições novas"} aprendida
+              {licoesPendentes === 1 ? "" : "s"} nos atendimentos, esperando sua aprovação para entrar no agente.
+            </span>
+            <span className="flex items-center gap-3 text-[12px] font-bold">
+              <Link href="/admin/agente?tipo=licao" className="text-navy underline">
+                Revisar
+              </Link>
+              <form action={aprovarLicoes}>
+                <SubmitButton pendingLabel="..." className="rounded-lg bg-navy px-3 py-1.5 text-white">
+                  Aprovar todas
+                </SubmitButton>
+              </form>
+            </span>
           </div>
         )}
 

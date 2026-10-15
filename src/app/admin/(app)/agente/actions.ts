@@ -57,6 +57,7 @@ export async function salvarAgente(formData: FormData) {
   const modelo = String(formData.get("modelo") ?? "").trim().slice(0, 80);
   const roteiro = String(formData.get("roteiro") ?? "");
   const ativo = formData.get("ativo") === "sim";
+  const autonomia = String(formData.get("autonomia") ?? "0") === "2" ? 2 : 0;
 
   if (nome.length < 2 || nome.length > 60) throw new Error("O nome do agente deve ter de 2 a 60 caracteres.");
   if (!tomValido(tom)) throw new Error("Tom inválido.");
@@ -72,6 +73,7 @@ export async function salvarAgente(formData: FormData) {
       modelo: modelo || null,
       roteiro,
       ativo,
+      nivel_autonomia: autonomia,
       updated_at: new Date().toISOString(),
     })
     .eq("company_id", companyId)
@@ -137,6 +139,25 @@ export async function salvarNota(formData: FormData) {
       versao: atual.versao + 1,
     });
   }
+  revalidatePath("/admin/agente");
+}
+
+/** Aprova de uma vez as lições candidatas (origem aprendizado) em rascunho. */
+export async function aprovarLicoes() {
+  const { user, admin, companyId } = await contexto();
+  const agora = new Date().toISOString();
+  const { data } = await admin
+    .from("ai_knowledge_notes")
+    .update({ status: "aprovada", aprovada_por: user.id, aprovada_em: agora, updated_at: agora })
+    .eq("company_id", companyId)
+    .eq("tipo", "licao")
+    .eq("origem", "aprendizado")
+    .eq("status", "rascunho")
+    .select("id");
+  await auditar(admin, user.id, "licoes_aprovadas_em_lote", "ai_knowledge_note", null, {
+    company_id: companyId,
+    versao: data?.length ?? 0,
+  });
   revalidatePath("/admin/agente");
 }
 
