@@ -644,3 +644,30 @@ Observações de projeto:
   etapa (direito de revisão da pessoa, LGPD art. 20).
 - Os dez itens são a base do teste de aceite do 3G: cada um vira um caso de
   teste automatizado com currículos sintéticos.
+
+### 14.14 Checklist da abordagem ativa: verificação antes de enviar (recebido em 15/10/2026)
+
+Aplicado a cada rascunho do 3K, com os níveis verde, aviso e bloqueio:
+
+| Item do checklist | Como o sistema verifica | Tipo |
+|---|---|---|
+| Um ângulo atrativo escolhido | A IA mostra o ângulo escolhido e o trecho do perfil que o sustenta; pessoa confirma | IA + pessoa |
+| Começa pela pessoa, não pela vaga | Primeira frase referencia o perfil antes de citar o cargo | Código |
+| Personalização real | A mensagem precisa conter ao menos um detalhe do perfil informado; sem isso, aviso | Código |
+| Transparência: cargo, modelo e faixa | Campos da vaga presentes no texto; faixa ausente em perfil técnico gera aviso | Código |
+| CTA de baixo atrito | Um único convite à conversa curta; pedido de currículo na primeira mensagem gera aviso | Código |
+| Curto e adequado ao canal | Nota de conexão do LinkedIn com cerca de 300 caracteres como limite; InMail e e-mail com tamanho de leitura no celular | **Código** |
+| Só informação profissional pública | O perfil colado é filtrado de dado pessoal (família, endereço, saúde); texto que cita tema pessoal **bloqueia** | **Código, bloqueante** |
+| Sem falar mal do empregador atual | Lista de termos negativos junto ao nome da empresa atual; aviso | Código |
+| 1 ou 2 follow-ups preparados | A sequência (14.4) é gerada junto, com datas | Código |
+| Porta aberta para o "não" e indicação | Fechamento com abertura para recusa e pedido de indicação presente | Código |
+
+Regras adicionais:
+
+- **Sem envio automático:** o sistema entrega o texto e o lembrete; a pessoa
+  envia fora da plataforma.
+- **Base legal e finalidade:** o perfil colado serve só a esta abordagem; o
+  rascunho guarda apenas o necessário e é descartado ao encerrar a
+  abordagem (máximo de 2 follow-ups).
+- **WhatsApp frio fica fora**, como já decidido: a regra de consentimento
+  vale também para o canal.
