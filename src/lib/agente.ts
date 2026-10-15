@@ -221,3 +221,22 @@ export function montarPrompt(e: EntradaPrompt): { system: string; user: string }
   ].join("\n");
   return { system, user };
 }
+
+/** Modelos que não servem para conversa (áudio, moderação, embeddings). */
+const NAO_CHAT = /whisper|tts|playai|guard|embed|moderation|transcribe|dall|image|vision-preview|orpheus/i;
+
+const PREFERENCIAS: Record<ProvedorAgente, RegExp[]> = {
+  groq: [/llama-3\.3-70b/, /gpt-oss-120b/, /llama-4-scout/, /llama-3\.1-70b/, /qwen/, /gpt-oss-20b/, /llama-3\.1-8b/],
+  openai: [/^gpt-4o-mini$/, /^gpt-4\.1-mini/, /^gpt-5-mini/, /^gpt-4o$/, /^gpt-4\.1$/],
+  anthropic: [/haiku/, /sonnet/],
+};
+
+/** Do que a conta lista, o melhor modelo de conversa pela ordem de preferência. */
+export function escolherModeloDisponivel(provedor: ProvedorAgente, ids: string[]): string | null {
+  const chat = ids.filter((id) => !NAO_CHAT.test(id));
+  for (const re of PREFERENCIAS[provedor]) {
+    const achado = chat.find((id) => re.test(id));
+    if (achado) return achado;
+  }
+  return null;
+}

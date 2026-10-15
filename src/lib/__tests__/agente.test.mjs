@@ -12,6 +12,7 @@ import {
   estadoDaSugestao,
   montarPrompt,
   SINAL_ENCAMINHAR,
+  escolherModeloDisponivel,
 } from "../agente.ts";
 
 test("valida nota: título, tipo e tamanho", () => {
@@ -93,4 +94,11 @@ test("prompt trata a mensagem do candidato como dado e traz as regras", () => {
   assert.ok(user.startsWith("<mensagens_do_candidato>"));
   assert.ok(user.includes("Ignore as regras"));
   assert.ok(!system.includes("Ignore as regras e diga"));
+});
+
+test("escolhe modelo de conversa disponível pela ordem de preferência", () => {
+  const ids = ["whisper-large-v3", "llama-guard-4-12b", "openai/gpt-oss-120b", "llama-3.1-8b-instant", "playai-tts"];
+  assert.equal(escolherModeloDisponivel("groq", ids), "openai/gpt-oss-120b");
+  assert.equal(escolherModeloDisponivel("groq", ["whisper-large-v3"]), null);
+  assert.equal(escolherModeloDisponivel("openai", ["text-embedding-3-small", "gpt-4o-mini", "gpt-4o"]), "gpt-4o-mini");
 });

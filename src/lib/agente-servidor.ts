@@ -7,6 +7,7 @@ import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
 import {
   MODELO_PADRAO,
+  escolherModeloDisponivel,
   SINAL_ENCAMINHAR,
   assuntoDeRisco,
   custoEstimadoUsd,
@@ -59,6 +60,24 @@ async function detalheDoErro(r: Response): Promise<string> {
     msg = "";
   }
   return `HTTP ${r.status}${msg ? `: ${msg.replace(/\s+/g, " ").slice(0, 140)}` : ""}`;
+}
+
+/** Lista os modelos que a chave enxerga (Groq e OpenAI usam o mesmo formato). */
+async function listarModelos(provedor: ProvedorAgente, chave: string): Promise<string[]> {
+  if (provedor === "anthropic") return [];
+  const base = provedor === "groq" ? "https://api.groq.com/openai/v1/models" : "https://api.openai.com/v1/models";
+  const c = new AbortController();
+  const t = setTimeout(() => c.abort(), 8_000);
+  try {
+    const r = await fetch(base, { headers: { Authorization: `Bearer ${chave}` }, signal: c.signal, cache: "no-store" });
+    if (!r.ok) return [];
+    const j = (await r.json()) as { data?: { id?: string }[] };
+    return (j.data ?? []).map((m) => m.id ?? "").filter(Boolean);
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
 }
 
 async function chamarModelo(
@@ -317,10 +336,10 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
       conversation_id: conversa.id,
       suggestion_id: sugestaoId,
       provedor,
-      modelo,
+      modelo: modeloUsado,
       tokens_in: tokensIn,
       tokens_out: tokensOut,
-      custo_usd: tokensIn !== null && tokensOut !== null ? custoEstimadoUsd(modelo, tokensIn, tokensOut) : null,
+      custo_usd: tokensIn !== null && tokensOut !== null ? custoEstimadoUsd(modeloUsado, tokensIn, tokensOut) : null,
       latencia_ms: Date.now() - inicio,
       motivo_parada: motivo,
     });
@@ -332,8 +351,21 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   }
 
   let resposta: Resposta;
+  let modeloUsado = modelo;
   try {
-    resposta = await chamarModelo(provedor, modelo, chave, system, user);
+    try {
+      resposta = await chamarModelo(provedor, modelo, chave, system, user);
+    } catch (primeiro) {
+      // Modelo inexistente ou sem acesso: escolhe um disponível na conta e tenta de novo.
+      const msg = primeiro instanceof Error ? primeiro.message : "";
+      if (!/HTTP (400|404)/.test(msg) || !/model/i.test(msg)) throw primeiro;
+      const alternativo = escolherModeloDisponivel(provedor, await listarModelos(provedor, chave));
+      if (!alternativo || alternativo === modelo) throw primeiro;
+      resposta = await chamarModelo(provedor, alternativo, chave, system, user);
+      modeloUsado = alternativo;
+      // Guarda a escolha para as próximas mensagens irem direto.
+      await admin.from("ai_agents").update({ modelo: alternativo }).eq("id", agente.id);
+    }
   } catch (e) {
     const detalhe = e instanceof Error ? e.name === "AbortError" ? "tempo esgotado" : e.message : "falha";
     const motivo = `erro_provedor: ${detalhe}`.slice(0, 200);

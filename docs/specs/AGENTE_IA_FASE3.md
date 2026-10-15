@@ -876,3 +876,13 @@ assumida) escrita na entrega.
   discriminatório, com a mensagem do motivo.
 - **Ainda não faz (próximas entregas do 3O):** gerar a JD pela IA a partir do
   recado do gestor, reescrever JD, modelos júnior e liderança, áudio do gestor.
+
+### Primeiro teste real do 3B e decisão de provedor (15/10/2026)
+
+O agente disparou, mas o Groq respondeu **HTTP 404: o modelo
+`llama-3.3-70b-versatile` não existe ou não há acesso**. Correções: o detalhe do
+erro do provedor passa a aparecer na conversa e é gravado na execução; quando o
+erro é de modelo, o sistema lista os modelos da conta, escolhe o melhor de
+conversa pela ordem de preferência e guarda a escolha no agente. **Decisão do
+Rodnei:** usar **OpenAI** como provedor da SOS Vagas (modelo padrão
+`gpt-4o-mini`, trocável no campo Modelo).

@@ -2151,3 +2151,6 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     (`jobs.criterios`), tela Critérios e qualidade, verificação em código e
     bloqueio de publicação com critério discriminatório. 77 testes.
     Pendente: geração da JD por IA (3O-2).
+    Primeiro teste real do agente: Groq retornou 404 de modelo; erro agora
+    visível na conversa, modelo alternativo escolhido sozinho e provedor da
+    SOS Vagas trocado para OpenAI por decisão do Rodnei.
