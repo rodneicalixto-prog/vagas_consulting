@@ -2214,3 +2214,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     sem banco de talentos; regra de encerramento (descadastro, black list, uma
     vez, 30 dias) com índice único. Migration 0038. 122 testes. Pendente:
     envio integrado, revisão de tom por IA, carta-oferta (3P).
+127. **3M: indicadores de R&S (15/10/2026)**: /admin/indicadores por empresa
+    e mês; tempo de fechamento, contratações, funil com gargalo e fontes do
+    banco; custo, SLA, NPS, turnover e ofertas informados; metas editáveis;
+    'sem dado' nunca zero; leitura em conjunto; plano de ação (3 abertas).
+    Marcador ?o= da divulgação agora gravado em applications.origem.
+    Migration 0039. 128 testes. Pendente: análise por IA, PDF, custo por fonte.

@@ -778,6 +778,108 @@ export type Database = {
         }
         Relationships: []
       }
+      recruitment_goals: {
+        Row: {
+          atualizado_por: string | null
+          company_id: string
+          metas: Json
+          updated_at: string
+        }
+        Insert: {
+          atualizado_por?: string | null
+          company_id: string
+          metas?: Json
+          updated_at?: string
+        }
+        Update: {
+          atualizado_por?: string | null
+          company_id?: string
+          metas?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      recruitment_monthly: {
+        Row: {
+          atualizado_por: string | null
+          company_id: string
+          id: string
+          periodo: string
+          updated_at: string
+          valores: Json
+        }
+        Insert: {
+          atualizado_por?: string | null
+          company_id: string
+          id?: string
+          periodo: string
+          updated_at?: string
+          valores?: Json
+        }
+        Update: {
+          atualizado_por?: string | null
+          company_id?: string
+          id?: string
+          periodo?: string
+          updated_at?: string
+          valores?: Json
+        }
+        Relationships: []
+      }
+      recruitment_action_plans: {
+        Row: {
+          acao: string
+          causa: string
+          company_id: string
+          created_at: string
+          criado_por: string | null
+          estado: string
+          id: string
+          indicador: string
+          meta_texto: string
+          o_que_funcionou: string
+          periodo: string
+          prazo: string
+          responsavel: string
+          updated_at: string
+          valor_texto: string
+        }
+        Insert: {
+          acao: string
+          causa?: string
+          company_id: string
+          created_at?: string
+          criado_por?: string | null
+          estado?: string
+          id?: string
+          indicador: string
+          meta_texto?: string
+          o_que_funcionou?: string
+          periodo: string
+          prazo: string
+          responsavel: string
+          updated_at?: string
+          valor_texto?: string
+        }
+        Update: {
+          acao?: string
+          causa?: string
+          company_id?: string
+          created_at?: string
+          criado_por?: string | null
+          estado?: string
+          id?: string
+          indicador?: string
+          meta_texto?: string
+          o_que_funcionou?: string
+          periodo?: string
+          prazo?: string
+          responsavel?: string
+          updated_at?: string
+          valor_texto?: string
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string

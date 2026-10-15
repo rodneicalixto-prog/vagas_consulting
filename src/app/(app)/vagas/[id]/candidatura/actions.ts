@@ -5,8 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { ApplyJobSchema, type ApplyJobInput } from "@/lib/validation/schemas";
+import { canalValido } from "@/lib/divulgacao";
 
-export async function enviarCandidatura(jobId: string, respostas: Record<string, boolean>) {
+export async function enviarCandidatura(jobId: string, respostas: Record<string, boolean>, origem?: string) {
   // Validar com Zod
   const validated = ApplyJobSchema.parse({ job_id: jobId, respostas });
   const { job_id: validatedJobId, respostas: validatedRespostas } = validated;
@@ -50,7 +51,7 @@ export async function enviarCandidatura(jobId: string, respostas: Record<string,
     job_id: validatedJobId,
     candidate_id: user.id,
     respostas: validatedRespostas as Record<string, boolean>,
-    origem: "app_candidato",
+    origem: origem && canalValido(origem) ? `divulgacao_${origem}` : "app_candidato",
   });
 
   if (error && error.code !== "23505") {

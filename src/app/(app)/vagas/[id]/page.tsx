@@ -1,5 +1,6 @@
 import { nomeEmpresa } from "@/lib/sigilo";
 import Link from "next/link";
+import { canalValido } from "@/lib/divulgacao";
 import { CONVITES_ABERTOS } from "@/lib/convites";
 import { exibirRemuneracao } from "@/lib/money";
 import { notFound } from "next/navigation";
@@ -12,10 +13,15 @@ import { VagaTabs, type Regras } from "./vaga-tabs";
 
 export default async function VagaDetalhePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ o?: string }>;
 }) {
   const { id } = await params;
+  const { o } = await searchParams;
+  // Marcador de origem da divulgação (3N): só canais conhecidos.
+  const origemQs = o && canalValido(o) ? `?o=${o}` : "";
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const supabase = await createClient();
   // Leitura pública no servidor: só vaga publicada e dentro do prazo.
@@ -96,8 +102,8 @@ export default async function VagaDetalhePage({
             convite
               ? `/convites/${convite.id}`
               : user
-                ? `/vagas/${vaga.id}/candidatura`
-                : `/login?next=${encodeURIComponent(`/vagas/${vaga.id}/candidatura`)}`
+                ? `/vagas/${vaga.id}/candidatura${origemQs}`
+                : `/login?next=${encodeURIComponent(`/vagas/${vaga.id}/candidatura${origemQs}`)}`
           }
           className="flex-1 rounded-xl bg-gold py-3.5 text-center text-[14px] font-extrabold text-[#1c1508]"
         >

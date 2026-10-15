@@ -1193,3 +1193,35 @@ dispara mensagem.
 
 **Limites:** não envia pelo WhatsApp nem pelo e-mail (cópia manual); o aviso
 de tom é por regra, sem revisão por IA; carta-oferta (3P) segue pendente.
+
+### Passo 3M construído (15/10/2026): indicadores de R&S
+
+Tela **Indicadores de R&S** (`/admin/indicadores`, menu Inteligência),
+por empresa e por mês, dentro do escopo do operador (vagas sigilosas só para
+quem tem acesso). Migration **0039** (`recruitment_goals`, `recruitment_monthly`,
+`recruitment_action_plans`; aditiva, RLS ligada).
+
+**Do banco (automático):** tempo médio de fechamento (da publicação ao
+fechamento da vaga), contratações do mês, funil por etapa com conversão e maior
+gargalo, fontes por origem da candidatura.
+**Informado:** custo total (vira custo por contratação), SLA, NPS, turnover
+precoce, ofertas enviadas e aceitas (vira aceitação).
+
+**Regras (§14.7 e §14.19):**
+- Indicador sem dado aparece como "sem dado", nunca zero; a tela lista o que falta.
+- Meta ao lado de cada indicador (editável por empresa), com status verde,
+  atenção ou abaixo.
+- Leitura em conjunto por regra: fechamento rápido com turnover alto, custo
+  baixo com NPS baixo, aceitação e tempo ruins juntos, e o gargalo do funil.
+- **Plano de ação:** até 3 abertas por mês, com responsável e prazo;
+  concluir exige "o que funcionou".
+- **Marcador de origem fechado:** o link da divulgação (`?o=canal`) agora é
+  lido na vitrine, repassado ao login e gravado em `applications.origem`
+  como `divulgacao_<canal>` (só canais conhecidos). Candidaturas antigas ficam
+  como "app (sem marcador)".
+
+**Limites:** o funil é aproximado (só há o status atual: etapa alcançada vem
+de triagem, ficha e teste); data de fechamento da vaga é a última atualização;
+custo por fonte exige gasto por canal (não informado); análise por IA e PDF
+próprio ficam para depois (a página imprime); meta sugerida por volume não
+existe; diversidade segue fora por decisão pendente.

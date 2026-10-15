@@ -17,10 +17,13 @@ type VagaResumo = { id: string; titulo: string; empresa: string; local: string }
 
 export default function CandidaturaPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ o?: string }>;
 }) {
   const { id } = use(params);
+  const { o: origem } = use(searchParams);
   const [vaga, setVaga] = useState<VagaResumo | null>(null);
   const [respostas, setRespostas] = useState<Record<string, boolean>>({
     experiencia_area: true,
@@ -57,7 +60,7 @@ export default function CandidaturaPage({
 
   const onSubmit = () => {
     startTransition(async () => {
-      const result = await enviarCandidatura(id, respostas);
+      const result = await enviarCandidatura(id, respostas, origem);
       if (result.error) {
         setErro(result.error);
       } else {
