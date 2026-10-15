@@ -6,6 +6,8 @@ import { formatarTelefoneBR } from "@/lib/whatsapp";
 import { can, requireInternalUser } from "@/lib/auth/internal";
 import { empresasParaFiltro, obterEscopo } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
+import { empresaDaOperacao } from "@/lib/evolution";
+import { abrirConversaComEmpresaCliente } from "../conversas/actions";
 
 const LIMITE = 300;
 
@@ -35,6 +37,8 @@ export default async function ModeracaoEmpresasPage({
   const escopo = await obterEscopo(user.id, role);
   const somenteLeitura = !can(role, "companies.approve");
   const sp = await searchParams;
+  const operacaoId = await empresaDaOperacao();
+  const podeConversar = !!operacaoId && can(role, "pipeline.manage") && (escopo.todos || escopo.empresas.includes(operacaoId));
 
   const filtro = FILTROS.find((f) => f.valor === sp.filtro) ?? FILTROS[3];
   const busca = (sp.q ?? "").replace(/[,()%*\\]/g, " ").trim().slice(0, 60).toLowerCase();
@@ -211,6 +215,14 @@ export default async function ModeracaoEmpresasPage({
                       <Link href={`/admin?empresa=${c.id}`} className="font-bold text-navy underline">
                         Ver painel da empresa →
                       </Link>
+                      {podeConversar && c.id !== operacaoId && (c.responsavel_telefone || c.telefone) && (
+                        <form action={abrirConversaComEmpresaCliente}>
+                          <input type="hidden" name="company_id" value={c.id} />
+                          <button type="submit" className="font-bold text-success underline">
+                            Conversar com o responsável (WhatsApp) →
+                          </button>
+                        </form>
+                      )}
                     </div>
 
                     {!somenteLeitura && (

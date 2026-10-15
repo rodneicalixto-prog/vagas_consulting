@@ -68,6 +68,21 @@ export async function apikeyDaPlataforma(): Promise<string | null> {
   }
 }
 
+/**
+ * Empresa da operação da plataforma (a SOS Vagas): dona do número usado para
+ * falar com as empresas clientes. Guardada na configuração da plataforma.
+ */
+export async function empresaDaOperacao(): Promise<string | null> {
+  const { data } = await createAdminClient()
+    .from("integration_credentials")
+    .select("config")
+    .eq("escopo", "plataforma")
+    .eq("provedor", "evolution")
+    .maybeSingle();
+  const id = (data?.config as { empresa_operacao?: string } | null)?.empresa_operacao;
+  return typeof id === "string" && id ? id : null;
+}
+
 /** Empresa dona de uma instância (para o webhook). */
 export async function empresaDaInstancia(instance: string): Promise<string | null> {
   const { data } = await createAdminClient()

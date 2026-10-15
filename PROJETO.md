@@ -1422,6 +1422,14 @@ sessões futuras.
     fecha (antes aceitava "Bearer undefined"); passa a gravar `audit_log`
     quando arquiva. Pendente: confirmar CRON_SECRET na Vercel (sem permissão
     de leitura via MCP) e rodar `docs/AUTO_ARCHIVE.md` com uma vaga de teste.
+110. **Operação da plataforma como empresa + canal com empresas clientes
+    (15/10/2026)**: o número da plataforma não é compartilhado; cada empresa
+    usa o seu. Criada a empresa interna "SOS Vagas" (dados, sem migration)
+    com a instância `sos_vagas`, marcada em `empresa_operacao` na config da
+    plataforma. Botão "Conversar com o responsável" na ficha da empresa
+    cliente abre a conversa na SOS Vagas; contato de empresa cliente cadastrada
+    libera o envio (descadastro continua bloqueando). 63 testes.
+    Pendente: o cliente falar com a SOS Vagas de dentro da plataforma.
 
 ## 3. Escopo do MVP (revisado)
 

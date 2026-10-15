@@ -15,7 +15,13 @@ import {
   tipoDoAnexo,
   type TipoAnexo,
 } from "@/lib/conversas";
-import { configEvolutionDaEmpresa, enviarMidia, enviarTexto, type Citada } from "@/lib/evolution";
+import {
+  configEvolutionDaEmpresa,
+  empresaDaOperacao,
+  enviarMidia,
+  enviarTexto,
+  type Citada,
+} from "@/lib/evolution";
 import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
@@ -72,6 +78,21 @@ export async function enviarMensagem(formData: FormData) {
   const telefone = conversa.telefone_normalizado;
   const candidateId = conversa.candidate_id;
 
+  // Contato de empresa cliente: só vale na conversa da empresa da operação.
+  let contatoDeCliente = false;
+  if (companyId === (await empresaDaOperacao())) {
+    const { data: clientes } = await admin
+      .from("companies")
+      .select("telefone, responsavel_telefone")
+      .eq("status", "aprovada")
+      .neq("id", companyId)
+      .limit(1000);
+    contatoDeCliente = (clientes ?? []).some(
+      (c) =>
+        normalizarTelefoneBR(c.telefone) === telefone || normalizarTelefoneBR(c.responsavel_telefone) === telefone,
+    );
+  }
+
   const [optOut, entrada, candidatura, consentimento] = await Promise.all([
     admin
       .from("channel_opt_outs")
@@ -112,6 +133,7 @@ export async function enviarMensagem(formData: FormData) {
     jaRespondeu: (entrada.data ?? []).length > 0,
     candidaturaEmAndamento: (candidatura.data ?? []).length > 0,
     consentimento: consentimento.data?.[0]?.estado === "concedido",
+    contatoDeCliente,
   });
   if (!decisao.ok) throw new Error(decisao.motivo ?? "Envio não permitido.");
 
@@ -300,6 +322,48 @@ export async function abrirConversaComCandidato(formData: FormData) {
         candidate_id: candidatoId,
         nome_contato: perfil.nome_completo,
       },
+      { onConflict: "company_id,canal,telefone_normalizado" },
+    )
+    .select("id")
+    .single();
+  if (error || !conversa) throw new Error("Não foi possível abrir a conversa. Tente novamente.");
+
+  redirect(`/admin/conversas?c=${conversa.id}`);
+}
+
+/**
+ * Abre a conversa da empresa da operação (SOS Vagas) com o responsável de uma
+ * empresa cliente. A conversa vive na empresa da operação, não na do cliente.
+ */
+export async function abrirConversaComEmpresaCliente(formData: FormData) {
+  const { user, role } = await requireInternalUser("pipeline.manage");
+  const clienteId = uuidDe(formData, "company_id");
+  const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
+
+  const operacaoId = await empresaDaOperacao();
+  if (!operacaoId) throw new Error("A empresa da operação ainda não foi definida na plataforma.");
+  exigirEmpresa(escopo, operacaoId);
+  if (clienteId === operacaoId) throw new Error("Esta é a sua própria empresa.");
+
+  const { data: cliente } = await admin
+    .from("companies")
+    .select("nome_fantasia, razao_social, telefone, responsavel_nome, responsavel_telefone")
+    .eq("id", clienteId)
+    .maybeSingle();
+  if (!cliente) throw new Error("Empresa não encontrada.");
+
+  const telefone = normalizarTelefoneBR(cliente.responsavel_telefone) ?? normalizarTelefoneBR(cliente.telefone);
+  if (!telefone) {
+    throw new Error("A empresa não tem telefone do responsável válido. Complete o cadastro em Empresas.");
+  }
+  const empresa = cliente.nome_fantasia || cliente.razao_social || "Empresa";
+  const nome = cliente.responsavel_nome ? `${cliente.responsavel_nome} (${empresa})` : empresa;
+
+  const { data: conversa, error } = await admin
+    .from("conversations")
+    .upsert(
+      { company_id: operacaoId, canal: "whatsapp", telefone_normalizado: telefone, nome_contato: nome },
       { onConflict: "company_id,canal,telefone_normalizado" },
     )
     .select("id")

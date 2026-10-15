@@ -66,6 +66,8 @@ export type ContextoEnvio = {
   candidaturaEmAndamento: boolean;
   /** Consentimento de alertas pelo WhatsApp concedido. */
   consentimento: boolean;
+  /** O número é o responsável/telefone de uma empresa cliente cadastrada (relação contratual). */
+  contatoDeCliente?: boolean;
 };
 
 /**
@@ -76,7 +78,9 @@ export function podeEnviar(c: ContextoEnvio): { ok: boolean; motivo: string | nu
   if (c.descadastrado) {
     return { ok: false, motivo: "Esta pessoa pediu para não receber mensagens (descadastro)." };
   }
-  if (c.jaRespondeu || c.candidaturaEmAndamento || c.consentimento) return { ok: true, motivo: null };
+  if (c.jaRespondeu || c.candidaturaEmAndamento || c.consentimento || c.contatoDeCliente) {
+    return { ok: true, motivo: null };
+  }
   return {
     ok: false,
     motivo:

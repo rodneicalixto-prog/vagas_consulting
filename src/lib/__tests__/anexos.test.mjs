@@ -8,6 +8,7 @@ import {
   detectarMidia,
   TAMANHO_MAX_ANEXO,
   TAMANHO_MAX_ENVIO,
+  podeEnviar,
 } from "../conversas.ts";
 
 test("tipos permitidos e bloqueados", () => {
@@ -54,4 +55,11 @@ test("detecta mídia recebida da Evolution", () => {
   assert.equal(detectarMidia(null), null);
   assert.equal(tipoDoAnexo("audio/webm;codecs=opus"), "audio");
   assert.equal(TAMANHO_MAX_ENVIO, 4 * 1024 * 1024);
+});
+
+test("contato de empresa cliente libera o envio, exceto descadastro", () => {
+  const base = { descadastrado: false, jaRespondeu: false, candidaturaEmAndamento: false, consentimento: false };
+  assert.equal(podeEnviar(base).ok, false);
+  assert.equal(podeEnviar({ ...base, contatoDeCliente: true }).ok, true);
+  assert.equal(podeEnviar({ ...base, contatoDeCliente: true, descadastrado: true }).ok, false);
 });
