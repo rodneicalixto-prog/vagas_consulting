@@ -369,6 +369,7 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
       .select("tipo, titulo, corpo_md")
       .eq("company_id", conversa.company_id)
       .eq("status", "aprovada")
+      .or(`valida_ate.is.null,valida_ate.gte.${new Date().toISOString().slice(0, 10)}`)
       .order("tipo")
       .limit(40),
     admin

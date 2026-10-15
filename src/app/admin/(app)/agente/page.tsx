@@ -5,7 +5,21 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { empresaDaOperacao } from "@/lib/evolution";
 import { SubmitButton } from "@/components/form-buttons";
 import { ROTULO_TIPO, TIPOS_NOTA, type TipoNota } from "@/lib/agente";
+import {
+  detectarConflitos,
+  estadoValidade,
+  hojeISO,
+  resumirBase,
+  temasSemResposta,
+  tiposSemCobertura,
+  type NotaBase,
+} from "@/lib/base-conhecimento";
 import { aprovarLicoes, criarAgente, mudarStatusNota, salvarAgente, salvarNota } from "./actions";
+
+// Fora do componente: o lint de pureza não aceita Date.now() no render.
+function agoraMs(): number {
+  return Date.now();
+}
 
 const STATUS_CLASSE: Record<string, string> = {
   rascunho: "bg-gold-bg text-gold-3",
@@ -87,13 +101,48 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
   const filtro = TIPOS_NOTA.find((t) => t === sp.tipo) ?? null;
   let q = admin
     .from("ai_knowledge_notes")
-    .select("id, tipo, titulo, corpo_md, status, versao, origem, updated_at")
+    .select("id, tipo, titulo, corpo_md, status, versao, origem, updated_at, valida_ate, dono_id")
     .eq("company_id", operacaoId)
     .order("updated_at", { ascending: false })
     .limit(300);
   if (filtro) q = q.eq("tipo", filtro);
   const { data: notas } = await q;
   const lista = notas ?? [];
+
+  // Confiabilidade da base: validade, revisão, conflito e cobertura.
+  const hoje = hojeISO();
+  const [{ data: completas }, { data: donos }] = await Promise.all([
+    admin
+      .from("ai_knowledge_notes")
+      .select("id, tipo, titulo, corpo_md, status, valida_ate, aprovada_em, dono_id")
+      .eq("company_id", operacaoId)
+      .neq("status", "arquivada")
+      .limit(500),
+    admin.from("admin_users").select("user_id, nome_exibicao").limit(100),
+  ]);
+  const baseCompleta = (completas ?? []) as NotaBase[];
+  const resumoBase = resumirBase(baseCompleta, hoje);
+  const conflitosBase = detectarConflitos(baseCompleta, hoje);
+  const semCobertura = tiposSemCobertura(baseCompleta, ["politica", "roteiro", "faq"], hoje);
+  const nomeDono = new Map((donos ?? []).map((d) => [d.user_id, d.nome_exibicao || "Equipe"]));
+
+  let temasBase: ReturnType<typeof temasSemResposta> = [];
+  if (agente) {
+    const desde = new Date(agoraMs() - 30 * 86_400_000).toISOString();
+    const { data: paradas } = await admin
+      .from("ai_suggestions")
+      .select("message_id")
+      .eq("agent_id", agente.id)
+      .eq("motivo_parada", "sem_fonte")
+      .gte("created_at", desde)
+      .not("message_id", "is", null)
+      .limit(300);
+    const ids = (paradas ?? []).map((p) => p.message_id as string);
+    if (ids.length > 0) {
+      const { data: msgs } = await admin.from("conversation_messages").select("texto").in("id", ids).limit(300);
+      temasBase = temasSemResposta((msgs ?? []).map((m) => m.texto ?? ""));
+    }
+  }
 
   const contagem = new Map<string, number>();
   const { data: todas } = await admin.from("ai_knowledge_notes").select("tipo, status").eq("company_id", operacaoId);
@@ -219,6 +268,70 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
           </div>
         )}
 
+        {/* Confiabilidade da base */}
+        <section className="mb-6 rounded-2xl border border-border bg-surface p-5">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-extrabold text-text">Confiabilidade da base</h2>
+            <span
+              className={`rounded-full px-3 py-1 text-[11px] font-extrabold ${
+                resumoBase.nivel === "confiavel"
+                  ? "bg-success-bg text-success"
+                  : resumoBase.nivel === "atencao"
+                    ? "bg-gold-bg text-gold-3"
+                    : "bg-danger-bg text-danger"
+              }`}
+            >
+              {resumoBase.nivel === "confiavel" ? "Confiável" : resumoBase.nivel === "atencao" ? "Atenção" : "Crítico"}
+            </span>
+          </div>
+          <ul className="grid gap-2 text-[12.5px] text-text-2 md:grid-cols-3">
+            <li><b className="text-text">{resumoBase.aprovadasVigentes}</b> nota(s) aprovada(s) em vigor</li>
+            <li><b className={resumoBase.vencidas ? "text-danger" : "text-text"}>{resumoBase.vencidas}</b> vencida(s) (fora do agente)</li>
+            <li><b className="text-text">{resumoBase.vencemEmBreve}</b> vence(m) em até 15 dias</li>
+            <li><b className="text-text">{resumoBase.paraRevisar}</b> para revisar (aprovadas há mais de 90 dias, sem prazo)</li>
+            <li><b className="text-text">{resumoBase.semDono}</b> sem dono definido</li>
+            <li><b className={resumoBase.conflitos ? "text-danger" : "text-text"}>{resumoBase.conflitos}</b> possível(is) conflito(s)</li>
+          </ul>
+
+          {conflitosBase.length > 0 && (
+            <div className="mt-4">
+              <div className="text-[10.5px] font-bold uppercase text-text-3">Possíveis conflitos (confira qual vale)</div>
+              <ul className="mt-1 grid gap-1.5 text-[12.5px]">
+                {conflitosBase.map((c) => (
+                  <li key={`${c.a}-${c.b}`} className="rounded-lg bg-danger-bg px-3 py-2 text-danger">
+                    <b>{c.titulo_a}</b> × <b>{c.titulo_b}</b>: {c.motivo}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {(temasBase.length > 0 || semCobertura.length > 0) && (
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {temasBase.length > 0 && (
+                <div>
+                  <div className="text-[10.5px] font-bold uppercase text-text-3">Perguntas sem resposta nos últimos 30 dias</div>
+                  <p className="mt-1 text-[12.5px] text-text-2">
+                    Temas que mais apareceram: {temasBase.map((t) => `${t.termo} (${t.vezes})`).join(", ")}. Vale escrever uma nota sobre eles.
+                  </p>
+                </div>
+              )}
+              {semCobertura.length > 0 && (
+                <div>
+                  <div className="text-[10.5px] font-bold uppercase text-text-3">Tipos sem nota aprovada em vigor</div>
+                  <p className="mt-1 text-[12.5px] text-text-2">
+                    {semCobertura.map((t) => ROTULO_TIPO[t as TipoNota] ?? t).join(", ")}.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+          <p className="mt-3 text-[11px] text-text-3">
+            Nota vencida deixa de entrar no agente até você renovar a data e aprovar de novo. Conflito e cobertura são
+            sinais por regra: confira antes de decidir.
+          </p>
+        </section>
+
         {/* Base de conhecimento */}
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -272,6 +385,19 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
                 ))}
               </select>
             </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[10.5px] font-bold text-text-2">Vale até (opcional)</span>
+              <input name="valida_ate" type="date" className={CAMPO} />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[10.5px] font-bold text-text-2">Dono da nota</span>
+              <select name="dono_id" defaultValue="" className={CAMPO}>
+                <option value="">Eu</option>
+                {(donos ?? []).map((d) => (
+                  <option key={d.user_id} value={d.user_id}>{d.nome_exibicao || "Equipe"}</option>
+                ))}
+              </select>
+            </label>
             <label className="flex flex-col gap-1 md:col-span-3">
               <span className="text-[10.5px] font-bold text-text-2">Texto (Markdown)</span>
               <textarea name="corpo_md" rows={6} maxLength={20000} className={CAMPO} />
@@ -299,6 +425,15 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
                     {ROTULO_TIPO[n.tipo as TipoNota] ?? n.tipo}
                   </span>
                   <span className="text-[10.5px] text-text-3">v{n.versao}</span>
+                  {n.status === "aprovada" && estadoValidade(n.valida_ate, hoje) === "vencida" && (
+                    <span className="rounded-full bg-danger-bg px-2.5 py-1 text-[10px] font-extrabold text-danger">Vencida</span>
+                  )}
+                  {n.status === "aprovada" && estadoValidade(n.valida_ate, hoje) === "vence_em_breve" && (
+                    <span className="rounded-full bg-gold-bg px-2.5 py-1 text-[10px] font-extrabold text-gold-3">Vence em breve</span>
+                  )}
+                  {n.dono_id && (
+                    <span className="text-[10.5px] text-text-3">Dono: {nomeDono.get(n.dono_id) ?? "Equipe"}</span>
+                  )}
                   <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${STATUS_CLASSE[n.status]}`}>
                     {STATUS_ROTULO[n.status] ?? n.status}
                   </span>
@@ -317,6 +452,19 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
                           <option key={t} value={t}>
                             {ROTULO_TIPO[t]}
                           </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-[10.5px] font-bold text-text-2">Vale até (opcional)</span>
+                      <input name="valida_ate" type="date" defaultValue={n.valida_ate ?? ""} className={CAMPO} />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-[10.5px] font-bold text-text-2">Dono da nota</span>
+                      <select name="dono_id" defaultValue={n.dono_id ?? ""} className={CAMPO}>
+                        <option value="">Eu</option>
+                        {(donos ?? []).map((d) => (
+                          <option key={d.user_id} value={d.user_id}>{d.nome_exibicao || "Equipe"}</option>
                         ))}
                       </select>
                     </label>

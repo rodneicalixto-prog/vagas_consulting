@@ -435,12 +435,14 @@ export type Database = {
           corpo_md: string
           created_at: string
           criado_por: string | null
+          dono_id: string | null
           id: string
           origem: string
           status: string
           tipo: string
           titulo: string
           updated_at: string
+          valida_ate: string | null
           versao: number
         }
         Insert: {
@@ -450,12 +452,14 @@ export type Database = {
           corpo_md?: string
           created_at?: string
           criado_por?: string | null
+          dono_id?: string | null
           id?: string
           origem?: string
           status?: string
           tipo: string
           titulo: string
           updated_at?: string
+          valida_ate?: string | null
           versao?: number
         }
         Update: {
@@ -465,12 +469,14 @@ export type Database = {
           corpo_md?: string
           created_at?: string
           criado_por?: string | null
+          dono_id?: string | null
           id?: string
           origem?: string
           status?: string
           tipo?: string
           titulo?: string
           updated_at?: string
+          valida_ate?: string | null
           versao?: number
         }
         Relationships: []

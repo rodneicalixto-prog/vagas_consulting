@@ -92,6 +92,11 @@ export async function salvarNota(formData: FormData) {
   const tipo = String(formData.get("tipo") ?? "");
   const corpo_md = String(formData.get("corpo_md") ?? "");
 
+  const validaBruta = String(formData.get("valida_ate") ?? "").trim();
+  const valida_ate = /^\d{4}-\d{2}-\d{2}$/.test(validaBruta) ? validaBruta : null;
+  const donoBruto = String(formData.get("dono_id") ?? "").trim();
+  const dono_id = UUID.test(donoBruto) ? donoBruto : user.id;
+
   const erro = validarNota({ titulo, tipo, corpo_md });
   if (erro) throw new Error(erro);
   if (!tipoNotaValido(tipo)) throw new Error("Tipo de nota inválido.");
@@ -99,7 +104,7 @@ export async function salvarNota(formData: FormData) {
   if (!id) {
     const { data, error } = await admin
       .from("ai_knowledge_notes")
-      .insert({ company_id: companyId, tipo, titulo, corpo_md, criado_por: user.id })
+      .insert({ company_id: companyId, tipo, titulo, corpo_md, criado_por: user.id, valida_ate, dono_id })
       .select("id")
       .single();
     if (error || !data) throw new Error("Não foi possível criar a nota.");
@@ -123,6 +128,8 @@ export async function salvarNota(formData: FormData) {
         titulo,
         tipo,
         corpo_md,
+        valida_ate,
+        dono_id,
         versao: atual.versao + 1,
         status: atual.status === "aprovada" ? "rascunho" : atual.status,
         aprovada_por: null,
@@ -169,6 +176,18 @@ export async function mudarStatusNota(formData: FormData) {
   if (!UUID.test(id)) throw new Error("Nota inválida.");
   const novo = acao === "aprovar" ? "aprovada" : acao === "arquivar" ? "arquivada" : acao === "reabrir" ? "rascunho" : null;
   if (!novo) throw new Error("Ação inválida.");
+
+  if (novo === "aprovada") {
+    const { data: n } = await admin
+      .from("ai_knowledge_notes")
+      .select("valida_ate")
+      .eq("id", id)
+      .eq("company_id", companyId)
+      .maybeSingle();
+    if (n?.valida_ate && n.valida_ate < new Date().toISOString().slice(0, 10)) {
+      throw new Error("A nota está vencida: renove a data em \"Vale até\" antes de aprovar.");
+    }
+  }
 
   const agora = new Date().toISOString();
   const { data, error } = await admin

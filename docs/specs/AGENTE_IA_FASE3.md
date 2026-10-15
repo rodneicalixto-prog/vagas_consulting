@@ -1380,3 +1380,24 @@ de oferta** quando o campo manual está vazio.
 
 **Limites:** sem Word; sem assinatura eletrônica; modelo único (a skill); não
 valida cláusulas por tipo de contrato além do que a pessoa escreve.
+
+### Camadas de confiabilidade da base de conhecimento (15/10/2026)
+
+Painel **Confiabilidade da base** em `/admin/agente`, acima das notas.
+Migration **0043** (`valida_ate`, `dono_id` em `ai_knowledge_notes`; aditiva).
+
+| Camada | O que faz |
+|---|---|
+| **Validade** | campo "Vale até" por nota. **Nota vencida sai do contexto do agente** (filtro na consulta) e não pode ser aprovada sem renovar a data; aviso 15 dias antes |
+| **Dono** | responsável por manter a nota (padrão: quem salvou); aparece na lista |
+| **Revisão** | nota aprovada há mais de 90 dias e sem prazo é marcada "para revisar" |
+| **Conflito** | por regra: mesmo título em duas notas aprovadas, ou assunto parecido do mesmo tipo com valores diferentes (dias, horas, R$, %). Só sinaliza; a pessoa decide qual vale |
+| **Cobertura** | temas que mais apareceram nas perguntas que o agente **não soube responder** nos últimos 30 dias (texto anonimizado, só termos) e tipos sem nota em vigor |
+| **Nível** | Confiável, Atenção ou Crítico (conflito ou nenhuma nota em vigor = crítico) |
+
+**Limite honesto — qualidade por nota:** o agente recebe **todas** as notas
+aprovadas em cada sugestão, então não há como atribuir acerto ou erro a uma nota
+específica; uma métrica por nota seria enganosa e **não foi criada**. O
+resultado (usada, editada, descartada) segue no nível do agente. Para medir por
+nota, seria preciso recuperar só as notas relevantes por pergunta (busca), o que
+é um passo próprio.
