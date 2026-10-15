@@ -953,3 +953,15 @@ planejadas** (3D completo):
 | Cobertura | Lista as perguntas mais frequentes sem fonte (lacunas) |
 | Qualidade | Taxa de resposta com fonte, usadas sem edição e descartadas, por nota |
 | Dono | Cada nota com responsável pela revisão |
+
+### Ajustes após o primeiro teste do atendimento automático (15/10/2026)
+
+- **Conversa assumida e abandonada:** o agente continuava só sugerindo porque
+  a equipe havia assumido a conversa. Regra nova: se ninguém da equipe
+  atribuiu nem respondeu há **30 minutos**, o agente retoma, responde e
+  devolve a conversa à fila.
+- **Marcador `{nome}` no texto:** o modelo copiou o marcador da nota de
+  primeira mensagem. O prompt proíbe marcadores e o texto passa por limpeza em
+  código antes de ser sugerido ou enviado; o agente não usa nome do candidato.
+- **Notas com marcador:** use `{nome}` só como indicação humana; o agente
+  nunca recebe nem preenche nome.

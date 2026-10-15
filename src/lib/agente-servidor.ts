@@ -8,6 +8,8 @@ import { normalizarTelefoneBR } from "@/lib/whatsapp";
 import { configEvolutionDaEmpresa, enviarTexto } from "@/lib/evolution";
 import {
   MODELO_PADRAO,
+  limparPlaceholders,
+  podeRetomar,
   atendeSozinho,
   comIdentificacao,
   ehEncerramento,
@@ -165,7 +167,7 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   const [{ data: conversa }, { data: msg }] = await Promise.all([
     admin
       .from("conversations")
-      .select("id, company_id, candidate_id, telefone_normalizado, atendente_id")
+      .select("id, company_id, candidate_id, telefone_normalizado, atendente_id, atribuida_em")
       .eq("id", conversationId)
       .maybeSingle(),
     admin
@@ -246,7 +248,23 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   };
 
   // Auto-envio só quando ninguém da equipe assumiu a conversa e o agente está em modo de atendimento.
-  const automatico = atendeSozinho(agente.nivel_autonomia) && conversa.atendente_id === null;
+  let automatico = atendeSozinho(agente.nivel_autonomia) && conversa.atendente_id === null;
+  let devolverAFila = false;
+  // Equipe assumiu, mas sumiu: depois de 30 min sem atribuir nem responder, o agente retoma.
+  if (atendeSozinho(agente.nivel_autonomia) && conversa.atendente_id !== null) {
+    const { data: ultimaHumana } = await admin
+      .from("conversation_messages")
+      .select("created_at")
+      .eq("conversation_id", conversa.id)
+      .eq("autor", "operador")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (podeRetomar(conversa.atribuida_em, ultimaHumana?.created_at ?? null, Date.now())) {
+      automatico = true;
+      devolverAFila = true;
+    }
+  }
 
   /** Envia pelo WhatsApp da empresa e registra a mensagem como do assistente. */
   const enviarAgora = async (texto: string): Promise<boolean> => {
@@ -287,7 +305,11 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
     }
     await admin
       .from("conversations")
-      .update({ ultima_msg_em: new Date().toISOString(), ultima_msg_previa: texto.replace(/\s+/g, " ").slice(0, 80) })
+      .update({
+        ultima_msg_em: new Date().toISOString(),
+        ultima_msg_previa: texto.replace(/\s+/g, " ").slice(0, 80),
+        ...(devolverAFila ? { atendente_id: null, atribuida_em: null } : {}),
+      })
       .eq("id", conversa.id);
     await admin.from("audit_log").insert({
       ator_id: null,
@@ -460,7 +482,7 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
     return;
   }
 
-  const texto = resposta.texto;
+  const texto = limparPlaceholders(resposta.texto);
   if (!texto || texto.includes(SINAL_ENCAMINHAR)) {
     const id = await registrar("", "sem_fonte");
     await registrarRun(id, "sem_fonte", resposta.tokensIn, resposta.tokensOut);

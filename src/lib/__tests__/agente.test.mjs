@@ -22,6 +22,8 @@ import {
   ehLicaoSegura,
   tituloDaLicao,
   corpoDaLicao,
+  podeRetomar,
+  limparPlaceholders,
 } from "../agente.ts";
 
 test("valida nota: título, tipo e tamanho", () => {
@@ -139,4 +141,18 @@ test("atendimento automático: encerramento, pedido de humano e identificação"
   assert.ok(mensagemDeEncaminhamento("sem_fonte"));
   assert.equal(atendeSozinho(0), false);
   assert.equal(atendeSozinho(2), true);
+});
+
+test("agente retoma conversa abandonada pela equipe depois de 30 minutos", () => {
+  const agora = Date.parse("2026-10-15T20:00:00Z");
+  assert.equal(podeRetomar("2026-10-15T19:50:00Z", null, agora), false);
+  assert.equal(podeRetomar("2026-10-15T19:00:00Z", "2026-10-15T19:45:00Z", agora), false);
+  assert.equal(podeRetomar("2026-10-15T19:00:00Z", "2026-10-15T19:20:00Z", agora), true);
+  assert.equal(podeRetomar(null, null, agora), true);
+});
+
+test("remove marcadores copiados das notas", () => {
+  assert.equal(limparPlaceholders("Olá, {nome}. Sou o assistente virtual."), "Olá. Sou o assistente virtual.");
+  assert.equal(limparPlaceholders("Olá (nome), tudo bem?"), "Olá, tudo bem?");
+  assert.equal(limparPlaceholders("A vaga de {vaga} é presencial."), "A vaga de é presencial.");
 });

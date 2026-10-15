@@ -2163,3 +2163,6 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     lição candidata sem dado pessoal, aprovada pelo Rodnei (Aprovar todas).
     Provedor da SOS: OpenAI. Planejadas camadas de confiabilidade da base
     (validade, conflito, cobertura, qualidade, dono). 80 testes.
+    Primeiro teste: continuou manual porque a equipe tinha assumido a conversa;
+    agente passa a retomar após 30 min sem ação humana e a limpar marcadores
+    como {nome} do texto. 82 testes.
