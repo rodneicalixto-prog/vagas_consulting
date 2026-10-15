@@ -5,6 +5,8 @@ import { can, requireInternalUser } from "@/lib/auth/internal";
 import { chaveMestraConfigurada } from "@/lib/crypto-segredos";
 import { PROVEDORES, type GrupoProvedor } from "@/lib/integracoes";
 import { SubmitButton } from "@/components/form-buttons";
+import { empresaDaOperacao, numeroDaOperacao } from "@/lib/evolution";
+import { formatarTelefoneBR } from "@/lib/whatsapp";
 import { removerCredencial, salvarCredencial, testarCredencial } from "./actions";
 
 const GRUPOS: { id: GrupoProvedor; rotulo: string }[] = [
@@ -79,6 +81,24 @@ export default async function IntegracoesPage({
       (empresas ?? []).find((e) => e.id === companyId)?.razao_social ??
       "Empresa")
     : "Plataforma";
+
+  // Plataforma: instância e número conectado da operação (empresa da plataforma).
+  let instanciaOperacao = "";
+  let numeroOperacao: string | null = null;
+  if (ehSuper && !companyId) {
+    const operacaoId = await empresaDaOperacao();
+    if (operacaoId) {
+      const { data: credOp } = await admin
+        .from("integration_credentials")
+        .select("config")
+        .eq("escopo", "empresa")
+        .eq("company_id", operacaoId)
+        .eq("provedor", "evolution")
+        .maybeSingle();
+      instanciaOperacao = (credOp?.config as { instance?: string } | null)?.instance ?? "";
+      numeroOperacao = await numeroDaOperacao();
+    }
+  }
 
   // Que provedores aparecem neste escopo.
   const visiveis = PROVEDORES.filter((p) => {
@@ -217,6 +237,24 @@ export default async function IntegracoesPage({
                                 placeholder="https://evolution.seudominio.com.br"
                                 className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm"
                               />
+                            </label>
+                          )}
+                          {p.id === "evolution" && !companyId && ehSuper && (
+                            <label className="flex flex-col gap-1 md:col-span-2">
+                              <span className="text-[10.5px] font-bold text-text-2">
+                                Instância do WhatsApp da sua operação (SOS Vagas)
+                              </span>
+                              <input
+                                name="instance_operacao"
+                                defaultValue={instanciaOperacao}
+                                placeholder="sos_vagas"
+                                className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm"
+                              />
+                              <span className="text-[11px] text-text-2">
+                                {numeroOperacao
+                                  ? `Número conectado agora: ${formatarTelefoneBR(numeroOperacao)} (lido da instância; se trocar o chip, muda sozinho).`
+                                  : "Nenhum número conectado nesta instância no momento."}
+                              </span>
                             </label>
                           )}
                           {ehInstancia && (

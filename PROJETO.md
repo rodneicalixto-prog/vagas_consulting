@@ -1434,6 +1434,9 @@ sessões futuras.
     instância CONECTADA na Evolution (fetchInstances, cache 5 min), nunca
     gravado; trocar o chip atualiza o botão sozinho. Sem instância conectada,
     o botão some.
+    Superadmin: a instância da operação é configurada na aba Plataforma (linha
+    WhatsApp, campo "Instância do WhatsApp da sua operação"), com o número
+    conectado exibido ao vivo; sem precisar entrar em aba de empresa.
 
 ## 3. Escopo do MVP (revisado)
 

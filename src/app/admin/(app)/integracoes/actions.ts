@@ -12,6 +12,7 @@ import {
   urlEvolutionSegura,
   type Provedor,
 } from "@/lib/integracoes";
+import { empresaDaOperacao } from "@/lib/evolution";
 
 const UUID_OK = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -84,8 +85,15 @@ export async function salvarCredencial(formData: FormData) {
   }
 
   const config: Record<string, string> = {};
+  // Instância do WhatsApp da operação (empresa da plataforma), configurada na aba Plataforma.
+  let instanciaOperacao: string | null = null;
   if (provedor === "evolution") {
     if (ctx.escopo === "plataforma") {
+      const instOp = String(formData.get("instance_operacao") ?? "").trim();
+      if (instOp) {
+        if (!instanciaValida(instOp)) throw new Error("Nome da instância da operação inválido (letras, números, _ ou -).");
+        instanciaOperacao = instOp;
+      }
       const base = urlEvolutionSegura(String(formData.get("base_url") ?? ""));
       if (!base) throw new Error("Informe a URL https pública da Evolution (sem IP interno).");
       config.base_url = base;
@@ -158,6 +166,34 @@ export async function salvarCredencial(formData: FormData) {
       ...campos,
     });
     if (error) throw new Error("Não foi possível salvar a credencial.");
+  }
+
+  // Instância da operação: grava na empresa da plataforma (mesmo modelo das demais empresas).
+  if (instanciaOperacao) {
+    const operacaoId = await empresaDaOperacao();
+    if (!operacaoId) throw new Error("A empresa da operação ainda não foi definida na plataforma.");
+    const { data: existente } = await ctx.admin
+      .from("integration_credentials")
+      .select("id, config")
+      .eq("escopo", "empresa")
+      .eq("company_id", operacaoId)
+      .eq("provedor", "evolution")
+      .limit(1);
+    const cfgNova = { ...((existente?.[0]?.config as Record<string, string> | null) ?? {}), instance: instanciaOperacao };
+    const { error: erroOp } = existente?.[0]
+      ? await ctx.admin
+          .from("integration_credentials")
+          .update({ config: cfgNova, status: "nao_testada", updated_at: new Date().toISOString() })
+          .eq("id", existente[0].id)
+      : await ctx.admin.from("integration_credentials").insert({
+          escopo: "empresa",
+          company_id: operacaoId,
+          provedor: "evolution",
+          config: cfgNova,
+          status: "nao_testada",
+          criado_por: ctx.user.id,
+        });
+    if (erroOp) throw new Error("Não foi possível salvar a instância da operação.");
   }
 
   // Auditoria: nunca grava o segredo, só o fato e os 4 últimos caracteres.
