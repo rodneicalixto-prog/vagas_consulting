@@ -2166,3 +2166,6 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     Primeiro teste: continuou manual porque a equipe tinha assumido a conversa;
     agente passa a retomar após 30 min sem ação humana e a limpar marcadores
     como {nome} do texto. 82 testes.
+    Primeira resposta automática real validada em produção (processo seletivo,
+    autor Assistente). Menu lateral do painel fixo: o shell passa a ter altura
+    da tela e a rolagem fica só na área de conteúdo.

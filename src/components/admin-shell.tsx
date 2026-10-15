@@ -205,7 +205,7 @@ export function AdminShell({
   );
 
   return (
-    <div className="flex min-h-dvh flex-col bg-bg md:flex-row">
+    <div className="flex min-h-dvh flex-col bg-bg md:h-dvh md:flex-row md:overflow-hidden">
       {/* Sidebar — desktop/tablet */}
       <aside className="hidden md:flex md:h-dvh md:w-60 md:shrink-0 md:flex-col bg-[#0c1526] p-4.5 text-white">
         <div className="flex items-center gap-2.5 px-2 pb-1">
@@ -246,7 +246,7 @@ export function AdminShell({
         </div>
       )}
 
-      <main className="flex flex-1 flex-col overflow-hidden min-w-0">
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border px-4 md:px-9">
           <div className="flex items-center gap-2 min-w-0">
             <button
@@ -275,7 +275,7 @@ export function AdminShell({
             Ver vitrine ↗
           </a>
         </div>
-        <div className="flex-1 overflow-hidden">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
       </main>
     </div>
   );
