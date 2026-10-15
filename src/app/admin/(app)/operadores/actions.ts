@@ -22,13 +22,13 @@ function campoId(formData: FormData, campo: string): string {
 /**
  * Autoriza e deriva a empresa DA SESSÃO: a atribuição ativa com papel
  * 'admin_empresa'. Nunca aceita company_id do formulário.
- * O superadmin gerencia a equipe da PRÓPRIA empresa da operação (SOS Vagas),
- * nunca a de empresas clientes (essas ficam em leitura).
+ * Superadmin e admin da plataforma gerenciam a equipe da empresa da operação
+ * (SOS Vagas), nunca a de empresas clientes (essas ficam em leitura).
  */
 async function contexto() {
   const { user, role } = await requireInternalUser();
   const admin = createAdminClient();
-  if (role === "superadmin") {
+  if (role === "superadmin" || role === "admin") {
     const operacaoId = await empresaDaOperacao();
     if (!operacaoId) throw new Error("A empresa da operação ainda não foi definida na plataforma.");
     return { user, admin, companyId: operacaoId, role };

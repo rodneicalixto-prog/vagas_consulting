@@ -30,7 +30,7 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
 
   let companyId: string | null = null;
   let empresasLeitura: { id: string; nome: string }[] = [];
-  const operacaoId = role === "superadmin" ? await empresaDaOperacao() : null;
+  const operacaoId = mostrarSeletor ? await empresaDaOperacao() : null;
 
   if (ehAdminEmpresa) {
     const { data } = await admin
@@ -53,7 +53,7 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
 
   // Admin da empresa gerencia a própria equipe; o superadmin gerencia a da
   // operação (SOS Vagas) e lê as das empresas clientes.
-  const podeGerenciar = ehAdminEmpresa || (role === "superadmin" && !!companyId && companyId === operacaoId);
+  const podeGerenciar = ehAdminEmpresa || (mostrarSeletor && !!companyId && companyId === operacaoId);
   const somenteLeitura = mostrarSeletor && !podeGerenciar;
 
   const seletor = mostrarSeletor && (
