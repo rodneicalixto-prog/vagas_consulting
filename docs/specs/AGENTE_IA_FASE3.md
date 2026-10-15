@@ -563,3 +563,30 @@ Regras:
   com a função) nunca são geradas: lista aplicada em código, não só no prompt.
 - O campo de avaliação e as anotações são preenchidos **na própria tela**
   durante a entrevista, e a ficha final sai pronta, sem redigitar.
+
+### 14.11 Checklist da job description: verificação antes de publicar (recebido em 15/10/2026)
+
+Vira a **verificação de qualidade da vaga** (3O), mostrada antes de publicar,
+com cada item marcado como verde, aviso ou bloqueio:
+
+| Item do checklist | Como o sistema verifica | Tipo |
+|---|---|---|
+| Perfil alinhado com o gestor (o que a pessoa vai fazer) | Campo "rotina do dia a dia" preenchido, com confirmação manual | Manual |
+| Obrigatórios (4 a 7) separados dos desejáveis | Contagem dos campos: menos de 4 ou mais de 7 gera aviso | **Código** |
+| Sem exigência "fantasma" (inglês, diploma, viagem) | A IA sinaliza exigência sem ligação com as tarefas escritas; pessoa decide | IA + pessoa |
+| Experiência calibrada à senioridade | Regra simples: anos pedidos × nível escolhido; faixa fora do usual gera aviso | **Código** |
+| Responsabilidades concretas, sem clichê | Lista de clichês ("proativo", "dinâmico", "perfil de dono") detectada no texto | **Código** |
+| Linguagem neutra em gênero | Detecção de marcas de gênero no título e no texto (por exemplo "o candidato") com sugestão | **Código** |
+| Sem critério discriminatório | Lista de termos (idade, sexo, estado civil, aparência, "boa aparência") **bloqueia** a publicação | **Código, bloqueante** |
+| Modelo, regime, local e faixa claros | Campos obrigatórios; faixa ausente gera aviso (não bloqueio) | **Código** |
+| Diferencial claro | Campo "por que esta vaga" preenchido | Código |
+| Título é o que o candidato busca | Título comparado com uma lista de cargos comuns; título "criativo" gera aviso | Código + IA |
+
+Regras:
+
+- **Bloqueante:** critério discriminatório e campo obrigatório vazio.
+  **Aviso:** o resto; a pessoa publica assumindo.
+- A verificação roda também na reescrita da JD (caso de uso 3 do 3O) e no
+  diagnóstico "vaga não atrai" do 3N.
+- O resultado fica registrado com a vaga (quem publicou com aviso e quais),
+  para o relatório e para auditoria.
