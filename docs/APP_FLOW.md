@@ -153,3 +153,11 @@ novo convite; o resultado de uma candidatura não impede nova candidatura.
 | `/admin/conversas` | Operador e acima (na carteira) | Inbox de WhatsApp |
 | `/admin/contatos`, `/admin/ranking`, `/admin/talentos`, `/admin/agenda/*` | Conforme papel | Ver specs |
 | `/processos/<id>` | Candidato | Linha do tempo da candidatura |
+
+### Cadastro da empresa e menu (15/10/2026)
+
+- **Empresas:** razão social, fantasia, CNPJ, telefone, e-mail, endereço
+  completo (CEP preenche logradouro, bairro, cidade e UF) e **responsável**
+  (nome obrigatório, cargo, telefone, e-mail). Editável por quem aprova empresa.
+- **Menu:** Visão geral, Conversas, Agenda, Candidatos, Empresas e vagas,
+  Financeiro e dados, Governança, Plataforma. Cada grupo abre em cascata.

@@ -1390,6 +1390,13 @@ sessões futuras.
     Fluxo, UI/UX, Schema e Plano atualizados com tudo desde a v1.5
     (vitrine, admin da empresa, black list por empresa, integrações, inbox,
     migrations 0024-0028). Índice `docs/README.md` v1.2.
+106. **Cadastro completo da empresa e menu em grupos (15/10/2026)**:
+    pedido do Rodnei. Migration 0029 aplicada (telefone, e-mail,
+    endereço estruturado com busca por CEP, e responsável com cargo,
+    telefone e e-mail). Formulário de cadastro e de edição na tela de
+    Empresas (auditado); `endereco` é montado a partir dos campos.
+    Menu lateral reorganizado em 6 grupos recolhíveis (abre sozinho o
+    grupo da página atual) para caber na tela sem rolar. 58 testes.
 
 ## 3. Escopo do MVP (revisado)
 
