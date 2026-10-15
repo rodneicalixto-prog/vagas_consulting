@@ -6,7 +6,8 @@ import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { fonteDaSelecao, selecionarNotas } from "@/lib/recuperacao";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
-import { configEvolutionDaEmpresa, enviarTexto } from "@/lib/evolution";
+import { enviarTexto } from "@/lib/evolution";
+import { configEvolutionDaLinha, linhaDaConversa } from "@/lib/linhas-servidor";
 import {
   MODELO_PADRAO,
   limparPlaceholders,
@@ -171,7 +172,7 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   const [{ data: conversa }, { data: msg }] = await Promise.all([
     admin
       .from("conversations")
-      .select("id, company_id, candidate_id, telefone_normalizado, atendente_id, atribuida_em")
+      .select("id, company_id, candidate_id, telefone_normalizado, atendente_id, atribuida_em, line_id")
       .eq("id", conversationId)
       .maybeSingle(),
     admin
@@ -204,6 +205,11 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   if (!agente || !agente.ativo) return;
   if (!provedorAgenteValido(agente.provedor)) return;
   const provedor: ProvedorAgente = agente.provedor;
+
+  // Cada linha de WhatsApp tem o seu modo: desligado, só sugestão ou automático.
+  const linha = await linhaDaConversa({ line_id: conversa.line_id, company_id: conversa.company_id });
+  if (linha && linha.agente === "desligado") return;
+  const linhaPermiteAutomatico = !linha || linha.agente === "automatico";
 
   // Já existe sugestão para esta mensagem?
   const { data: jaTem } = await admin.from("ai_suggestions").select("id").eq("message_id", messageId).limit(1);
@@ -252,10 +258,16 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   };
 
   // Auto-envio só quando ninguém da equipe assumiu a conversa e o agente está em modo de atendimento.
-  let automatico = atendeSozinho(agente.nivel_autonomia) && conversa.atendente_id === null;
+  let automatico = atendeSozinho(agente.nivel_autonomia) && conversa.atendente_id === null && linhaPermiteAutomatico;
   let devolverAFila = false;
   // Equipe assumiu, mas sumiu: depois de 30 min sem atribuir nem responder, o agente retoma.
-  if (atendeSozinho(agente.nivel_autonomia) && conversa.atendente_id !== null) {
+  // Linha dedicada a um operador nunca é retomada nem devolvida à fila.
+  if (
+    atendeSozinho(agente.nivel_autonomia) &&
+    conversa.atendente_id !== null &&
+    linhaPermiteAutomatico &&
+    !linha?.operador_id
+  ) {
     const { data: ultimaHumana } = await admin
       .from("conversation_messages")
       .select("created_at")
@@ -282,7 +294,7 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
       .gte("created_at", desde);
     if ((count ?? 0) >= 3) return false;
 
-    const cfg = await configEvolutionDaEmpresa(conversa.company_id);
+    const cfg = await configEvolutionDaLinha(linha, conversa.company_id);
     if (!cfg.ok) return false;
 
     const { data: nova } = await admin

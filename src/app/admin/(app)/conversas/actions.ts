@@ -19,12 +19,12 @@ import {
   type TipoAnexo,
 } from "@/lib/conversas";
 import {
-  configEvolutionDaEmpresa,
   empresaDaOperacao,
   enviarMidia,
   enviarTexto,
   type Citada,
 } from "@/lib/evolution";
+import { configEvolutionDaLinha, linhaDaConversa, linhaParaOperador, linhaPorId } from "@/lib/linhas-servidor";
 import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
@@ -73,7 +73,7 @@ export async function enviarMensagem(formData: FormData) {
   // A empresa vem da conversa carregada no servidor, nunca do formulário.
   const { data: conversa } = await admin
     .from("conversations")
-    .select("id, company_id, telefone_normalizado, candidate_id, status, atendente_id")
+    .select("id, company_id, telefone_normalizado, candidate_id, status, atendente_id, line_id")
     .eq("id", conversaId)
     .maybeSingle();
   if (!conversa) throw new Error("Conversa não encontrada.");
@@ -166,7 +166,9 @@ export async function enviarMensagem(formData: FormData) {
   });
   if (bloqueado) throw new Error("Esta pessoa está na black list da empresa. Envio bloqueado.");
 
-  const cfg = await configEvolutionDaEmpresa(companyId);
+  // Sai pelo número da linha da conversa (conversa antiga usa a linha padrão).
+  const linhaConversa = await linhaDaConversa({ line_id: conversa.line_id, company_id: companyId });
+  const cfg = await configEvolutionDaLinha(linhaConversa, companyId);
   if (!cfg.ok) throw new Error(cfg.motivo);
 
   // Citação: só vale mensagem desta mesma conversa.
@@ -370,6 +372,7 @@ export async function abrirConversaComCandidato(formData: FormData) {
   const telefone = normalizarTelefoneBR(perfil.telefone);
   if (!telefone) throw new Error("O telefone do candidato está vazio ou não parece um número brasileiro válido.");
 
+  const linha = await linhaParaOperador(companyId, user.id);
   const { data: conversa, error } = await admin
     .from("conversations")
     .upsert(
@@ -379,8 +382,9 @@ export async function abrirConversaComCandidato(formData: FormData) {
         telefone_normalizado: telefone,
         candidate_id: candidatoId,
         nome_contato: perfil.nome_completo,
+        line_id: linha?.id ?? null,
       },
-      { onConflict: "company_id,canal,telefone_normalizado" },
+      { onConflict: "company_id,canal,telefone_normalizado,line_id" },
     )
     .select("id")
     .single();
@@ -424,11 +428,18 @@ export async function abrirConversaComEmpresaCliente(formData: FormData) {
   const empresa = cliente.nome_fantasia || cliente.razao_social || "Empresa";
   const nome = cliente.responsavel_nome ? `${cliente.responsavel_nome} (${empresa})` : empresa;
 
+  const linhaOperacao = await linhaParaOperador(operacaoId, user.id);
   const { data: conversa, error } = await admin
     .from("conversations")
     .upsert(
-      { company_id: operacaoId, canal: "whatsapp", telefone_normalizado: telefone, nome_contato: nome },
-      { onConflict: "company_id,canal,telefone_normalizado" },
+      {
+        company_id: operacaoId,
+        canal: "whatsapp",
+        telefone_normalizado: telefone,
+        nome_contato: nome,
+        line_id: linhaOperacao?.id ?? null,
+      },
+      { onConflict: "company_id,canal,telefone_normalizado,line_id" },
     )
     .select("id")
     .single();
@@ -452,7 +463,7 @@ async function conversaDoEscopo(formData: FormData) {
   const escopo = await obterEscopo(user.id, role);
   const { data: conversa } = await admin
     .from("conversations")
-    .select("id, company_id, candidate_id, atendente_id")
+    .select("id, company_id, candidate_id, atendente_id, line_id")
     .eq("id", conversaId)
     .maybeSingle();
   if (!conversa) redirect("/admin/acesso-negado");
@@ -499,6 +510,13 @@ export async function assumirConversa(formData: FormData) {
 export async function devolverConversa(formData: FormData) {
   const { user, role, admin, conversa } = await conversaDoEscopo(formData);
   if (conversa.atendente_id !== user.id && !GESTAO.includes(role)) redirect("/admin/acesso-negado");
+  // Número dedicado: a conversa é do operador dono da linha, não vai para a fila.
+  if (conversa.line_id) {
+    const linha = await linhaPorId(conversa.line_id);
+    if (linha?.operador_id) {
+      throw new Error("Esta conversa é do número de um operador e não vai para a fila. Peça à gestão para transferir.");
+    }
+  }
   await admin
     .from("conversations")
     .update({ atendente_id: null, atribuida_em: null })

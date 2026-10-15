@@ -5,10 +5,10 @@ import { gerarSugestao } from "@/lib/agente-servidor";
 import {
   apikeyDaPlataforma,
   baixarMidia,
-  configEvolutionDaEmpresa,
   empresaDaInstancia,
   tokenDaInstancia,
 } from "@/lib/evolution";
+import { configEvolutionDaLinha, linhaDaInstancia, type Linha } from "@/lib/linhas-servidor";
 import {
   TAMANHO_MAX_ANEXO,
   detectarMidia,
@@ -72,21 +72,23 @@ function instanteDaMensagem(ts: unknown): string {
   return new Date().toISOString();
 }
 
-/** Acha ou cria a conversa (company, whatsapp, telefone). */
+/** Acha ou cria a conversa (empresa, whatsapp, telefone, linha). */
 async function obterConversa(
   admin: Admin,
   companyId: string,
   telefone: string,
   nome: string | null,
+  linha: Linha | null,
 ): Promise<{ id: string; nao_lidas: number; candidate_id: string | null; nome_contato: string | null } | null> {
   const buscar = async () => {
-    const { data } = await admin
+    let q = admin
       .from("conversations")
       .select("id, nao_lidas, candidate_id, nome_contato")
       .eq("company_id", companyId)
       .eq("canal", "whatsapp")
-      .eq("telefone_normalizado", telefone)
-      .maybeSingle();
+      .eq("telefone_normalizado", telefone);
+    q = linha ? q.eq("line_id", linha.id) : q.is("line_id", null);
+    const { data } = await q.maybeSingle();
     return data ?? null;
   };
 
@@ -97,6 +99,9 @@ async function obterConversa(
       canal: "whatsapp",
       telefone_normalizado: telefone,
       nome_contato: nome,
+      line_id: linha?.id ?? null,
+      // Linha dedicada: a conversa já nasce do operador dono do número.
+      ...(linha?.operador_id ? { atendente_id: linha.operador_id, atribuida_em: new Date().toISOString() } : {}),
     });
     // 23505: outra requisição criou no meio; relê.
     if (error && error.code !== "23505") throw error;
@@ -134,6 +139,7 @@ async function guardarMidia(
   provedorId: string | null,
   item: Record<string, unknown>,
   midia: MidiaDetectada,
+  linha: Linha | null,
 ) {
   try {
     const inline = (item.message as { base64?: unknown } | null)?.base64;
@@ -142,7 +148,7 @@ async function guardarMidia(
     let nome = midia.nome;
     if (!base64) {
       if (!provedorId) return;
-      const cfg = await configEvolutionDaEmpresa(companyId);
+      const cfg = await configEvolutionDaLinha(linha, companyId);
       if (!cfg.ok) return;
       const baixada = await baixarMidia(cfg.config, provedorId);
       if (!baixada) return;
@@ -171,7 +177,7 @@ async function guardarMidia(
   }
 }
 
-async function tratarMensagem(admin: Admin, companyId: string, item: Record<string, unknown>) {
+async function tratarMensagem(admin: Admin, companyId: string, item: Record<string, unknown>, linha: Linha | null) {
   const key = (item.key ?? {}) as { remoteJid?: unknown; fromMe?: unknown; id?: unknown };
   if (key.fromMe === true) return; // saídas passam pelo nosso sistema
   const telefone = telefoneDeJid(key.remoteJid);
@@ -180,7 +186,7 @@ async function tratarMensagem(admin: Admin, companyId: string, item: Record<stri
   if (!telefone || !texto) return;
 
   const pushName = typeof item.pushName === "string" && item.pushName.trim() ? item.pushName.trim().slice(0, 120) : null;
-  const conversa = await obterConversa(admin, companyId, telefone, pushName);
+  const conversa = await obterConversa(admin, companyId, telefone, pushName, linha);
   if (!conversa) return;
 
   // Descadastro primeiro e de forma idempotente: mesmo que o resto falhe ou a
@@ -231,7 +237,7 @@ async function tratarMensagem(admin: Admin, companyId: string, item: Record<stri
   }
   await admin.from("conversations").update(atualizacao).eq("id", conversa.id);
 
-  if (midia && nova) await guardarMidia(admin, companyId, conversa.id, nova.id, provedorId, item, midia);
+  if (midia && nova) await guardarMidia(admin, companyId, conversa.id, nova.id, provedorId, item, midia, linha);
 
   // Sugestão do agente (modo sugestão): roda depois da resposta ao webhook.
   if (!midia && !pediuSaida && nova) {
@@ -322,12 +328,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true, ignorado: true });
     }
 
-    const companyId = instancia ? await empresaDaInstancia(instancia) : null;
+    // A instância pertence a uma linha (uma empresa pode ter várias); sem linha, cadastro antigo.
+    const linha = instancia ? await linhaDaInstancia(instancia) : null;
+    const companyId = linha?.company_id ?? (instancia ? await empresaDaInstancia(instancia) : null);
     if (!companyId) return NextResponse.json({ ok: true, ignorado: true });
 
     const admin = createAdminClient();
     for (const item of paraLista(corpo.data)) {
-      if (evento === "messages.upsert") await tratarMensagem(admin, companyId, item);
+      if (evento === "messages.upsert") await tratarMensagem(admin, companyId, item, linha);
       else await tratarStatus(admin, companyId, item);
     }
     return NextResponse.json({ ok: true });

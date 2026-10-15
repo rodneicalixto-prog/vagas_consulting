@@ -179,6 +179,7 @@ export type Database = {
       }
       companies: {
         Row: {
+          max_linhas_whatsapp: number
           telefone: string | null
           email_contato: string | null
           cep: string | null
@@ -208,6 +209,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          max_linhas_whatsapp?: number
           telefone?: string | null
           email_contato?: string | null
           cep?: string | null
@@ -237,6 +239,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          max_linhas_whatsapp?: number
           telefone?: string | null
           email_contato?: string | null
           cep?: string | null
@@ -1006,6 +1009,48 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_lines: {
+        Row: {
+          agente: string
+          apelido: string
+          ativa: boolean
+          company_id: string
+          created_at: string
+          criado_por: string | null
+          id: string
+          instance: string
+          operador_id: string | null
+          padrao: boolean
+          updated_at: string
+        }
+        Insert: {
+          agente?: string
+          apelido: string
+          ativa?: boolean
+          company_id: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          instance: string
+          operador_id?: string | null
+          padrao?: boolean
+          updated_at?: string
+        }
+        Update: {
+          agente?: string
+          apelido?: string
+          ativa?: boolean
+          company_id?: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          instance?: string
+          operador_id?: string | null
+          padrao?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string
@@ -1095,6 +1140,7 @@ export type Database = {
       }
       conversations: {
         Row: {
+          line_id: string | null
           atendente_id: string | null
           atribuida_em: string | null
           canal: string
@@ -1110,6 +1156,7 @@ export type Database = {
           ultima_msg_previa: string | null
         }
         Insert: {
+          line_id?: string | null
           atendente_id?: string | null
           atribuida_em?: string | null
           canal?: string
@@ -1125,6 +1172,7 @@ export type Database = {
           ultima_msg_previa?: string | null
         }
         Update: {
+          line_id?: string | null
           atendente_id?: string | null
           atribuida_em?: string | null
           canal?: string
