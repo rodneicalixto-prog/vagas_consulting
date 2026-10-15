@@ -1368,6 +1368,13 @@ sessões futuras.
     `INTEGRATIONS_ENCRYPTION_KEY` na Vercel (tipo sensível, Production) e
     o novo deploy ficam com o Rodnei. **Fazer cópia em gerenciador de
     senhas**: sem a chave, os segredos gravados não podem ser lidos.
+103. **Cofre de integrações em produção e OpenAI conectada (15/10/2026,
+    00:03 UTC)**: o Rodnei cadastrou `INTEGRATIONS_ENCRYPTION_KEY` na Vercel
+    (Production, secreta) e redeployou; a chave da OpenAI foi gravada
+    cifrada e o "Testar conexão" retornou conexão válida. Pendentes:
+    Claude, Groq, Evolution (WhatsApp), Resend, Telegram e SMS; teto
+    mensal ainda não preenchido; endurecer a chave na OpenAI (permissões
+    restritas e limite de gasto).
 
 ## 3. Escopo do MVP (revisado)
 
