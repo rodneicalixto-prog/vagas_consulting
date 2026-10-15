@@ -312,3 +312,18 @@ A rota recusa (401) qualquer chamada sem a chave da plataforma.
 - Só texto: imagens e áudios entram como marcador (`[imagem]`).
 - Reentrega sem id do provedor pode duplicar uma mensagem.
 - Telefone aparece na conversa mesmo se a candidatura terminou (conversa já existente).
+
+### Anexos e áudio (15/10/2026)
+
+- **Armazenamento:** bucket privado `conversas-anexos`, caminho
+  `<empresa>/<conversa>/<id>-<nome>`; sem política de leitura direta.
+- **Entrada:** o webhook registra a mensagem e, em seguida, baixa a mídia
+  (`/chat/getBase64FromMediaMessage`) e guarda. Falha no download não perde a
+  mensagem (aparece "arquivo indisponível"). Tipos permitidos: JPG, PNG, WebP,
+  PDF, Word, Excel, TXT, áudio e vídeo MP4; SVG, HTML e executáveis nunca.
+- **Saída:** `sendMedia` (imagem, documento, vídeo) e `sendWhatsAppAudio`
+  (áudio como nota de voz; sem legenda). Limite de 4 MB por envio.
+- **Citação:** `resposta_a` aponta mensagem da mesma conversa; se a citação
+  causar erro na Evolution, reenvia sem citar.
+- **Acesso:** `/api/admin/conversas/anexo/[id]` valida o escopo da empresa e
+  redireciona para link temporário de 2 min; fora do escopo responde 404.

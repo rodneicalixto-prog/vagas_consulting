@@ -1,8 +1,20 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { apikeyDaPlataforma, empresaDaInstancia } from "@/lib/evolution";
-import { ehPedidoDeSaida, extrairTexto, previa, telefoneDeJid } from "@/lib/conversas";
+import { apikeyDaPlataforma, baixarMidia, configEvolutionDaEmpresa, empresaDaInstancia } from "@/lib/evolution";
+import {
+  TAMANHO_MAX_ANEXO,
+  detectarMidia,
+  ehPedidoDeSaida,
+  extensaoDoMime,
+  extrairTexto,
+  nomeSeguro,
+  previa,
+  rotuloAnexo,
+  telefoneDeJid,
+  tipoDoAnexo,
+  type MidiaDetectada,
+} from "@/lib/conversas";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
 
 /**
@@ -13,6 +25,9 @@ import { normalizarTelefoneBR } from "@/lib/whatsapp";
  * - Idempotente: o índice único (conversation_id, provedor_msg_id) barra reentregas.
  * - Sem chamadas externas: só banco. Nunca loga apikey nem corpo.
  */
+
+// Baixar a mídia da Evolution e guardá-la pode levar alguns segundos.
+export const maxDuration = 30;
 
 const SEM_DETALHE = { ok: false } as const;
 
@@ -100,11 +115,61 @@ async function candidatoPorTelefone(admin: Admin, telefone: string): Promise<str
   return achados.length === 1 ? achados[0].id : null;
 }
 
+/**
+ * Baixa a mídia recebida e guarda no bucket privado. Falhar aqui não derruba
+ * o webhook: a mensagem já está registrada e aparece sem o arquivo.
+ */
+async function guardarMidia(
+  admin: Admin,
+  companyId: string,
+  conversaId: string,
+  mensagemId: string,
+  provedorId: string | null,
+  item: Record<string, unknown>,
+  midia: MidiaDetectada,
+) {
+  try {
+    const inline = (item.message as { base64?: unknown } | null)?.base64;
+    let base64 = typeof inline === "string" && inline ? inline.replace(/^data:[^;]+;base64,/, "") : null;
+    let mime = midia.mime;
+    let nome = midia.nome;
+    if (!base64) {
+      if (!provedorId) return;
+      const cfg = await configEvolutionDaEmpresa(companyId);
+      if (!cfg.ok) return;
+      const baixada = await baixarMidia(cfg.config, provedorId);
+      if (!baixada) return;
+      base64 = baixada.base64;
+      mime = mime ?? baixada.mime;
+      nome = nome ?? baixada.nome;
+    }
+    const tipo = tipoDoAnexo(mime);
+    if (!tipo || !mime) return;
+    const bytes = Buffer.from(base64, "base64");
+    if (bytes.length === 0 || bytes.length > TAMANHO_MAX_ANEXO) return;
+
+    const contentType = mime.split(";")[0].trim().toLowerCase();
+    const arquivo = (nome ?? `${tipo}.${extensaoDoMime(mime)}`).replace(/[\\/]/g, "_").slice(0, 100);
+    const path = `${companyId}/${conversaId}/${mensagemId}-${nomeSeguro(arquivo)}`;
+    const { error } = await admin.storage
+      .from("conversas-anexos")
+      .upload(path, bytes, { contentType, upsert: true });
+    if (error) return;
+    await admin
+      .from("conversation_messages")
+      .update({ tipo, anexo_path: path, anexo_nome: arquivo, anexo_mime: contentType, anexo_tamanho: bytes.length })
+      .eq("id", mensagemId);
+  } catch {
+    // mensagem preservada sem o arquivo
+  }
+}
+
 async function tratarMensagem(admin: Admin, companyId: string, item: Record<string, unknown>) {
   const key = (item.key ?? {}) as { remoteJid?: unknown; fromMe?: unknown; id?: unknown };
   if (key.fromMe === true) return; // saídas passam pelo nosso sistema
   const telefone = telefoneDeJid(key.remoteJid);
-  const texto = extrairTexto(item.message);
+  const midia = detectarMidia(item.message);
+  const texto = midia ? rotuloAnexo(midia.tipo, midia.nome, midia.legenda) : extrairTexto(item.message);
   if (!telefone || !texto) return;
 
   const pushName = typeof item.pushName === "string" && item.pushName.trim() ? item.pushName.trim().slice(0, 120) : null;
@@ -125,14 +190,19 @@ async function tratarMensagem(admin: Admin, companyId: string, item: Record<stri
   }
 
   const provedorId = typeof key.id === "string" && key.id ? key.id.slice(0, 200) : null;
-  const { error: errMsg } = await admin.from("conversation_messages").insert({
-    conversation_id: conversa.id,
-    direcao: "entrada",
-    autor: "candidato",
-    texto,
-    provedor_msg_id: provedorId,
-    status: "recebida",
-  });
+  const { data: nova, error: errMsg } = await admin
+    .from("conversation_messages")
+    .insert({
+      conversation_id: conversa.id,
+      direcao: "entrada",
+      autor: "candidato",
+      texto,
+      tipo: midia?.tipo ?? "texto",
+      provedor_msg_id: provedorId,
+      status: "recebida",
+    })
+    .select("id")
+    .single();
   if (errMsg) {
     if (errMsg.code === "23505") return; // reentrega: já processada
     throw errMsg;
@@ -153,6 +223,8 @@ async function tratarMensagem(admin: Admin, companyId: string, item: Record<stri
     if (candidato) atualizacao.candidate_id = candidato;
   }
   await admin.from("conversations").update(atualizacao).eq("id", conversa.id);
+
+  if (midia && nova) await guardarMidia(admin, companyId, conversa.id, nova.id, provedorId, item, midia);
 
   if (pediuSaida) {
     await admin.from("conversation_messages").insert({

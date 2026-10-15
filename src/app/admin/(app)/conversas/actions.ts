@@ -5,9 +5,17 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, exigirEmpresa, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
-import { podeEnviar } from "@/lib/conversas";
-import { previa } from "@/lib/conversas";
-import { configEvolutionDaEmpresa, enviarTexto } from "@/lib/evolution";
+import {
+  TAMANHO_MAX_ENVIO,
+  extensaoDoMime,
+  nomeSeguro,
+  podeEnviar,
+  previa,
+  rotuloAnexo,
+  tipoDoAnexo,
+  type TipoAnexo,
+} from "@/lib/conversas";
+import { configEvolutionDaEmpresa, enviarMidia, enviarTexto, type Citada } from "@/lib/evolution";
 import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { normalizarTelefoneBR } from "@/lib/whatsapp";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
@@ -21,14 +29,32 @@ function uuidDe(formData: FormData, campo: string): string {
   return v;
 }
 
-/** Envia uma mensagem de texto do operador pelo WhatsApp da empresa. */
+const BUCKET = "conversas-anexos";
+
+/** Envia texto e/ou arquivo (imagem, documento, áudio) pelo WhatsApp da empresa. */
 export async function enviarMensagem(formData: FormData) {
   const { user, role } = await requireInternalUser("pipeline.manage");
   const conversaId = uuidDe(formData, "conversation_id");
   const texto = String(formData.get("texto") ?? "").trim();
-  if (texto.length < 1 || texto.length > 2000) {
+
+  const arquivo = formData.get("arquivo");
+  const anexo = arquivo instanceof File && arquivo.size > 0 ? arquivo : null;
+  let tipoAnexo: TipoAnexo | null = null;
+  if (anexo) {
+    tipoAnexo = tipoDoAnexo(anexo.type);
+    if (!tipoAnexo) {
+      throw new Error("Tipo de arquivo não permitido. Envie imagem, PDF, Word, Excel, texto, áudio ou vídeo MP4.");
+    }
+    if (anexo.size > TAMANHO_MAX_ENVIO) throw new Error("O arquivo passa de 4 MB. Envie um menor.");
+    if (tipoAnexo === "audio" && texto) {
+      throw new Error("Áudio não aceita legenda. Envie o texto em outra mensagem.");
+    }
+    if (texto.length > 1000) throw new Error("A legenda deve ter até 1000 caracteres.");
+  } else if (texto.length < 1 || texto.length > 2000) {
     throw new Error("A mensagem deve ter entre 1 e 2000 caracteres.");
   }
+  const respostaBruta = String(formData.get("resposta_a") ?? "").trim();
+  if (respostaBruta && !UUID.test(respostaBruta)) throw new Error("Identificador inválido.");
 
   const admin = createAdminClient();
   const escopo = await obterEscopo(user.id, role);
@@ -99,6 +125,40 @@ export async function enviarMensagem(formData: FormData) {
   const cfg = await configEvolutionDaEmpresa(companyId);
   if (!cfg.ok) throw new Error(cfg.motivo);
 
+  // Citação: só vale mensagem desta mesma conversa.
+  let citada: Citada | undefined;
+  let respostaId: string | null = null;
+  if (respostaBruta) {
+    const { data: ref } = await admin
+      .from("conversation_messages")
+      .select("id, provedor_msg_id, texto")
+      .eq("id", respostaBruta)
+      .eq("conversation_id", conversa.id)
+      .maybeSingle();
+    if (ref) {
+      respostaId = ref.id;
+      if (ref.provedor_msg_id) citada = { id: ref.provedor_msg_id, texto: ref.texto };
+    }
+  }
+
+  // Arquivo: guardado no bucket privado antes de registrar a mensagem.
+  let bytes: Buffer | null = null;
+  let mime = "";
+  let nomeArquivo: string | null = null;
+  let anexoPath: string | null = null;
+  if (anexo && tipoAnexo) {
+    mime = anexo.type.split(";")[0].trim().toLowerCase();
+    bytes = Buffer.from(await anexo.arrayBuffer());
+    nomeArquivo = (anexo.name || `${tipoAnexo}.${extensaoDoMime(mime)}`).replace(/[\\/]/g, "_").slice(0, 100);
+    anexoPath = `${companyId}/${conversa.id}/${globalThis.crypto.randomUUID()}-${nomeSeguro(nomeArquivo)}`;
+    const { error: erroUp } = await admin.storage
+      .from(BUCKET)
+      .upload(anexoPath, bytes, { contentType: mime, upsert: false });
+    if (erroUp) throw new Error("Não foi possível guardar o arquivo. Tente novamente.");
+  }
+
+  const textoRegistro = texto || (tipoAnexo ? rotuloAnexo(tipoAnexo, nomeArquivo) : "");
+
   // Registra antes de enviar: se a rede cair, o histórico não perde a tentativa.
   const { data: msg, error: erroInsert } = await admin
     .from("conversation_messages")
@@ -107,14 +167,36 @@ export async function enviarMensagem(formData: FormData) {
       direcao: "saida",
       autor: "operador",
       autor_id: user.id,
-      texto,
+      texto: textoRegistro,
+      tipo: tipoAnexo ?? "texto",
+      anexo_path: anexoPath,
+      anexo_nome: nomeArquivo,
+      anexo_mime: anexoPath ? mime : null,
+      anexo_tamanho: bytes ? bytes.length : null,
+      resposta_a: respostaId,
       status: "enviada",
     })
     .select("id")
     .single();
-  if (erroInsert || !msg) throw new Error("Não foi possível registrar a mensagem. Tente novamente.");
+  if (erroInsert || !msg) {
+    if (anexoPath) await admin.storage.from(BUCKET).remove([anexoPath]);
+    throw new Error("Não foi possível registrar a mensagem. Tente novamente.");
+  }
 
-  const envio = await enviarTexto(cfg.config, telefone, texto);
+  const enviar = (c?: Citada) =>
+    bytes && tipoAnexo
+      ? enviarMidia(
+          cfg.config,
+          telefone,
+          { tipo: tipoAnexo, base64: bytes.toString("base64"), mime, nome: nomeArquivo ?? "arquivo", legenda: texto || undefined },
+          c,
+        )
+      : enviarTexto(cfg.config, telefone, texto, c);
+  let envio = await enviar(citada);
+  // Se a citação for o problema, reenvia sem ela em vez de perder a mensagem.
+  if (!envio.ok && citada && envio.erro.startsWith("A Evolution respondeu com erro")) {
+    envio = await enviar(undefined);
+  }
   if (!envio.ok) {
     await admin.from("conversation_messages").update({ status: "falhou", erro: envio.erro }).eq("id", msg.id);
     revalidatePath("/admin/conversas");
@@ -127,7 +209,7 @@ export async function enviarMensagem(formData: FormData) {
 
   await admin
     .from("conversations")
-    .update({ ultima_msg_em: new Date().toISOString(), ultima_msg_previa: previa(texto) })
+    .update({ ultima_msg_em: new Date().toISOString(), ultima_msg_previa: previa(textoRegistro) })
     .eq("id", conversa.id);
 
   // O texto da mensagem nunca vai para a auditoria (dado pessoal).
@@ -136,7 +218,7 @@ export async function enviarMensagem(formData: FormData) {
     acao: "whatsapp_mensagem_enviada",
     objeto_tipo: "conversation",
     objeto_id: conversa.id,
-    depois: { company_id: companyId },
+    depois: { company_id: companyId, tipo: tipoAnexo ?? "texto" },
   });
 
   revalidatePath("/admin/conversas");

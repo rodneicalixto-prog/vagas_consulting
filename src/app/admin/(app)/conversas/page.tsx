@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { SubmitButton } from "@/components/form-buttons";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { empresasParaFiltro, obterEscopo, podeVerEmpresa } from "@/lib/auth/escopo";
 import { formatarTelefoneBR, linkWhatsApp } from "@/lib/whatsapp";
+import { rotuloAnexo, type TipoAnexo } from "@/lib/conversas";
 import { AtualizarSozinho } from "./atualizar-sozinho";
+import { BotaoCopiar } from "./botao-copiar";
 import { FormularioEnvio } from "./formulario-envio";
+
+// Envio de arquivo e áudio chama a Evolution e pode levar alguns segundos.
+export const maxDuration = 30;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const FUSO = "America/Sao_Paulo";
@@ -54,7 +58,7 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function ConversasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ c?: string; filtro?: string; q?: string }>;
+  searchParams: Promise<{ c?: string; filtro?: string; q?: string; r?: string }>;
 }) {
   const { user, role } = await requireInternalUser("pipeline.manage");
   const sp = await searchParams;
@@ -162,6 +166,10 @@ export default async function ConversasPage({
     status: string;
     erro: string | null;
     created_at: string;
+    tipo: string;
+    anexo_path: string | null;
+    anexo_nome: string | null;
+    resposta_a: string | null;
   }[] = [];
   let descadastrado = false;
   let empresaDaAberta: string | null = null;
@@ -169,7 +177,7 @@ export default async function ConversasPage({
     const [{ data: msgs }, { data: optOut }, { data: emp }] = await Promise.all([
       admin
         .from("conversation_messages")
-        .select("id, direcao, autor, texto, status, erro, created_at")
+        .select("id, direcao, autor, texto, status, erro, created_at, tipo, anexo_path, anexo_nome, resposta_a")
         .eq("conversation_id", aberta.id)
         .order("created_at", { ascending: false })
         .limit(300),
@@ -187,14 +195,20 @@ export default async function ConversasPage({
     empresaDaAberta = emp?.nome_fantasia || emp?.razao_social || null;
   }
 
-  const href = (c?: string | null, filtro?: string | null) => {
+  const href = (c?: string | null, filtro?: string | null, r?: string | null) => {
     const p = new URLSearchParams();
     if (c) p.set("c", c);
     if (filtro) p.set("filtro", filtro);
     if (q) p.set("q", q);
+    if (r) p.set("r", r);
     const s = p.toString();
     return `/admin/conversas${s ? `?${s}` : ""}`;
   };
+
+  // Mensagem que está sendo respondida (?r=): precisa ser da conversa aberta.
+  const alvoResposta = sp.r && UUID.test(sp.r) ? mensagens.find((m) => m.id === sp.r) ?? null : null;
+  const resumoDe = (m: { texto: string; tipo: string; anexo_nome: string | null }) =>
+    m.tipo === "texto" ? m.texto.slice(0, 120) : rotuloAnexo(m.tipo as TipoAnexo, m.anexo_nome);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -341,6 +355,11 @@ export default async function ConversasPage({
                 )}
                 {mensagens.map((m) => {
                   const saida = m.direcao === "saida";
+                  const citada = m.resposta_a ? mensagens.find((x) => x.id === m.resposta_a) : null;
+                  const urlAnexo = m.anexo_path ? `/api/admin/conversas/anexo/${m.id}` : null;
+                  // Legenda só aparece se for texto de verdade (não o rótulo automático).
+                  const legenda =
+                    m.tipo === "texto" || m.texto === rotuloAnexo(m.tipo as TipoAnexo, m.anexo_nome) ? null : m.texto;
                   return (
                     <div key={m.id} className={`flex ${saida ? "justify-end" : "justify-start"}`}>
                       <div
@@ -348,11 +367,61 @@ export default async function ConversasPage({
                           saida ? "bg-navy text-white" : "bg-black/[0.06] text-text"
                         } ${m.status === "falhou" ? "ring-1 ring-red-400" : ""}`}
                       >
-                        <p className="whitespace-pre-wrap break-words">{m.texto}</p>
+                        {m.resposta_a && (
+                          <p
+                            className={`mb-1 truncate rounded border-l-2 px-2 py-1 text-[11px] ${
+                              saida ? "border-white/60 bg-white/10 text-white/80" : "border-navy bg-black/[0.05] text-text-2"
+                            }`}
+                          >
+                            {citada ? resumoDe(citada) : "Mensagem anterior"}
+                          </p>
+                        )}
+                        {m.tipo === "texto" && <p className="whitespace-pre-wrap break-words">{m.texto}</p>}
+                        {m.tipo !== "texto" && urlAnexo && (
+                          <div className="space-y-1">
+                            {m.tipo === "imagem" && (
+                              <a href={urlAnexo} target="_blank" rel="noreferrer">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={urlAnexo}
+                                  alt="Imagem recebida"
+                                  loading="lazy"
+                                  className="max-h-64 max-w-full rounded-lg"
+                                />
+                              </a>
+                            )}
+                            {m.tipo === "audio" && <audio controls preload="none" src={urlAnexo} className="max-w-full" />}
+                            {m.tipo === "video" && (
+                              <video controls preload="none" src={urlAnexo} className="max-h-64 max-w-full rounded-lg" />
+                            )}
+                            {m.tipo === "documento" && (
+                              <a href={urlAnexo} className="font-bold underline">
+                                📎 {m.anexo_nome ?? "Documento"}
+                              </a>
+                            )}
+                            {legenda && <p className="whitespace-pre-wrap break-words">{legenda}</p>}
+                          </div>
+                        )}
+                        {m.tipo !== "texto" && !urlAnexo && (
+                          <p className="break-words italic opacity-80">
+                            {m.texto} <span className="not-italic">(arquivo indisponível)</span>
+                          </p>
+                        )}
                         <p className={`mt-0.5 text-[10px] ${saida ? "text-white/70" : "text-text-3"}`}>
                           {AUTOR_LABEL[m.autor] ?? m.autor} · {dataHora(m.created_at)}
                           {saida && ` · ${STATUS_LABEL[m.status] ?? m.status}`}
                         </p>
+                        {m.autor !== "sistema" && (
+                          <p className={`mt-0.5 flex gap-3 text-[10.5px] ${saida ? "text-white/80" : "text-text-2"}`}>
+                            <Link
+                              href={href(aberta.id, soNaoLidas ? "nao-lidas" : null, m.id)}
+                              className="font-bold underline-offset-2 hover:underline"
+                            >
+                              Responder
+                            </Link>
+                            {m.tipo === "texto" && <BotaoCopiar texto={m.texto} />}
+                          </p>
+                        )}
                         {m.status === "falhou" && (
                           <p className="mt-0.5 text-[10.5px] font-bold text-red-200">
                             Falhou{m.erro ? `: ${m.erro}` : "."}
@@ -364,7 +433,19 @@ export default async function ConversasPage({
                 })}
               </div>
 
-              <FormularioEnvio conversationId={aberta.id} descadastrado={descadastrado} />
+              <FormularioEnvio
+                conversationId={aberta.id}
+                descadastrado={descadastrado}
+                respondendo={
+                  alvoResposta
+                    ? {
+                        id: alvoResposta.id,
+                        resumo: resumoDe(alvoResposta),
+                        limparHref: href(aberta.id, soNaoLidas ? "nao-lidas" : null),
+                      }
+                    : null
+                }
+              />
             </>
           )}
         </section>

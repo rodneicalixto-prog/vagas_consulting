@@ -208,3 +208,10 @@ auditadas: `carteira_atribuida`, `carteira_removida`,
 
 Todas com RLS ligada e sem política pública (acesso só pelo servidor).
 Pendência: a `0021` (alinha schema) segue não aplicada (no-op documentado).
+
+### Migration 0030 — anexos no inbox (15/10/2026)
+
+`conversation_messages` ganha `tipo` (texto, imagem, documento, audio, video),
+`anexo_path`, `anexo_nome`, `anexo_mime`, `anexo_tamanho` e `resposta_a`
+(auto-referência, `on delete set null`). Bucket privado `conversas-anexos`
+(16 MB), sem políticas: acesso só pelo servidor com chave de serviço.

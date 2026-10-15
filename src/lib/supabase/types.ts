@@ -423,6 +423,12 @@ export type Database = {
       }
       conversation_messages: {
         Row: {
+          tipo: string
+          anexo_path: string | null
+          anexo_nome: string | null
+          anexo_mime: string | null
+          anexo_tamanho: number | null
+          resposta_a: string | null
           autor: string
           autor_id: string | null
           conversation_id: string
@@ -435,6 +441,12 @@ export type Database = {
           texto: string
         }
         Insert: {
+          tipo?: string
+          anexo_path?: string | null
+          anexo_nome?: string | null
+          anexo_mime?: string | null
+          anexo_tamanho?: number | null
+          resposta_a?: string | null
           autor: string
           autor_id?: string | null
           conversation_id: string
@@ -447,6 +459,12 @@ export type Database = {
           texto: string
         }
         Update: {
+          tipo?: string
+          anexo_path?: string | null
+          anexo_nome?: string | null
+          anexo_mime?: string | null
+          anexo_tamanho?: number | null
+          resposta_a?: string | null
           autor?: string
           autor_id?: string | null
           conversation_id?: string

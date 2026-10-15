@@ -1397,6 +1397,17 @@ sessões futuras.
     Empresas (auditado); `endereco` é montado a partir dos campos.
     Menu lateral reorganizado em 6 grupos recolhíveis (abre sozinho o
     grupo da página atual) para caber na tela sem rolar. 58 testes.
+107. **Anexos e áudio no inbox (15/10/2026)**: pedido do Rodnei
+    ("anexar", "receber áudio, enviar áudio"). Migration 0030 aplicada
+    (tipo, anexo_*, resposta_a em `conversation_messages` + bucket privado
+    `conversas-anexos`). Receber: o webhook baixa imagem, áudio, vídeo e
+    documento pela Evolution e guarda no bucket; envio: clipe (até 4 MB,
+    limite do corpo na Vercel), gravação de áudio no navegador, emoji,
+    responder (citação) e copiar. Arquivo só abre por rota autenticada
+    com escopo da empresa (`/api/admin/conversas/anexo/[id]`).
+    Permissions-Policy liberou o microfone só para o próprio site.
+    Pendente: respostas rápidas, notas internas, atribuir, encaminhar.
+    62 testes.
 
 ## 3. Escopo do MVP (revisado)
 

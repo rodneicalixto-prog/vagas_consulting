@@ -82,15 +82,20 @@ export async function empresaDaInstancia(instance: string): Promise<string | nul
 
 export type ResultadoEnvio = { ok: true; idMensagem: string | null } | { ok: false; erro: string };
 
-/** Envia texto simples. Tempo limite de 10 s; erros sem expor a chave. */
-export async function enviarTexto(cfg: ConfigEvolution, telefone: string, texto: string): Promise<ResultadoEnvio> {
+/** Mensagem a citar (resposta): id do provedor e texto, para o WhatsApp mostrar a citação. */
+export type Citada = { id: string; texto: string };
+
+type RespostaPost = { ok: true; json: unknown } | { ok: false; erro: string };
+
+/** POST JSON na Evolution com tempo limite; erros sem expor a chave. */
+async function postar(cfg: ConfigEvolution, caminho: string, corpo: unknown, limiteMs: number): Promise<RespostaPost> {
   const c = new AbortController();
-  const t = setTimeout(() => c.abort(), 10_000);
+  const t = setTimeout(() => c.abort(), limiteMs);
   try {
-    const r = await fetch(`${cfg.baseUrl}/message/sendText/${encodeURIComponent(cfg.instance)}`, {
+    const r = await fetch(`${cfg.baseUrl}${caminho}/${encodeURIComponent(cfg.instance)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", apikey: cfg.apikey },
-      body: JSON.stringify({ number: telefone, text: texto }),
+      body: JSON.stringify(corpo),
       signal: c.signal,
       cache: "no-store",
     });
@@ -99,12 +104,88 @@ export async function enviarTexto(cfg: ConfigEvolution, telefone: string, texto:
       if (r.status === 404) return { ok: false, erro: "Instância do WhatsApp não encontrada." };
       return { ok: false, erro: `A Evolution respondeu com erro (HTTP ${r.status}).` };
     }
-    const corpo = (await r.json().catch(() => null)) as { key?: { id?: string } } | null;
-    return { ok: true, idMensagem: corpo?.key?.id ?? null };
+    return { ok: true, json: await r.json().catch(() => null) };
   } catch (e) {
     const abortou = e instanceof Error && e.name === "AbortError";
     return { ok: false, erro: abortou ? "Tempo esgotado ao falar com a Evolution." : "Falha de rede ao falar com a Evolution." };
   } finally {
     clearTimeout(t);
   }
+}
+
+function idDaResposta(json: unknown): string | null {
+  return (json as { key?: { id?: string } } | null)?.key?.id ?? null;
+}
+
+function citacao(c?: Citada) {
+  return c ? { quoted: { key: { id: c.id }, message: { conversation: c.texto.slice(0, 500) } } } : {};
+}
+
+/** Envia texto simples (com citação opcional). */
+export async function enviarTexto(
+  cfg: ConfigEvolution,
+  telefone: string,
+  texto: string,
+  citada?: Citada,
+): Promise<ResultadoEnvio> {
+  const r = await postar(cfg, "/message/sendText", { number: telefone, text: texto, ...citacao(citada) }, 10_000);
+  return r.ok ? { ok: true, idMensagem: idDaResposta(r.json) } : r;
+}
+
+export type MidiaEnvio = {
+  tipo: "imagem" | "documento" | "audio" | "video";
+  /** Conteúdo em base64 puro (sem prefixo data:). */
+  base64: string;
+  mime: string;
+  nome: string;
+  legenda?: string;
+};
+
+/** Envia imagem, documento, vídeo ou áudio (áudio vai como nota de voz). */
+export async function enviarMidia(
+  cfg: ConfigEvolution,
+  telefone: string,
+  m: MidiaEnvio,
+  citada?: Citada,
+): Promise<ResultadoEnvio> {
+  const r =
+    m.tipo === "audio"
+      ? await postar(cfg, "/message/sendWhatsAppAudio", { number: telefone, audio: m.base64, ...citacao(citada) }, 30_000)
+      : await postar(
+          cfg,
+          "/message/sendMedia",
+          {
+            number: telefone,
+            mediatype: m.tipo === "imagem" ? "image" : m.tipo === "video" ? "video" : "document",
+            mimetype: m.mime,
+            caption: m.legenda ?? "",
+            media: m.base64,
+            fileName: m.nome,
+            ...citacao(citada),
+          },
+          30_000,
+        );
+  return r.ok ? { ok: true, idMensagem: idDaResposta(r.json) } : r;
+}
+
+/** Baixa a mídia de uma mensagem recebida (a Evolution devolve em base64). */
+export async function baixarMidia(
+  cfg: ConfigEvolution,
+  idMensagem: string,
+): Promise<{ base64: string; mime: string | null; nome: string | null } | null> {
+  const r = await postar(
+    cfg,
+    "/chat/getBase64FromMediaMessage",
+    { message: { key: { id: idMensagem } }, convertToMp4: false },
+    25_000,
+  );
+  if (!r.ok) return null;
+  const j = r.json as { base64?: unknown; mimetype?: unknown; fileName?: unknown } | null;
+  if (!j || typeof j.base64 !== "string" || !j.base64) return null;
+  const base64 = j.base64.replace(/^data:[^;]+;base64,/, "");
+  return {
+    base64,
+    mime: typeof j.mimetype === "string" ? j.mimetype : null,
+    nome: typeof j.fileName === "string" ? j.fileName : null,
+  };
 }
