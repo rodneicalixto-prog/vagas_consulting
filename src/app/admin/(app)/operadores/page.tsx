@@ -4,6 +4,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { SubmitButton } from "@/components/form-buttons";
 import { calcularVagasOperador, rotuloVagasOperador } from "@/lib/operadores";
 import { empresaDaOperacao } from "@/lib/evolution";
+import { FormularioConvite } from "./formulario-convite";
 import {
   alternarConfianca,
   convidarOperador,
@@ -103,9 +104,9 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
   const [{ data: atribuicoes }, { data: vagasEmpresa }] = await Promise.all([
     admin
       .from("company_assignments")
-      .select("id, user_id, ativo, acessa_confidenciais, created_at")
+      .select("id, user_id, ativo, acessa_confidenciais, created_at, papel")
       .eq("company_id", companyId)
-      .eq("papel", "operador")
+      .in("papel", ["operador", "admin_empresa"])
       .order("created_at", { ascending: true }),
     admin.from("jobs").select("id").eq("company_id", companyId),
   ]);
@@ -131,7 +132,13 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
     candidaturasEmAndamento = count ?? 0;
   }
 
-  const emUso = linhas.filter((l) => l.ativo).length;
+  const { data: plataformaBruta } =
+    role === "superadmin"
+      ? await admin.from("admin_users").select("user_id, perfil, nome_exibicao").in("perfil", ["superadmin", "admin"])
+      : { data: [] as { user_id: string; perfil: string; nome_exibicao: string | null }[] };
+  const plataforma = plataformaBruta ?? [];
+
+  const emUso = linhas.filter((l) => l.ativo && l.papel === "operador").length;
   const vagas = calcularVagasOperador(Number(empresa?.max_operadores ?? 0), emUso);
   const nomeEmpresa = empresa?.nome_fantasia ?? empresa?.razao_social ?? "Empresa";
 
@@ -148,41 +155,11 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
         {seletor}
 
         {podeGerenciar && (
-          <form
+          <FormularioConvite
             action={convidarOperador}
-            className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-5 md:grid-cols-3"
-          >
-            <input
-              name="nome"
-              required
-              minLength={2}
-              maxLength={120}
-              placeholder="Nome do operador"
-              disabled={vagas.cheio}
-              className="rounded-xl border border-border bg-bg px-3 py-2 text-sm disabled:opacity-50"
-            />
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="E-mail"
-              disabled={vagas.cheio}
-              className="rounded-xl border border-border bg-bg px-3 py-2 text-sm disabled:opacity-50"
-            />
-            <SubmitButton
-              pendingLabel="Convidando..."
-              disabled={vagas.cheio}
-              className="rounded-xl bg-navy px-4 py-2 text-sm font-bold text-white"
-            >
-              Convidar operador
-            </SubmitButton>
-            {vagas.cheio && (
-              <p className="text-[12px] text-danger md:col-span-3">
-                Todas as vagas de operador estão em uso. Desative um operador ou peça ao superadmin para
-                ampliar o limite da empresa.
-              </p>
-            )}
-          </form>
+            cheio={vagas.cheio}
+            podeEscolherFuncao={role === "superadmin"}
+          />
         )}
 
         <p className="mb-4 rounded-xl bg-navy-bg px-4 py-3 text-xs text-text-2">
@@ -192,7 +169,7 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
 
         <div className="overflow-hidden rounded-2xl border border-border bg-surface">
           <div className="grid grid-cols-4 gap-3 border-b border-border px-5 py-3 text-[10.5px] font-extrabold uppercase text-text-3">
-            <div>Operador</div>
+            <div>Pessoa</div>
             <div>Situação</div>
             <div>Acesso de confiança</div>
             <div>Ações</div>
@@ -207,9 +184,14 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
             >
               <div className="font-bold text-text">
                 {nomePorUser.get(l.user_id) ?? `Operador #${l.user_id.slice(0, 8)}`}
+                {l.papel === "admin_empresa" && (
+                  <span className="ml-2 rounded bg-navy-bg px-1.5 py-0.5 text-[10px] font-extrabold text-navy">
+                    Admin da empresa
+                  </span>
+                )}
               </div>
               <div className={l.ativo ? "text-text-2" : "text-text-3"}>{l.ativo ? "Ativo" : "Inativo"}</div>
-              {podeGerenciar ? (
+              {podeGerenciar && l.papel === "operador" ? (
                 <form action={alternarConfianca}>
                   <input type="hidden" name="assignment_id" value={l.id} />
                   <input type="hidden" name="valor" value={l.acessa_confidenciais ? "false" : "true"} />
@@ -220,7 +202,7 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
               ) : (
                 <div className="text-text-2">{l.acessa_confidenciais ? "Sim" : "Não"}</div>
               )}
-              {podeGerenciar ? (
+              {podeGerenciar && l.papel === "operador" ? (
                 l.ativo ? (
                   <form action={desativarOperador}>
                     <input type="hidden" name="assignment_id" value={l.id} />
@@ -247,6 +229,25 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
             </div>
           ))}
         </div>
+
+        {role === "superadmin" && plataforma.length > 0 && (
+          <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface">
+            <div className="border-b border-border px-5 py-3 text-[10.5px] font-extrabold uppercase text-text-3">
+              Acesso à plataforma (todas as empresas)
+            </div>
+            {plataforma.map((p) => (
+              <div
+                key={p.user_id}
+                className="flex items-center justify-between border-b border-border px-5 py-3 text-[12px] last:border-none"
+              >
+                <span className="font-bold text-text">{p.nome_exibicao ?? `#${p.user_id.slice(0, 8)}`}</span>
+                <span className="rounded bg-navy-bg px-2 py-0.5 text-[10.5px] font-extrabold text-navy">
+                  {p.perfil === "superadmin" ? "Superadmin" : "Admin da plataforma"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

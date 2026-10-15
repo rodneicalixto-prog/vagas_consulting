@@ -1460,6 +1460,11 @@ sessões futuras.
     acessível a operador e admin da empresa em versão da PRÓPRIA carteira,
     sem leads, instalações nem valores financeiros; a versão global segue
     só do superadmin. Spec `DASHBOARD_OPERADOR.md` §7.1 atendido.
+113. **Convite já com a função (15/10/2026)**: o convite em Operadores passa a
+    definir a função de quem entra: Operador, Admin da empresa, Admin da
+    plataforma ou Superadmin (só o superadmin escolhe além de Operador;
+    Superadmin exige confirmação de acesso total). A lista mostra a função e
+    um bloco "Acesso à plataforma" lista admins e superadmins. Auditado.
 
 ## 3. Escopo do MVP (revisado)
 

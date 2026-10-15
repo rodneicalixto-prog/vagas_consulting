@@ -31,7 +31,7 @@ async function contexto() {
   if (role === "superadmin") {
     const operacaoId = await empresaDaOperacao();
     if (!operacaoId) throw new Error("A empresa da operação ainda não foi definida na plataforma.");
-    return { user, admin, companyId: operacaoId };
+    return { user, admin, companyId: operacaoId, role };
   }
   if (!can(role, "operadores.manage")) throw new Error("Sem permissão para gerenciar operadores.");
   const { data } = await admin
@@ -43,7 +43,7 @@ async function contexto() {
     .limit(1);
   const companyId = data?.[0]?.company_id;
   if (!companyId) throw new Error("Você não é administrador de nenhuma empresa.");
-  return { user, admin, companyId: companyId as string };
+  return { user, admin, companyId: companyId as string, role };
 }
 
 async function contarOperadoresAtivos(
@@ -91,7 +91,18 @@ async function limparContaNova(
 
 /** Convida um operador novo para a empresa do admin da empresa. */
 export async function convidarOperador(formData: FormData) {
-  const { user, admin, companyId } = await contexto();
+  const { user, admin, companyId, role } = await contexto();
+
+  // Função: só o superadmin escolhe além de "operador". Superadmin exige confirmação.
+  const bruta = String(formData.get("funcao") ?? "operador");
+  const FUNCOES = ["operador", "admin_empresa", "admin", "superadmin"] as const;
+  type Funcao = (typeof FUNCOES)[number];
+  const funcao: Funcao =
+    role === "superadmin" && (FUNCOES as readonly string[]).includes(bruta) ? (bruta as Funcao) : "operador";
+  if (funcao === "superadmin" && formData.get("confirmo_total") !== "sim") {
+    throw new Error("Confirme que esta pessoa terá acesso total antes de enviar o convite.");
+  }
+  const comVinculo = funcao === "operador" || funcao === "admin_empresa";
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const nome = String(formData.get("nome") ?? "").trim();
@@ -99,11 +110,13 @@ export async function convidarOperador(formData: FormData) {
   if (nome.length < 2 || nome.length > 120) throw new Error("Informe o nome do operador.");
 
   // Conferência prévia no servidor (o gatilho do banco é a trava final).
-  const [limite, emUso] = await Promise.all([
-    limiteDaEmpresa(admin, companyId),
-    contarOperadoresAtivos(admin, companyId),
-  ]);
-  if (emUso >= limite) throw new Error(MSG_CHEIO);
+  if (funcao === "operador") {
+    const [limite, emUso] = await Promise.all([
+      limiteDaEmpresa(admin, companyId),
+      contarOperadoresAtivos(admin, companyId),
+    ]);
+    if (emUso >= limite) throw new Error(MSG_CHEIO);
+  }
 
   const cab = await headers();
   const host = cab.get("x-forwarded-host") ?? cab.get("host");
@@ -131,9 +144,10 @@ export async function convidarOperador(formData: FormData) {
     throw new Error("Este e-mail já pertence a outra pessoa cadastrada na plataforma.");
   }
 
+  const perfil = funcao === "admin" ? "admin" : funcao === "superadmin" ? "superadmin" : "operador";
   const { error: perfilError } = await admin.from("admin_users").insert({
     user_id: novoId,
-    perfil: "operador",
+    perfil,
     nome_exibicao: nome,
   });
   if (perfilError) {
@@ -141,16 +155,18 @@ export async function convidarOperador(formData: FormData) {
     throw new Error("Convite enviado, mas não foi possível registrar o operador. Tente de novo.");
   }
 
-  const { data: linha, error: atribError } = await admin
-    .from("company_assignments")
-    .insert({
-      company_id: companyId,
-      user_id: novoId,
-      papel: "operador",
-      ativo: true,
-      criado_por: user.id,
-    })
-    .select("id");
+  const { data: linha, error: atribError } = comVinculo
+    ? await admin
+        .from("company_assignments")
+        .insert({
+          company_id: companyId,
+          user_id: novoId,
+          papel: funcao as "operador" | "admin_empresa",
+          ativo: true,
+          criado_por: user.id,
+        })
+        .select("id")
+    : { data: [{ id: novoId }], error: null };
   if (atribError || !linha || linha.length === 0) {
     // Desfaz só o que acabamos de criar, para não deixar usuário órfão.
     await admin.from("admin_users").delete().eq("user_id", novoId);
@@ -162,9 +178,9 @@ export async function convidarOperador(formData: FormData) {
   await admin.from("audit_log").insert({
     ator_id: user.id,
     acao: "operador_convidado",
-    objeto_tipo: "company_assignment",
+    objeto_tipo: comVinculo ? "company_assignment" : "admin_user",
     objeto_id: linha[0].id,
-    depois: { company_id: companyId, user_id: novoId, email, nome, papel: "operador" },
+    depois: { company_id: comVinculo ? companyId : null, user_id: novoId, email, nome, papel: funcao },
   });
   revalidatePath("/admin/operadores");
 }
