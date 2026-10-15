@@ -1,6 +1,6 @@
 # Schema do Backend
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Gerado a partir do schema **real** do Supabase (`tfipbxjslpxbaybpxsql`,
@@ -232,3 +232,29 @@ todas com RLS ligada e sem política pública. Campos em
 `jobs.criterios` (jsonb, padrão `{}`): rotina, obrigatórios, eliminatórios,
 desejáveis, comportamentais, senioridade, anos de experiência, diferencial e
 data da confirmação. Aditiva; `regras` continua sendo o texto ao candidato.
+
+## Atualização v1.7 (15/10/2026) — migrations 0034 a 0043 (todas aplicadas)
+
+Todas aditivas, com RLS ligada e sem política pública (acesso só pelo servidor,
+sempre atrás do escopo do operador).
+
+| Migration | Tabela ou mudança | Para quê |
+|---|---|---|
+| `0034_triagem_curriculos` | `job_screenings` (job, candidatura, hash dos critérios, resultado, pontuação, eliminado) | Triagem 3G; único por vaga e candidatura |
+| `0035_roteiro_ficha_entrevista` | `interview_scripts` (versionado por vaga), `interview_scorecards` (ficha por entrevistador) | Roteiro e ficha 3H |
+| `0036_testes_dinamicas` | `assessments`, `assessment_results` (nota 1 a 4 por candidatura) | Testes e dinâmicas 3J |
+| `0037_laudos_candidato` | `candidate_reports` (versão, modo, conteúdo, recomendação, assinatura) | Laudo 3L; assinado é imutável |
+| `0038_devolutivas` | `candidate_feedbacks`; índice único parcial: uma `enviada` por candidatura | Devolutiva 3I |
+| `0039_indicadores_rs` | `recruitment_goals`, `recruitment_monthly`, `recruitment_action_plans` | Indicadores 3M |
+| `0040_abordagem_ativa` | `outreach_drafts`; único por vaga e contato | Abordagem 3K; perfil colado nunca gravado |
+| `0041_abordagem_verificacoes` | `outreach_drafts.verificacoes` | Verificação guardada com o rascunho |
+| `0042_carta_oferta` | `offer_letters` (versão, dados, texto, validade, envio e resposta) | Carta-oferta 3P |
+| `0043_base_confiabilidade` | `ai_knowledge_notes.valida_ate`, `dono_id` | Validade e dono das notas |
+
+Sem migration: vaga estruturada (já em `0033`), divulgação 3N, áudio do gestor,
+recuperação de notas, exportação em Word.
+
+Dado novo em coluna existente: `applications.origem` passa a receber
+`divulgacao_<canal>` (linkedin, instagram, whatsapp, portal, comunidade,
+interna, indicacao) a partir do marcador `?o=` do link; o valor antigo
+`app_candidato` continua para quem chega sem marcador.

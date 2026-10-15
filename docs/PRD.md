@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do código real do repositório (`vagas_consulting`),
@@ -165,3 +165,28 @@ Estas não têm resposta em nenhum `.md` do repositório nem no `PROJETO.md`
 - **Integrações:** cofre de chaves (OpenAI, Claude, Groq, Evolution, Resend, SMS, Telegram).
 - **Em aberto:** teste com pessoas reais (isolamento, inbox); SMS; Resend;
   agente de IA; etapa Exame médico.
+
+## Atualização v1.7 (15/10/2026) — ciclo de R&S com IA
+
+Entregue em produção: agente que atende e aprende, base de conhecimento
+confiável e o pacote de R&S (10 skills do Rodnei) como módulos do produto.
+
+| Módulo | O que entrega | Regra central |
+|---|---|---|
+| Vaga estruturada e IA (3O) | critérios em campos, proposta por IA, áudio do gestor | proposta só vale depois de conferida |
+| Divulgação (3N) | texto por canal com origem | só redige |
+| Triagem (3G) | ranking com evidência, às cegas, PDF de fallback | evidência literal; eliminatório no código |
+| Entrevista (3H) | roteiro e ficha | temas proibidos removidos no código |
+| Testes (3J) | instrumento e nota | sem teste psicológico; gabarito fora da folha do candidato |
+| Laudo (3L) | quadro, recomendação, assinatura | recomendação é da pessoa; assinado é imutável |
+| Devolutiva (3I) | aprovação, genérica, feedback | uma por candidatura, em até 30 dias |
+| Indicadores (3M) | funil, fontes, metas, plano de ação | sem dado nunca vira zero |
+| Abordagem (3K) | rascunho e follow-ups | perfil não é gravado |
+| Carta-oferta (3P) | carta montada no código | nunca inventa valores |
+
+Também: base confiável (validade, dono, conflito, cobertura, qualidade por
+nota), recuperação de notas por pergunta e exportação em Word.
+
+**Ainda aberto:** busca semântica (embeddings), áudio direto da conversa,
+edição da abordagem no app, tabelas e papel timbrado no Word, diversidade
+(decisão do Rodnei, com consentimento próprio).

@@ -1,6 +1,6 @@
 # Briefing de UI e UX
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir de `src/app/globals.css`, `src/app/manifest.ts`
@@ -194,3 +194,18 @@ quando usados sobre seus fundos `-bg`.
   chave é só de escrita (`••••` + 4 últimos).
 - **Cadastro do candidato:** "Voltar" em todas as etapas; "Aceitar todos os
   canais" como clique do titular (nunca pré-marcado).
+
+## Atualização v1.7 (15/10/2026)
+
+- **Verificação visível:** todo texto ou documento gerado mostra a lista de
+  verificações com três níveis (OK, Aviso, Bloqueia); bloqueio impede a ação,
+  aviso deixa passar assumindo.
+- **A pessoa decide:** botões de ação registram o que a pessoa fez fora da
+  plataforma ("Já enviei"); nada é enviado sozinho.
+- **Campo em branco à mostra:** `{CAMPO}` destacado em dourado e envio travado.
+- **Não avaliado é um estado próprio**, nunca zero nem "não atende".
+- **Duas folhas:** candidato e aplicador em telas e arquivos separados.
+- **Sem dado:** indicador sem dado diz "sem dado".
+- **Saída:** botões "Imprimir ou salvar em PDF" e "Baixar em Word" no mesmo
+  lugar em todos os documentos; impressão esconde o que não é do documento.
+- **Privacidade:** o que não é guardado (perfil colado, áudio) é dito na tela.

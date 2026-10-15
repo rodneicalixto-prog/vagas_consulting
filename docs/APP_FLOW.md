@@ -1,6 +1,6 @@
 # Fluxo do App (App Flow)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir da árvore de rotas real em `src/app/`.
@@ -161,3 +161,27 @@ novo convite; o resultado de uma candidatura não impede nova candidatura.
   (nome obrigatório, cargo, telefone, e-mail). Editável por quem aprova empresa.
 - **Menu:** Visão geral, Conversas, Agenda, Candidatos, Empresas e vagas,
   Financeiro e dados, Governança, Plataforma. Cada grupo abre em cascata.
+
+## Atualização v1.7 (15/10/2026) — rotas do ciclo de R&S
+
+Todas sob `/admin/vagas/[id]`, atrás do escopo da vaga (carteira e sigilo).
+
+| Rota | Função | Documento de saída |
+|---|---|---|
+| `/` (página da vaga) | Critérios estruturados, qualidade, geração por IA, áudio do gestor | — |
+| `/divulgacao` | Texto por canal, ganchos, link com origem | cópia |
+| `/triagem` | Ranking com evidência, top N, planilha | CSV |
+| `/entrevista`, `/entrevista/[applicationId]` | Roteiro versionado e ficha de parecer | Word, PDF |
+| `/testes`, `/testes/[assessmentId]` | Instrumento, aprovação, nota por candidato | Word (candidato e aplicador) |
+| `/laudos`, `/laudos/[laudoId]`, `/laudos/comparativo` | Quadro cargo x candidato, recomendação, assinatura | Word, PDF |
+| `/devolutivas`, `/devolutivas/[feedbackId]` | Rascunho, revisão, envio registrado | cópia |
+| `/abordagem`, `/abordagem/[draftId]` | Abordagem ativa e follow-ups | cópia |
+| `/ofertas`, `/ofertas/editar`, `/ofertas/[offerId]` | Carta-oferta | Word, PDF |
+
+Fora da vaga: `/admin/indicadores` (indicadores, metas, plano de ação),
+`/admin/abordagens` (follow-ups vencidos) e `/admin/agente` (base de
+conhecimento com confiabilidade e qualidade por nota).
+
+Sequência natural: critérios, divulgação, triagem, roteiro e ficha, testes,
+laudo, devolutiva ou carta-oferta; indicadores fecham o ciclo. Registro no
+funil: marcar a carta como enviada move a candidatura para Proposta.

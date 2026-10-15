@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > O app já está construído (18 migrations, 15+ commits, em produção). Este
@@ -149,3 +149,20 @@ qualquer tela nova.
 guardrails e teto · 3C caixa de sugestão na conversa · 3D aprendizado com
 aprovação · 3E piloto de 2 semanas na SOS Vagas · 3F abrir para clientes.
 Critérios de aceite por passo em `specs/AGENTE_IA_FASE3.md` §10.
+
+## Estado ao fim de 15/10/2026
+
+| Frente | Situação |
+|---|---|
+| Agente de IA: atende, aprende, base confiável, recuperação por pergunta | ✅ em produção (falta uso real e aprovar a nota do processo) |
+| Pacote de R&S, 3B a 3P | ✅ entregue e publicado |
+| Exportação em Word (carta, laudo, roteiro, testes) | ✅ |
+| Indicadores e plano de ação | ✅ (funil aproximado) |
+| Roteiro de teste do ciclo | ✅ `ROTEIRO_TESTE_CICLO_RS.md` |
+| Teste com pessoas e dados reais | ⏳ depende do Rodnei |
+| Auth URL do Supabase, revisão das chaves Groq e OpenAI | ⏳ depende do Rodnei |
+| Busca semântica de notas, áudio da conversa, abordagem editável, Word com tabelas | 📋 backlog |
+
+Ordem de dependência dos passos concluídos: 3O, 3N, 3G, 3H, 3J, 3L, 3I, 3M, 3K,
+3P (migrations 0033 a 0043). Cada passo foi publicado com tsc, eslint, build e
+testes verdes; o lote soma 158 testes automatizados.

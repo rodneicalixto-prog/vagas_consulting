@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -171,3 +171,21 @@ schema foi de fato aplicado em produção.
 | Webhook | `/api/webhooks/evolution`: apikey com `timingSafeEqual`, idempotente por `provedor_msg_id`, descadastro gravado primeiro |
 | Testes | `npm test` (node:test): 53 casos de regras puras; sem testes de integração com banco |
 | Limites | Filtros `.in()` com muitos ids podem truncar; sem tempo real (refresh a cada 15 s) |
+
+## Atualização v1.7 (15/10/2026)
+
+| Tema | Decisão técnica |
+|---|---|
+| Camadas | Regra no código (`src/lib/*.ts`, puras e testadas), IA só onde preciso redigir ou extrair. `server-only` nas que tocam banco ou provedor |
+| IA | `gerarTextoIA` único (chave do cofre, teto mensal, registro em `ai_agent_runs`). Geração com `json: true` e leitura tolerante |
+| Garantia no código, não no prompt | evidência literal conferida (triagem), temas proibidos (entrevista), gabarito fora da folha do candidato (testes), placeholders bloqueando envio (carta), uma devolutiva por índice único |
+| Triagem às cegas | texto enviado ao modelo só com título, resumo e histórico; sem nome, contato, endereço, cidade nem motivo de saída |
+| PDF | fallback só para cadastro vazio, via AI Gateway (fora do teto do agente), ilegível vira "não foi possível ler" |
+| Áudio | Whisper (`whisper-1`) com a chave OpenAI do cofre, até 4 MB (limite da ação do servidor), arquivo não guardado, custo no teto do agente |
+| Recuperação de notas | lexical (`recuperacao.ts`): título 3, corpo 1, até 8 notas; fallback para todas; `fonte` registra só as enviadas |
+| Validade | consulta do contexto filtra `valida_ate`; nota vencida não entra |
+| Word | `.docx` mínimo montado com `fflate` (`docx.ts`), sem dependência nova (evita o problema de lockfile Windows e Linux) |
+| Origem | `?o=` validado contra a lista de canais, repassado vitrine, login e candidatura |
+| Auditoria | `audit_log` em toda geração, aprovação, assinatura, envio e exportação, sem texto de mensagem nem segredo |
+| Testes | `npm test`: 158 casos de regra pura; sem teste de integração com banco ou provedor |
+| Lição | escapes de regex em script Python via shell viram caracteres de controle: escrever trechos por arquivo |
