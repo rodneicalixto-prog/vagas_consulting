@@ -616,3 +616,31 @@ Regras:
 - A verificação de link usa a URL da vitrine pública com o marcador de origem
   do canal, que alimenta a métrica de fontes (3M).
 - Texto que passa com aviso fica registrado com quem aprovou, como na vaga.
+
+### 14.13 Checklist da triagem: garantias do módulo 3G (recebido em 15/10/2026)
+
+Aqui o checklist deixa de ser conferência manual e vira **garantia do
+próprio módulo**: cada item é imposto pelo sistema, e o que não puder ser
+imposto aparece como aviso na tela do ranking.
+
+| Item do checklist | Garantia no produto | Como |
+|---|---|---|
+| Critérios da vaga definidos | Triagem **não inicia** sem obrigatórios, desejáveis e eliminatórios na vaga estruturada | Código, bloqueante |
+| Só competência ligada ao trabalho | O modelo recebe apenas campos de trabalho (experiência, ferramentas, formação, idiomas, resultados) | Código |
+| Ignorar gênero, idade, foto, estado civil, origem e nome | Esses dados são **removidos antes** de ir ao modelo (triagem às cegas); nome volta só na tela, com um identificador estável | **Código** |
+| Evidência em cada avaliação | A resposta do modelo precisa trazer a frase de origem; avaliação sem evidência é descartada e vira "não evidenciado" | Código |
+| "Não mencionado" ≠ "não tem" | Estado próprio "não evidenciado", diferente de "não atende" | Código |
+| Marcar quem não atende obrigatório eliminatório | Pontuação no código: eliminatório não atendido vai ao fim, com o motivo | **Código** |
+| Lacunas e trocas de emprego como "a validar" | Entram só na coluna "a validar"; nunca reduzem a nota | Código |
+| Comportamental como ponto a validar | Competência comportamental sai com confiança baixa e vai para a lista de pontos a validar na entrevista (3H) | Código |
+| Ranking mostra a evidência por trás de cada posição | Linha expansível com a frase do currículo em cada critério | UI |
+| Corte de quem avança definido | O recrutador marca o corte; a plataforma só **sugere** | Pessoa decide |
+
+Observações de projeto:
+
+- Por segurança, o sistema nunca diz "reprovado": o estado é "não segue para
+  entrevista, por motivo X", decisão da pessoa e registrada.
+- O ranking tem **revisão humana obrigatória** antes de qualquer mudança de
+  etapa (direito de revisão da pessoa, LGPD art. 20).
+- Os dez itens são a base do teste de aceite do 3G: cada um vira um caso de
+  teste automatizado com currículos sintéticos.
