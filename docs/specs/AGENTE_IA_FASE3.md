@@ -346,3 +346,18 @@ aparecem em cada linha. Exportação em Word/PDF.
 - No WhatsApp, a mensagem sai como rascunho na conversa; quem envia é o
   atendente. Lote só para o modo genérico e sempre com revisão.
 - Feedback sensível de finalista: o sistema sugere ligação em vez de texto.
+
+**3M — Métricas de R&S** (recebido em 15/10/2026)
+
+| # | Caso de uso | Como entra no produto |
+|---|---|---|
+| 1 | Acompanhar SLA, custo por contratação e fontes | painel de indicadores no Estratégico; opcional baixar a planilha-modelo |
+| 2 | Ajustar metas para quem contrata N pessoas por mês | metas editáveis por empresa, com sugestão a partir do volume mensal |
+| 3 | Informar os números do mês e receber o que está fora da meta e o que fazer | formulário de entrada manual (custos, ofertas, saídas) + status e recomendação por métrica |
+| 4 | Analisar fontes de contratação e onde investir para reduzir custo | quadro por fonte (origem da candidatura) com custo por contratação |
+| 5 | Funil de seleção e maior gargalo | funil por etapa com conversão e destaque da maior queda |
+
+Indicadores que saem sozinhos do banco: tempo de fechamento, SLA do prazo da
+vaga, funil e conversão, aceitação de proposta e fontes (origem). Dependem de
+entrada manual: custo por contratação, NPS do processo e turnover precoce.
+Leitura sempre em conjunto (fechar rápido com turnover alto não é sucesso).
