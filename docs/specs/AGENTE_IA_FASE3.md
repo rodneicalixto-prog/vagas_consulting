@@ -590,3 +590,29 @@ Regras:
   diagnóstico "vaga não atrai" do 3N.
 - O resultado fica registrado com a vaga (quem publicou com aviso e quais),
   para o relatório e para auditoria.
+
+### 14.12 Checklist da divulgação: verificação antes de publicar (recebido em 15/10/2026)
+
+Roda sobre cada texto gerado pelo 3N, por canal, com os mesmos níveis do
+14.11 (verde, aviso, bloqueio):
+
+| Item do checklist | Como o sistema verifica | Tipo |
+|---|---|---|
+| Canal certo para o perfil | Aviso quando o canal destoa do perfil (por exemplo vaga técnica só em canal operacional) | Código |
+| Tom adequado ao perfil e à cultura | A IA confere o texto contra o tom cadastrado da empresa; pessoa decide | IA + pessoa |
+| Gancho na primeira linha (redes) | Primeira linha dentro do limite do feed e sem abertura genérica | Código |
+| Título claro e buscável (portais) | Título sem adjetivo "criativo" e dentro do limite do portal | Código |
+| CTA claro e de baixo atrito | Detecta a presença de uma chamada única (um CTA só) | Código |
+| Transparência de modelo, regime e faixa | Campos da vaga presentes no texto; faixa ausente em perfil técnico gera aviso | Código |
+| Formato adequado ao canal | Portal sem markdown; WhatsApp curto; LinkedIn com respiro e link nos comentários | **Código** |
+| Sem critério discriminatório | Mesma lista do 14.11; **bloqueia** | **Código, bloqueante** |
+| Hashtags e arte quando o canal pede | Hashtags presentes; briefing da arte no Instagram | Código |
+| Link ou forma de candidatura testado | O sistema valida que o link responde (vitrine pública, com marcador de origem) e avisa se não | **Código** |
+
+Regras:
+
+- Limites por canal ficam em uma tabela de configuração (tamanho, markdown,
+  hashtags), para ajustar sem mexer em código.
+- A verificação de link usa a URL da vitrine pública com o marcador de origem
+  do canal, que alimenta a métrica de fontes (3M).
+- Texto que passa com aviso fica registrado com quem aprovou, como na vaga.
