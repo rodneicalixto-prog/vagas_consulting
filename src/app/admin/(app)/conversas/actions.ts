@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, exigirEmpresa, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
 import { conversaVisivelParaOperador } from "@/lib/conversas";
+import { estadoDaSugestao } from "@/lib/agente";
 import {
   TAMANHO_MAX_ENVIO,
   extensaoDoMime,
@@ -62,6 +63,8 @@ export async function enviarMensagem(formData: FormData) {
   }
   const respostaBruta = String(formData.get("resposta_a") ?? "").trim();
   if (respostaBruta && !UUID.test(respostaBruta)) throw new Error("Identificador inválido.");
+  const sugestaoBruta = String(formData.get("sugestao_id") ?? "").trim();
+  const sugestaoId = UUID.test(sugestaoBruta) ? sugestaoBruta : null;
 
   const admin = createAdminClient();
   const escopo = await obterEscopo(user.id, role);
@@ -251,6 +254,27 @@ export async function enviarMensagem(formData: FormData) {
     .from("conversations")
     .update({ ultima_msg_em: new Date().toISOString(), ultima_msg_previa: previa(textoRegistro) })
     .eq("id", conversa.id);
+
+  // Sugestão do assistente: registra se foi usada como estava ou editada.
+  if (sugestaoId) {
+    const { data: sug } = await admin
+      .from("ai_suggestions")
+      .select("id, rascunho, estado")
+      .eq("id", sugestaoId)
+      .eq("conversation_id", conversa.id)
+      .maybeSingle();
+    if (sug && sug.estado === "pendente") {
+      await admin
+        .from("ai_suggestions")
+        .update({
+          estado: estadoDaSugestao(sug.rascunho, texto),
+          texto_final: texto,
+          decidida_por: user.id,
+          decidida_em: new Date().toISOString(),
+        })
+        .eq("id", sug.id);
+    }
+  }
 
   // O texto da mensagem nunca vai para a auditoria (dado pessoal).
   await admin.from("audit_log").insert({
@@ -488,5 +512,19 @@ export async function transferirConversa(formData: FormData) {
     de: conversa.atendente_id,
     para: destino,
   });
+  revalidatePath("/admin/conversas");
+}
+
+/** Descarta a sugestão do assistente (só o atendente da conversa ou a gestão). */
+export async function descartarSugestao(formData: FormData) {
+  const { user, role, admin, conversa } = await conversaDoEscopo(formData);
+  if (conversa.atendente_id !== user.id && !GESTAO.includes(role)) redirect("/admin/acesso-negado");
+  const id = uuidDe(formData, "sugestao_id");
+  await admin
+    .from("ai_suggestions")
+    .update({ estado: "descartada", decidida_por: user.id, decidida_em: new Date().toISOString() })
+    .eq("id", id)
+    .eq("conversation_id", conversa.id)
+    .eq("estado", "pendente");
   revalidatePath("/admin/conversas");
 }

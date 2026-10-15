@@ -7,6 +7,7 @@ import { formatarTelefoneBR, linkWhatsApp } from "@/lib/whatsapp";
 import { conversaVisivelParaOperador, rotuloAnexo, type TipoAnexo } from "@/lib/conversas";
 import { AtualizarSozinho } from "./atualizar-sozinho";
 import { BotaoCopiar } from "./botao-copiar";
+import { CaixaSugestao } from "./caixa-sugestao";
 import { FormularioEnvio } from "./formulario-envio";
 import { assumirConversa, devolverConversa, transferirConversa } from "./actions";
 
@@ -230,6 +231,27 @@ export default async function ConversasPage({
     mensagens = msgs ?? []; // já em ordem decrescente: o mais novo fica embaixo (flex-col-reverse)
     descadastrado = (optOut ?? []).length > 0;
     empresaDaAberta = emp?.nome_fantasia || emp?.razao_social || null;
+  }
+
+  // Sugestão pendente do assistente: só o atendente da conversa vê.
+  let sugestao: { id: string; rascunho: string; motivo_parada: string | null; fonte: string[] } | null = null;
+  if (aberta && aberta.atendente_id === user.id) {
+    const { data: s } = await admin
+      .from("ai_suggestions")
+      .select("id, rascunho, motivo_parada, fonte")
+      .eq("conversation_id", aberta.id)
+      .eq("estado", "pendente")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (s) {
+      sugestao = {
+        id: s.id,
+        rascunho: s.rascunho,
+        motivo_parada: s.motivo_parada,
+        fonte: Array.isArray(s.fonte) ? (s.fonte as unknown[]).map(String) : [],
+      };
+    }
   }
 
   const href = (c?: string | null, filtro?: string | null, r?: string | null) => {
@@ -525,6 +547,16 @@ export default async function ConversasPage({
                 })}
               </div>
 
+              {sugestao && (
+                <CaixaSugestao
+                  key={sugestao.id}
+                  id={sugestao.id}
+                  rascunho={sugestao.rascunho}
+                  motivo={sugestao.motivo_parada}
+                  fonte={sugestao.fonte}
+                  conversationId={aberta.id}
+                />
+              )}
               <FormularioEnvio
                 conversationId={aberta.id}
                 descadastrado={descadastrado}

@@ -48,6 +48,7 @@ export function FormularioEnvio({
   const [aviso, setAviso] = useState<string | null>(null);
   const [emojis, setEmojis] = useState(false);
   const [gravando, setGravando] = useState(false);
+  const [sugestaoId, setSugestaoId] = useState<string | null>(null);
   const [segundos, setSegundos] = useState(0);
 
   const gravadorRef = useRef<MediaRecorder | null>(null);
@@ -62,11 +63,24 @@ export function FormularioEnvio({
       formRef.current?.reset();
       /* eslint-disable react-hooks/set-state-in-effect */
       setTexto("");
+      setSugestaoId(null);
       setAnexo(null);
       setAviso(null);
       /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [estado]);
+
+  // Sugestão do assistente: "Usar" e "Editar" preenchem a caixa de texto.
+  useEffect(() => {
+    const aoAplicar = (ev: Event) => {
+      const d = (ev as CustomEvent<{ id: string; texto: string; editar: boolean }>).detail;
+      setTexto(d.texto.slice(0, 2000));
+      setSugestaoId(d.id);
+      requestAnimationFrame(() => textoRef.current?.focus());
+    };
+    window.addEventListener("sugestao:aplicar", aoAplicar);
+    return () => window.removeEventListener("sugestao:aplicar", aoAplicar);
+  }, []);
 
   // Sair da tela com o microfone aberto: solta tudo.
   useEffect(() => {
@@ -180,6 +194,7 @@ export function FormularioEnvio({
     <form ref={formRef} action={acao} className="shrink-0 border-t border-border p-2.5">
       <input type="hidden" name="conversation_id" value={conversationId} />
       {respondendo && <input type="hidden" name="resposta_a" value={respondendo.id} />}
+      {sugestaoId && <input type="hidden" name="sugestao_id" value={sugestaoId} />}
       <input
         ref={arquivoRef}
         type="file"

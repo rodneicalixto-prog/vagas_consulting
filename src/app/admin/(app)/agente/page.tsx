@@ -43,6 +43,38 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
   ]);
   const nomeEmpresa = empresa?.nome_fantasia || empresa?.razao_social || "SOS Vagas";
 
+  // Uso do mês: sugestões por resultado e custo estimado.
+  const inicioMes = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)).toISOString();
+  const uso = { total: 0, usada: 0, editada: 0, descartada: 0, pendente: 0, paradas: 0, custo: 0, tokens: 0 };
+  if (agente) {
+    const [{ data: sugs }, { data: runs }] = await Promise.all([
+      admin
+        .from("ai_suggestions")
+        .select("estado, motivo_parada")
+        .eq("agent_id", agente.id)
+        .gte("created_at", inicioMes)
+        .limit(5000),
+      admin
+        .from("ai_agent_runs")
+        .select("custo_usd, tokens_in, tokens_out")
+        .eq("agent_id", agente.id)
+        .gte("created_at", inicioMes)
+        .limit(5000),
+    ]);
+    for (const s of sugs ?? []) {
+      uso.total += 1;
+      if (s.motivo_parada) uso.paradas += 1;
+      else if (s.estado === "usada") uso.usada += 1;
+      else if (s.estado === "editada") uso.editada += 1;
+      else if (s.estado === "descartada") uso.descartada += 1;
+      else if (s.estado === "pendente") uso.pendente += 1;
+    }
+    for (const r of runs ?? []) {
+      uso.custo += Number(r.custo_usd ?? 0);
+      uso.tokens += (r.tokens_in ?? 0) + (r.tokens_out ?? 0);
+    }
+  }
+
   const filtro = TIPOS_NOTA.find((t) => t === sp.tipo) ?? null;
   let q = admin
     .from("ai_knowledge_notes")
@@ -122,10 +154,34 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
               </SubmitButton>
               <span className="text-[11.5px] text-text-2">
                 Nível de autonomia {agente.nivel_autonomia} (sugestão) · teto de US$ {Number(agente.teto_mensal_usd)}/mês.
-                A geração das sugestões entra no próximo passo (3B); por ora você monta o agente e a base.
+                Ligado, ele gera uma sugestão por mensagem de candidato, só com notas aprovadas e a vaga em andamento.
               </span>
             </div>
           </form>
+        )}
+
+        {agente && (
+          <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-5">
+            {[
+              ["Sugestões no mês", uso.total],
+              ["Usadas sem edição", uso.usada],
+              ["Editadas", uso.editada],
+              ["Descartadas", uso.descartada],
+              ["Paradas (risco, sem fonte, teto)", uso.paradas],
+            ].map(([rotulo, valor]) => (
+              <div key={String(rotulo)} className="rounded-2xl border border-border bg-surface p-4">
+                <div className="text-[10.5px] font-bold uppercase text-text-2">{rotulo}</div>
+                <div className="mt-1 text-[22px] font-extrabold text-navy">{valor}</div>
+              </div>
+            ))}
+            <div className="col-span-2 rounded-2xl border border-border bg-surface p-4 md:col-span-5">
+              <span className="text-[12px] text-text-2">
+                Custo estimado do mês: <b className="text-text">US$ {uso.custo.toFixed(4)}</b> de US${" "}
+                {Number(agente.teto_mensal_usd)} · {uso.tokens.toLocaleString("pt-BR")} tokens. Valor aproximado
+                (tabela de preços do modelo); o contador oficial é o do provedor.
+              </span>
+            </div>
+          </div>
         )}
 
         {/* Base de conhecimento */}

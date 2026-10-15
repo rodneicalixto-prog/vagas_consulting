@@ -138,7 +138,7 @@ qualquer tela nova.
 | Vitrine pública e modo visitante | ✅ em produção |
 | Integrações Fase A (cofre; OpenAI e Groq conectadas) | ✅ em produção |
 | Inbox de WhatsApp Fase B | ✅ publicado; falta configurar Evolution e webhook e testar com mensagem real |
-| Agente de IA em modo sugestão (Fase 3) | 🚧 3A pronto (agente + base + Obsidian); 3B–3F pendentes: `specs/AGENTE_IA_FASE3.md` |
+| Agente de IA em modo sugestão (Fase 3) | 🚧 3A e 3B prontos (agente, base, Obsidian, sugestão nas conversas); módulos do pacote R&S pendentes: `specs/AGENTE_IA_FASE3.md` |
 | Etapa Exame médico (dashboard Fase 3) | ⏳ migration só com "sim" |
 | E-mail (Resend), SMS, Telegram: envio | ⏳ cadastro de chaves feito/pendente; envio não construído |
 | Teste de isolamento com pessoas reais | ⏳ roteiro pronto (`ROTEIRO_TESTE_ADMIN_EMPRESA.md`) |

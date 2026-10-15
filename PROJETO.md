@@ -1495,6 +1495,14 @@ sessões futuras.
     com bloqueio onde há risco legal):
     cada skill tem 5 comandos de exemplo que viram campos de formulário.
 
+117. **Agente de IA, passo 3B construído (15/10/2026)**: sugestão de resposta
+    nas conversas, em modo sugestão. O webhook dispara a geração depois de
+    responder; guardrails em código (assunto de risco, sem fonte, teto,
+    descadastro, black list, vaga confidencial); caixa Usar/Editar/Descartar
+    só para o atendente, com registro usada/editada; painel de uso e custo
+    estimado no Agente de IA. Sem migration nova. O agente nasce desligado
+    até o Rodnei aprovar as notas e ligar. 72 testes. Pendente: teste com
+    mensagem real e áudio/imagem sem sugestão.
 ## 3. Escopo do MVP (revisado)
 
 **Incluído:** login, logout, recuperação de acesso, perfis, currículo,

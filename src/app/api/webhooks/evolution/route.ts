@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { gerarSugestao } from "@/lib/agente-servidor";
 import {
   apikeyDaPlataforma,
   baixarMidia,
@@ -231,6 +232,19 @@ async function tratarMensagem(admin: Admin, companyId: string, item: Record<stri
   await admin.from("conversations").update(atualizacao).eq("id", conversa.id);
 
   if (midia && nova) await guardarMidia(admin, companyId, conversa.id, nova.id, provedorId, item, midia);
+
+  // Sugestão do agente (modo sugestão): roda depois da resposta ao webhook.
+  if (!midia && !pediuSaida && nova) {
+    const conversaId = conversa.id;
+    const mensagemId = nova.id;
+    after(async () => {
+      try {
+        await gerarSugestao(conversaId, mensagemId);
+      } catch {
+        // o inbox segue sem a sugestão
+      }
+    });
+  }
 
   if (pediuSaida) {
     await admin.from("conversation_messages").insert({

@@ -810,3 +810,36 @@ Regras próprias deste modo:
   ranking, sem chute.
 - Valem os dez itens do §14.13 (triagem às cegas, evidência obrigatória,
   eliminatório no código, revisão humana antes de mudar etapa).
+
+### Passo 3B construído (15/10/2026): sugestão de resposta nas conversas
+
+**O que faz**
+- Ao chegar mensagem de **texto de candidato**, o webhook responde primeiro e,
+  depois (`after`), pede a sugestão ao provedor do agente (Groq por padrão;
+  OpenAI e Claude também). O recebimento nunca espera a IA.
+- Só gera quando: agente da empresa **ligado**; conversa com candidato; sem
+  descadastro nem black list; teto do mês não atingido.
+- Contexto enviado: notas **aprovadas**, roteiro, a vaga em andamento do
+  candidato (nunca vaga confidencial) e as últimas 8 mensagens como **dado**.
+  Sem nome nem telefone do candidato no prompt.
+- **Paradas sem chamar a IA:** assunto de risco (jurídico, saúde, ameaça, dados
+  pessoais, reclamação) → "responda você"; sem fonte; teto mensal.
+- **Caixa "Sugestão do assistente"** acima do campo de envio, só para o
+  atendente da conversa: **Usar**, **Editar** (preenchem o texto) e
+  **Descartar**. Ao enviar, o sistema registra **usada** (texto igual) ou
+  **editada** (texto diferente), com o texto final.
+- **Painel do agente:** sugestões do mês, usadas sem edição, editadas,
+  descartadas, paradas, tokens e custo estimado contra o teto.
+
+**Limites conhecidos**
+- Custo é **estimativa** por tabela de preço; o oficial é o do provedor.
+- Áudio, imagem e documento ainda não geram sugestão (transcrição é passo
+  posterior).
+- O nome padrão do modelo (`llama-3.3-70b-versatile` no Groq) pode precisar de
+  ajuste no campo "Modelo" do agente se o provedor mudar a lista.
+- Não testado com mensagem real de candidato no momento da publicação; o
+  agente nasce **desligado**, até o Rodnei aprovar as notas e ligar.
+
+**Código:** `src/lib/agente.ts` (regras puras), `src/lib/agente-servidor.ts`
+(geração), `conversas/caixa-sugestao.tsx`, ajustes em `formulario-envio.tsx`,
+`actions.ts` e no webhook. Sem migration nova (tabelas da 0032).
