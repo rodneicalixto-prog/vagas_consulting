@@ -404,3 +404,23 @@ Observações de modelagem:
   motivo). Vai na migration do passo 3H.
 - Acesso: só o entrevistador e a gestão; o candidato nunca vê. O texto é
   evidência de comportamento, sem característica pessoal.
+
+### 14.4 Sequência de follow-up (modelo recebido em 15/10/2026)
+
+Modelo padrão do 3K, usado como base editável (nunca texto fixo):
+
+| Passo | Quando | Intenção | Texto-base |
+|---|---|---|---|
+| Follow-up 1 | cerca de 3 dias depois | Lembrar, sem pressão, e oferecer a conversa curta | "Oi, {nome}, só subindo minha mensagem. Se tiver curiosidade, te conto os detalhes em 15 min." |
+| Follow-up 2 | cerca de 1 semana depois | Encerrar com elegância, deixar a porta aberta e pedir indicação | "{nome}, vou encerrar por aqui para não te incomodar. Se em algum momento fizer sentido, minha porta fica aberta, e se conhecer alguém para essa vaga, agradeço a indicação!" |
+
+Regras de produto:
+
+- Máximo de **2 follow-ups** por abordagem; depois o contato fica marcado como
+  "encerrado" e a plataforma não sugere novo contato sobre a mesma vaga.
+- A plataforma **lembra** a data (card em "Precisa de ação agora"), mas quem
+  envia é a pessoa, fora do sistema.
+- Quem responder "não" ou pedir para parar é marcado como não contactar;
+  nenhum follow-up é gerado.
+- Personalização obrigatória: o `{nome}` e um detalhe do perfil, para o texto
+  não parecer disparo em massa.
