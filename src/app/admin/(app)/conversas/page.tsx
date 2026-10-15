@@ -279,10 +279,10 @@ export default async function ConversasPage({
         </p>
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-0 px-0 md:grid-cols-[320px_1fr] md:px-9 md:pb-6">
+      <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] gap-0 px-0 md:grid-cols-[320px_1fr] md:px-9 md:pb-6">
         {/* Lista */}
         <aside
-          className={`min-h-0 flex-col border-border bg-surface md:rounded-l-2xl md:border ${
+          className={`min-h-0 h-full flex-col overflow-hidden border-border bg-surface md:rounded-l-2xl md:border ${
             aberta ? "hidden md:flex" : "flex"
           }`}
         >
@@ -368,7 +368,7 @@ export default async function ConversasPage({
 
         {/* Conversa */}
         <section
-          className={`min-h-0 flex-col border-border bg-surface md:rounded-r-2xl md:border md:border-l-0 ${
+          className={`min-h-0 h-full flex-col overflow-hidden border-border bg-surface md:rounded-r-2xl md:border md:border-l-0 ${
             aberta ? "flex" : "hidden md:flex"
           }`}
         >

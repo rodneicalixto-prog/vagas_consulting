@@ -2169,3 +2169,6 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     Primeira resposta automática real validada em produção (processo seletivo,
     autor Assistente). Menu lateral do painel fixo: o shell passa a ter altura
     da tela e a rolagem fica só na área de conteúdo.
+    Tela de atendimento passa a caber na altura da janela: grade com linha
+    de altura definida, lista de mensagens rola por dentro e o campo de envio
+    fica sempre visível.
