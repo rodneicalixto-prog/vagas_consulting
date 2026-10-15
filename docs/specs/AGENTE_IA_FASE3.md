@@ -671,3 +671,27 @@ Regras adicionais:
   abordagem (máximo de 2 follow-ups).
 - **WhatsApp frio fica fora**, como já decidido: a regra de consentimento
   vale também para o canal.
+
+### 14.15 Checklist da entrevista: preparação e condução (recebido em 15/10/2026)
+
+Divide-se em duas verificações do 3H: **antes** (ao gerar o roteiro) e
+**depois** (ao fechar a ficha de parecer).
+
+| Item do checklist | Quando | Como o sistema garante |
+|---|---|---|
+| 4 a 6 competências definidas | Gerar | Aviso fora da faixa; sugere as de maior peso da vaga estruturada |
+| Mistura de STAR e situacional | Gerar | O gerador distribui os dois tipos; roteiro só com um tipo gera aviso |
+| Cada pergunta sinaliza a competência | Gerar | Pergunta sem competência não é gerada |
+| Fit por valor, pedindo comportamento | Gerar | Pergunta de valor sempre em formato de comportamento (nunca "você valoriza...?") |
+| Pontos a validar da triagem | Gerar | Puxados da triagem salva (3G) e transformados em perguntas |
+| Roteiro cabe no tempo | Gerar | Cálculo por duração (por exemplo 45 min comporta 6 a 8 perguntas); excesso gera aviso |
+| "O que observar" para o mesmo critério | Gerar | Campo obrigatório em cada pergunta |
+| Anotações e escala 1 a 4 prontos | Gerar | Presentes por item na tela de condução |
+| Não perguntar sobre filhos, idade, estado civil ou religião | Gerar | Lista aplicada em código; pergunta proibida é removida e o motivo aparece |
+| Espaço do candidato e próximos passos | Gerar | Bloco final fixo no roteiro |
+| Todas as competências avaliadas e com evidência | Fechar ficha | Ficha não fecha com competência sem nota; nota 1 ou 4 exige evidência |
+| Recomendação com o "por quê" | Fechar ficha | Obrigatório (14.3) |
+
+Regra de consistência: o **mesmo roteiro** é usado para todos os candidatos de
+uma vaga (para comparar de forma justa); alterações viram nova versão do
+roteiro, com registro de quais entrevistas usaram cada versão.
