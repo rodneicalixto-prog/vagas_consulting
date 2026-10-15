@@ -2190,3 +2190,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     comportamentais, corte só sugerido. Migration 0034. Usa o cadastro
     estruturado (PDF ainda não lido). 94 testes. Pendente: exportar planilha,
     top N, mestre-de-match de um passo, leitura de PDF.
+123. **3H: roteiro de entrevista e ficha de parecer (15/10/2026)**: roteiro
+    versionado por vaga (30/45/60 min, STAR e situacional, 'o que observar'),
+    lista de temas proibidos no código, avisos de tempo e de mistura; ficha por
+    candidatura com nota 1 a 4, evidência obrigatória em 1 e 4, recomendação e
+    porquê; perguntas a partir dos pontos a validar da triagem. Migration 0035.
+    100 testes. Pendente: Word, Agenda, visão da gestão sobre fichas de outros.

@@ -520,6 +520,90 @@ export type Database = {
         }
         Relationships: []
       }
+      interview_scripts: {
+        Row: {
+          conteudo: Json
+          created_at: string
+          criado_por: string | null
+          duracao_min: number
+          id: string
+          job_id: string
+          versao: number
+        }
+        Insert: {
+          conteudo?: Json
+          created_at?: string
+          criado_por?: string | null
+          duracao_min: number
+          id?: string
+          job_id: string
+          versao?: number
+        }
+        Update: {
+          conteudo?: Json
+          created_at?: string
+          criado_por?: string | null
+          duracao_min?: number
+          id?: string
+          job_id?: string
+          versao?: number
+        }
+        Relationships: []
+      }
+      interview_scorecards: {
+        Row: {
+          application_id: string
+          created_at: string
+          entrevistador_id: string
+          fechada_em: string | null
+          id: string
+          itens: Json
+          job_id: string
+          motivo: string
+          perguntas_extra: Json
+          pontos_atencao: string
+          pontos_fortes: string
+          recomendacao: string | null
+          script_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          entrevistador_id: string
+          fechada_em?: string | null
+          id?: string
+          itens?: Json
+          job_id: string
+          motivo?: string
+          perguntas_extra?: Json
+          pontos_atencao?: string
+          pontos_fortes?: string
+          recomendacao?: string | null
+          script_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          entrevistador_id?: string
+          fechada_em?: string | null
+          id?: string
+          itens?: Json
+          job_id?: string
+          motivo?: string
+          perguntas_extra?: Json
+          pontos_atencao?: string
+          pontos_fortes?: string
+          recomendacao?: string | null
+          script_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string

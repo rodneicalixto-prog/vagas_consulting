@@ -1058,3 +1058,37 @@ candidatura com o hash dos critérios (se a vaga mudar, o ranking avisa
 - Formação, idiomas e ferramentas só entram se estiverem no resumo ou nos cargos.
 - Faltam: exportar o ranking em planilha, "top N", currículos colados e o
   modo mestre-de-match de um passo (a extração de critérios já existe no 3O-2).
+
+### Passo 3H construído (15/10/2026): roteiro de entrevista e ficha de parecer
+
+Telas: **Vagas > Critérios > Roteiro de entrevista** (`/admin/vagas/[id]/entrevista`)
+e a ficha por candidatura (`.../entrevista/[applicationId]`).
+Migration **0035** (`interview_scripts`, `interview_scorecards`; aditiva, RLS ligada).
+
+**Roteiro (§14.10 e §14.15, "gerar"):**
+- Duração 30, 45 ou 60 min; competências (sugeridas dos critérios da vaga) e
+  valores informados; um roteiro por vaga, **versionado** (mudou, nova versão).
+- Cada item exige competência ou valor, tipo (STAR, situacional,
+  comportamento) e "o que observar"; sem isso não entra.
+- Pergunta de valor pede comportamento; "você valoriza...?" é removida.
+- **Temas proibidos no código** (filhos, idade, estado civil, religião, saúde,
+  orientação, política, origem, aparência e os termos discriminatórios do 3O):
+  a pergunta é removida e o motivo aparece.
+- Avisos: competências fora de 4 a 6, só um tipo de pergunta, mais ou menos
+  perguntas do que cabe na duração, competência sem pergunta válida.
+- Abertura, aquecimento e encerramento fixos e editáveis no futuro.
+- Impressão/PDF pelo navegador; Word fica para depois.
+
+**Ficha de parecer (§14.3 e §14.15, "fechar"):**
+- Nota 1 a 4 por competência e valor, evidência e anotações na própria tela.
+- Não fecha com item sem nota, nota 1 ou 4 sem evidência, sem recomendação
+  (Avançar, Com ressalva, Não avançar) ou sem o "porquê"; texto com tema
+  proibido também bloqueia.
+- Fechada, não muda mais. Cada entrevistador tem a sua ficha.
+- A ficha usa o roteiro vigente quando foi iniciada (comparação justa).
+- **Perguntas dos pontos a validar:** botão gera até 5 perguntas a partir da
+  triagem (3G) da candidatura; ficam na ficha, sem alterar o roteiro comum.
+
+**Limites:** entrevistas ainda não ligam à Agenda; exportar Word, editar o
+texto fixo do roteiro e mostrar a ficha de outros entrevistadores para a
+gestão ficam para depois. O laudo (3L) vai ler estas fichas.
