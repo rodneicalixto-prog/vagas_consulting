@@ -1,6 +1,6 @@
 # Fluxo do App (App Flow)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Fluxo do app v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir da árvore de rotas real em `src/app/`.
@@ -140,3 +140,16 @@ checkbox genérico.
 
 Regras de fluxo: convite vencido sem resposta encerra como cancelado e libera
 novo convite; o resultado de uma candidatura não impede nova candidatura.
+
+## Atualização v1.6 (15/10/2026) — rotas novas
+
+| Rota | Quem | Função |
+|---|---|---|
+| `/vagas`, `/vagas/<id>` | Público | Vitrine; candidatar leva ao login e volta à vaga |
+| `/api/cadastro/continuar` | Candidato logado | Guarda o destino e leva à etapa do cadastro que falta |
+| `/admin/operadores` | Admin da empresa (leitura: admin/superadmin) | Convidar, ativar, desativar, acesso de confiança, contador |
+| `/admin/blacklist` | Plataforma (global) e admin da empresa (a dele) | Cadastrar e liberar |
+| `/admin/integracoes` | Superadmin; admin da empresa (chave de IA própria) | Cofre e teste de conexão |
+| `/admin/conversas` | Operador e acima (na carteira) | Inbox de WhatsApp |
+| `/admin/contatos`, `/admin/ranking`, `/admin/talentos`, `/admin/agenda/*` | Conforme papel | Ver specs |
+| `/processos/<id>` | Candidato | Linha do tempo da candidatura |

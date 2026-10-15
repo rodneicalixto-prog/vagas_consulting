@@ -1386,6 +1386,10 @@ sessões futuras.
     **Pendente do Rodnei:** cadastrar a Evolution em Integrações e
     configurar o webhook em cada instância (spec §Fase B). Sem teste com
     mensagem real ainda.
+105. **Documentos v1.6 e memórias consolidados (15/10/2026)**: PRD, TRD,
+    Fluxo, UI/UX, Schema e Plano atualizados com tudo desde a v1.5
+    (vitrine, admin da empresa, black list por empresa, integrações, inbox,
+    migrations 0024-0028). Índice `docs/README.md` v1.2.
 
 ## 3. Escopo do MVP (revisado)
 

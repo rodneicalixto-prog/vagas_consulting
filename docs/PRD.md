@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do código real do repositório (`vagas_consulting`),
@@ -151,3 +151,17 @@ Estas não têm resposta em nenhum `.md` do repositório nem no `PROJETO.md`
   para uma versão futura).
 - **Em aberto:** teste de isolamento com operadores reais (Athenas e ePró);
   black list por empresa contratante.
+
+## Atualização v1.6 (15/10/2026)
+
+- **Vitrine pública:** lista e detalhe das vagas abrem sem login; candidatar-se
+  exige conta e volta à mesma vaga; cadastro incompleto navega home e vagas.
+- **Hierarquia de 4 níveis:** superadmin, admin da plataforma, **admin da
+  empresa** (limite de operadores definido só pelo superadmin) e operador.
+- **Black list por empresa**, cadastrada pelo admin da empresa; a global segue da plataforma.
+- **Vagas:** pausar e reativar (só quem publica); canceladas; sigilosas por empresa.
+- **Comunicação:** inbox de WhatsApp via Evolution; descadastro e consentimento
+  obrigatórios; agente de IA em modo sugestão (ainda não construído).
+- **Integrações:** cofre de chaves (OpenAI, Claude, Groq, Evolution, Resend, SMS, Telegram).
+- **Em aberto:** teste com pessoas reais (isolamento, inbox); SMS; Resend;
+  agente de IA; etapa Exame médico.

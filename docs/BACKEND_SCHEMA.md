@@ -1,6 +1,6 @@
 # Schema do Backend
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Gerado a partir do schema **real** do Supabase (`tfipbxjslpxbaybpxsql`,
@@ -195,3 +195,16 @@ candidatura vem de `audit_log` (`candidatura_status_alterado`); novas ações
 auditadas: `carteira_atribuida`, `carteira_removida`,
 `carteira_confidenciais_liberadas/revogadas`, `convite_vencido_encerrado`,
 `vaga_marcada/desmarcada_confidencial`.
+
+## Atualização v1.6 (15/10/2026) — migrations 0024 a 0028 (todas aplicadas)
+
+| Migration | Conteúdo |
+|---|---|
+| `0024_admin_empresa` | `companies.max_operadores` (padrão 4), `company_assignments.papel`, índice de um admin por empresa, gatilho do limite |
+| `0025_consents_identificador` | `consents.identificador` (@usuário/ID do Telegram) |
+| `0026_blacklist_empresa` | `company_blacklist` (por candidato ou telefone normalizado) |
+| `0027_integration_credentials` | `integration_credentials` (segredo cifrado, escopo plataforma/empresa) |
+| `0028_inbox_conversas` | `conversations`, `conversation_messages`, `channel_opt_outs` |
+
+Todas com RLS ligada e sem política pública (acesso só pelo servidor).
+Pendência: a `0021` (alinha schema) segue não aplicada (no-op documentado).

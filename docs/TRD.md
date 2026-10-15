@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -158,3 +158,16 @@ schema foi de fato aplicado em produção.
   `src/lib/__tests__`). Fora de cobertura: funções que consultam o banco.
 - Limitação conhecida: filtros por lista de UUIDs (`.in`) podem truncar com
   milhares de vagas visíveis (falha fechada, não vaza dado).
+
+## Atualização v1.6 (15/10/2026)
+
+| Tema | Decisão técnica |
+|---|---|
+| Papéis | `admin_empresa` = operador + atribuição `papel` (sem alterar enum); escopo por empresa em `escopo.ts` |
+| Cofre | AES-256-GCM, chave-mestra `INTEGRATIONS_ENCRYPTION_KEY` (Vercel, Production); segredo nunca volta ao navegador |
+| SSRF | URL da Evolution: https, sem IP privado/loopback/link-local |
+| Vitrine | Leitura pública no servidor com colunas fixas; `x-pathname` no proxy libera o modo visitante |
+| Destino pós-login | `next` e cookie `destino_pos_cadastro`, com `sanitizarDestino` (sem open redirect) |
+| Webhook | `/api/webhooks/evolution`: apikey com `timingSafeEqual`, idempotente por `provedor_msg_id`, descadastro gravado primeiro |
+| Testes | `npm test` (node:test): 53 casos de regras puras; sem testes de integração com banco |
+| Limites | Filtros `.in()` com muitos ids podem truncar; sem tempo real (refresh a cada 15 s) |

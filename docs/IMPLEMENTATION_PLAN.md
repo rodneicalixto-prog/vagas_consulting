@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > O app já está construído (18 migrations, 15+ commits, em produção). Este
@@ -127,3 +127,18 @@ ePró, criar os 2 operadores e rodar o roteiro manual de isolamento (aguarda
 o Rodnei). Backlog seguinte: black list por empresa; revelar a empresa por
 `revelada_em` na lista de processos; aplicar a mesma barreira de escopo em
 qualquer tela nova.
+
+## Estado em 15/10/2026
+
+| Frente | Situação |
+|---|---|
+| Carteira e escopo por empresa | ✅ em produção |
+| Admin da empresa (Fase 1), black list por empresa | ✅ em produção |
+| Dashboard do operador (Fase 1), agenda em cascata, contatos, ranking | ✅ em produção |
+| Vitrine pública e modo visitante | ✅ em produção |
+| Integrações Fase A (cofre; OpenAI e Groq conectadas) | ✅ em produção |
+| Inbox de WhatsApp Fase B | ✅ publicado; falta configurar Evolution e webhook e testar com mensagem real |
+| Agente de IA em modo sugestão (Fase 3) | ⏳ próximo |
+| Etapa Exame médico (dashboard Fase 3) | ⏳ migration só com "sim" |
+| E-mail (Resend), SMS, Telegram: envio | ⏳ cadastro de chaves feito/pendente; envio não construído |
+| Teste de isolamento com pessoas reais | ⏳ roteiro pronto (`ROTEIRO_TESTE_ADMIN_EMPRESA.md`) |

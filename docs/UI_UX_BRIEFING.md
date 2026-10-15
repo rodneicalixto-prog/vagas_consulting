@@ -1,6 +1,6 @@
 # Briefing de UI e UX
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.5 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Briefing de UI/UX v1.6 · **Data:** 14/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir de `src/app/globals.css`, `src/app/manifest.ts`
@@ -182,3 +182,15 @@ quando usados sobre seus fundos `-bg`.
 - **Linha do tempo:** lista vertical com ponto por etapa, etapa atual em
   destaque e aviso de resultado ao final.
 - Selo "Confidencial" nas vagas e "Empresa confidencial" para o candidato.
+
+## Atualização v1.6 (15/10/2026)
+
+- **Padrão de lista densa:** cascata empresa → item com `<details>`, chips de
+  filtro com contagem e busca; nunca um cartão grande por item (Vagas,
+  Candidatos, Empresas).
+- **Inbox:** duas colunas (lista e conversa); no celular, uma por vez; motivo
+  do bloqueio de envio na própria caixa.
+- **Cofre:** linha abre sozinha quando a chave existe e falta testar; campo de
+  chave é só de escrita (`••••` + 4 últimos).
+- **Cadastro do candidato:** "Voltar" em todas as etapas; "Aceitar todos os
+  canais" como clique do titular (nunca pré-marcado).
