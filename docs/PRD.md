@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** PRD v1.8 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do código real do repositório (`vagas_consulting`),
@@ -190,3 +190,20 @@ nota), recuperação de notas por pergunta e exportação em Word.
 **Ainda aberto:** busca semântica (embeddings), áudio direto da conversa,
 edição da abordagem no app, tabelas e papel timbrado no Word, diversidade
 (decisão do Rodnei, com consentimento próprio).
+
+## Atualização v1.8 (15/10/2026) — números de WhatsApp
+
+Decisão do Rodnei: **os dois modelos valem**. Uma empresa pode ter um número
+compartilhado (fila da equipe) ou vários, **um por operador** (exemplo: cliente
+com 6 números de RH).
+
+| Capacidade | Regra |
+|---|---|
+| Número por empresa | uma ou mais linhas; limite por empresa definido pela plataforma (modelo de aluguel) |
+| Número dedicado | a conversa nasce do operador dono; não vai para a fila |
+| Conexão | a própria plataforma cria a instância, liga o recebimento e mostra o QR code |
+| Agente | por número: desligado, só sugestão ou atende sozinho |
+| Visibilidade | operador vê só o que é dele; lista mostra e filtra por número |
+| Troca de dono | opção de passar também as conversas já atribuídas |
+
+Quem tem um número só não precisa fazer nada (virou a linha padrão).

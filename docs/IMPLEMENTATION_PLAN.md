@@ -1,6 +1,6 @@
 # Plano de Implementação
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Plano de implementação v1.8 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > O app já está construído (18 migrations, 15+ commits, em produção). Este
@@ -166,3 +166,15 @@ Critérios de aceite por passo em `specs/AGENTE_IA_FASE3.md` §10.
 Ordem de dependência dos passos concluídos: 3O, 3N, 3G, 3H, 3J, 3L, 3I, 3M, 3K,
 3P (migrations 0033 a 0043). Cada passo foi publicado com tsc, eslint, build e
 testes verdes; o lote soma 158 testes automatizados.
+
+## Acréscimo ao estado de 15/10/2026 — números de WhatsApp
+
+| Frente | Situação |
+|---|---|
+| Números por empresa e por operador (linhas, conversa por linha, agente por linha) | ✅ em produção |
+| Tela Números de WhatsApp (QR code, webhook automático, estado, limite) | ✅ publicada; **sem teste contra a Evolution real** |
+| Origem do número na lista de conversas, filtro por número | ✅ |
+| Troca do operador dono com transferência das conversas | ✅ |
+| Rodízio entre números, Meta Cloud API | 📋 backlog |
+
+Primeiro teste a fazer: criar um número novo, ler o QR e trocar mensagens.

@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.8 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -189,3 +189,17 @@ schema foi de fato aplicado em produção.
 | Auditoria | `audit_log` em toda geração, aprovação, assinatura, envio e exportação, sem texto de mensagem nem segredo |
 | Testes | `npm test`: 158 casos de regra pura; sem teste de integração com banco ou provedor |
 | Lição | escapes de regex em script Python via shell viram caracteres de controle: escrever trechos por arquivo |
+
+## Atualização v1.8 (15/10/2026) — linhas de WhatsApp
+
+| Tema | Decisão técnica |
+|---|---|
+| Modelo | `whatsapp_lines` (instância única, operador opcional, agente, padrão, ativa); `conversations.line_id` |
+| Unicidade | índice único `(company_id, canal, telefone, line_id)` com `NULLS NOT DISTINCT`; índice com expressão não serve de alvo de `upsert` (aprendido na 0044, corrigido na 0045) |
+| Resolução da linha | webhook: instância para linha; envio: `linhaDaConversa`, com reserva para a linha padrão e depois o cadastro antigo |
+| Conversa nova | em linha dedicada nasce atribuída ao operador dono |
+| Agente | gating por linha (`desligado` não gera; `sugestao` nunca envia; dedicada nunca é retomada nem devolvida à fila) |
+| Evolution | criar instância, webhook, QR, estado, logout e leitura do número pela API v2; QR validado como PNG base64; nada de QR ou token gravado |
+| Permissões | superadmin e admin da empresa; limite por empresa em `companies.max_linhas_whatsapp` |
+| Migração | cada instância cadastrada virou a linha padrão da empresa (sos_vagas, 4 conversas) |
+| Risco aberto | criação de instância, QR e webhook ainda sem teste contra a Evolution real |

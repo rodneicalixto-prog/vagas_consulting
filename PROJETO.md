@@ -2241,3 +2241,4 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 139. **Linhas de WhatsApp, tela de conexão (15/10/2026)**: /admin/linhas com criação da instância, webhook automático, QR code com atualização, estado e número, desconectar, editar e limite por empresa. 164 testes. Pendente: teste contra a Evolution real, mostrar a linha na lista de conversas.
 140. **Número de origem na lista de conversas (15/10/2026)**: chip com o apelido do número, filtro por número e indicação na conversa aberta; só aparece quando a empresa tem mais de um número.
 141. **Troca do operador dono do número (15/10/2026)**: opção de transferir também as conversas que já têm dono ao mudar o operador da linha, com contagem e auditoria.
+142. **Consolidação v1.8 (15/10/2026)**: índice, PRD, TRD, plano e roteiro de teste atualizados com os números de WhatsApp por empresa e por operador (migrations 0044 e 0045), spec LINHAS_WHATSAPP e passo 13 do roteiro. 164 testes.

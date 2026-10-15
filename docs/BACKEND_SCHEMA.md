@@ -1,6 +1,6 @@
 # Schema do Backend
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.7 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** Schema do backend v1.8 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Gerado a partir do schema **real** do Supabase (`tfipbxjslpxbaybpxsql`,
@@ -270,3 +270,6 @@ interna, indicacao) a partir do marcador `?o=` do link; o valor antigo
 
 A `0044` trocou a unicidade por um índice com expressão, que não aceita o
 `upsert`; a `0045` a corrigiu para um índice sobre colunas.
+
+Estado do banco em 15/10/2026: migrations aplicadas até a `0045`. A
+`whatsapp_lines` tem RLS ligada e sem política pública, como as demais.

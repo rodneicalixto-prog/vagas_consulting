@@ -1,6 +1,6 @@
 # Roteiro de teste: ciclo completo de R&S
 
-Tempo estimado: 60 a 90 minutos. Use **candidatos e vaga de teste**, não
+Tempo estimado: 80 a 110 minutos. Use **candidatos e vaga de teste**, não
 pessoas reais. Em cada passo há o que fazer, o que deve acontecer e o que
 **não** deve acontecer. Se algo diferente ocorrer, anote o número do passo.
 
@@ -164,6 +164,23 @@ Página: `/admin/indicadores`
 1. Do celular de teste, pergunte algo que **existe** nas notas aprovadas. A resposta deve citar só o que está nas notas.
 2. Pergunte algo que **não existe**. Deve encaminhar para a equipe, **sem inventar**.
 3. Volte em `/admin/agente`: o painel deve mostrar o tema em "Perguntas sem resposta" depois de repetido 2 vezes, e a qualidade por nota depois de 5 respostas.
+
+---
+
+## 13. Números de WhatsApp (empresa e operador)
+
+Página: `/admin/linhas` (Plataforma > Números de WhatsApp)
+
+1. Em uma empresa de teste, clique em **Criar número** com um apelido e **sem** operador (compartilhado).
+2. Use **Mostrar QR code** e leia com um celular de teste. O estado deve virar **Conectada** e o número deve aparecer.
+3. Mande uma mensagem de outro celular para esse número: a conversa deve aparecer na fila, com o chip do número.
+4. Crie um **segundo número dedicado a um operador**. Mande uma mensagem para ele: a conversa deve cair **direto com o operador**, sem passar pela fila, e o outro operador **não** pode vê-la.
+5. Responda pelo inbox: a resposta deve sair **pelo número da conversa** (confira no celular que recebeu).
+6. A mesma pessoa escrevendo nos dois números deve gerar **duas conversas**.
+7. Com o agente em "só sugestão" no número dedicado, confirme que **nada é enviado sozinho**.
+8. Como admin da empresa, tente criar além do limite: deve **recusar**; como superadmin, aumente o limite e crie.
+9. Edite o número dedicado trocando o operador **com** a opção de passar as conversas: elas devem ir para o novo operador.
+10. **Desconecte** o número e confira que o estado vira Desconectada e que o envio é recusado.
 
 ---
 
