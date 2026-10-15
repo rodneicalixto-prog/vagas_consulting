@@ -1488,7 +1488,9 @@ sessões futuras.
     de R&S ao vivo, 3N divulgação, 3O vaga estruturada), não skills dentro do app. Atenção: a devolutiva exige
     exceção na regra de envio (candidatura encerrada). Registrado em
     `AGENTE_IA_FASE3.md` §14.
-    Os 9 módulos ganharam casos de uso como critério de aceite (§14.1):
+    Surgiu um 10º módulo, carta-oferta (3P), só com o modelo de e-mail
+    (§14.6); a skill ainda não chegou. Os 9 módulos ganharam casos de uso
+    como critério de aceite (§14.1):
     cada skill tem 5 comandos de exemplo que viram campos de formulário.
 
 ## 3. Escopo do MVP (revisado)

@@ -198,7 +198,7 @@ Nada de texto de candidato envolvido neste passo.
 
 ## 14. Pacote de skills de recrutamento e seleção: inventário (15/10/2026)
 
-O Rodnei tem um pacote de skills de R&S. Recebidas até agora 9 (as demais
+O Rodnei tem um pacote de skills de R&S. Recebidas até agora 9 skills e 1 modelo de uma décima (as demais
 serão inventariadas conforme chegarem). Regra: o **conteúdo** vira
 funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 
@@ -212,6 +212,7 @@ funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 | `testes-e-dinamicas` | **Biblioteca de avaliações** por vaga: prova técnica, português, matemática, raciocínio e dinâmicas, com folha do candidato, folha do aplicador, gabarito/rubrica 1 a 4 e export Word/PDF | 3J | Nunca teste psicológico ou de personalidade (privativo de psicólogo); sem trabalho gratuito; conteúdo neutro e acessível |
 | `laudo-do-candidato` | **Laudo consolidado** por candidato: matching cargo × evidência com fonte, aderência 1 a 4, síntese e (opcional) recomendação; quadro comparativo e versão enxuta para o gestor; export Word/PDF | 3L | Fecha o funil: monta a partir dos resultados salvos da triagem, do roteiro e dos testes (montagem em código, a IA só sintetiza). **Modo A (só fatos) e Modo B (com recomendação) escolhidos a cada laudo.** Acesso só do atendente e da gestão; nunca ao candidato; sem avaliação psicológica |
 | `metricas-rh` | **Indicadores de R&S ao vivo** no Estratégico/Visão geral, calculados dos dados da plataforma, com meta editável por empresa, status e recomendação | 3M | Nasce **sem planilha**: tempo de fechamento, SLA (prazo da vaga), funil e conversão, aceitação de proposta e fontes já saem do banco. Precisam de entrada manual: custo por contratação (campos de custo), NPS do processo (pesquisa) e turnover precoce (acompanhamento pós-contratação). Diversidade do funil **fora** (exigiria dado sensível) |
+| `carta-oferta` (skill ainda **não recebida**; só o modelo do e-mail, §14.6) | **Carta-oferta** da aprovação: documento da proposta e e-mail de comunicação com a carta em anexo | 3P | Fica **depois** do laudo e **separada** da devolutiva de aprovação (que não é oferta vinculante). Exige revisão humana (e jurídica, quando houver condição ou valor) antes de sair |
 | `hunting` | **Rascunho de abordagem** (LinkedIn, e-mail, ligação) com ângulo e follow-up | 3K | Só redige; **não envia**. WhatsApp frio fica de fora: contraria a regra de consentimento e arrisca o número |
 
 Regras comuns herdadas das skills: avaliar competência e nunca pessoa; só vale
@@ -446,3 +447,27 @@ Regras de produto:
   todas para revisão e libera o envio uma a uma pelo atendente.
 - A mensagem passa pela regra de envio de encerramento (um envio em até 30
   dias, respeitando descadastro e black list).
+
+### 14.6 E-mail de comunicação da aprovação, com a carta-oferta em anexo (modelo recebido em 15/10/2026)
+
+Pertence a um módulo de **carta-oferta** (3P), cuja skill ainda não chegou.
+Modelo-base do e-mail:
+
+> **Assunto:** Sua proposta na {empresa}
+> Olá, {nome}! Foi ótimo ter você no processo. Segue em anexo a carta-oferta
+> para a vaga de {cargo}. Fico à disposição para conversar sobre qualquer
+> ponto. Podemos falar até {data}? Abraço, {recrutador}
+
+Regras de produto já definidas a partir do modelo e do que o pacote diz:
+
+- A carta-oferta é o documento **vinculante**; a devolutiva de aprovação (3I)
+  **não** traz valores nem condições. Por isso são módulos separados.
+- Campos do e-mail vêm da candidatura (`empresa`, `nome`, `cargo`,
+  `recrutador`); `data` (prazo de resposta) é obrigatório.
+- O anexo é gerado e **revisado por uma pessoa antes do envio**; o sistema não
+  envia carta-oferta sozinho. Valores e condições vêm da vaga estruturada (3O)
+  e da proposta aprovada, nunca inventados pelo modelo.
+- Registro no funil: "proposta enviada" com data e prazo de resposta, o que
+  alimenta o indicador de aceitação de oferta (3M).
+- **Pendente:** receber a skill de carta-oferta para detalhar campos, tipos de
+  contratação (CLT, PJ, temporário) e cláusulas.
