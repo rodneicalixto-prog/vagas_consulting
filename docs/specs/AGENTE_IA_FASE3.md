@@ -300,3 +300,17 @@ então roda em fila, com contagem de custo contra o teto antes de iniciar.
 Só redige: copiar e enviar são ações manuais fora da plataforma. Os campos de
 perfil colado são tratados como dado pessoal (finalidade única, sem guardar
 além do necessário).
+
+**3J — Testes e dinâmicas** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Prova técnica do cargo com gabarito e critérios de correção | vaga (cargo e competências), tipo "prova técnica" |
+| 2 | Dinâmica para uma competência, com instruções e grade de observação | competência-alvo; saída com folha do aplicador e grade 1 a 4 |
+| 3 | Prova de português e raciocínio lógico calibrada à função | tipo "português" e "raciocínio"; nível exigido pela função |
+| 4 | Case prático de até 1 h com rubrica 1 a 4 | tipo "case", tempo máximo (limite de 1 a 2 h, sem trabalho gratuito) |
+| 5 | Dinâmica de grupo para N candidatos em 1 h (comunicação e colaboração) | nº de candidatos, duração, competências |
+
+Toda proposta sai em duas folhas (candidato sem gabarito, aplicador com
+gabarito/rubrica), exportável em Word/PDF. Teste psicológico ou de
+personalidade não é gerado.
