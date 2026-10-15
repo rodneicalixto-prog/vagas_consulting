@@ -4,10 +4,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { empresasParaFiltro, obterEscopo, podeVerEmpresa } from "@/lib/auth/escopo";
 import { formatarTelefoneBR, linkWhatsApp } from "@/lib/whatsapp";
-import { rotuloAnexo, type TipoAnexo } from "@/lib/conversas";
+import { conversaVisivelParaOperador, rotuloAnexo, type TipoAnexo } from "@/lib/conversas";
 import { AtualizarSozinho } from "./atualizar-sozinho";
 import { BotaoCopiar } from "./botao-copiar";
 import { FormularioEnvio } from "./formulario-envio";
+import { assumirConversa, devolverConversa, transferirConversa } from "./actions";
 
 // Envio de arquivo e áudio chama a Evolution e pode levar alguns segundos.
 export const maxDuration = 30;
@@ -76,15 +77,18 @@ export default async function ConversasPage({
     nome_contato: string | null;
     candidate_id: string | null;
     nao_lidas: number;
+    atendente_id: string | null;
   } | null = null;
   if (abertaId) {
     const { data } = await admin
       .from("conversations")
-      .select("id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas")
+      .select("id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas, atendente_id")
       .eq("id", abertaId)
       .maybeSingle();
     if (data) {
       if (!podeVerEmpresa(escopo, data.company_id)) redirect("/admin/acesso-negado");
+      // Sigilo: operador só abre a própria conversa ou a fila de candidatos.
+      if (role === "operador" && !conversaVisivelParaOperador(data, user.id)) redirect("/admin/acesso-negado");
       aberta = data;
       if (data.nao_lidas > 0) {
         await admin.from("conversations").update({ nao_lidas: 0 }).eq("id", data.id);
@@ -113,16 +117,21 @@ export default async function ConversasPage({
     nao_lidas: number;
     ultima_msg_em: string | null;
     ultima_msg_previa: string | null;
+    atendente_id: string | null;
   }[] = [];
   if (!semCarteira) {
     let consulta = admin
       .from("conversations")
       .select(
-        "id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas, ultima_msg_em, ultima_msg_previa",
+        "id, company_id, telefone_normalizado, nome_contato, candidate_id, nao_lidas, ultima_msg_em, ultima_msg_previa, atendente_id",
       )
       .order("ultima_msg_em", { ascending: false, nullsFirst: false })
       .limit(200);
     if (!escopo.todos) consulta = consulta.in("company_id", empresasParaFiltro(escopo));
+    // Operador: só as suas conversas e a fila de candidatos (sigilo entre a equipe).
+    if (role === "operador") {
+      consulta = consulta.or(`atendente_id.eq.${user.id},and(atendente_id.is.null,candidate_id.not.is.null)`);
+    }
     if (soNaoLidas) consulta = consulta.gt("nao_lidas", 0);
     if (q) {
       const digitos = q.replace(/\D/g, "");
@@ -146,6 +155,32 @@ export default async function ConversasPage({
       ? admin.from("companies").select("id, nome_fantasia, razao_social").in("id", empresaIds)
       : Promise.resolve({ data: [] as { id: string; nome_fantasia: string | null; razao_social: string | null }[] }),
   ]);
+  // Nomes dos atendentes (fila = sem atendente).
+  const atendenteIds = [
+    ...new Set([...lista.map((c) => c.atendente_id), aberta?.atendente_id].filter(Boolean) as string[]),
+  ];
+  const { data: atendentes } = atendenteIds.length
+    ? await admin.from("admin_users").select("user_id, nome_exibicao").in("user_id", atendenteIds)
+    : { data: [] as { user_id: string; nome_exibicao: string | null }[] };
+  const nomeAtendente = new Map((atendentes ?? []).map((a) => [a.user_id, a.nome_exibicao || "Atendente"]));
+  const ehGestao = role !== "operador";
+
+  // Equipe da empresa, para a gestão transferir a conversa.
+  let equipe: { id: string; nome: string }[] = [];
+  if (ehGestao && aberta) {
+    const { data: vinculos } = await admin
+      .from("company_assignments")
+      .select("user_id")
+      .eq("company_id", aberta.company_id)
+      .eq("ativo", true)
+      .in("papel", ["operador", "admin_empresa"]);
+    const ids = (vinculos ?? []).map((v) => v.user_id);
+    if (ids.length > 0) {
+      const { data: nomes } = await admin.from("admin_users").select("user_id, nome_exibicao").in("user_id", ids);
+      equipe = (nomes ?? []).map((n) => ({ id: n.user_id, nome: n.nome_exibicao || "Operador" }));
+    }
+  }
+
   const nomePerfil = new Map((perfisNomes ?? []).map((p) => [p.id, p.nome_completo]));
   const nomeEmpresa = new Map(
     (empresas ?? []).map((e) => [e.id, e.nome_fantasia || e.razao_social || "Empresa"]),
@@ -282,7 +317,14 @@ export default async function ConversasPage({
                     <span className="shrink-0 text-[10px] text-text-3">{quando(c.ultima_msg_em)}</span>
                   </div>
                   <div className="mt-0.5 flex items-center justify-between gap-2">
-                    <span className="truncate text-[11.5px] text-text-2">{c.ultima_msg_previa ?? "Sem mensagens"}</span>
+                    <span className="truncate text-[11.5px] text-text-2">
+                      {!c.atendente_id
+                        ? "● Fila · "
+                        : c.atendente_id === user.id
+                          ? ""
+                          : `${nomeAtendente.get(c.atendente_id) ?? "Outro"} · `}
+                      {c.ultima_msg_previa ?? "Sem mensagens"}
+                    </span>
                     {naoLidas > 0 && (
                       <span className="shrink-0 rounded-full bg-success px-1.5 py-0.5 text-[10px] font-extrabold text-white">
                         {naoLidas}
@@ -340,6 +382,54 @@ export default async function ConversasPage({
                     <span className="rounded bg-black/[0.05] px-1.5 py-0.5 text-[10px] font-bold text-text-2">
                       {empresaDaAberta}
                     </span>
+                  )}
+                </div>
+                <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11.5px]">
+                  {!aberta.atendente_id ? (
+                    <span className="rounded bg-gold-bg px-2 py-0.5 font-bold text-gold-3">Na fila · sem atendente</span>
+                  ) : aberta.atendente_id === user.id ? (
+                    <span className="rounded bg-success-bg px-2 py-0.5 font-bold text-success">Você está atendendo</span>
+                  ) : (
+                    <span className="rounded bg-navy-bg px-2 py-0.5 font-bold text-navy">
+                      Em atendimento: {nomeAtendente.get(aberta.atendente_id) ?? "outra pessoa"}
+                    </span>
+                  )}
+                  {(!aberta.atendente_id || (ehGestao && aberta.atendente_id !== user.id)) && (
+                    <form action={assumirConversa}>
+                      <input type="hidden" name="conversation_id" value={aberta.id} />
+                      <button className="rounded-lg bg-navy px-3 py-1 font-bold text-white">
+                        {aberta.atendente_id ? "Assumir (retomar)" : "Assumir conversa"}
+                      </button>
+                    </form>
+                  )}
+                  {aberta.atendente_id && (aberta.atendente_id === user.id || ehGestao) && (
+                    <form action={devolverConversa}>
+                      <input type="hidden" name="conversation_id" value={aberta.id} />
+                      <button className="rounded-lg border border-border px-3 py-1 font-bold text-text-2">
+                        Devolver à fila
+                      </button>
+                    </form>
+                  )}
+                  {ehGestao && equipe.length > 0 && (
+                    <form action={transferirConversa} className="flex items-center gap-1">
+                      <input type="hidden" name="conversation_id" value={aberta.id} />
+                      <select
+                        name="para_user_id"
+                        defaultValue=""
+                        required
+                        className="rounded-lg border border-border bg-surface px-2 py-1"
+                      >
+                        <option value="" disabled>
+                          Transferir para…
+                        </option>
+                        {equipe.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.nome}
+                          </option>
+                        ))}
+                      </select>
+                      <button className="rounded-lg border border-border px-3 py-1 font-bold text-text-2">Transferir</button>
+                    </form>
                   )}
                 </div>
                 {descadastrado && (
@@ -436,6 +526,7 @@ export default async function ConversasPage({
               <FormularioEnvio
                 conversationId={aberta.id}
                 descadastrado={descadastrado}
+                semAtendente={aberta.atendente_id !== user.id}
                 respondendo={
                   alvoResposta
                     ? {

@@ -29,10 +29,13 @@ function mmss(s: number): string {
 export function FormularioEnvio({
   conversationId,
   descadastrado,
+  semAtendente,
   respondendo,
 }: {
   conversationId: string;
   descadastrado: boolean;
+  /** Quem está logado não é o atendente: precisa assumir antes de responder. */
+  semAtendente?: boolean;
   respondendo?: { id: string; resumo: string; limparHref: string } | null;
 }) {
   const [estado, acao, pendente] = useActionState(enviarMensagemComEstado, inicial);
@@ -171,7 +174,7 @@ export function FormularioEnvio({
   };
 
   const semConteudo = texto.trim().length === 0 && !anexo;
-  const bloqueado = descadastrado;
+  const bloqueado = descadastrado || !!semAtendente;
 
   return (
     <form ref={formRef} action={acao} className="shrink-0 border-t border-border p-2.5">
@@ -289,7 +292,9 @@ export function FormularioEnvio({
           onChange={(e) => setTexto(e.target.value)}
           disabled={bloqueado}
           placeholder={
-            bloqueado
+            semAtendente
+              ? "Assuma a conversa para responder."
+              : bloqueado
               ? "Envio bloqueado por descadastro."
               : anexo?.audio
                 ? "Áudio não leva legenda."

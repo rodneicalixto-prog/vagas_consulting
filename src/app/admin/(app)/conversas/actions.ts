@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, exigirEmpresa, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
+import { conversaVisivelParaOperador } from "@/lib/conversas";
 import {
   TAMANHO_MAX_ENVIO,
   extensaoDoMime,
@@ -68,11 +69,28 @@ export async function enviarMensagem(formData: FormData) {
   // A empresa vem da conversa carregada no servidor, nunca do formulário.
   const { data: conversa } = await admin
     .from("conversations")
-    .select("id, company_id, telefone_normalizado, candidate_id, status")
+    .select("id, company_id, telefone_normalizado, candidate_id, status, atendente_id")
     .eq("id", conversaId)
     .maybeSingle();
   if (!conversa) throw new Error("Conversa não encontrada.");
   exigirEmpresa(escopo, conversa.company_id);
+
+  // Dono da conversa: só o atendente responde. Gestão assume a fila ao responder.
+  if (role === "operador" && !conversaVisivelParaOperador(conversa, user.id)) {
+    redirect("/admin/acesso-negado");
+  }
+  if (!conversa.atendente_id) {
+    if (role === "operador") throw new Error("Assuma a conversa antes de responder.");
+    const { data: tomou } = await admin
+      .from("conversations")
+      .update({ atendente_id: user.id, atribuida_em: new Date().toISOString() })
+      .eq("id", conversa.id)
+      .is("atendente_id", null)
+      .select("id");
+    if (!tomou || tomou.length === 0) throw new Error("Esta conversa acabou de ser assumida por outra pessoa.");
+  } else if (conversa.atendente_id !== user.id) {
+    throw new Error("Esta conversa está com outra pessoa. Assuma a conversa para responder.");
+  }
 
   const companyId = conversa.company_id;
   const telefone = conversa.telefone_normalizado;
@@ -328,6 +346,12 @@ export async function abrirConversaComCandidato(formData: FormData) {
     .single();
   if (error || !conversa) throw new Error("Não foi possível abrir a conversa. Tente novamente.");
 
+  await admin
+    .from("conversations")
+    .update({ atendente_id: user.id, atribuida_em: new Date().toISOString() })
+    .eq("id", conversa.id)
+    .is("atendente_id", null);
+
   redirect(`/admin/conversas?c=${conversa.id}`);
 }
 
@@ -370,5 +394,99 @@ export async function abrirConversaComEmpresaCliente(formData: FormData) {
     .single();
   if (error || !conversa) throw new Error("Não foi possível abrir a conversa. Tente novamente.");
 
+  await admin
+    .from("conversations")
+    .update({ atendente_id: user.id, atribuida_em: new Date().toISOString() })
+    .eq("id", conversa.id)
+    .is("atendente_id", null);
+
   redirect(`/admin/conversas?c=${conversa.id}`);
+}
+
+const GESTAO = ["superadmin", "admin", "admin_empresa"];
+
+async function conversaDoEscopo(formData: FormData) {
+  const { user, role } = await requireInternalUser("pipeline.manage");
+  const conversaId = uuidDe(formData, "conversation_id");
+  const admin = createAdminClient();
+  const escopo = await obterEscopo(user.id, role);
+  const { data: conversa } = await admin
+    .from("conversations")
+    .select("id, company_id, candidate_id, atendente_id")
+    .eq("id", conversaId)
+    .maybeSingle();
+  if (!conversa) redirect("/admin/acesso-negado");
+  exigirEmpresa(escopo, conversa.company_id);
+  if (role === "operador" && !conversaVisivelParaOperador(conversa, user.id)) redirect("/admin/acesso-negado");
+  return { user, role, admin, conversa };
+}
+
+async function registrar(
+  admin: ReturnType<typeof createAdminClient>,
+  atorId: string,
+  acao: string,
+  conversaId: string,
+  depois: { de?: string | null; para?: string | null },
+) {
+  await admin.from("audit_log").insert({
+    ator_id: atorId,
+    acao,
+    objeto_tipo: "conversation",
+    objeto_id: conversaId,
+    depois,
+  });
+}
+
+/** Assume a conversa. Operador só assume da fila; a gestão pode retomar de outro. */
+export async function assumirConversa(formData: FormData) {
+  const { user, role, admin, conversa } = await conversaDoEscopo(formData);
+  let consulta = admin
+    .from("conversations")
+    .update({ atendente_id: user.id, atribuida_em: new Date().toISOString() })
+    .eq("id", conversa.id);
+  if (!GESTAO.includes(role)) consulta = consulta.is("atendente_id", null); // sem corrida entre operadores
+  const { data } = await consulta.select("id");
+  if (data && data.length > 0) {
+    await registrar(admin, user.id, "conversa_assumida", conversa.id, {
+      de: conversa.atendente_id,
+      para: user.id,
+    });
+  }
+  revalidatePath("/admin/conversas");
+}
+
+/** Devolve a conversa à fila (o atendente ou a gestão). */
+export async function devolverConversa(formData: FormData) {
+  const { user, role, admin, conversa } = await conversaDoEscopo(formData);
+  if (conversa.atendente_id !== user.id && !GESTAO.includes(role)) redirect("/admin/acesso-negado");
+  await admin
+    .from("conversations")
+    .update({ atendente_id: null, atribuida_em: null })
+    .eq("id", conversa.id);
+  await registrar(admin, user.id, "conversa_devolvida", conversa.id, { de: conversa.atendente_id });
+  revalidatePath("/admin/conversas");
+}
+
+/** Transfere para outra pessoa da equipe da empresa (só a gestão). */
+export async function transferirConversa(formData: FormData) {
+  const { user, role, admin, conversa } = await conversaDoEscopo(formData);
+  if (!GESTAO.includes(role)) redirect("/admin/acesso-negado");
+  const destino = uuidDe(formData, "para_user_id");
+  const { data: vinculo } = await admin
+    .from("company_assignments")
+    .select("id")
+    .eq("company_id", conversa.company_id)
+    .eq("user_id", destino)
+    .eq("ativo", true)
+    .limit(1);
+  if (!vinculo || vinculo.length === 0) throw new Error("Essa pessoa não faz parte da equipe desta empresa.");
+  await admin
+    .from("conversations")
+    .update({ atendente_id: destino, atribuida_em: new Date().toISOString() })
+    .eq("id", conversa.id);
+  await registrar(admin, user.id, "conversa_transferida", conversa.id, {
+    de: conversa.atendente_id,
+    para: destino,
+  });
+  revalidatePath("/admin/conversas");
 }

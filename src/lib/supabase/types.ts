@@ -381,6 +381,8 @@ export type Database = {
       }
       conversations: {
         Row: {
+          atendente_id: string | null
+          atribuida_em: string | null
           canal: string
           candidate_id: string | null
           company_id: string
@@ -394,6 +396,8 @@ export type Database = {
           ultima_msg_previa: string | null
         }
         Insert: {
+          atendente_id?: string | null
+          atribuida_em?: string | null
           canal?: string
           candidate_id?: string | null
           company_id: string
@@ -407,6 +411,8 @@ export type Database = {
           ultima_msg_previa?: string | null
         }
         Update: {
+          atendente_id?: string | null
+          atribuida_em?: string | null
           canal?: string
           candidate_id?: string | null
           company_id?: string

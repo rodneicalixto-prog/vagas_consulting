@@ -199,3 +199,21 @@ export function detectarMidia(message: unknown): MidiaDetectada | null {
   }
   return null;
 }
+
+/**
+ * Sigilo entre operadores: o operador vê só as conversas dele e a fila de
+ * candidatos. Contatos que não são candidato (empresas clientes, números
+ * desconhecidos) ficam só para a gestão até alguém repassar a ele.
+ */
+export function conversaVisivelParaOperador(
+  c: { atendente_id: string | null; candidate_id: string | null },
+  userId: string,
+): boolean {
+  if (c.atendente_id) return c.atendente_id === userId;
+  return c.candidate_id !== null;
+}
+
+/** Pode responder? Só o atendente da conversa. */
+export function podeResponderConversa(c: { atendente_id: string | null }, userId: string): boolean {
+  return c.atendente_id === userId;
+}

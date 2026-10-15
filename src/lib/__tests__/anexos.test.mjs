@@ -9,6 +9,8 @@ import {
   TAMANHO_MAX_ANEXO,
   TAMANHO_MAX_ENVIO,
   podeEnviar,
+  conversaVisivelParaOperador,
+  podeResponderConversa,
 } from "../conversas.ts";
 
 test("tipos permitidos e bloqueados", () => {
@@ -62,4 +64,19 @@ test("contato de empresa cliente libera o envio, exceto descadastro", () => {
   assert.equal(podeEnviar(base).ok, false);
   assert.equal(podeEnviar({ ...base, contatoDeCliente: true }).ok, true);
   assert.equal(podeEnviar({ ...base, contatoDeCliente: true, descadastrado: true }).ok, false);
+});
+
+test("sigilo entre operadores: dono da conversa", () => {
+  const eu = "u-1";
+  const outro = "u-2";
+  // Fila de candidato: visível; contato que não é candidato: oculto até repassar.
+  assert.equal(conversaVisivelParaOperador({ atendente_id: null, candidate_id: "c-1" }, eu), true);
+  assert.equal(conversaVisivelParaOperador({ atendente_id: null, candidate_id: null }, eu), false);
+  // Conversa de outro operador: oculta; a minha: visível mesmo sem candidato.
+  assert.equal(conversaVisivelParaOperador({ atendente_id: outro, candidate_id: "c-1" }, eu), false);
+  assert.equal(conversaVisivelParaOperador({ atendente_id: eu, candidate_id: null }, eu), true);
+  // Só o atendente responde.
+  assert.equal(podeResponderConversa({ atendente_id: eu }, eu), true);
+  assert.equal(podeResponderConversa({ atendente_id: null }, eu), false);
+  assert.equal(podeResponderConversa({ atendente_id: outro }, eu), false);
 });

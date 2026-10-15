@@ -1445,6 +1445,12 @@ sessões futuras.
     fragmento de token na página inicial e "Primeiro acesso ou esqueci a senha"
     no login (link por e-mail, resposta sempre igual). Convite já aponta para
     a nova tela. Requer o domínio na lista de URLs permitidas do Supabase Auth.
+111. **Dono da conversa e sigilo entre operadores (15/10/2026)**: migration
+    0031 (`atendente_id`, `atribuida_em`). Conversa nova entra na fila;
+    operador vê só as suas e a fila de candidatos (contatos que não são
+    candidato ficam só para a gestão); só o atendente responde; Assumir,
+    Devolver à fila e Transferir (gestão), tudo auditado. Quem abre conversa
+    com candidato ou empresa cliente já vira o atendente. 64 testes.
 
 ## 3. Escopo do MVP (revisado)
 
