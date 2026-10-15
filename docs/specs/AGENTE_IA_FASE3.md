@@ -1092,3 +1092,35 @@ Migration **0035** (`interview_scripts`, `interview_scorecards`; aditiva, RLS li
 **Limites:** entrevistas ainda não ligam à Agenda; exportar Word, editar o
 texto fixo do roteiro e mostrar a ficha de outros entrevistadores para a
 gestão ficam para depois. O laudo (3L) vai ler estas fichas.
+
+### Passo 3J construído (15/10/2026): testes e dinâmicas
+
+Telas: **Vagas > Critérios > Testes e dinâmicas** (`/admin/vagas/[id]/testes`)
+e o instrumento (`.../testes/[assessmentId]`; `?folha=candidato` abre só a
+folha do candidato, pronta para imprimir).
+Migration **0036** (`assessments`, `assessment_results`; aditiva, RLS ligada).
+
+**Tipos que existem:** prova técnica, português, raciocínio lógico, case
+prático e dinâmica. Teste psicológico, de personalidade ou de perfil **não
+existe** (privativo de psicólogo): pedido nesse sentido é recusado.
+
+**Garantias do §14.16 no código:**
+| Garantia | Implementação |
+|---|---|
+| Competência-alvo antes de gerar | `validarEntrada` bloqueia sem ela |
+| Cada questão mede uma competência | questão sem competência é removida |
+| Sem trabalho gratuito | limite de tempo por tipo (case até 120 min) e aviso de entrega aproveitável pela empresa |
+| Conteúdo neutro | tema sensível (religião, política) e termo discriminatório removem a questão e bloqueiam a liberação |
+| Rubrica ou gabarito | prova: gabarito ou critério por questão; case: rubrica 1 a 4; sem isso não aprova |
+| Dinâmica sem exposição | formatos de confissão, constrangimento, pegadinha e pressão deliberada geram aviso e bloqueiam |
+| Grade por nível | dinâmica exige os níveis 1 a 4 por comportamento |
+| Duas folhas | `folhaDoCandidato` nunca inclui gabarito, critério, rubrica ou grade (testado) |
+| Adaptações PcD | campo na folha do aplicador, a confirmar com a pessoa |
+
+**Fluxo:** gerar → revisar → **aprovar para aplicação** (auditado) → registrar a
+nota 1 a 4 por candidatura, com evidência obrigatória nas notas 1 e 4. As notas
+ficam em `assessment_results` (competência, nota) para o laudo (3L).
+
+**Limites:** instrumento aprovado ainda não é duplicado para outra vaga
+semelhante; exportação Word fica para depois (impressão/PDF pelo navegador);
+não há edição manual do texto gerado (gera de novo).

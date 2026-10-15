@@ -2196,3 +2196,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     candidatura com nota 1 a 4, evidência obrigatória em 1 e 4, recomendação e
     porquê; perguntas a partir dos pontos a validar da triagem. Migration 0035.
     100 testes. Pendente: Word, Agenda, visão da gestão sobre fichas de outros.
+124. **3J: testes e dinâmicas (15/10/2026)**: prova técnica, português,
+    raciocínio, case e dinâmica; competência-alvo obrigatória; tipos
+    psicológicos não existem; limites de tempo; gabarito/rubrica/grade
+    obrigatórios para aprovar; folha do candidato separada (sem gabarito);
+    nota 1 a 4 por candidatura. Migration 0036. 107 testes. Pendente:
+    reaproveitar em outra vaga, Word, edição manual.

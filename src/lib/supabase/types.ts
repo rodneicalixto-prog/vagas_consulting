@@ -604,6 +604,87 @@ export type Database = {
         }
         Relationships: []
       }
+      assessments: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          competencia: string
+          conteudo: Json
+          created_at: string
+          criado_por: string | null
+          id: string
+          job_id: string
+          status: string
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          competencia: string
+          conteudo?: Json
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          job_id: string
+          status?: string
+          tipo: string
+          titulo?: string
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          competencia?: string
+          conteudo?: Json
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          job_id?: string
+          status?: string
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
+      assessment_results: {
+        Row: {
+          application_id: string
+          assessment_id: string
+          avaliador_id: string
+          competencia: string
+          created_at: string
+          evidencia: string
+          id: string
+          job_id: string
+          nota: number
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          assessment_id: string
+          avaliador_id: string
+          competencia: string
+          created_at?: string
+          evidencia?: string
+          id?: string
+          job_id: string
+          nota: number
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          assessment_id?: string
+          avaliador_id?: string
+          competencia?: string
+          created_at?: string
+          evidencia?: string
+          id?: string
+          job_id?: string
+          nota?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string
