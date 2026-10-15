@@ -198,12 +198,13 @@ Nada de texto de candidato envolvido neste passo.
 
 ## 14. Pacote de skills de recrutamento e seleção: inventário (15/10/2026)
 
-O Rodnei tem um pacote de skills de R&S. Recebidas até agora 8 (as demais
+O Rodnei tem um pacote de skills de R&S. Recebidas até agora 9 (as demais
 serão inventariadas conforme chegarem). Regra: o **conteúdo** vira
 funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 
 | Skill | Vira | Passo | Observações |
 |---|---|---|---|
+| `job-description` | **Vaga estruturada**: gerador de JD a partir do recado do gestor (texto ou áudio transcrito), reescrita para atrair mais e cortar requisito inflado, modelos júnior e liderança | 3O | **Base de todo o funil:** a JD sai em campos (obrigatórios, desejáveis, comportamentais, eliminatórios, senioridade, modelo, faixa) que alimentam divulgação, triagem, roteiro, testes e laudo. Sem critério discriminatório; requisito inflado é sinalizado |
 | `divulgacao-de-vaga` | **Gerador de divulgação** na vaga: texto pronto por canal (LinkedIn, Instagram, WhatsApp, portais, comunidades, interno), com 2 ganchos, briefing de arte e título otimizado para portal | 3N | Só redige (publicação é manual). Pergunta canal, perfil técnico/menos técnico e tom. Usa o link da vitrine pública com **marcador de origem por canal**, que alimenta a métrica de fontes (3M). Diagnóstico "vaga não atrai" aponta título, requisito inflado e canal errado |
 | `triagem-de-curriculos` | **Módulo de triagem** na vaga: ranking com evidências, mini-parecer e corte sugerido | 3G | Critérios estruturados na vaga; pontuação no código; **triagem às cegas** (remover nome, foto, idade antes de enviar ao modelo); aviso de IA e direito à revisão (LGPD art. 20) |
 | `roteiro-de-entrevista` | **Roteiro e scorecard** por vaga/candidato: perguntas STAR e situacionais, "o que observar", escala 1 a 4, parecer; exportar Word/PDF | 3H | Liga com Agenda/Entrevistas e com os "pontos a validar" da triagem; lista de perguntas proibidas aplicada no código |
@@ -222,8 +223,8 @@ escala 1 a 4 comum a triagem, entrevista e testes.
 roteiro (3H) → testes (3J) → laudo (3L) → decisão → devolutiva (3I). A
 abordagem (3K) fica no começo do funil, antes da triagem.
 
-Ordem proposta: 3B (sugestão de resposta) → 3N (divulgação, ganho rápido: só
-texto) → 3G → 3H → 3J → 3L → 3I → 3M → 3K.
+Ordem proposta: 3B (sugestão de resposta) → **3O (vaga estruturada, é a base
+dos módulos seguintes)** → 3N (divulgação) → 3G → 3H → 3J → 3L → 3I → 3M → 3K.
 Os resultados de cada módulo são gravados de forma estruturada (competência,
 evidência, fonte, nota 1 a 4) para o laudo montar sem reler tudo.
 
@@ -246,3 +247,16 @@ digitar prompt, só preenchendo campos.
 Os valores da empresa e as competências da vaga ficam **cadastrados uma vez**
 (base de conhecimento e vaga) e são reaproveitados em triagem, roteiro, testes
 e laudo, em vez de digitados a cada uso.
+
+**3O — Job description** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Criar a JD a partir do cargo, setor/porte, modelo e cidade | cargo, setor, porte, modelo (presencial, híbrido, remoto), cidade e UF |
+| 2 | Transformar o recado do gestor em vaga estruturada | caixa de texto ou áudio (transcrição) |
+| 3 | Reescrever uma JD para atrair mais e cortar requisitos inflados | JD atual; o sistema mostra o que cortou e por quê |
+| 4 | JD de nível júnior, sem experiência prévia e com foco em potencial | opção "júnior/potencial" |
+| 5 | JD de liderança com escopo de gestão e competências de liderança | tamanho do time, escopo, competências de liderança |
+
+O áudio do gestor pode chegar pelo WhatsApp (já recebido e guardado); a
+transcrição é passo posterior e usa o provedor de voz do cofre.
