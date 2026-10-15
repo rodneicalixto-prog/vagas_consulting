@@ -260,3 +260,15 @@ e laudo, em vez de digitados a cada uso.
 
 O áudio do gestor pode chegar pelo WhatsApp (já recebido e guardado); a
 transcrição é passo posterior e usa o provedor de voz do cofre.
+
+**3N — Divulgação de vaga** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Post de LinkedIn a partir da JD | vaga (traz a JD), perfil técnico ou menos técnico |
+| 2 | Adaptar a mesma vaga para vários canais de uma vez | seleção múltipla de canais (LinkedIn, WhatsApp, portal tipo Gupy); uma versão por canal |
+| 3 | Anúncio de Instagram com legenda e briefing da arte | canal Instagram; saída em duas partes (legenda e briefing) |
+| 4 | Diagnosticar "vaga não atrai" e reescrever | botão de diagnóstico na vaga; lista causas prováveis e reescreve |
+| 5 | Texto para comunidade tech (Discord) com stack, remoto e faixa | canal comunidade; exige stack, modelo e faixa quando o perfil é técnico |
+
+Reaproveita os campos da vaga estruturada (3O); só pergunta o que faltar.
