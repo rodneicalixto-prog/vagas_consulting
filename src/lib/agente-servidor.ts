@@ -49,6 +49,18 @@ async function chaveDoProvedor(companyId: string, provedor: ProvedorAgente): Pro
   }
 }
 
+/** Resumo do erro do provedor (código e mensagem); nunca inclui a chave. */
+async function detalheDoErro(r: Response): Promise<string> {
+  let msg = "";
+  try {
+    const j = (await r.json()) as { error?: { message?: string } | string; message?: string };
+    msg = typeof j.error === "string" ? j.error : (j.error?.message ?? j.message ?? "");
+  } catch {
+    msg = "";
+  }
+  return `HTTP ${r.status}${msg ? `: ${msg.replace(/\s+/g, " ").slice(0, 140)}` : ""}`;
+}
+
 async function chamarModelo(
   provedor: ProvedorAgente,
   modelo: string,
@@ -67,7 +79,7 @@ async function chamarModelo(
         signal: c.signal,
         cache: "no-store",
       });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      if (!r.ok) throw new Error(await detalheDoErro(r));
       const j = (await r.json()) as {
         content?: { text?: string }[];
         usage?: { input_tokens?: number; output_tokens?: number };
@@ -93,7 +105,7 @@ async function chamarModelo(
       signal: c.signal,
       cache: "no-store",
     });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) throw new Error(await detalheDoErro(r));
     const j = (await r.json()) as {
       choices?: { message?: { content?: string } }[];
       usage?: { prompt_tokens?: number; completion_tokens?: number };
@@ -322,8 +334,11 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   let resposta: Resposta;
   try {
     resposta = await chamarModelo(provedor, modelo, chave, system, user);
-  } catch {
-    await registrarRun(null, "erro_provedor", null, null);
+  } catch (e) {
+    const detalhe = e instanceof Error ? e.name === "AbortError" ? "tempo esgotado" : e.message : "falha";
+    const motivo = `erro_provedor: ${detalhe}`.slice(0, 200);
+    const id = await registrar("", motivo);
+    await registrarRun(id, motivo, null, null);
     return;
   }
 

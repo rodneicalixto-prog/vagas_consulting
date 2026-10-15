@@ -40,9 +40,12 @@ export function CaixaSugestao({
   };
 
   if (motivo || !rascunho) {
+    const texto = motivo?.startsWith("erro_provedor")
+      ? `O provedor de IA não respondeu (${motivo.replace("erro_provedor: ", "")}). Responda você e avise o superadmin.`
+      : (MOTIVOS[motivo ?? ""] ?? "O assistente não gerou sugestão para esta mensagem.");
     return (
       <div className="shrink-0 border-t border-border bg-gold-bg px-4 py-2 text-[12px] font-semibold text-gold-3">
-        {MOTIVOS[motivo ?? ""] ?? "O assistente não gerou sugestão para esta mensagem."}
+        {texto}
       </div>
     );
   }
