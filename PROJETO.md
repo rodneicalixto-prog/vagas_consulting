@@ -1408,6 +1408,13 @@ sessões futuras.
     Permissions-Policy liberou o microfone só para o próprio site.
     Pendente: respostas rápidas, notas internas, atribuir, encaminhar.
     62 testes.
+108. **Correção de CVE nas dependências (15/10/2026)**: `npm audit` achou
+    1 crítica (Next.js, RCE em next/og — o app não usa next/og) e 8 altas.
+    Next e eslint-config-next 16.3.4 → 16.4.1 (fixados), `npm audit fix`
+    nos transitivos. Produção: 0 vulnerabilidades (`--omit=dev`). Restam 5
+    altas só na cadeia de lint (eslint-config-next → fast-glob → braces),
+    dev-only; a sugestão do audit (downgrade para 14.x) foi descartada.
+    tsc, eslint, build e 62 testes verdes.
 
 ## 3. Escopo do MVP (revisado)
 
