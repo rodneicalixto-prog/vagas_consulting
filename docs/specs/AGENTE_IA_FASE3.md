@@ -515,3 +515,28 @@ no momento, causa, ação, responsável, prazo, indicador de acompanho, estado
 aberta, em andamento, concluída ou cancelada). O relatório mensal (14.7) lista
 os planos abertos e o resultado dos concluídos. Plano concluído sem melhora do
 indicador aparece sinalizado, para revisar a ação em vez de repetir.
+
+### 14.9 Modelo do laudo, matching cargo × candidato (recebido em 15/10/2026)
+
+Estrutura fixa do documento do 3L; cada bloco tem origem definida:
+
+| Bloco | Conteúdo | Origem |
+|---|---|---|
+| Cabeçalho | Candidato e cargo | Candidatura |
+| Fontes | Lista do que foi usado (currículo, entrevista, teste, dinâmica) | Registros salvos em 3G, 3H e 3J; o que não existe aparece como "não avaliado" |
+| Resumo do perfil | 3 a 5 linhas, **só fatos** | IA a partir das evidências, sem adjetivo nem personalidade |
+| Quadro de matching | Competência, o que o cargo exige, como o candidato se apresenta (evidência e fonte) e aderência 1 a 4 | Competências da vaga estruturada (3O) cruzadas com a ficha da entrevista (14.3) |
+| Fit cultural | Evidência e nota 1 a 4 | Ficha da entrevista |
+| Fortes, a validar, divergências | Três listas | Montagem em código: divergência aparece quando duas fontes dão notas muito diferentes para a mesma competência |
+| Recomendação | Contratar, Com ressalva ou Não contratar, **com o porquê** | **Só se solicitada** (modo B); no modo A o bloco nem existe |
+
+Regras:
+
+- Cada linha do quadro mostra a **fonte** e a **força da evidência** (por
+  exemplo "só relato de entrevista, sem teste").
+- Sem evidência para uma competência, a linha diz "Não avaliado" e sugere como
+  avaliar, em vez de preencher.
+- Recomendação "Com ressalva" exige o campo de condições; "Não contratar"
+  exige justificativa ligada a competência, nunca a característica pessoal.
+- O laudo é imutável depois de **assinado** pelo recrutador (nova versão em vez
+  de edição), para sustentar a decisão depois.
