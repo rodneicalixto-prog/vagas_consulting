@@ -685,6 +685,51 @@ export type Database = {
         }
         Relationships: []
       }
+      candidate_reports: {
+        Row: {
+          application_id: string
+          assinado_em: string | null
+          assinado_por: string | null
+          conteudo: Json
+          created_at: string
+          criado_por: string | null
+          id: string
+          job_id: string
+          modo: string
+          recomendacao: Json | null
+          status: string
+          versao: number
+        }
+        Insert: {
+          application_id: string
+          assinado_em?: string | null
+          assinado_por?: string | null
+          conteudo?: Json
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          job_id: string
+          modo: string
+          recomendacao?: Json | null
+          status?: string
+          versao?: number
+        }
+        Update: {
+          application_id?: string
+          assinado_em?: string | null
+          assinado_por?: string | null
+          conteudo?: Json
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          job_id?: string
+          modo?: string
+          recomendacao?: Json | null
+          status?: string
+          versao?: number
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string

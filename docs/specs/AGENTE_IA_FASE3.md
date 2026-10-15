@@ -1124,3 +1124,36 @@ ficam em `assessment_results` (competência, nota) para o laudo (3L).
 **Limites:** instrumento aprovado ainda não é duplicado para outra vaga
 semelhante; exportação Word fica para depois (impressão/PDF pelo navegador);
 não há edição manual do texto gerado (gera de novo).
+
+### Passo 3L construído (15/10/2026): laudo do candidato
+
+Telas: **Vagas > Critérios > Laudos dos candidatos** (`/admin/vagas/[id]/laudos`),
+o laudo (`.../laudos/[laudoId]`; `?visao=gestor` é o resumo enxuto) e o
+quadro comparativo (`.../laudos/comparativo?ids=...`).
+Migration **0037** (`candidate_reports`; aditiva, RLS ligada).
+
+**Como é montado:** o quadro cargo × candidato é **calculado no código** com o
+que já foi salvo: triagem (3G), ficha de entrevista **fechada** (3H) e notas
+dos testes (3J). A IA só redige o resumo do perfil, e esse resumo passa por
+revisão por regra.
+
+| Garantia (§14.17) | Implementação |
+|---|---|
+| Tipo escolhido antes | só fatos ou com recomendação; no modo "só fatos" o documento não tem recomendação |
+| Uma linha por competência, na ordem da vaga | `competenciasDaVaga` (obrigatórios, desejáveis, comportamentais) |
+| Evidência e fonte em cada linha | linha sem evidência vira "não avaliado" e sugere como avaliar |
+| Força da evidência | texto por linha (ex.: "Entrevista; sem teste") |
+| Divergência entre fontes | notas com 2 pontos ou mais de diferença vão para "divergências", sem escolher |
+| Limitação no topo | menos de 2 fontes ou fonte ausente aparece como "não avaliado" |
+| Sem leitura de personalidade ou adjetivo valorativo | `revisarResumo` descarta o resumo; recomendação com esses termos é invalidada |
+| Recomendação apoiada no quadro | a pessoa escolhe e cita linhas existentes e avaliadas; "com ressalva" exige condições; característica pessoal invalida |
+| Imutável ao assinar | laudo assinado não muda; nova versão gera outro registro (versionado) |
+| Acesso | só quem criou e a gestão; o candidato nunca recebe o laudo |
+
+**Aderência:** média arredondada das notas disponíveis (triagem: atende = 3,
+não atende = 1; ficha e testes: nota 1 a 4). Sem nota, "—".
+
+**Limites:** exportação Word fica para depois (impressão/PDF pelo navegador);
+casamento de competência entre fontes é por nome (igual ou contido), então
+nomes muito diferentes entre vaga e roteiro aparecem como "não avaliado";
+insumo externo anexado (caso 3) ainda não existe.

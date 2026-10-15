@@ -2202,3 +2202,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     obrigatórios para aprovar; folha do candidato separada (sem gabarito);
     nota 1 a 4 por candidatura. Migration 0036. 107 testes. Pendente:
     reaproveitar em outra vaga, Word, edição manual.
+125. **3L: laudo do candidato (15/10/2026)**: quadro cargo × candidato no
+    código a partir de triagem, ficha e testes; fonte e força por linha;
+    'não avaliado' sem evidência; divergências; resumo por IA revisado por
+    regra; recomendação sempre da pessoa, citando linhas do quadro; assinado
+    é imutável (versão nova); comparativo de finalistas; resumo para o
+    gestor. Migration 0037. 114 testes. Pendente: Word, insumo externo.
