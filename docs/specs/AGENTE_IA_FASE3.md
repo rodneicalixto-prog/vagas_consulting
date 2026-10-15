@@ -1157,3 +1157,39 @@ não atende = 1; ficha e testes: nota 1 a 4). Sem nota, "—".
 casamento de competência entre fontes é por nome (igual ou contido), então
 nomes muito diferentes entre vaga e roteiro aparecem como "não avaliado";
 insumo externo anexado (caso 3) ainda não existe.
+
+### Passo 3I construído (15/10/2026): devolutiva ao candidato
+
+Telas: **Vagas > Critérios > Devolutivas** (`/admin/vagas/[id]/devolutivas`) e
+a revisão de cada rascunho (`.../devolutivas/[feedbackId]`).
+Migration **0038** (`candidate_feedbacks`; aditiva, RLS ligada; índice parcial
+único: uma devolutiva `enviada` por candidatura).
+
+**Decisão de projeto:** os textos são os **modelos aprovados do §14.5,
+preenchidos no código** (sem custo de IA e sem inventar conteúdo). A pessoa
+edita e envia fora da plataforma, depois marca como enviada. A plataforma não
+dispara mensagem.
+
+| Caso de uso | Como |
+|---|---|
+| Aprovação com próximos passos | tipo Aprovação; próximo passo e prazo obrigatórios; lista de documentos opcional |
+| Genérica respeitosa (e em lote) | tipo Genérica; lote com um rascunho por pessoa, revisão e envio um a um |
+| Com feedback na fase final | tipo Feedback; fortes e melhoria vêm da ficha de parecer fechada ou são digitados; sem eles só a genérica |
+| Roteiro de ligação | canal Ligação; roteiro com espaço de escuta, sem justificar nem prometer |
+| WhatsApp curto com documentos | canal WhatsApp + lista de documentos |
+
+**Garantias do §14.18 no código:**
+- Campo `{…}` em branco, nome ou vaga ausentes e critério discriminatório ou
+  referência a característica pessoal **bloqueiam**.
+- Promessa de guardar currículo ou chamar de novo só passa com o campo
+  "banco de talentos" marcado.
+- Aprovação exige próximo passo e prazo; feedback exige fortes e melhoria.
+- Termo depreciativo e texto seco geram **aviso**.
+- Finalista com ficha fechada: sugere feedback e **ligação antes**.
+- **Regra de encerramento** (`podeEnviarEncerramento`): respeita descadastro e
+  black list, permite **uma** devolutiva por candidatura e, depois da decisão,
+  só dentro de 30 dias; o índice do banco impede a segunda.
+- Acesso: quem criou e a gestão.
+
+**Limites:** não envia pelo WhatsApp nem pelo e-mail (cópia manual); o aviso
+de tom é por regra, sem revisão por IA; carta-oferta (3P) segue pendente.

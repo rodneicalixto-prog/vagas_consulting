@@ -2208,3 +2208,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     regra; recomendação sempre da pessoa, citando linhas do quadro; assinado
     é imutável (versão nova); comparativo de finalistas; resumo para o
     gestor. Migration 0037. 114 testes. Pendente: Word, insumo externo.
+126. **3I: devolutiva ao candidato (15/10/2026)**: aprovação, genérica (com
+    lote) e com feedback, roteiro de ligação, WhatsApp com documentos; modelos
+    do §14.5 no código; bloqueios de campo em branco, discriminação e promessa
+    sem banco de talentos; regra de encerramento (descadastro, black list, uma
+    vez, 30 dias) com índice único. Migration 0038. 122 testes. Pendente:
+    envio integrado, revisão de tom por IA, carta-oferta (3P).

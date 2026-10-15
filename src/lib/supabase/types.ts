@@ -730,6 +730,54 @@ export type Database = {
         }
         Relationships: []
       }
+      candidate_feedbacks: {
+        Row: {
+          application_id: string
+          canal: string
+          created_at: string
+          criado_por: string | null
+          dados: Json
+          enviada_em: string | null
+          enviada_por: string | null
+          id: string
+          job_id: string
+          status: string
+          texto: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          canal: string
+          created_at?: string
+          criado_por?: string | null
+          dados?: Json
+          enviada_em?: string | null
+          enviada_por?: string | null
+          id?: string
+          job_id: string
+          status?: string
+          texto?: string
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          canal?: string
+          created_at?: string
+          criado_por?: string | null
+          dados?: Json
+          enviada_em?: string | null
+          enviada_por?: string | null
+          id?: string
+          job_id?: string
+          status?: string
+          texto?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_screenings: {
         Row: {
           application_id: string

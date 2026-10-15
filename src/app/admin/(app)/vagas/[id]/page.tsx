@@ -79,6 +79,9 @@ export default async function CriteriosDaVagaPage({ params }: { params: Promise<
         <Link href={`/admin/vagas/${id}/laudos`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
           Laudos dos candidatos →
         </Link>
+        <Link href={`/admin/vagas/${id}/devolutivas`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
+          Devolutivas →
+        </Link>
         <p className="mt-1 text-xs text-text-2">
           {vaga.titulo} · {nomeEmpresa}. Estes campos alimentam divulgação, triagem, roteiro de entrevista, testes e laudo.
         </p>
