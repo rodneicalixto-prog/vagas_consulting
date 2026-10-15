@@ -1429,7 +1429,11 @@ sessões futuras.
     plataforma. Botão "Conversar com o responsável" na ficha da empresa
     cliente abre a conversa na SOS Vagas; contato de empresa cliente cadastrada
     libera o envio (descadastro continua bloqueando). 63 testes.
-    Pendente: o cliente falar com a SOS Vagas de dentro da plataforma.
+    O cliente fala com a SOS Vagas pelo botão "Falar com a SOS Vagas" (menu
+    lateral de admin e operadores de empresa cliente): o número é lido da
+    instância CONECTADA na Evolution (fetchInstances, cache 5 min), nunca
+    gravado; trocar o chip atualiza o botão sozinho. Sem instância conectada,
+    o botão some.
 
 ## 3. Escopo do MVP (revisado)
 

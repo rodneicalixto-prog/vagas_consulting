@@ -90,10 +90,13 @@ const PERFIL_LABEL: Record<string, string> = {
 export function AdminShell({
   adminName,
   role,
+  suporteHref,
   children,
 }: {
   adminName: string;
   role: InternalRole;
+  /** Link de WhatsApp da operação (só para equipes de empresas clientes). */
+  suporteHref?: string | null;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -182,6 +185,16 @@ export function AdminShell({
           <span className="block truncate text-[10.5px] text-white/50">{PERFIL_LABEL[role]}</span>
         </div>
       </div>
+      {suporteHref && (
+        <a
+          href={suporteHref}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-3 block w-full rounded-lg bg-success/90 px-3 py-2 text-center text-xs font-bold text-white hover:bg-success"
+        >
+          Falar com a SOS Vagas
+        </a>
+      )}
       <form action={adminSignOut} className="mt-3">
         <button className="w-full rounded-lg border border-white/15 px-3 py-2 text-xs font-bold text-white/70 hover:bg-white/10 hover:text-white">
           Sair

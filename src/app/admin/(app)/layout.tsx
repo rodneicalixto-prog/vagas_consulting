@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin-shell";
 import { normalizeInternalRole } from "@/lib/auth/internal";
 import { createClient } from "@/lib/supabase/server";
+import { numeroDaOperacao } from "@/lib/evolution";
 
 export default async function AdminAppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -21,8 +22,13 @@ export default async function AdminAppLayout({ children }: { children: React.Rea
 
   const role = normalizeInternalRole(account.perfil);
 
+  // Empresas clientes falam com a operação pelo número da instância conectada.
+  const numero = role === "admin_empresa" || role === "operador" ? await numeroDaOperacao() : null;
+  const texto = encodeURIComponent("Olá! Preciso de ajuda com a plataforma de vagas.");
+  const suporteHref = numero ? `https://wa.me/${numero}?text=${texto}` : null;
+
   return (
-    <AdminShell adminName={account.nome_exibicao ?? user.email ?? "Usuário"} role={role}>
+    <AdminShell adminName={account.nome_exibicao ?? user.email ?? "Usuário"} role={role} suporteHref={suporteHref}>
       {children}
     </AdminShell>
   );

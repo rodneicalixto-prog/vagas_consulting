@@ -83,6 +83,44 @@ export async function empresaDaOperacao(): Promise<string | null> {
   return typeof id === "string" && id ? id : null;
 }
 
+/**
+ * Número de WhatsApp da operação, lido da instância CONECTADA na Evolution
+ * (não é guardado em lugar nenhum: se o chip mudar, muda junto). Cache de 5 min.
+ */
+export async function numeroDaOperacao(): Promise<string | null> {
+  try {
+    const empresaId = await empresaDaOperacao();
+    if (!empresaId) return null;
+    const cfg = await configEvolutionDaEmpresa(empresaId);
+    if (!cfg.ok) return null;
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), 6_000);
+    try {
+      const r = await fetch(
+        `${cfg.config.baseUrl}/instance/fetchInstances?instanceName=${encodeURIComponent(cfg.config.instance)}`,
+        { headers: { apikey: cfg.config.apikey }, signal: c.signal, next: { revalidate: 300 } },
+      );
+      if (!r.ok) return null;
+      const corpo = (await r.json().catch(() => null)) as unknown;
+      const item = (Array.isArray(corpo) ? corpo[0] : corpo) as
+        | { ownerJid?: unknown; owner?: unknown; number?: unknown; connectionStatus?: unknown; instance?: unknown }
+        | null;
+      if (!item) return null;
+      if (typeof item.connectionStatus === "string" && item.connectionStatus !== "open") return null;
+      const bruto = [item.ownerJid, item.owner, item.number].find((v) => typeof v === "string" && v) as
+        | string
+        | undefined;
+      if (!bruto) return null;
+      const digitos = (bruto.split("@")[0].split(":")[0] ?? "").replace(/\D/g, "");
+      return digitos.length >= 10 && digitos.length <= 15 ? digitos : null;
+    } finally {
+      clearTimeout(t);
+    }
+  } catch {
+    return null;
+  }
+}
+
 /** Empresa dona de uma instância (para o webhook). */
 export async function empresaDaInstancia(instance: string): Promise<string | null> {
   const { data } = await createAdminClient()
