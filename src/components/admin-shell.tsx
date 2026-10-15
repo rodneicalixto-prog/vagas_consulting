@@ -75,7 +75,7 @@ const NAV: NavEntry[] = [
       { href: "/admin/integracoes", label: "Integrações", roles: ["superadmin", "admin_empresa"] },
       { href: "/admin/carteira", label: "Carteira", roles: ["superadmin"] },
       { href: "/admin/acesso", label: "Acesso", roles: ["superadmin"] },
-      { href: "/admin/estrategico", label: "Estratégico", roles: ["superadmin"] },
+      { href: "/admin/estrategico", label: "Estratégico", roles: ["superadmin", "admin_empresa", "operador"] },
     ],
   },
 ];

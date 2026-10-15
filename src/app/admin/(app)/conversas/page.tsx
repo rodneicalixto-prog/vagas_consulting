@@ -67,6 +67,7 @@ export default async function ConversasPage({
   const escopo = await obterEscopo(user.id, role);
   const q = limpar(sp.q);
   const soNaoLidas = sp.filtro === "nao-lidas";
+  const soFila = sp.filtro === "fila";
   const abertaId = sp.c && UUID.test(sp.c) ? sp.c : null;
 
   // Conversa aberta: carregada pelo id e validada no servidor.
@@ -133,6 +134,7 @@ export default async function ConversasPage({
       consulta = consulta.or(`atendente_id.eq.${user.id},and(atendente_id.is.null,candidate_id.not.is.null)`);
     }
     if (soNaoLidas) consulta = consulta.gt("nao_lidas", 0);
+    if (soFila) consulta = consulta.is("atendente_id", null);
     if (q) {
       const digitos = q.replace(/\D/g, "");
       const partes = [`nome_contato.ilike.%${q}%`];

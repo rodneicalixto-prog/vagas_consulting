@@ -11,6 +11,7 @@ import {
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 import { statusLabel, STATUS_CANDIDATURA_EM_ABERTO, CHART_COLORS } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
+import { EstrategicoEquipe } from "./equipe";
 
 const STATUS_CANDIDATURA_COLOR: Record<string, string> = {
   recebida: CHART_COLORS.neutro,
@@ -78,7 +79,9 @@ function mesChave(iso: string): string {
 }
 
 export default async function EstrategicoPage() {
-  const { role } = await requireInternalUser();
+  const { user, role } = await requireInternalUser();
+  // Operador e admin da empresa: a mesma leitura, só da carteira e sem valores.
+  if (role === "operador" || role === "admin_empresa") return <EstrategicoEquipe userId={user.id} role={role} />;
   if (role !== "superadmin") redirect("/admin");
 
   const admin = createAdminClient();

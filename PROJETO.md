@@ -1451,6 +1451,15 @@ sessões futuras.
     candidato ficam só para a gestão); só o atendente responde; Assumir,
     Devolver à fila e Transferir (gestão), tudo auditado. Quem abre conversa
     com candidato ou empresa cliente já vira o atendente. 64 testes.
+112. **Painel "Precisa de ação agora" e Estratégico da equipe (15/10/2026)**:
+    pedido do Rodnei ("dashboard interativo das ações"; "liberar o
+    estratégico para ele"). Visão geral ganha 6 cards clicáveis: conversas na
+    fila, mensagens não lidas, compromissos de hoje, candidaturas paradas 7+
+    dias, vagas sem candidato há 5+ dias e entregas vencendo em 3 dias (tudo
+    pela carteira; operador só conta o que é dele). Estratégico passa a ser
+    acessível a operador e admin da empresa em versão da PRÓPRIA carteira,
+    sem leads, instalações nem valores financeiros; a versão global segue
+    só do superadmin. Spec `DASHBOARD_OPERADOR.md` §7.1 atendido.
 
 ## 3. Escopo do MVP (revisado)
 

@@ -7,6 +7,7 @@ import {
   filtroConfidencialJobs,
   obterEscopo,
 } from "@/lib/auth/escopo";
+import { PainelDeAcoes } from "./painel-acoes";
 import { CategoryBarChart, DonutChart, FunnelBarChart, GroupedBarChart } from "@/components/charts";
 import { DataTable, type DataTableColumn, type DataTableRow } from "@/components/data-table";
 import { CHART_COLORS, statusLabel } from "@/lib/format";
@@ -428,6 +429,8 @@ export default async function AdminOverviewPage({
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 md:px-9 py-6">
+        <PainelDeAcoes userId={user.id} role={role} escopo={escopo} />
+
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Kpi label="Vagas" value={vagas.length} href={link({ detalhe: "vagas_total" })} ativo={detalhe === "vagas_total"} />
           <Kpi label="Vagas em aberto" value={abertas.length} href={link({ detalhe: "vagas_abertas" })} ativo={detalhe === "vagas_abertas"} />
