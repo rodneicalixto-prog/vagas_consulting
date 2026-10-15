@@ -68,7 +68,12 @@ export default async function LaudoPage({
             <h2 className="text-sm font-extrabold text-text">
               {perfil?.nome_completo ?? "Candidato"} · {vaga?.titulo ?? "Vaga"}
             </h2>
-            <ImprimirBotao />
+            <span className="flex flex-wrap items-center gap-2">
+              <ImprimirBotao />
+              <a href={`/admin/vagas/${id}/laudos/${l.id}/exportar${gestor ? "?visao=gestor" : ""}`} className="rounded-lg border border-border bg-surface px-3 py-1 text-[11.5px] font-bold text-navy print:hidden">
+                Baixar em Word
+              </a>
+            </span>
           </div>
 
           {c.limitacoes.length > 0 && (

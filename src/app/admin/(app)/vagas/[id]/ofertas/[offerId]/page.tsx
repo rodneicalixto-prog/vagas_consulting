@@ -54,6 +54,9 @@ export default async function CartaPage({ params }: { params: Promise<{ id: stri
             <span className="flex gap-2">
               <Copiar texto={o.texto} rotulo="Copiar carta" />
               <Imprimir />
+              <a href={`/admin/vagas/${id}/ofertas/${o.id}/exportar`} className="rounded-lg border border-border bg-surface px-3 py-1 text-[11.5px] font-bold text-navy print:hidden">
+                Baixar em Word
+              </a>
             </span>
           </div>
           <div className="whitespace-pre-wrap break-words text-[13.5px] leading-relaxed text-text">

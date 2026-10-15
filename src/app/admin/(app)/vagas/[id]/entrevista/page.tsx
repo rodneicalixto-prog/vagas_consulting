@@ -63,7 +63,12 @@ export default async function EntrevistaPage({ params }: { params: Promise<{ id:
               <h2 className="text-sm font-extrabold text-text">
                 Roteiro v{script.versao} · {script.duracao_min} min · {vaga.titulo}
               </h2>
-              <ImprimirBotao />
+              <span className="flex flex-wrap items-center gap-2">
+                <ImprimirBotao />
+                <a href={`/admin/vagas/${vaga.id}/entrevista/exportar`} className="rounded-lg border border-border bg-surface px-3 py-1 text-[11.5px] font-bold text-navy print:hidden">
+                  Baixar em Word
+                </a>
+              </span>
             </div>
             {roteiro.avisos.length > 0 && (
               <ul className="mb-3 grid gap-1 print:hidden">

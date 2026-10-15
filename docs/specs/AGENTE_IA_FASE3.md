@@ -1401,3 +1401,23 @@ específica; uma métrica por nota seria enganosa e **não foi criada**. O
 resultado (usada, editada, descartada) segue no nível do agente. Para medir por
 nota, seria preciso recuperar só as notas relevantes por pergunta (busca), o que
 é um passo próprio.
+
+### Exportação em Word (15/10/2026)
+
+Botão **Baixar em Word** (arquivo `.docx` real) em quatro documentos, sem
+dependência nova: o arquivo é montado com o `fflate` que o projeto já usa
+(`src/lib/docx.ts`, três partes WordprocessingML).
+
+| Documento | Rota | Observação |
+|---|---|---|
+| Carta-oferta | `.../ofertas/[offerId]/exportar` | mesmo texto da tela, com `{campos}` em branco à mostra |
+| Laudo | `.../laudos/[laudoId]/exportar` | `?visao=gestor` omite o texto das evidências |
+| Roteiro de entrevista | `.../entrevista/exportar` | com campos de anotação, nota 1 a 4 e parecer para condução impressa |
+| Testes e dinâmicas | `.../testes/[assessmentId]/exportar?folha=candidato\|aplicador` | **a folha do candidato nunca traz gabarito, critério, rubrica nem grade** (mesma função da tela) |
+
+Cada rota repete a verificação de escopo da vaga e de acesso (quem criou e a
+gestão), grava auditoria (`*_exportado_docx`) e responde sem cache.
+
+**Limites:** formatação simples (títulos, parágrafos e listas), sem tabelas
+nem logotipo; o laudo, o roteiro e os testes ainda não têm modelo de papel
+timbrado da empresa.

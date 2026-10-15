@@ -100,6 +100,12 @@ export default async function InstrumentoPage({
                 Abrir folha do candidato
               </Link>
               <ImprimirBotao />
+              <a href={`/admin/vagas/${id}/testes/${a.id}/exportar?folha=candidato`} className="rounded-lg border border-border bg-surface px-3 py-1 text-[11.5px] font-bold text-navy print:hidden">
+                Word: candidato
+              </a>
+              <a href={`/admin/vagas/${id}/testes/${a.id}/exportar?folha=aplicador`} className="rounded-lg border border-border bg-surface px-3 py-1 text-[11.5px] font-bold text-navy print:hidden">
+                Word: aplicador
+              </a>
             </span>
           </div>
           {instr.instrucoes_candidato && <p className="whitespace-pre-wrap text-[13px]"><b>Instruções:</b> {instr.instrucoes_candidato}</p>}
