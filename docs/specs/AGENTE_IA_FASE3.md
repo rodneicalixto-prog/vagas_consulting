@@ -272,3 +272,17 @@ transcrição é passo posterior e usa o provedor de voz do cofre.
 | 5 | Texto para comunidade tech (Discord) com stack, remoto e faixa | canal comunidade; exige stack, modelo e faixa quando o perfil é técnico |
 
 Reaproveita os campos da vaga estruturada (3O); só pergunta o que faltar.
+
+**3G — Triagem de currículos** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Ranquear candidatos da vaga por obrigatórios e desejáveis | vaga (traz os critérios da JD estruturada), currículos da vaga ou anexados |
+| 2 | Comparar currículos com a JD e mostrar a evidência de cada um | saída com a frase do currículo que sustenta cada critério |
+| 3 | Triar N currículos e devolver os 5 mais aderentes | limite de resultados ("top N") |
+| 4 | Ranking exportado em planilha | botão Excel/CSV, só campos que o papel já enxerga |
+| 5 | Quem atende os obrigatórios e quem falha em qual | visão por critério eliminatório, com o item que falhou |
+
+Currículo já pode vir do cadastro do candidato (documentos do perfil) ou ser
+anexado na hora. Escalar por vaga: uma triagem pode ter dezenas de currículos,
+então roda em fila, com contagem de custo contra o teto antes de iniciar.
