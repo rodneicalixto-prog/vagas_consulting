@@ -756,3 +756,23 @@ o laudo; para ele existe a devolutiva (3I).
 
 A exceção de envio de encerramento (um envio em até 30 dias, respeitando
 descadastro e black list) é verificada **antes** de liberar o envio.
+
+### 14.19 Checklist de métricas e fechamento: acompanhar e melhorar (recebido em 15/10/2026)
+
+| Item do checklist | Como o produto garante | Tipo |
+|---|---|---|
+| Indicadores do período com dados reais | Automáticos vêm do banco; manuais mostram "sem dado" até serem preenchidos | Código |
+| Comparar com a meta | Meta ao lado de cada indicador, com status verde, atenção ou abaixo | Código |
+| Ler em conjunto | A análise cruza pares conhecidos (fechamento rápido com turnover alto; custo baixo com NPS baixo) e os destaca | IA + regras |
+| Maior gargalo do funil | Destaque da etapa com maior queda de conversão | Código |
+| Fonte com mais contratações por menor custo | Quadro por fonte com contratações e custo; ordenação por eficiência | Código |
+| 1 a 3 ações com responsável e prazo | Plano de ação (14.8) limita a 3 ações abertas por período e exige responsável e prazo | Código |
+| Metas ajustadas à realidade | Metas editáveis por empresa e histórico de mudanças | Código |
+| Diversidade só para equidade, nunca para excluir | **Fora do escopo inicial.** Se habilitada: dado voluntário, com consentimento específico, **só agregado**, nunca visível por candidato nem usado em triagem | Decisão pendente |
+| Comunicar à liderança | Relatório mensal (14.7) em PDF, com botão de envio para o gestor | Código |
+| Registrar o que funcionou | Campo "o que funcionou" ao concluir um plano de ação, que alimenta a base de conhecimento (lição candidata, 3D) | Código |
+
+**Reconciliação sobre diversidade:** o checklist aceita a métrica desde que seja
+só de equidade. Como ela exige coletar dado pessoal sensível (LGPD), fica fora
+da primeira entrega e só entra com decisão explícita do Rodnei, desenho de
+consentimento próprio e apenas em formato agregado.
