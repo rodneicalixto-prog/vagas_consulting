@@ -328,3 +328,21 @@ personalidade não é gerado.
 O modo (A ou B) é escolhido a cada laudo e respeitado à risca; no modo A
 nenhuma recomendação é gerada nem sugerida. Fonte e força da evidência
 aparecem em cada linha. Exportação em Word/PDF.
+
+**3I — Devolutiva ao candidato** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Devolutiva de aprovação com os próximos passos | candidato aprovado, vaga, próximo passo e prazo |
+| 2 | Reprovação genérica e respeitosa para quem parou na triagem | modo **genérico**; pode ir em lote com nome e vaga personalizados |
+| 3 | Reprovação com feedback na fase final | modo **com feedback**; pontos fortes e de melhoria; tom da empresa (descontraído ou formal) |
+| 4 | Roteiro de ligação para feedback de reprovado na fase final | canal "ligação"; roteiro com espaço para a pessoa falar |
+| 5 | Mensagem curta de WhatsApp com aprovação e pedido de documentos | canal WhatsApp; lista de documentos da vaga |
+
+**Regras de envio específicas (a implementar junto):**
+- Exceção única de encerramento: depois da decisão a candidatura deixa de estar
+  "em andamento", mas a devolutiva pode sair **uma vez, em até 30 dias**,
+  respeitando descadastro e black list.
+- No WhatsApp, a mensagem sai como rascunho na conversa; quem envia é o
+  atendente. Lote só para o modo genérico e sempre com revisão.
+- Feedback sensível de finalista: o sistema sugere ligação em vez de texto.
