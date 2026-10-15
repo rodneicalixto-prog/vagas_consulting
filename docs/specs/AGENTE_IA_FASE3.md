@@ -424,3 +424,25 @@ Regras de produto:
   nenhum follow-up é gerado.
 - Personalização obrigatória: o `{nome}` e um detalhe do perfil, para o texto
   não parecer disparo em massa.
+
+### 14.5 Modelos de devolutiva de reprovação (recebidos em 15/10/2026)
+
+Bases editáveis do 3I; os campos `{...}` vêm da candidatura, nunca digitados à mão.
+
+| Versão | Quando usar | Texto-base |
+|---|---|---|
+| Genérica | Parou na triagem ou grande volume | "Olá, {nome}, obrigado(a) por participar do processo para {cargo}. Desta vez seguimos com outro perfil, mas foi um prazer te conhecer. Desejo sucesso e espero te reencontrar em uma próxima oportunidade. Abraço, {recrutador}." |
+| Com feedback | Finalista ou quem investiu mais no processo | "Olá, {nome}, obrigado(a) pelo tempo dedicado ao processo para {cargo}. Não seguiremos desta vez. Como pontos fortes, destaco {fortes}. Como próximo passo de desenvolvimento, {melhoria} ampliaria bastante seu leque. Isso não invalida seu potencial: foi o fit com esta vaga específica. Fico à disposição. {recrutador}." |
+
+Regras de produto:
+
+- **Campos obrigatórios da versão com feedback:** `{fortes}` e `{melhoria}` vêm da
+  ficha de parecer (14.3) ou são digitados; sem eles o sistema oferece só a
+  genérica, em vez de inventar feedback.
+- "Espero te reencontrar" é fórmula leve e fica; **promessa concreta** ("vamos
+  guardar seu currículo", "vamos te chamar") só entra se o recrutador marcar
+  que é verdade (campo "banco de talentos").
+- **Genérica em lote:** gera uma mensagem por pessoa com nome e vaga, mostra
+  todas para revisão e libera o envio uma a uma pelo atendente.
+- A mensagem passa pela regra de envio de encerramento (um envio em até 30
+  dias, respeitando descadastro e black list).
