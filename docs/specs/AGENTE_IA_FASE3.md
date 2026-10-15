@@ -1026,3 +1026,35 @@ Parte dos critérios estruturados do 3O e gera o texto por canal.
 
 **Fica para depois:** diagnóstico "vaga não atrai" (precisa de dados de
 candidaturas, vem com o 3M) e leitura do marcador de origem.
+
+### Passo 3G construído (15/10/2026): triagem de currículos
+
+Tela **Vagas > Critérios > Triar candidatos** (`/admin/vagas/[id]/triagem`).
+Migration **0034** (`job_screenings`, aditiva, RLS ligada, sem política pública).
+
+**Fluxo:** botão "Triar candidatos" avalia, em blocos de 5 e até 30 por rodada,
+as candidaturas ativas da vaga contra `jobs.criterios`; resultado salvo por
+candidatura com o hash dos critérios (se a vaga mudar, o ranking avisa
+"critérios mudaram: refazer"). Teto mensal e chave do cofre valem como no resto.
+
+**Garantias do §14.13 e onde vivem:**
+| Garantia | Implementação |
+|---|---|
+| Critérios definidos antes | `bloqueiosDaTriagem`: sem obrigatórios, proposta da IA não conferida ou termo discriminatório bloqueia |
+| Às cegas | `montarCurriculoCego`: só título, resumo e histórico (cargo e período); sem nome, contato, endereço, cidade, motivo de saída; idade, estado civil e sexo são removidos do texto livre (melhor esforço) |
+| Evidência obrigatória | trecho literal conferido contra o currículo; sem ele, vira "não evidenciado" |
+| Não evidenciado ≠ não atende | estado próprio; só "não atende" com evidência pode eliminar |
+| Eliminatório no código | `fecharResultado`; eliminado vai ao fim com o motivo |
+| Lacunas e trocas só "a validar" | `sinaisDeHistorico` calcula no código; nunca reduz a nota |
+| Comportamental a validar | entra na lista "a validar na entrevista" |
+| Pontuação | 70% obrigatórios + 30% desejáveis, calculada no código |
+| Corte | só sugerido (70+ e sem eliminatório); a decisão é da pessoa |
+| Sem reprovação automática | nenhuma mudança de etapa é feita pela triagem |
+
+**Limites desta primeira entrega:**
+- O "currículo" é o **cadastro estruturado** (título, resumo, experiências).
+  O PDF anexado **não** é lido ainda; perfil vazio aparece como "não foi
+  possível avaliar".
+- Formação, idiomas e ferramentas só entram se estiverem no resumo ou nos cargos.
+- Faltam: exportar o ranking em planilha, "top N", currículos colados e o
+  modo mestre-de-match de um passo (a extração de critérios já existe no 3O-2).

@@ -520,6 +520,48 @@ export type Database = {
         }
         Relationships: []
       }
+      job_screenings: {
+        Row: {
+          application_id: string
+          candidate_id: string
+          created_at: string
+          criado_por: string | null
+          criterios_hash: string
+          eliminado: boolean
+          id: string
+          job_id: string
+          pontuacao: number
+          resultado: Json
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          candidate_id: string
+          created_at?: string
+          criado_por?: string | null
+          criterios_hash: string
+          eliminado?: boolean
+          id?: string
+          job_id: string
+          pontuacao?: number
+          resultado?: Json
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          candidate_id?: string
+          created_at?: string
+          criado_por?: string | null
+          criterios_hash?: string
+          eliminado?: boolean
+          id?: string
+          job_id?: string
+          pontuacao?: number
+          resultado?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_agent_runs: {
         Row: {
           agent_id: string

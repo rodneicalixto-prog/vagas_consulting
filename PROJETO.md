@@ -2184,3 +2184,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     em código com bloqueio de critério discriminatório; vaga confidencial não
     cita a empresa. Só redige, publicação manual. Sem migration. 87 testes.
     Pendente: leitura do marcador (3M) e diagnóstico 'vaga não atrai'.
+122. **3G: triagem de currículos (15/10/2026)**: ranking por candidatura com
+    evidência literal, estados atende/não atende/não evidenciado, eliminatório
+    e pontuação no código, triagem às cegas, 'a validar' para lacunas e
+    comportamentais, corte só sugerido. Migration 0034. Usa o cadastro
+    estruturado (PDF ainda não lido). 94 testes. Pendente: exportar planilha,
+    top N, mestre-de-match de um passo, leitura de PDF.
