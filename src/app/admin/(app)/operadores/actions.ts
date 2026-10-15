@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { can, requireInternalUser } from "@/lib/auth/internal";
 import { empresaDaOperacao } from "@/lib/evolution";
@@ -104,7 +105,12 @@ export async function convidarOperador(formData: FormData) {
   ]);
   if (emUso >= limite) throw new Error(MSG_CHEIO);
 
-  const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email);
+  const cab = await headers();
+  const host = cab.get("x-forwarded-host") ?? cab.get("host");
+  const redirectTo = host
+    ? `${host.startsWith("localhost") ? "http" : "https"}://${host}/admin/definir-senha`
+    : undefined;
+  const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, { redirectTo });
   if (inviteError || !invited?.user) {
     const msg = inviteError?.message?.toLowerCase() ?? "";
     if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {

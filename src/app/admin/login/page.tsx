@@ -1,13 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { BrandMark, Wordmark } from "@/components/brand-mark";
-import { adminLogin, type AdminAuthState } from "./actions";
+import { adminLogin, enviarLinkDeSenha, type AdminAuthState, type EstadoLinkSenha } from "./actions";
 
 const initialState: AdminAuthState = { error: null };
+const linkInicial: EstadoLinkSenha = { enviado: false, erro: null };
 
 export default function AdminLoginPage() {
   const [state, formAction, pending] = useActionState(adminLogin, initialState);
+  const [linkEstado, linkAcao, linkPendente] = useActionState(enviarLinkDeSenha, linkInicial);
+  const [mostrarLink, setMostrarLink] = useState(false);
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-[#0c1526] px-4">
@@ -49,6 +52,42 @@ export default function AdminLoginPage() {
             {pending ? "Entrando..." : "Entrar"}
           </button>
         </form>
+
+        <div className="mt-5 border-t border-white/10 pt-4">
+          {!mostrarLink ? (
+            <button
+              type="button"
+              onClick={() => setMostrarLink(true)}
+              className="text-[12.5px] font-bold text-gold-2 underline"
+            >
+              Primeiro acesso ou esqueci a senha
+            </button>
+          ) : linkEstado.enviado ? (
+            <p className="text-[12.5px] font-semibold text-white/80">
+              Se este e-mail tem acesso, enviamos um link para definir a senha. Confira também o spam.
+            </p>
+          ) : (
+            <form action={linkAcao} className="flex flex-col gap-3">
+              <label className="flex flex-col gap-1.5">
+                <span className="text-xs font-bold text-white/60">Seu e-mail de acesso</span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  className="rounded-lg border border-white/15 bg-white/5 px-3.5 py-3 text-sm text-white outline-none focus:border-gold-2"
+                />
+              </label>
+              {linkEstado.erro && <p className="text-[12.5px] font-semibold text-[#dc8290]">{linkEstado.erro}</p>}
+              <button
+                type="submit"
+                disabled={linkPendente}
+                className="w-full rounded-xl border border-white/20 px-0 py-3 text-[13.5px] font-bold text-white disabled:opacity-60"
+              >
+                {linkPendente ? "Enviando..." : "Enviar link para definir a senha"}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

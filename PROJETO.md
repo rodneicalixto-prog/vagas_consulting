@@ -1440,6 +1440,11 @@ sessões futuras.
     Operadores: o superadmin passa a convidar, desativar e reativar operadores
     da PRÓPRIA empresa da operação (SOS Vagas); as empresas clientes continuam
     em leitura. Recebimento validado em produção (mensagem real em Conversas).
+    Senha da equipe: faltava a tela para o operador convidado definir a senha.
+    Criada `/admin/definir-senha` (convite e recuperação), redirecionamento do
+    fragmento de token na página inicial e "Primeiro acesso ou esqueci a senha"
+    no login (link por e-mail, resposta sempre igual). Convite já aponta para
+    a nova tela. Requer o domínio na lista de URLs permitidas do Supabase Auth.
 
 ## 3. Escopo do MVP (revisado)
 

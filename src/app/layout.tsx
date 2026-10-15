@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AuthHashRedirect } from "@/components/auth-hash-redirect";
 import { InstallLeadCapture } from "@/components/install-lead-capture";
 import { InstallAppButton } from "@/components/install-app-button";
 import { RegisterServiceWorker } from "@/components/register-service-worker";
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-bg text-text font-sans">
         {children}
+        <AuthHashRedirect />
         <InstallLeadCapture />
         <InstallAppButton />
         <RegisterServiceWorker />

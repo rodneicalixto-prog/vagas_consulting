@@ -8,6 +8,7 @@ const PUBLIC_PATHS = [
   "/onboarding",
   "/admin/login",
   "/admin/acesso-negado",
+  "/admin/definir-senha",
   "/api/webhooks",
 ];
 
