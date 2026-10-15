@@ -49,3 +49,4 @@ construir algo que toque o banco, reconfirmar o schema real de produção
 | `specs/VITRINE_PUBLICA.md` | Vitrine pública e modo visitante |
 | `ROTEIRO_TESTE_ADMIN_EMPRESA.md` | Teste de 20 minutos do isolamento |
 | `ROTEIRO_TESTE_CICLO_RS.md` | Teste do ciclo completo de R&S, 12 passos |
+| `MANUAL_PLANO.md` | Plano do manual de uso (público, estrutura, produção e manutenção) |

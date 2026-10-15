@@ -2242,3 +2242,4 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 140. **Número de origem na lista de conversas (15/10/2026)**: chip com o apelido do número, filtro por número e indicação na conversa aberta; só aparece quando a empresa tem mais de um número.
 141. **Troca do operador dono do número (15/10/2026)**: opção de transferir também as conversas que já têm dono ao mudar o operador da linha, com contagem e auditoria.
 142. **Consolidação v1.8 (15/10/2026)**: índice, PRD, TRD, plano e roteiro de teste atualizados com os números de WhatsApp por empresa e por operador (migrations 0044 e 0045), spec LINHAS_WHATSAPP e passo 13 do roteiro. 164 testes.
+143. **Plano do manual de uso (15/10/2026)**: docs/MANUAL_PLANO.md com públicos, estrutura em volumes, capítulo do ciclo de R&S, molde de tópico, método sem inventar, manutenção, formatos e 5 decisões pendentes do Rodnei. Nenhum capítulo escrito ainda.
