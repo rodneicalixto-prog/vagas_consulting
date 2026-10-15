@@ -98,15 +98,17 @@ async function chamarModelo(
   chave: string,
   system: string,
   user: string,
+  opcoes: { json?: boolean; maxTokens?: number } = {},
 ): Promise<Resposta> {
+  const maxTokens = opcoes.maxTokens ?? 400;
   const c = new AbortController();
-  const t = setTimeout(() => c.abort(), 20_000);
+  const t = setTimeout(() => c.abort(), opcoes.json ? 40_000 : 20_000);
   try {
     if (provedor === "anthropic") {
       const r = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "x-api-key": chave, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-        body: JSON.stringify({ model: modelo, max_tokens: 400, temperature: 0.3, system, messages: [{ role: "user", content: user }] }),
+        body: JSON.stringify({ model: modelo, max_tokens: maxTokens, temperature: 0.3, system, messages: [{ role: "user", content: user }] }),
         signal: c.signal,
         cache: "no-store",
       });
@@ -127,7 +129,8 @@ async function chamarModelo(
       body: JSON.stringify({
         model: modelo,
         temperature: 0.3,
-        max_tokens: 400,
+        max_tokens: maxTokens,
+        ...(opcoes.json ? { response_format: { type: "json_object" } } : {}),
         messages: [
           { role: "system", content: system },
           { role: "user", content: user },
@@ -583,4 +586,77 @@ export async function aprenderComResposta(
     origem: "aprendizado",
     criado_por: p.userId,
   });
+}
+
+export type ResultadoIA =
+  | { ok: true; texto: string; provedor: ProvedorAgente; modelo: string }
+  | { ok: false; erro: string };
+
+/**
+ * Chamada de IA de uso geral (geração de critérios da vaga etc.): usa o
+ * provedor e o modelo do agente da empresa (ou OpenAI), a chave do cofre, o
+ * teto mensal e registra a execução. Nunca devolve a chave.
+ */
+export async function gerarTextoIA(p: {
+  companyId: string;
+  system: string;
+  user: string;
+  json?: boolean;
+  maxTokens?: number;
+}): Promise<ResultadoIA> {
+  const admin = createAdminClient();
+  const { data: agente } = await admin.from("ai_agents").select("*").eq("company_id", p.companyId).maybeSingle();
+  const provedor: ProvedorAgente =
+    agente && provedorAgenteValido(agente.provedor) ? (agente.provedor as ProvedorAgente) : "openai";
+  let modelo = agente?.modelo?.trim() || MODELO_PADRAO[provedor];
+
+  if (agente) {
+    const { data: runs } = await admin
+      .from("ai_agent_runs")
+      .select("custo_usd")
+      .eq("agent_id", agente.id)
+      .gte("created_at", inicioDoMes())
+      .limit(5000);
+    const gasto = (runs ?? []).reduce((s, r) => s + Number(r.custo_usd ?? 0), 0);
+    if (gasto >= Number(agente.teto_mensal_usd)) {
+      return { ok: false, erro: "O teto mensal de custo de IA foi atingido." };
+    }
+  }
+
+  const chave = await chaveDoProvedor(p.companyId, provedor);
+  if (!chave) return { ok: false, erro: "Não há chave de IA cadastrada para este provedor (Integrações)." };
+
+  const inicio = Date.now();
+  const opcoes = { json: p.json, maxTokens: p.maxTokens ?? 1200 };
+  let resposta: Resposta;
+  try {
+    try {
+      resposta = await chamarModelo(provedor, modelo, chave, p.system, p.user, opcoes);
+    } catch (primeiro) {
+      const msg = primeiro instanceof Error ? primeiro.message : "";
+      if (!/HTTP (400|404)/.test(msg) || !/model/i.test(msg)) throw primeiro;
+      const alternativo = escolherModeloDisponivel(provedor, await listarModelos(provedor, chave));
+      if (!alternativo || alternativo === modelo) throw primeiro;
+      resposta = await chamarModelo(provedor, alternativo, chave, p.system, p.user, opcoes);
+      modelo = alternativo;
+    }
+  } catch (e) {
+    const detalhe = e instanceof Error ? (e.name === "AbortError" ? "tempo esgotado" : e.message) : "falha";
+    return { ok: false, erro: `O provedor de IA não respondeu (${detalhe.slice(0, 160)}).` };
+  }
+
+  if (agente) {
+    await admin.from("ai_agent_runs").insert({
+      agent_id: agente.id,
+      provedor,
+      modelo,
+      tokens_in: resposta.tokensIn,
+      tokens_out: resposta.tokensOut,
+      custo_usd: custoEstimadoUsd(modelo, resposta.tokensIn, resposta.tokensOut),
+      latencia_ms: Date.now() - inicio,
+      motivo_parada: null,
+    });
+  }
+  if (!resposta.texto) return { ok: false, erro: "A IA devolveu uma resposta vazia." };
+  return { ok: true, texto: resposta.texto, provedor, modelo };
 }

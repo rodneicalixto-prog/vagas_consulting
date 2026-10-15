@@ -965,3 +965,31 @@ planejadas** (3D completo):
   código antes de ser sugerido ou enviado; o agente não usa nome do candidato.
 - **Notas com marcador:** use `{nome}` só como indicação humana; o agente
   nunca recebe nem preenche nome.
+
+### Passo 3O-2 construído (15/10/2026): critérios da vaga gerados por IA
+
+Cobre os cinco casos de uso do §14.1 (3O). Na tela **Vagas > Critérios e
+qualidade**, o bloco "Gerar critérios com IA":
+
+| Modo | O que faz |
+|---|---|
+| Criar a partir do recado do gestor | Extrai rotina, obrigatórios, desejáveis, comportamentais e senioridade do texto; o que o gestor não disse vira **lacuna** ("falta perguntar") |
+| Reescrever uma JD | Corta exigência inflada, calibra a experiência e troca clichê por responsabilidade concreta |
+| Vaga júnior | Foco em potencial; sem exigir experiência prévia |
+| Vaga de liderança | Inclui escopo de gestão (tamanho do time) e competências de liderança |
+
+**Regras:**
+- A IA entrega uma **proposta**, gravada como não confirmada (`proposta_ia`).
+  Só vale quando a pessoa confere e clica em Salvar critérios; o aviso fica
+  na tela até lá.
+- O texto do usuário entra como dado (não instrução); o prompt proíbe
+  critério discriminatório, linguagem com marca de gênero e clichê.
+- A verificação de qualidade (§14.11) roda sobre a proposta como sobre
+  qualquer vaga: se a IA devolver termo discriminatório, a publicação continua
+  **bloqueada**.
+- Usa o provedor e o modelo do agente da empresa (hoje OpenAI), a chave do
+  cofre, o teto mensal e registra a execução com custo estimado.
+- Auditado (`vaga_criterios_gerados_ia`), sem o texto original.
+
+**Fica para a próxima entrega:** áudio do gestor (transcrição) e geração do
+texto de divulgação (3N).

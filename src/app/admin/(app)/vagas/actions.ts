@@ -7,7 +7,11 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirEmpresa, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { validateFormData } from "@/lib/validation/validate-form";
 import { CreateJobSchema, DecideJobSchema, type CreateJobInput, type DecideJobInput } from "@/lib/validation/schemas";
+import { gerarTextoIA } from "@/lib/agente-servidor";
 import {
+  criteriosDaResposta,
+  modoValido,
+  montarPromptCriterios,
   listaDeTexto,
   normalizarCriterios,
   obrigatoriosDeTexto,
@@ -215,6 +219,8 @@ export async function salvarCriterios(formData: FormData) {
     senioridade: String(formData.get("senioridade") ?? ""),
     anos_experiencia: anos === "" ? null : Number(anos),
     diferencial: String(formData.get("diferencial") ?? ""),
+    lacunas: [],
+    proposta_ia: false,
     confirmado_em: new Date().toISOString(),
   };
   const criterios = normalizarCriterios(bruto);
@@ -244,4 +250,74 @@ export async function salvarCriterios(formData: FormData) {
 
   revalidatePath(`/admin/vagas/${jobId}`);
   revalidatePath("/admin/vagas");
+}
+
+export type EstadoGeracao = { erro: string | null; ok: boolean };
+
+/**
+ * Gera uma PROPOSTA de critérios com IA a partir do recado do gestor ou de uma
+ * JD. A proposta é gravada como não confirmada: só vale depois de a pessoa
+ * conferir e salvar. Nada é publicado nem enviado.
+ */
+export async function gerarCriteriosComIA(_anterior: EstadoGeracao, formData: FormData): Promise<EstadoGeracao> {
+  try {
+    const { user, role } = await requireInternalUser("jobs.manage");
+    const jobId = String(formData.get("job_id") ?? "");
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId)) {
+      return { erro: "Vaga inválida.", ok: false };
+    }
+    const modo = String(formData.get("modo") ?? "criar");
+    if (!modoValido(modo)) return { erro: "Modo inválido.", ok: false };
+    const texto = String(formData.get("texto") ?? "").trim();
+    if (texto.length < 20) return { erro: "Cole o recado do gestor ou a JD (pelo menos 20 caracteres).", ok: false };
+    const tamanhoTime = String(formData.get("tamanho_time") ?? "").trim().slice(0, 60);
+
+    const escopo = await obterEscopo(user.id, role);
+    await exigirVaga(escopo, jobId);
+
+    const admin = createAdminClient();
+    const { data: vaga } = await admin
+      .from("jobs")
+      .select("id, company_id, titulo, local, modalidade, remuneracao_texto, criterios")
+      .eq("id", jobId)
+      .maybeSingle();
+    if (!vaga) return { erro: "Vaga não encontrada.", ok: false };
+
+    const { system, user: prompt } = montarPromptCriterios({
+      modo,
+      texto,
+      tamanhoTime,
+      vaga: {
+        titulo: vaga.titulo,
+        local: vaga.local,
+        modalidade: vaga.modalidade,
+        remuneracao_texto: vaga.remuneracao_texto,
+      },
+    });
+    const r = await gerarTextoIA({ companyId: vaga.company_id, system, user: prompt, json: true, maxTokens: 1200 });
+    if (!r.ok) return { erro: r.erro, ok: false };
+
+    const proposta = criteriosDaResposta(r.texto);
+    if (!proposta) return { erro: "Não consegui ler a resposta da IA. Tente de novo.", ok: false };
+
+    const { error } = await admin
+      .from("jobs")
+      .update({ criterios: proposta, updated_at: new Date().toISOString() })
+      .eq("id", jobId);
+    if (error) return { erro: "Não foi possível salvar a proposta.", ok: false };
+
+    await admin.from("audit_log").insert({
+      ator_id: user.id,
+      acao: "vaga_criterios_gerados_ia",
+      objeto_tipo: "job",
+      objeto_id: jobId,
+      depois: { modo, provedor: r.provedor, modelo: r.modelo, obrigatorios: proposta.obrigatorios.length },
+    });
+    revalidatePath(`/admin/vagas/${jobId}`);
+    return { erro: null, ok: true };
+  } catch (e) {
+    const digest = (e as { digest?: unknown } | null)?.digest;
+    if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw e;
+    return { erro: "Não foi possível gerar agora. Tente de novo.", ok: false };
+  }
 }

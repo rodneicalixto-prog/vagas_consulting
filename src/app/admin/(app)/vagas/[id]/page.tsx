@@ -14,6 +14,7 @@ import {
   type NivelVerificacao,
 } from "@/lib/vaga-estruturada";
 import { salvarCriterios } from "../actions";
+import { GerarComIA } from "./gerar-com-ia";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -89,6 +90,24 @@ export default async function CriteriosDaVagaPage({ params }: { params: Promise<
             ))}
           </ul>
         </section>
+
+        <GerarComIA jobId={vaga.id} />
+
+        {criterios.proposta_ia && !criterios.confirmado_em && (
+          <p className="mb-4 rounded-xl bg-gold-bg px-4 py-3 text-[12.5px] font-bold text-gold-3">
+            Estes campos são uma proposta da IA e ainda não foram conferidos. Revise, ajuste e clique em Salvar critérios.
+          </p>
+        )}
+        {criterios.lacunas.length > 0 && (
+          <div className="mb-4 rounded-xl bg-navy-bg px-4 py-3 text-[12.5px] text-text-2">
+            <b className="text-text">Falta perguntar ao gestor:</b>
+            <ul className="mt-1 list-disc pl-5">
+              {criterios.lacunas.map((l) => (
+                <li key={l}>{l}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <form action={salvarCriterios} className="grid gap-4 rounded-2xl border border-border bg-surface p-5 md:grid-cols-2">
           <input type="hidden" name="job_id" value={vaga.id} />

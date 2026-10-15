@@ -2172,3 +2172,9 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     Tela de atendimento passa a caber na altura da janela: grade com linha
     de altura definida, lista de mensagens rola por dentro e o campo de envio
     fica sempre visível.
+120. **3O-2: critérios da vaga gerados por IA (15/10/2026)**: criar do recado
+    do gestor, reescrever JD, júnior e liderança, na tela Critérios e
+    qualidade. Proposta não confirmada até a pessoa salvar; lacunas listadas;
+    verificação e bloqueio de critério discriminatório valem sobre a
+    proposta; teto, chave do cofre e custo no painel do agente. Sem migration
+    nova. 84 testes. Próximo: 3N divulgação e áudio do gestor.
