@@ -738,3 +738,21 @@ Regras:
 Fechamento: laudo **assinado** pelo recrutador é imutável (nova versão em vez de
 edição) e fica acessível só ao atendente e à gestão. O candidato nunca recebe
 o laudo; para ele existe a devolutiva (3I).
+
+### 14.18 Checklist da devolutiva: verificação antes de enviar (recebido em 15/10/2026)
+
+| Item do checklist | Como o sistema garante | Tipo |
+|---|---|---|
+| Aprovado ou reprovado; genérica ou com feedback | Escolha obrigatória antes de gerar; feedback exige pontos fortes e de melhoria | Código, bloqueante |
+| Personalizada com nome e vaga | Campos vêm da candidatura; mensagem sem nome ou vaga não é liberada | Código, bloqueante |
+| Feedback proporcional à etapa | A etapa em que a pessoa parou define a versão sugerida (triagem: genérica; finalista: com feedback) | Código |
+| Melhoria construtiva e acionável, nada pessoal | Termos pessoais e depreciativos sinalizados; sugestão de reescrita acionável | Código + IA |
+| Feedback baseado em evidência do processo | Só usa pontos vindos da ficha de parecer (14.3) ou digitados pela pessoa; sem eles, só a genérica | Código |
+| Sem critério discriminatório | Mesma lista do 14.11; **bloqueia** | **Código, bloqueante** |
+| Sem falsa esperança nem promessa vazia | Promessa de guardar o currículo só entra com o campo "banco de talentos" marcado | Código |
+| Tom respeitoso | Revisão de tom; texto seco ("Infelizmente não foi selecionado. Att.") gera aviso | IA + pessoa |
+| Aprovado: próximos passos e prazo claros | Campos "próximo passo" e "prazo" obrigatórios na aprovação | Código, bloqueante |
+| Feedback delicado de finalista por conversa | Para finalista com feedback, o sistema sugere **ligação** primeiro e gera o roteiro (caso 4 do 3I) | Código |
+
+A exceção de envio de encerramento (um envio em até 30 dias, respeitando
+descadastro e black list) é verificada **antes** de liberar o envio.
