@@ -361,3 +361,22 @@ Indicadores que saem sozinhos do banco: tempo de fechamento, SLA do prazo da
 vaga, funil e conversão, aceitação de proposta e fontes (origem). Dependem de
 entrada manual: custo por contratação, NPS do processo e turnover precoce.
 Leitura sempre em conjunto (fechar rápido com turnover alto não é sucesso).
+
+### 14.2 Briefing de entrada (modelo do pacote, 15/10/2026)
+
+Cada skill tem um "BRIEFING" com a mesma estrutura de seis blocos. O primeiro
+recebido (Job Description) é genérico e vale como molde para todos os módulos:
+
+| Bloco do briefing | O que a plataforma já sabe | O que o usuário ainda informa |
+|---|---|---|
+| 1. Empresa e contexto | Empresa, porte e segmento (cadastro) | Momento e time envolvido |
+| 2. Situação | Histórico da vaga e do funil | A dor, o que mudou e o que já foi tentado |
+| 3. Dados disponíveis | Candidaturas, notas, agenda | Planilhas e políticas externas |
+| 4. Objetivo | Etapa do funil em que está | Decisão que apoia, prazo e quem vai usar |
+| 5. Restrições | Consentimento, black list, LGPD | Orçamento, aprovações, confidencialidade |
+| 6. Entregável | Formato padrão do módulo | Nível (básico, intermediário, avançado) e observações |
+
+**Decisão de produto:** o briefing não vira um formulário gigante. Cada módulo
+pré-preenche o que já existe e mostra só os campos que faltam, com um bloco
+opcional "Contexto adicional" para o resto. Nível básico, intermediário e
+avançado controla a profundidade da saída (e o custo da geração).
