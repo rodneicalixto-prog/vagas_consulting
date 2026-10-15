@@ -221,7 +221,7 @@ Pendência: a `0021` (alinha schema) segue não aplicada (no-op documentado).
 `conversations.atendente_id` (referência a `auth.users`, `on delete set null`),
 `conversations.atribuida_em` e índice `(company_id, atendente_id)`.
 
-### Planejado — migration 0032, agente de IA (NÃO aplicada)
+### Migration 0032, agente de IA (APLICADA em 15/10/2026)
 
 Tabelas `ai_agents`, `ai_knowledge_notes`, `ai_suggestions` e `ai_agent_runs`,
 todas com RLS ligada e sem política pública. Campos em

@@ -1473,6 +1473,13 @@ sessões futuras.
     sobre o Obsidian: a base de conhecimento fica no banco por empresa
     (fonte da verdade) com espelho opcional no Obsidian da SOS. Nada
     construído ainda; migration 0032 prevista e não aplicada.
+115. **Agente de IA, passo 3A construído (15/10/2026)**: decisões F7–F10
+    (tom formal, Rodnei aprova lições, espelho no Obsidian desde o início,
+    sugestão o dia todo). Migration 0032 aplicada (4 tabelas). Nova tela
+    Plataforma > Agente de IA (superadmin): agente da SOS Vagas e base de
+    conhecimento com aprovação, e exportação `.zip` para o Obsidian. Dados
+    iniciais: agente desligado e 3 notas em rascunho. Geração de sugestões
+    é o passo 3B. 68 testes.
 
 ## 3. Escopo do MVP (revisado)
 

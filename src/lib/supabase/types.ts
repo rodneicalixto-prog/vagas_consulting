@@ -379,6 +379,192 @@ export type Database = {
           },
         ]
       }
+      ai_agents: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          modelo: string | null
+          nivel_autonomia: number
+          nome: string
+          ativo: boolean
+          provedor: string
+          roteiro: string
+          teto_mensal_usd: number
+          tom: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          modelo?: string | null
+          nivel_autonomia?: number
+          nome?: string
+          ativo?: boolean
+          provedor?: string
+          roteiro?: string
+          teto_mensal_usd?: number
+          tom?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          modelo?: string | null
+          nivel_autonomia?: number
+          nome?: string
+          ativo?: boolean
+          provedor?: string
+          roteiro?: string
+          teto_mensal_usd?: number
+          tom?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_knowledge_notes: {
+        Row: {
+          aprovada_em: string | null
+          aprovada_por: string | null
+          company_id: string
+          corpo_md: string
+          created_at: string
+          criado_por: string | null
+          id: string
+          origem: string
+          status: string
+          tipo: string
+          titulo: string
+          updated_at: string
+          versao: number
+        }
+        Insert: {
+          aprovada_em?: string | null
+          aprovada_por?: string | null
+          company_id: string
+          corpo_md?: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          origem?: string
+          status?: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+          versao?: number
+        }
+        Update: {
+          aprovada_em?: string | null
+          aprovada_por?: string | null
+          company_id?: string
+          corpo_md?: string
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          origem?: string
+          status?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          versao?: number
+        }
+        Relationships: []
+      }
+      ai_suggestions: {
+        Row: {
+          agent_id: string
+          conversation_id: string
+          created_at: string
+          decidida_em: string | null
+          decidida_por: string | null
+          estado: string
+          fonte: Json
+          id: string
+          message_id: string | null
+          motivo_parada: string | null
+          rascunho: string
+          texto_final: string | null
+        }
+        Insert: {
+          agent_id: string
+          conversation_id: string
+          created_at?: string
+          decidida_em?: string | null
+          decidida_por?: string | null
+          estado?: string
+          fonte?: Json
+          id?: string
+          message_id?: string | null
+          motivo_parada?: string | null
+          rascunho: string
+          texto_final?: string | null
+        }
+        Update: {
+          agent_id?: string
+          conversation_id?: string
+          created_at?: string
+          decidida_em?: string | null
+          decidida_por?: string | null
+          estado?: string
+          fonte?: Json
+          id?: string
+          message_id?: string | null
+          motivo_parada?: string | null
+          rascunho?: string
+          texto_final?: string | null
+        }
+        Relationships: []
+      }
+      ai_agent_runs: {
+        Row: {
+          agent_id: string
+          conversation_id: string | null
+          created_at: string
+          custo_usd: number | null
+          id: string
+          latencia_ms: number | null
+          modelo: string | null
+          motivo_parada: string | null
+          provedor: string
+          suggestion_id: string | null
+          tokens_in: number | null
+          tokens_out: number | null
+        }
+        Insert: {
+          agent_id: string
+          conversation_id?: string | null
+          created_at?: string
+          custo_usd?: number | null
+          id?: string
+          latencia_ms?: number | null
+          modelo?: string | null
+          motivo_parada?: string | null
+          provedor: string
+          suggestion_id?: string | null
+          tokens_in?: number | null
+          tokens_out?: number | null
+        }
+        Update: {
+          agent_id?: string
+          conversation_id?: string | null
+          created_at?: string
+          custo_usd?: number | null
+          id?: string
+          latencia_ms?: number | null
+          modelo?: string | null
+          motivo_parada?: string | null
+          provedor?: string
+          suggestion_id?: string | null
+          tokens_in?: number | null
+          tokens_out?: number | null
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           atendente_id: string | null

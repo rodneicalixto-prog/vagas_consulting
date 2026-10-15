@@ -2,7 +2,7 @@
 
 > **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec Fase 3 v0.1 · **Data:** 15/10/2026
 > **Status:** planejamento aprovado pelo Rodnei (piloto na SOS Vagas, Groq, modo sugestão,
-> migration aditiva). **Nada deste documento foi construído ainda.**
+> migration aditiva). **Passo 3A construído em 15/10/2026** (ver §13); 3B em diante pendentes.
 > Parte da regra dos seis documentos: este arquivo precede o código.
 > Complementa `COMUNICACAO_OMNICANAL.md` §7 (agente recrutador) e a hierarquia de agentes.
 
@@ -25,6 +25,10 @@ conversando com candidato, disparo em massa.
 | F4 | Pode criar as **tabelas do agente** (migration aditiva) quando a construção começar |
 | F5 | Teto de **US$ 100/mês por empresa** (já decidido): aviso aos 80%, pausa aos 100% |
 | F6 | Cada empresa tem **base de conhecimento própria**; a da SOS guarda a política global |
+| F7 | **Tom formal** na SOS Vagas |
+| F8 | **O Rodnei aprova as lições** da SOS (ninguém mais, por ora) |
+| F9 | **Espelho no Obsidian desde o início**: exportação das notas aprovadas já no passo 3A |
+| F10 | Sugestão gerada **o dia todo** (no modo sugestão não há risco de envio fora do horário) |
 
 ## 3. Como funciona
 
@@ -164,7 +168,7 @@ documento e do `PROJETO.md`, e só então publica.
 | Dependência de provedor | Provedor configurável por empresa; falha vira "sem sugestão", nunca bloqueia o inbox |
 | Operador confiar demais | Mostrar a fonte; métrica de descarte; subir de nível só com evidência |
 
-## 12. Perguntas ainda abertas
+## 12. Perguntas (respondidas em 15/10/2026: F7 a F10 acima)
 
 1. **Idioma e tom da SOS:** formal ou próximo? (define o roteiro inicial.)
 2. **Quem aprova lições na SOS:** só o superadmin, ou a Priscilla também?
@@ -172,3 +176,22 @@ documento e do `PROJETO.md`, e só então publica.
    vault da SOS já no 3D, ou depois do piloto?
 4. **Horário de resposta:** a sugestão é gerada o dia todo ou só em horário
    comercial (relevante para custo e para a fase de envio automático)?
+
+## 13. Estado de construção
+
+### Passo 3A — construído (15/10/2026)
+
+- **Migration `0032` aplicada:** `ai_agents`, `ai_knowledge_notes`, `ai_suggestions` e `ai_agent_runs`
+  (RLS ligada, sem política pública).
+- **Tela `Plataforma > Agente de IA`** (só superadmin): cadastro do agente da SOS Vagas (nome, tom,
+  provedor, modelo, roteiro, ligado/desligado) e base de conhecimento (criar, editar, aprovar, arquivar,
+  reabrir; filtro por tipo). Editar nota aprovada a devolve para rascunho (nova versão e nova aprovação).
+- **Exportação para o Obsidian:** botão que baixa um `.zip` com as notas **aprovadas**, uma pasta por
+  tipo, cabeçalho de propriedades e o roteiro do agente. Somente leitura (a fonte da verdade é o painel).
+- **Dados iniciais:** agente "Assistente SOS Vagas" (formal, Groq, **desligado**) e 3 notas em rascunho
+  (política global, FAQ do processo, primeira mensagem), para o Rodnei revisar e aprovar.
+- **Ainda não faz:** gerar sugestões (3B), caixa na conversa (3C), aprendizado (3D). O agente ligado
+  hoje não responde nada.
+
+Auditoria: criação e edição do agente, criação/edição/aprovação/arquivamento de nota e exportação.
+Nada de texto de candidato envolvido neste passo.
