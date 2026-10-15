@@ -286,3 +286,17 @@ Reaproveita os campos da vaga estruturada (3O); só pergunta o que faltar.
 Currículo já pode vir do cadastro do candidato (documentos do perfil) ou ser
 anexado na hora. Escalar por vaga: uma triagem pode ter dezenas de currículos,
 então roda em fila, com contagem de custo contra o teto antes de iniciar.
+
+**3K — Abordagem ativa (hunting)** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Abordagem de LinkedIn para um candidato | perfil colado, vaga (traz modelo e faixa) |
+| 2 | InMail para um cargo sênior com 2 assuntos e sequência de follow-up | cargo; saída com 2 opções de assunto e follow-ups |
+| 3 | Abordagem por e-mail no tom da empresa | perfil colado, tom (descontraído ou formal) |
+| 4 | Roteiro de ligação para candidato passivo | canal "ligação"; saída em roteiro com espaço para a pessoa falar |
+| 5 | Dois follow-ups curtos e educados quando não responde | botão "gerar follow-up" a partir da abordagem salva |
+
+Só redige: copiar e enviar são ações manuais fora da plataforma. Os campos de
+perfil colado são tratados como dado pessoal (finalidade única, sem guardar
+além do necessário).
