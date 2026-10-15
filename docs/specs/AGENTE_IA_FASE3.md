@@ -471,3 +471,29 @@ Regras de produto já definidas a partir do modelo e do que o pacote diz:
   alimenta o indicador de aceitação de oferta (3M).
 - **Pendente:** receber a skill de carta-oferta para detalhar campos, tipos de
   contratação (CLT, PJ, temporário) e cláusulas.
+
+### 14.7 Relatório mensal de indicadores (modelo recebido em 15/10/2026)
+
+Saída do módulo 3M. Gerado por empresa e por mês, com os números montados em
+código e só o texto de análise escrito pela IA:
+
+| Bloco | Conteúdo | Origem |
+|---|---|---|
+| Cabeçalho | Mês e ano | Seleção do período |
+| Volume e tempo | Vagas fechadas; tempo médio de fechamento com a meta | Banco (vagas e candidaturas) |
+| Qualidade do processo | SLA; taxa de efetivação; custo por contratação | SLA e efetivação do banco; **custo** de entrada manual |
+| Candidato e retenção | Aceitação de oferta; turnover precoce; NPS do processo | Aceitação do banco; **turnover** e **NPS** de entrada manual ou pesquisa |
+| Fontes | Principal fonte de contratação e o percentual | Origem da candidatura |
+| Análise | Destaques do mês, pontos de atenção e ações para o próximo mês | Texto da IA a partir dos números, revisado por pessoa |
+
+Regras de produto:
+
+- Indicador sem dado aparece como **"sem dado"**, nunca como zero, para não
+  fingir resultado. O relatório avisa quais campos manuais faltaram.
+- Meta ao lado de cada indicador, editável por empresa (3M).
+- "Ações para o próximo mês" ligam cada ponto de atenção a uma ação concreta e
+  são sugestão: a pessoa edita antes de salvar.
+- Exportável em PDF e imprimível; para a SOS Vagas, é o relatório que serve de
+  prestação de contas ao cliente (leitura por empresa, sem misturar clientes).
+- Leitura em conjunto: o texto da análise precisa cruzar indicadores (ex.:
+  fechamento rápido com turnover precoce alto).
