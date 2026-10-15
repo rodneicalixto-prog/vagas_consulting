@@ -149,7 +149,11 @@ export default async function IntegracoesPage({
                   const config = (c?.config as { base_url?: string; instance?: string; remetente?: string; provedor?: string } | null) ?? {};
                   const ehInstancia = p.id === "evolution" && !!companyId;
                   return (
-                    <details key={p.id} className="group border-b border-border last:border-b-0">
+                    <details
+                      key={p.id}
+                      open={!!c && c.status !== "ok"}
+                      className="group border-b border-border last:border-b-0"
+                    >
                       <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 hover:bg-bg">
                         <span className="text-[10px] text-text-3 transition-transform group-open:rotate-90">▸</span>
                         <span className="min-w-0 flex-1 basis-44 text-[13.5px] font-extrabold text-text">
@@ -174,6 +178,11 @@ export default async function IntegracoesPage({
                       </summary>
 
                       <div className="border-t border-border bg-bg/60 px-5 py-4">
+                        {c && c.status === "nao_testada" && (
+                          <p className="mb-3 rounded-lg bg-gold-bg px-3 py-2 text-[11.5px] font-bold text-gold-3">
+                            Chave salva. Clique em &ldquo;Testar conexão&rdquo; (botão verde abaixo) para validar.
+                          </p>
+                        )}
                         {c?.status_msg && (
                           <p className="mb-3 text-[11.5px] text-text-2">
                             {c.status_msg} <span className="text-text-3">(testado em {quando(c.testado_em)})</span>
