@@ -1,7 +1,13 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { apikeyDaPlataforma, baixarMidia, configEvolutionDaEmpresa, empresaDaInstancia } from "@/lib/evolution";
+import {
+  apikeyDaPlataforma,
+  baixarMidia,
+  configEvolutionDaEmpresa,
+  empresaDaInstancia,
+  tokenDaInstancia,
+} from "@/lib/evolution";
 import {
   TAMANHO_MAX_ANEXO,
   detectarMidia,
@@ -283,16 +289,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(SEM_DETALHE, { status: 400 });
     }
 
-    const esperada = await apikeyDaPlataforma();
+    const instancia = typeof corpo.instance === "string" ? corpo.instance : "";
     const recebidas = [request.headers.get("apikey"), typeof corpo.apikey === "string" ? corpo.apikey : null].filter(
       (v): v is string => !!v,
     );
-    if (!esperada || !recebidas.some((r) => iguais(r, esperada))) {
-      return NextResponse.json(SEM_DETALHE, { status: 401 });
+    // Aceita a chave global (cabeçalho) ou o token da própria instância, que é
+    // o que a Evolution envia no corpo do webhook.
+    const esperada = await apikeyDaPlataforma();
+    let autenticado = !!esperada && recebidas.some((r) => iguais(r, esperada));
+    if (!autenticado && instancia && recebidas.length > 0) {
+      const tokenInstancia = await tokenDaInstancia(instancia);
+      autenticado = !!tokenInstancia && recebidas.some((r) => iguais(r, tokenInstancia));
     }
+    if (!autenticado) return NextResponse.json(SEM_DETALHE, { status: 401 });
 
     const evento = normalizarEvento(corpo.event);
-    const instancia = typeof corpo.instance === "string" ? corpo.instance : "";
     if (evento !== "messages.upsert" && evento !== "messages.update") {
       return NextResponse.json({ ok: true, ignorado: true });
     }

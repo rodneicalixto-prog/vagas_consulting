@@ -121,6 +121,50 @@ export async function numeroDaOperacao(): Promise<string | null> {
   }
 }
 
+const cacheTokens = new Map<string, { token: string; ate: number }>();
+
+/**
+ * Token da instância na Evolution (é ele que assina o webhook). Cache curto em
+ * memória para não consultar a Evolution a cada evento. Nunca sai do servidor.
+ */
+export async function tokenDaInstancia(instance: string): Promise<string | null> {
+  const agora = Date.now();
+  const guardado = cacheTokens.get(instance);
+  if (guardado && guardado.ate > agora) return guardado.token;
+  try {
+    const { data: plataforma } = await createAdminClient()
+      .from("integration_credentials")
+      .select("segredo_cifrado, config")
+      .eq("escopo", "plataforma")
+      .eq("provedor", "evolution")
+      .maybeSingle();
+    const base = (plataforma?.config as { base_url?: string } | null)?.base_url;
+    const baseUrl = base ? urlEvolutionSegura(base) : null;
+    if (!baseUrl || !plataforma?.segredo_cifrado) return null;
+    const apikey = decifrar(plataforma.segredo_cifrado);
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), 6_000);
+    try {
+      const r = await fetch(`${baseUrl}/instance/fetchInstances?instanceName=${encodeURIComponent(instance)}`, {
+        headers: { apikey },
+        signal: c.signal,
+        cache: "no-store",
+      });
+      if (!r.ok) return null;
+      const corpo = (await r.json().catch(() => null)) as unknown;
+      const item = (Array.isArray(corpo) ? corpo[0] : corpo) as { token?: unknown; name?: unknown } | null;
+      if (!item || typeof item.token !== "string" || !item.token) return null;
+      if (typeof item.name === "string" && item.name !== instance) return null;
+      cacheTokens.set(instance, { token: item.token, ate: agora + 5 * 60_000 });
+      return item.token;
+    } finally {
+      clearTimeout(t);
+    }
+  } catch {
+    return null;
+  }
+}
+
 /** Empresa dona de uma instância (para o webhook). */
 export async function empresaDaInstancia(instance: string): Promise<string | null> {
   const { data } = await createAdminClient()
