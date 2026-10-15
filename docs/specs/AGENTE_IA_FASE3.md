@@ -198,7 +198,7 @@ Nada de texto de candidato envolvido neste passo.
 
 ## 14. Pacote de skills de recrutamento e seleção: inventário (15/10/2026)
 
-O Rodnei tem um pacote de skills de R&S. Recebidas até agora 5 (as demais
+O Rodnei tem um pacote de skills de R&S. Recebidas até agora 6 (as demais
 serão inventariadas conforme chegarem). Regra: o **conteúdo** vira
 funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 
@@ -208,6 +208,7 @@ funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 | `roteiro-de-entrevista` | **Roteiro e scorecard** por vaga/candidato: perguntas STAR e situacionais, "o que observar", escala 1 a 4, parecer; exportar Word/PDF | 3H | Liga com Agenda/Entrevistas e com os "pontos a validar" da triagem; lista de perguntas proibidas aplicada no código |
 | `devolutiva-candidatos` | **Devolutiva** de aprovação e reprovação, genérica ou com feedback, como rascunho na conversa | 3I | **Regra de envio precisa de ajuste:** hoje, depois da reprovação a candidatura deixa de estar "em andamento" e o envio é bloqueado. Propor exceção única de encerramento (devolutiva em até 30 dias da decisão), respeitando descadastro e black list |
 | `testes-e-dinamicas` | **Biblioteca de avaliações** por vaga: prova técnica, português, matemática, raciocínio e dinâmicas, com folha do candidato, folha do aplicador, gabarito/rubrica 1 a 4 e export Word/PDF | 3J | Nunca teste psicológico ou de personalidade (privativo de psicólogo); sem trabalho gratuito; conteúdo neutro e acessível |
+| `laudo-do-candidato` | **Laudo consolidado** por candidato: matching cargo × evidência com fonte, aderência 1 a 4, síntese e (opcional) recomendação; quadro comparativo e versão enxuta para o gestor; export Word/PDF | 3L | Fecha o funil: monta a partir dos resultados salvos da triagem, do roteiro e dos testes (montagem em código, a IA só sintetiza). **Modo A (só fatos) e Modo B (com recomendação) escolhidos a cada laudo.** Acesso só do atendente e da gestão; nunca ao candidato; sem avaliação psicológica |
 | `hunting` | **Rascunho de abordagem** (LinkedIn, e-mail, ligação) com ângulo e follow-up | 3K | Só redige; **não envia**. WhatsApp frio fica de fora: contraria a regra de consentimento e arrisca o número |
 
 Regras comuns herdadas das skills: avaliar competência e nunca pessoa; só vale
@@ -216,6 +217,9 @@ entrevista; sem critério discriminatório; a decisão é sempre da pessoa;
 escala 1 a 4 comum a triagem, entrevista e testes.
 
 **Encadeamento natural do funil:** triagem (3G) gera "pontos a validar" →
-roteiro (3H) → testes (3J) → decisão → devolutiva (3I).
+roteiro (3H) → testes (3J) → laudo (3L) → decisão → devolutiva (3I). A
+abordagem (3K) fica no começo do funil, antes da triagem.
 
-Ordem proposta: 3B (sugestão de resposta) → 3G → 3H → 3I → 3J → 3K.
+Ordem proposta: 3B (sugestão de resposta) → 3G → 3H → 3J → 3L → 3I → 3K.
+Os resultados de cada módulo são gravados de forma estruturada (competência,
+evidência, fonte, nota 1 a 4) para o laudo montar sem reler tudo.

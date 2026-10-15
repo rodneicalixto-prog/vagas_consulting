@@ -1482,9 +1482,9 @@ sessões futuras.
     é o passo 3B. 68 testes.
 116. **Pacote de skills de R&S: inventário (15/10/2026)**: recebidas
     triagem-de-curriculos, roteiro-de-entrevista, devolutiva-candidatos,
-    testes-e-dinamicas e hunting. Viram módulos do produto (3G triagem, 3H
-    roteiro/scorecard, 3I devolutiva, 3J testes e dinâmicas, 3K abordagem só
-    em rascunho), não skills dentro do app. Atenção: a devolutiva exige
+    testes-e-dinamicas, laudo-do-candidato e hunting. Viram módulos do
+    produto (3G triagem, 3H roteiro/scorecard, 3I devolutiva, 3J testes e
+    dinâmicas, 3K abordagem só em rascunho, 3L laudo), não skills dentro do app. Atenção: a devolutiva exige
     exceção na regra de envio (candidatura encerrada). Registrado em
     `AGENTE_IA_FASE3.md` §14.
 
