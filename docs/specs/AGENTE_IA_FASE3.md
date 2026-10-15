@@ -198,12 +198,13 @@ Nada de texto de candidato envolvido neste passo.
 
 ## 14. Pacote de skills de recrutamento e seleção: inventário (15/10/2026)
 
-O Rodnei tem um pacote de skills de R&S. Recebidas até agora 7 (as demais
+O Rodnei tem um pacote de skills de R&S. Recebidas até agora 8 (as demais
 serão inventariadas conforme chegarem). Regra: o **conteúdo** vira
 funcionalidade ou nota aprovada; a skill em si não roda dentro do app.
 
 | Skill | Vira | Passo | Observações |
 |---|---|---|---|
+| `divulgacao-de-vaga` | **Gerador de divulgação** na vaga: texto pronto por canal (LinkedIn, Instagram, WhatsApp, portais, comunidades, interno), com 2 ganchos, briefing de arte e título otimizado para portal | 3N | Só redige (publicação é manual). Pergunta canal, perfil técnico/menos técnico e tom. Usa o link da vitrine pública com **marcador de origem por canal**, que alimenta a métrica de fontes (3M). Diagnóstico "vaga não atrai" aponta título, requisito inflado e canal errado |
 | `triagem-de-curriculos` | **Módulo de triagem** na vaga: ranking com evidências, mini-parecer e corte sugerido | 3G | Critérios estruturados na vaga; pontuação no código; **triagem às cegas** (remover nome, foto, idade antes de enviar ao modelo); aviso de IA e direito à revisão (LGPD art. 20) |
 | `roteiro-de-entrevista` | **Roteiro e scorecard** por vaga/candidato: perguntas STAR e situacionais, "o que observar", escala 1 a 4, parecer; exportar Word/PDF | 3H | Liga com Agenda/Entrevistas e com os "pontos a validar" da triagem; lista de perguntas proibidas aplicada no código |
 | `devolutiva-candidatos` | **Devolutiva** de aprovação e reprovação, genérica ou com feedback, como rascunho na conversa | 3I | **Regra de envio precisa de ajuste:** hoje, depois da reprovação a candidatura deixa de estar "em andamento" e o envio é bloqueado. Propor exceção única de encerramento (devolutiva em até 30 dias da decisão), respeitando descadastro e black list |
@@ -221,6 +222,7 @@ escala 1 a 4 comum a triagem, entrevista e testes.
 roteiro (3H) → testes (3J) → laudo (3L) → decisão → devolutiva (3I). A
 abordagem (3K) fica no começo do funil, antes da triagem.
 
-Ordem proposta: 3B (sugestão de resposta) → 3G → 3H → 3J → 3L → 3I → 3M → 3K.
+Ordem proposta: 3B (sugestão de resposta) → 3N (divulgação, ganho rápido: só
+texto) → 3G → 3H → 3J → 3L → 3I → 3M → 3K.
 Os resultados de cada módulo são gravados de forma estruturada (competência,
 evidência, fonte, nota 1 a 4) para o laudo montar sem reler tudo.
