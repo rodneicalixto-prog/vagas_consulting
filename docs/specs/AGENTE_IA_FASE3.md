@@ -195,3 +195,20 @@ documento e do `PROJETO.md`, e só então publica.
 
 Auditoria: criação e edição do agente, criação/edição/aprovação/arquivamento de nota e exportação.
 Nada de texto de candidato envolvido neste passo.
+
+## 14. Pacote de skills de recrutamento e seleção: inventário (15/10/2026)
+
+O Rodnei tem um pacote de skills de R&S. Recebidas até agora 3 (as demais serão
+inventariadas conforme chegarem). Regra: o **conteúdo** vira funcionalidade ou
+nota aprovada; a skill em si não roda dentro do app.
+
+| Skill | Vira | Passo | Observações |
+|---|---|---|---|
+| `triagem-de-curriculos` | **Módulo de triagem** na vaga: ranking com evidências, mini-parecer e corte sugerido | 3G | Critérios estruturados na vaga; pontuação no código; **triagem às cegas** (remover nome, foto, idade antes de enviar ao modelo); aviso de IA e direito à revisão (LGPD art. 20) |
+| `roteiro-de-entrevista` | **Roteiro e scorecard** por vaga/candidato: perguntas STAR e situacionais, "o que observar", escala 1 a 4, parecer; exportar Word/PDF | 3H | Liga com Agenda/Entrevistas e com os "pontos a validar" da triagem; lista de perguntas proibidas aplicada no código |
+| `hunting` | **Rascunho de abordagem** (LinkedIn, e-mail, ligação) com ângulo e follow-up | 3I | Só redige; **não envia**. WhatsApp frio fica de fora: contraria a regra de consentimento e arrisca o número |
+
+Regras comuns herdadas das skills: avaliar competência e nunca pessoa; só vale
+o que está escrito; comportamental com confiança baixa e validação na
+entrevista; sem critério discriminatório; a decisão é sempre da pessoa.
+Ordem proposta: 3B (sugestão de resposta) → 3G → 3H → 3I.

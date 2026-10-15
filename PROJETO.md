@@ -1480,6 +1480,10 @@ sessões futuras.
     conhecimento com aprovação, e exportação `.zip` para o Obsidian. Dados
     iniciais: agente desligado e 3 notas em rascunho. Geração de sugestões
     é o passo 3B. 68 testes.
+116. **Pacote de skills de R&S: inventário inicial (15/10/2026)**: recebidas
+    triagem-de-curriculos, roteiro-de-entrevista e hunting. Viram módulos do
+    produto (3G triagem, 3H roteiro/scorecard, 3I abordagem só em rascunho),
+    não skills dentro do app. Registrado em `AGENTE_IA_FASE3.md` §14.
 
 ## 3. Escopo do MVP (revisado)
 
