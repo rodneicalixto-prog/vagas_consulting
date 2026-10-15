@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Pagination } from "@/components/Pagination";
+import { SubmitButton } from "@/components/form-buttons";
+import { abrirConversaComCandidato } from "../conversas/actions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { candidatosVisiveis, obterEscopo, vagasVisiveis } from "@/lib/auth/escopo";
@@ -114,7 +116,7 @@ export default async function ContatosPage({
                 <Link href={`/admin/candidatos/${p.id}`} className="truncate font-bold text-navy underline">
                   {p.nome_completo}
                 </Link>
-                <div className="truncate">
+                <div className="flex items-center gap-2 truncate">
                   {!mostraTelefone ? (
                     <span className="text-text-3">Liberado com candidatura em andamento</span>
                   ) : wa ? (
@@ -129,6 +131,17 @@ export default async function ContatosPage({
                     </a>
                   ) : (
                     <span className="text-text-2">{p.telefone?.trim() || "—"}</span>
+                  )}
+                  {wa && (
+                    <form action={abrirConversaComCandidato} className="shrink-0">
+                      <input type="hidden" name="candidate_id" value={p.id} />
+                      <SubmitButton
+                        pendingLabel="..."
+                        className="rounded-md border border-border px-2 py-0.5 text-[10.5px] font-bold text-navy"
+                      >
+                        Conversar
+                      </SubmitButton>
+                    </form>
                   )}
                 </div>
                 <div className="truncate text-text-2">{job?.titulo ?? "Sem candidatura"}</div>

@@ -7,6 +7,14 @@ const STUBS = {
 };
 export async function resolve(specifier, context, next) {
   if (specifier in STUBS) return { url: "stub:" + specifier, shortCircuit: true };
+  // Import relativo sem extensão (como o TypeScript escreve): tenta ".ts".
+  if (/^\.\.?\//.test(specifier) && !/\.[a-z]+$/i.test(specifier)) {
+    try {
+      return await next(specifier + ".ts", context);
+    } catch {
+      // cai no comportamento padrão abaixo
+    }
+  }
   return next(specifier, context);
 }
 export async function load(url, context, next) {

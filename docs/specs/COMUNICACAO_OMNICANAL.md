@@ -279,3 +279,36 @@ primeiro só como supervisor e relatório para o superadmin.
    **versão** do roteiro com autor e data, e o superadmin pode reverter; o
    admin não muda o nível de autonomia nem a chave/teto (só o superadmin).
    Revisar quando houver white-label ou operadores com perfil de gestão.
+
+## Fase B construída: inbox de WhatsApp (14-15/10/2026)
+
+**Telas:** `/admin/conversas` (lista + conversa, atualiza a cada 15 s) e o botão
+"Conversar" em Contatos. **Recebimento:** `POST /api/webhooks/evolution`.
+
+### Regras de envio (aplicadas no servidor)
+1. Empresa vem da conversa, nunca do formulário; precisa estar no escopo do usuário.
+2. **Descadastro** (SAIR, PARAR, STOP, DESCADASTRAR, mensagem inteira) bloqueia
+   novos envios e é registrado **antes** de qualquer outra gravação.
+3. Só envia com relação ativa: a pessoa **já respondeu**, **candidatura em
+   andamento** na empresa ou **consentimento** de alertas no WhatsApp.
+4. **Black list da empresa** bloqueia o envio.
+5. O texto da mensagem **nunca** entra na auditoria.
+6. Cada empresa envia pela **própria instância** (um número por empresa).
+
+### Como ligar o recebimento na Evolution (uma vez por instância)
+No manager da Evolution, em cada instância → **Webhook**:
+
+| Campo | Valor |
+|---|---|
+| URL | `https://sosvagas.sosmkt.com.br/api/webhooks/evolution` |
+| Eventos | `MESSAGES_UPSERT` e `MESSAGES_UPDATE` |
+| Cabeçalho | `apikey: <a chave global da Evolution cadastrada em Integrações>` |
+
+A rota recusa (401) qualquer chamada sem a chave da plataforma.
+
+### Limites conhecidos
+- Mensagens enviadas pelo celular (fora do sistema) não aparecem no inbox.
+- Sem tempo real verdadeiro: atualização a cada 15 s.
+- Só texto: imagens e áudios entram como marcador (`[imagem]`).
+- Reentrega sem id do provedor pode duplicar uma mensagem.
+- Telefone aparece na conversa mesmo se a candidatura terminou (conversa já existente).

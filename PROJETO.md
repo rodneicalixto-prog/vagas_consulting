@@ -1375,6 +1375,17 @@ sessões futuras.
     Claude, Groq, Evolution (WhatsApp), Resend, Telegram e SMS; teto
     mensal ainda não preenchido; endurecer a chave na OpenAI (permissões
     restritas e limite de gasto).
+104. **Inbox de WhatsApp, Fase B (15/10/2026)**: migration 0028 aplicada
+    (`conversations`, `conversation_messages`, `channel_opt_outs`). Telas
+    `/admin/conversas` e botão "Conversar" em Contatos; envio pela
+    Evolution da empresa com travas (descadastro, relação ativa ou
+    consentimento, black list da empresa, escopo); webhook
+    `/api/webhooks/evolution` autenticado pela apikey, idempotente, com
+    descadastro gravado primeiro. Construído por 2 agentes em paralelo
+    e revisado; erros de envio aparecem na própria caixa. 53 testes.
+    **Pendente do Rodnei:** cadastrar a Evolution em Integrações e
+    configurar o webhook em cada instância (spec §Fase B). Sem teste com
+    mensagem real ainda.
 
 ## 3. Escopo do MVP (revisado)
 

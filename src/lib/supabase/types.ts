@@ -340,6 +340,114 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          canal: string
+          candidate_id: string | null
+          company_id: string
+          created_at: string
+          id: string
+          nao_lidas: number
+          nome_contato: string | null
+          status: string
+          telefone_normalizado: string
+          ultima_msg_em: string | null
+          ultima_msg_previa: string | null
+        }
+        Insert: {
+          canal?: string
+          candidate_id?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          nao_lidas?: number
+          nome_contato?: string | null
+          status?: string
+          telefone_normalizado: string
+          ultima_msg_em?: string | null
+          ultima_msg_previa?: string | null
+        }
+        Update: {
+          canal?: string
+          candidate_id?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          nao_lidas?: number
+          nome_contato?: string | null
+          status?: string
+          telefone_normalizado?: string
+          ultima_msg_em?: string | null
+          ultima_msg_previa?: string | null
+        }
+        Relationships: []
+      }
+      conversation_messages: {
+        Row: {
+          autor: string
+          autor_id: string | null
+          conversation_id: string
+          created_at: string
+          direcao: string
+          erro: string | null
+          id: string
+          provedor_msg_id: string | null
+          status: string
+          texto: string
+        }
+        Insert: {
+          autor: string
+          autor_id?: string | null
+          conversation_id: string
+          created_at?: string
+          direcao: string
+          erro?: string | null
+          id?: string
+          provedor_msg_id?: string | null
+          status?: string
+          texto: string
+        }
+        Update: {
+          autor?: string
+          autor_id?: string | null
+          conversation_id?: string
+          created_at?: string
+          direcao?: string
+          erro?: string | null
+          id?: string
+          provedor_msg_id?: string | null
+          status?: string
+          texto?: string
+        }
+        Relationships: []
+      }
+      channel_opt_outs: {
+        Row: {
+          canal: string
+          company_id: string | null
+          created_at: string
+          id: string
+          motivo: string | null
+          telefone_normalizado: string
+        }
+        Insert: {
+          canal?: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          motivo?: string | null
+          telefone_normalizado: string
+        }
+        Update: {
+          canal?: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          motivo?: string | null
+          telefone_normalizado?: string
+        }
+        Relationships: []
+      }
       company_assignments: {
         Row: {
           papel: string

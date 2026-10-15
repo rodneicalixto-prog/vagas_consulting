@@ -21,6 +21,7 @@ const NAV: NavItem[] = [
   { href: "/admin/vagas", label: "Cadastro de vagas" },
   { href: "/admin/candidatos", label: "Candidatos" },
   { href: "/admin/contatos", label: "Contatos" },
+  { href: "/admin/conversas", label: "Conversas" },
   { href: "/admin/talentos", label: "Talentos" },
   { href: "/admin/convites", label: "Convites" },
   {
