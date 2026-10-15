@@ -13,9 +13,11 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  // Validar Vercel's Cron secret
+  // Validar Vercel's Cron secret. Sem segredo configurado a rota fica fechada
+  // (antes, "Bearer undefined" passava quando a variável não existia).
+  const secret = process.env.CRON_SECRET;
   const authHeader = request.headers.get('authorization') || '';
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!secret || authHeader !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -33,6 +35,17 @@ export async function GET(request: Request) {
 
     const archived = data || [];
     console.log(`[CRON] ${archived.length} vagas arquivadas`, archived);
+
+    // Rastro: só quando algo foi arquivado (ids das vagas, sem dados pessoais).
+    if (archived.length > 0) {
+      await supabase.from('audit_log').insert({
+        ator_id: null,
+        acao: 'vagas_arquivadas_automaticamente',
+        objeto_tipo: 'job',
+        objeto_id: null,
+        depois: { ids: archived.map((v: { id: string }) => v.id) },
+      });
+    }
 
     return NextResponse.json({
       success: true,

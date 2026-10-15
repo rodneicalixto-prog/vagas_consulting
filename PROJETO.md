@@ -1415,6 +1415,13 @@ sessões futuras.
     altas só na cadeia de lint (eslint-config-next → fast-glob → braces),
     dev-only; a sugestão do audit (downgrade para 14.x) foi descartada.
     tsc, eslint, build e 62 testes verdes.
+109. **Cron de arquivamento verificado e endurecido (15/10/2026)**: a função
+    `arquivo_automatico_vagas` existe e está correta; nenhuma vaga tem
+    `expira_em`, então não havia o que arquivar (auditoria vazia era esperada:
+    a rota não gravava rastro). Corrigido: sem `CRON_SECRET` a rota agora
+    fecha (antes aceitava "Bearer undefined"); passa a gravar `audit_log`
+    quando arquiva. Pendente: confirmar CRON_SECRET na Vercel (sem permissão
+    de leitura via MCP) e rodar `docs/AUTO_ARCHIVE.md` com uma vaga de teste.
 
 ## 3. Escopo do MVP (revisado)
 
