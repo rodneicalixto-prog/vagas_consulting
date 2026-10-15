@@ -497,3 +497,21 @@ Regras de produto:
   prestação de contas ao cliente (leitura por empresa, sem misturar clientes).
 - Leitura em conjunto: o texto da análise precisa cruzar indicadores (ex.:
   fechamento rápido com turnover precoce alto).
+
+### 14.8 Plano de ação a partir das métricas (modelo recebido em 15/10/2026)
+
+Fecha o ciclo do 3M: indicador fora da meta vira ação com dono e prazo.
+
+| Campo | Regra |
+|---|---|
+| Indicador fora da meta | Preenchido pelo sistema (indicador, valor e meta), por exemplo "SLA 75% vs meta 90%" |
+| Causa provável | Sugestão da IA a partir dos números cruzados; a pessoa confirma ou troca |
+| Ação definida | Texto livre, com sugestões prontas por indicador |
+| Responsável e prazo | Pessoa da equipe (da carteira) e data; vira lembrete em "Precisa de ação agora" |
+| Como vou medir a melhora | Indicador e meta, já ligados ao painel; o sistema mostra a evolução no mês seguinte |
+
+Registro em tabela própria no passo 3M (plano de ação: indicador, valor e meta
+no momento, causa, ação, responsável, prazo, indicador de acompanho, estado
+aberta, em andamento, concluída ou cancelada). O relatório mensal (14.7) lista
+os planos abertos e o resultado dos concluídos. Plano concluído sem melhora do
+indicador aparece sinalizado, para revisar a ação em vez de repetir.
