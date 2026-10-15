@@ -380,3 +380,27 @@ recebido (Job Description) é genérico e vale como molde para todos os módulos
 pré-preenche o que já existe e mostra só os campos que faltam, com um bloco
 opcional "Contexto adicional" para o resto. Nível básico, intermediário e
 avançado controla a profundidade da saída (e o custo da geração).
+
+### 14.3 Ficha de parecer da entrevista (modelo recebido em 15/10/2026)
+
+Define o **registro estruturado** que o 3H grava ao fim de cada entrevista e
+que o laudo (3L) lê depois:
+
+| Campo | Regra |
+|---|---|
+| Candidato e cargo | Vêm da candidatura (não digitados) |
+| Competência 1..N | Nota **1 a 4** (1 Não atende, 2 Parcial, 3 Atende, 4 Supera) e **evidência** (texto obrigatório quando a nota é 1 ou 4) |
+| Fit cultural | Nota 1 a 4 e evidência, avaliado por comportamento observado |
+| Pontos fortes e pontos de atenção | Texto livre, ligados a evidência |
+| Recomendação | **Avançar**, **Com ressalva** ou **Não avançar**, com o "por quê" obrigatório |
+
+Observações de modelagem:
+
+- A recomendação da entrevista (avançar na seleção) é **diferente** da do
+  laudo (contratar): são dois registros em momentos distintos. O laudo cita a
+  ficha como fonte, não a copia.
+- Gravada em tabela própria (`interview_scorecards`: candidatura, entrevistador,
+  itens com competência, nota e evidência, fit, fortes, atenção, recomendação,
+  motivo). Vai na migration do passo 3H.
+- Acesso: só o entrevistador e a gestão; o candidato nunca vê. O texto é
+  evidência de comportamento, sem característica pessoal.
