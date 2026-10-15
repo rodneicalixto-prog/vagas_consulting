@@ -226,3 +226,23 @@ Ordem proposta: 3B (sugestão de resposta) → 3N (divulgação, ganho rápido: 
 texto) → 3G → 3H → 3J → 3L → 3I → 3M → 3K.
 Os resultados de cada módulo são gravados de forma estruturada (competência,
 evidência, fonte, nota 1 a 4) para o laudo montar sem reler tudo.
+
+### 14.1 Casos de uso do pacote (arquivos "COMANDOS")
+
+Cada skill do pacote vem com um arquivo de comandos de exemplo. Eles viram
+**critérios de aceite** do módulo: o que o usuário precisa conseguir fazer sem
+digitar prompt, só preenchendo campos.
+
+**3H — Roteiro de entrevista** (recebido em 15/10/2026)
+
+| # | Caso de uso | Campos do formulário |
+|---|---|---|
+| 1 | Roteiro completo por duração, competências e valores | duração (30, 45 ou 60 min), cargo, competências, valores da empresa |
+| 2 | Perguntas situacionais (STAR e simulação) para competências escolhidas | competências (1 ou mais), tipo da pergunta |
+| 3 | Roteiro com campo de anotações e parecer final, exportável em Word | modelo com anotações por pergunta, escala 1 a 4 e parecer; botão Word |
+| 4 | Transformar os "pontos a validar" da triagem em perguntas | candidato com triagem salva (liga o 3G ao 3H) |
+| 5 | Perguntas de fit cultural a partir dos valores | valores (lista) |
+
+Os valores da empresa e as competências da vaga ficam **cadastrados uma vez**
+(base de conhecimento e vaga) e são reaproveitados em triagem, roteiro, testes
+e laudo, em vez de digitados a cada uso.
