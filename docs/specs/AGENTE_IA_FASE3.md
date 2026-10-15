@@ -540,3 +540,26 @@ Regras:
   exige justificativa ligada a competência, nunca a característica pessoal.
 - O laudo é imutável depois de **assinado** pelo recrutador (nova versão em vez
   de edição), para sustentar a decisão depois.
+
+### 14.10 Modelo do roteiro por competências (recebido em 15/10/2026)
+
+Estrutura do documento gerado pelo 3H; cada bloco vira um item no roteiro e
+cada **Avaliação** e **Anotações** alimenta a ficha de parecer (14.3):
+
+| Bloco | Conteúdo | Observações |
+|---|---|---|
+| Cabeçalho | Cargo, candidato, data, entrevistador | Vêm da candidatura e da agenda |
+| Abertura | Acolher, explicar o fluxo e a duração | Texto-base editável |
+| Aquecimento | Uma pergunta leve sobre a trajetória | Exatamente uma |
+| Competência (repete por competência) | Nome, tipo (STAR ou situacional), pergunta, "o que observar", anotações e avaliação 1 a 4 | Competências vêm da vaga estruturada (3O); 4 a 6 por roteiro, calibradas pela duração |
+| Fit cultural (por valor) | Valor, tipo, pergunta, anotações e avaliação 1 a 4 | Valores vêm da base de conhecimento da empresa; pergunta sempre de comportamento |
+
+Regras:
+
+- Toda pergunta traz competência ou valor, tipo e "o que observar"; sem isso
+  o item não é gerado.
+- A pergunta STAR traz as sondagens de situação, tarefa, ação e resultado.
+- Perguntas sobre tema proibido (família, idade, religião, saúde sem relação
+  com a função) nunca são geradas: lista aplicada em código, não só no prompt.
+- O campo de avaliação e as anotações são preenchidos **na própria tela**
+  durante a entrevista, e a ficha final sai pronta, sem redigitar.
