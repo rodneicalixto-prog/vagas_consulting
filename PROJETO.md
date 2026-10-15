@@ -2143,3 +2143,11 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 3. **Próximo passo claro:** seguir a seção 8 a partir do item 4 (regenerar
    tipos TypeScript) antes de qualquer nova feature — o schema mudou, o
    código de tipos ainda não foi atualizado pra refletir isso.
+118. **Correção do 3B e primeira entrega do 3O (15/10/2026)**: o agente ligado
+    não gerou sugestão porque as conversas eram de contatos sem candidato e as
+    notas estavam em rascunho; regra ajustada (contato desconhecido recebe
+    sugestão; cliente cadastrado, descadastro e black list ficam de fora) e
+    sugestão pronta aparece em leitura na fila. 3O: migration 0033
+    (`jobs.criterios`), tela Critérios e qualidade, verificação em código e
+    bloqueio de publicação com critério discriminatório. 77 testes.
+    Pendente: geração da JD por IA (3O-2).

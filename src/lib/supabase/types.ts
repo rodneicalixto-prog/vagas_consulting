@@ -873,6 +873,7 @@ export type Database = {
       }
       jobs: {
         Row: {
+          criterios: Json
           company_id: string
           confidencial: boolean
           created_at: string
@@ -895,6 +896,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          criterios?: Json
           company_id: string
           confidencial?: boolean
           created_at?: string
@@ -919,6 +921,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          criterios?: Json
           company_id?: string
           confidencial?: boolean
           created_at?: string

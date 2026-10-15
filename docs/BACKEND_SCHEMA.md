@@ -226,3 +226,9 @@ Pendência: a `0021` (alinha schema) segue não aplicada (no-op documentado).
 Tabelas `ai_agents`, `ai_knowledge_notes`, `ai_suggestions` e `ai_agent_runs`,
 todas com RLS ligada e sem política pública. Campos em
 `specs/AGENTE_IA_FASE3.md` §4. Só será aplicada no passo 3A.
+
+### Migration 0033 — vaga estruturada (15/10/2026, aplicada)
+
+`jobs.criterios` (jsonb, padrão `{}`): rotina, obrigatórios, eliminatórios,
+desejáveis, comportamentais, senioridade, anos de experiência, diferencial e
+data da confirmação. Aditiva; `regras` continua sendo o texto ao candidato.

@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { decifrar } from "@/lib/crypto-segredos";
 import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
+import { normalizarTelefoneBR } from "@/lib/whatsapp";
 import {
   MODELO_PADRAO,
   SINAL_ENCAMINHAR,
@@ -134,8 +135,23 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
   ]);
   if (!conversa || !msg || msg.conversation_id !== conversa.id) return;
   if (msg.direcao !== "entrada" || msg.tipo !== "texto") return;
-  // Fase 3B: só conversa de candidato (o resto é gestão, sem agente).
-  if (!conversa.candidate_id) return;
+  // Empresa cliente cadastrada (responsável ou telefone da empresa): conversa de
+  // gestão, sem agente. Contato desconhecido ou candidato recebe sugestão.
+  {
+    const { data: clientes } = await admin
+      .from("companies")
+      .select("telefone, responsavel_telefone")
+      .neq("id", conversa.company_id)
+      .limit(1000);
+    const tel = conversa.telefone_normalizado;
+    if (
+      (clientes ?? []).some(
+        (c) => normalizarTelefoneBR(c.telefone) === tel || normalizarTelefoneBR(c.responsavel_telefone) === tel,
+      )
+    ) {
+      return;
+    }
+  }
 
   const { data: agente } = await admin.from("ai_agents").select("*").eq("company_id", conversa.company_id).maybeSingle();
   if (!agente || !agente.ativo) return;
@@ -155,7 +171,10 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
       .eq("telefone_normalizado", conversa.telefone_normalizado)
       .or(`company_id.eq.${conversa.company_id},company_id.is.null`)
       .limit(1),
-    bloqueadoNaEmpresa(conversa.company_id, { id: conversa.candidate_id, telefone: conversa.telefone_normalizado }),
+    bloqueadoNaEmpresa(conversa.company_id, {
+      id: conversa.candidate_id ?? "00000000-0000-0000-0000-000000000000",
+      telefone: conversa.telefone_normalizado,
+    }),
   ]);
   if ((optOut ?? []).length > 0 || bloqueado) return;
 
@@ -220,14 +239,16 @@ export async function gerarSugestao(conversationId: string, messageId: string): 
       .eq("conversation_id", conversa.id)
       .order("created_at", { ascending: false })
       .limit(10),
-    admin
-      .from("applications")
-      .select("status, updated_at, jobs!inner(titulo, local, modelo_trabalho, modalidade, remuneracao_texto, descricao, requisitos, company_id, confidencial)")
-      .eq("candidate_id", conversa.candidate_id)
-      .eq("jobs.company_id", conversa.company_id)
-      .in("status", STATUS_CANDIDATURA_EM_ABERTO)
-      .order("updated_at", { ascending: false })
-      .limit(1),
+    conversa.candidate_id
+      ? admin
+          .from("applications")
+          .select("status, updated_at, jobs!inner(titulo, local, modelo_trabalho, modalidade, remuneracao_texto, descricao, requisitos, company_id, confidencial)")
+          .eq("candidate_id", conversa.candidate_id)
+          .eq("jobs.company_id", conversa.company_id)
+          .in("status", STATUS_CANDIDATURA_EM_ABERTO)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+      : Promise.resolve({ data: null }),
   ]);
 
   const jobBruto = apps?.[0]?.jobs;

@@ -7,6 +7,13 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirEmpresa, exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { validateFormData } from "@/lib/validation/validate-form";
 import { CreateJobSchema, DecideJobSchema, type CreateJobInput, type DecideJobInput } from "@/lib/validation/schemas";
+import {
+  listaDeTexto,
+  normalizarCriterios,
+  obrigatoriosDeTexto,
+  temBloqueio,
+  verificarVaga,
+} from "@/lib/vaga-estruturada";
 
 export async function criarVaga(formData: FormData) {
   const { user, role } = await requireInternalUser("jobs.manage");
@@ -123,6 +130,22 @@ export async function decidirVaga(formData: FormData) {
   }
 
   if (!before) throw new Error("Vaga não encontrada.");
+
+  // Critério que discrimina bloqueia a publicação (checklist da vaga, §14.11).
+  if (acao === "publicar" || acao === "reativar") {
+    const bloqueios = verificarVaga({
+      titulo: before.titulo,
+      descricao: before.descricao,
+      requisitos: before.requisitos,
+      local: before.local,
+      modelo_trabalho: before.modelo_trabalho,
+      remuneracao_texto: before.remuneracao_texto,
+      criterios: normalizarCriterios(before.criterios),
+    }).filter((v) => v.nivel === "bloqueio");
+    if (bloqueios.length > 0) {
+      throw new Error(`Publicação bloqueada: ${bloqueios.map((b) => b.mensagem).join(" ")}`);
+    }
+  }
   if (acao === "pausar" && before.status !== "publicada") {
     throw new Error("Só é possível pausar uma vaga publicada.");
   }
@@ -169,4 +192,56 @@ export async function decidirVaga(formData: FormData) {
 
   revalidatePath("/admin/vagas");
   revalidatePath("/admin");
+}
+
+/** Salva os critérios estruturados da vaga (passo 3O). Auditado. */
+export async function salvarCriterios(formData: FormData) {
+  const { user, role } = await requireInternalUser("jobs.manage");
+  const jobId = String(formData.get("job_id") ?? "");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId)) {
+    throw new Error("Vaga inválida.");
+  }
+  const escopo = await obterEscopo(user.id, role);
+  await exigirVaga(escopo, jobId);
+
+  const { obrigatorios, eliminatorios } = obrigatoriosDeTexto(String(formData.get("obrigatorios") ?? ""));
+  const anos = String(formData.get("anos_experiencia") ?? "").trim();
+  const bruto: Record<string, unknown> = {
+    rotina: String(formData.get("rotina") ?? ""),
+    obrigatorios,
+    eliminatorios,
+    desejaveis: listaDeTexto(String(formData.get("desejaveis") ?? "")),
+    comportamentais: listaDeTexto(String(formData.get("comportamentais") ?? "")),
+    senioridade: String(formData.get("senioridade") ?? ""),
+    anos_experiencia: anos === "" ? null : Number(anos),
+    diferencial: String(formData.get("diferencial") ?? ""),
+    confirmado_em: new Date().toISOString(),
+  };
+  const criterios = normalizarCriterios(bruto);
+
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("jobs")
+    .update({ criterios, updated_at: new Date().toISOString() })
+    .eq("id", jobId)
+    .select("id, titulo, descricao, requisitos, local, modelo_trabalho, remuneracao_texto");
+  if (error || !data || data.length === 0) throw new Error("Não foi possível salvar os critérios.");
+
+  const verificacoes = verificarVaga({ ...data[0], criterios });
+  await admin.from("audit_log").insert({
+    ator_id: user.id,
+    acao: "vaga_criterios_atualizados",
+    objeto_tipo: "job",
+    objeto_id: jobId,
+    depois: {
+      obrigatorios: criterios.obrigatorios.length,
+      eliminatorios: criterios.eliminatorios.length,
+      desejaveis: criterios.desejaveis.length,
+      comportamentais: criterios.comportamentais.length,
+      bloqueada: temBloqueio(verificacoes),
+    },
+  });
+
+  revalidatePath(`/admin/vagas/${jobId}`);
+  revalidatePath("/admin/vagas");
 }

@@ -843,3 +843,36 @@ Regras próprias deste modo:
 **Código:** `src/lib/agente.ts` (regras puras), `src/lib/agente-servidor.ts`
 (geração), `conversas/caixa-sugestao.tsx`, ajustes em `formulario-envio.tsx`,
 `actions.ts` e no webhook. Sem migration nova (tabelas da 0032).
+
+### Correção do 3B (15/10/2026): quem recebe sugestão
+
+Primeiro teste real do Rodnei: o agente estava ligado e não gerou nada.
+Causas confirmadas no banco: (1) as 4 conversas eram de contatos **sem
+candidato vinculado** e o 3B só gerava para candidato; (2) as 3 notas iniciais
+ainda estavam em **rascunho**, e sem nota aprovada a resposta é "sem fonte".
+
+Regra ajustada: **contato desconhecido também recebe sugestão** (o número da
+operação é canal de entrada de quem ainda não é candidato), com contexto só das
+notas aprovadas. Continuam de fora: empresa cliente cadastrada (responsável ou
+telefone), descadastro e black list. A sugestão pronta aparece em modo leitura
+enquanto a conversa está na fila; para usar, assuma a conversa.
+
+Lição de processo: todo passo termina com um **teste com mensagem real** e a
+lista do que precisa estar ligado (agente ligado, notas aprovadas, conversa
+assumida) escrita na entrega.
+
+### Passo 3O, primeira entrega (15/10/2026): vaga estruturada
+
+- **Migration `0033`:** `jobs.criterios` (jsonb, aditiva). `regras` segue como o
+  conteúdo mostrado ao candidato.
+- **Tela `Admin > Vagas > Critérios e qualidade`** (por vaga, respeita carteira
+  e sigilo): rotina, obrigatórios (linha com `*` = eliminatório), desejáveis,
+  comportamentais, senioridade, anos de experiência e diferencial.
+- **Verificação de qualidade (checklist 14.11) em código:** discriminação
+  (bloqueia), obrigatórios fora de 4 a 7, rotina, clichês, linguagem com marca
+  de gênero, título criativo, senioridade x anos, modelo, local e faixa,
+  diferencial.
+- **Bloqueio na publicação:** `publicar` e `reativar` recusam vaga com critério
+  discriminatório, com a mensagem do motivo.
+- **Ainda não faz (próximas entregas do 3O):** gerar a JD pela IA a partir do
+  recado do gestor, reescrever JD, modelos júnior e liderança, áudio do gestor.

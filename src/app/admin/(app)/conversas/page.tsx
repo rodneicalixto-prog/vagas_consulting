@@ -235,7 +235,7 @@ export default async function ConversasPage({
 
   // Sugestão pendente do assistente: só o atendente da conversa vê.
   let sugestao: { id: string; rascunho: string; motivo_parada: string | null; fonte: string[] } | null = null;
-  if (aberta && aberta.atendente_id === user.id) {
+  if (aberta && (aberta.atendente_id === user.id || aberta.atendente_id === null)) {
     const { data: s } = await admin
       .from("ai_suggestions")
       .select("id, rascunho, motivo_parada, fonte")
@@ -555,6 +555,7 @@ export default async function ConversasPage({
                   motivo={sugestao.motivo_parada}
                   fonte={sugestao.fonte}
                   conversationId={aberta.id}
+                  somenteLeitura={aberta.atendente_id !== user.id}
                 />
               )}
               <FormularioEnvio

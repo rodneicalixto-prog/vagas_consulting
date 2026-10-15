@@ -20,12 +20,15 @@ export function CaixaSugestao({
   motivo,
   fonte,
   conversationId,
+  somenteLeitura = false,
 }: {
   id: string;
   rascunho: string;
   motivo: string | null;
   fonte: string[];
   conversationId: string;
+  /** Conversa ainda na fila: mostra o rascunho, mas só dá para usar depois de assumir. */
+  somenteLeitura?: boolean;
 }) {
   const [aberta, setAberta] = useState(true);
   if (!aberta) return null;
@@ -58,7 +61,12 @@ export function CaixaSugestao({
         )}
       </div>
       <p className="whitespace-pre-wrap break-words text-[12.5px] text-text">{rascunho}</p>
-      <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px] font-bold">
+      {somenteLeitura && (
+        <p className="mt-2 text-[11.5px] font-bold text-navy">
+          Assuma a conversa (botão no topo) para usar ou editar esta sugestão.
+        </p>
+      )}
+      <div className={`mt-2 flex flex-wrap items-center gap-3 text-[12px] font-bold ${somenteLeitura ? "hidden" : ""}`}>
         <button type="button" onClick={() => aplicar(false)} className="rounded-lg bg-navy px-3 py-1.5 text-white">
           Usar
         </button>
