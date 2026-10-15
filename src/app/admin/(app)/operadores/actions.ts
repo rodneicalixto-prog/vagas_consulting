@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requireInternalUser } from "@/lib/auth/internal";
+import { can, requireInternalUser } from "@/lib/auth/internal";
+import { empresaDaOperacao } from "@/lib/evolution";
 import { erroLimiteExcedido } from "@/lib/operadores";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -20,10 +21,18 @@ function campoId(formData: FormData, campo: string): string {
 /**
  * Autoriza e deriva a empresa DA SESSÃO: a atribuição ativa com papel
  * 'admin_empresa'. Nunca aceita company_id do formulário.
+ * O superadmin gerencia a equipe da PRÓPRIA empresa da operação (SOS Vagas),
+ * nunca a de empresas clientes (essas ficam em leitura).
  */
 async function contexto() {
-  const { user } = await requireInternalUser("operadores.manage");
+  const { user, role } = await requireInternalUser();
   const admin = createAdminClient();
+  if (role === "superadmin") {
+    const operacaoId = await empresaDaOperacao();
+    if (!operacaoId) throw new Error("A empresa da operação ainda não foi definida na plataforma.");
+    return { user, admin, companyId: operacaoId };
+  }
+  if (!can(role, "operadores.manage")) throw new Error("Sem permissão para gerenciar operadores.");
   const { data } = await admin
     .from("company_assignments")
     .select("company_id")

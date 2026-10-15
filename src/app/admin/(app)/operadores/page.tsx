@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { SubmitButton } from "@/components/form-buttons";
 import { calcularVagasOperador, rotuloVagasOperador } from "@/lib/operadores";
+import { empresaDaOperacao } from "@/lib/evolution";
 import {
   alternarConfianca,
   convidarOperador,
@@ -22,14 +23,15 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
   const admin = createAdminClient();
   const sp = await searchParams;
 
-  const podeGerenciar = role === "admin_empresa";
-  const somenteLeitura = role === "superadmin" || role === "admin";
-  if (!podeGerenciar && !somenteLeitura) redirect("/admin/acesso-negado");
+  const ehAdminEmpresa = role === "admin_empresa";
+  const mostrarSeletor = role === "superadmin" || role === "admin";
+  if (!ehAdminEmpresa && !mostrarSeletor) redirect("/admin/acesso-negado");
 
   let companyId: string | null = null;
   let empresasLeitura: { id: string; nome: string }[] = [];
+  const operacaoId = role === "superadmin" ? await empresaDaOperacao() : null;
 
-  if (podeGerenciar) {
+  if (ehAdminEmpresa) {
     const { data } = await admin
       .from("company_assignments")
       .select("company_id")
@@ -44,11 +46,16 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
       .select("id, razao_social, nome_fantasia")
       .order("razao_social");
     empresasLeitura = (data ?? []).map((e) => ({ id: e.id, nome: e.nome_fantasia ?? e.razao_social }));
-    const pedida = sp.empresa && UUID.test(sp.empresa) ? sp.empresa : null;
+    const pedida = sp.empresa && UUID.test(sp.empresa) ? sp.empresa : operacaoId;
     companyId = empresasLeitura.find((e) => e.id === pedida)?.id ?? null;
   }
 
-  const seletor = somenteLeitura && (
+  // Admin da empresa gerencia a própria equipe; o superadmin gerencia a da
+  // operação (SOS Vagas) e lê as das empresas clientes.
+  const podeGerenciar = ehAdminEmpresa || (role === "superadmin" && !!companyId && companyId === operacaoId);
+  const somenteLeitura = mostrarSeletor && !podeGerenciar;
+
+  const seletor = mostrarSeletor && (
     <form className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface p-4">
       <select
         name="empresa"
@@ -63,7 +70,9 @@ export default async function OperadoresPage({ searchParams }: { searchParams: S
         ))}
       </select>
       <button className="rounded-xl bg-navy px-4 py-2 text-sm font-bold text-white">Ver operadores</button>
-      <span className="text-[11.5px] text-text-2">Visão somente leitura.</span>
+      <span className="text-[11.5px] text-text-2">
+        {podeGerenciar ? "Equipe da sua operação: você gerencia." : "Visão somente leitura."}
+      </span>
     </form>
   );
 

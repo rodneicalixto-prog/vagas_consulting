@@ -1437,6 +1437,9 @@ sessões futuras.
     Superadmin: a instância da operação é configurada na aba Plataforma (linha
     WhatsApp, campo "Instância do WhatsApp da sua operação"), com o número
     conectado exibido ao vivo; sem precisar entrar em aba de empresa.
+    Operadores: o superadmin passa a convidar, desativar e reativar operadores
+    da PRÓPRIA empresa da operação (SOS Vagas); as empresas clientes continuam
+    em leitura. Recebimento validado em produção (mensagem real em Conversas).
 
 ## 3. Escopo do MVP (revisado)
 
