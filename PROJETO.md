@@ -2226,3 +2226,6 @@ Toda entrega que modificar documentação deve informar uma destas situações:
     2 follow-ups com lembrete em 'Precisa de ação agora' e /admin/abordagens;
     encerramento apaga o conteúdo e fecha o contato. Migrations 0040 e 0041.
     135 testes. Pendente: edição no app, leitura por URL.
+129. **3G-2: fechamento da triagem (15/10/2026)**: top N, planilha CSV com
+    proteção contra fórmula, caminho do mestre-de-match pela extração do 3O-2
+    com confirmação. 136 testes. Pendente: leitura do PDF anexado.

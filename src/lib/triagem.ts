@@ -363,3 +363,35 @@ export function ordenarRanking<T extends { resultado: ResultadoTriagem }>(linhas
 export function sugerirCorte(linhas: { resultado: ResultadoTriagem }[]): number {
   return linhas.filter((l) => !l.resultado.eliminado && l.resultado.pontuacao >= 70).length;
 }
+
+// ---------------------------------------------------------------------------
+// Exportação (planilha)
+// ---------------------------------------------------------------------------
+
+/** Evita que a planilha interprete texto como fórmula. */
+export function celulaSegura(v: string | number): string {
+  const s = String(v ?? "");
+  const protegido = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
+  return /[";\n\r]/.test(protegido) ? `"${protegido.replace(/"/g, '""')}"` : protegido;
+}
+
+export function ranqueamentoParaCsv(linhas: { nome: string; resultado: ResultadoTriagem }[]): string {
+  const cab = ["Posição", "Candidato", "Pontuação", "Obrigatórios atendidos", "Eliminatório não atendido", "Motivo", "A validar"];
+  const corpo = linhas.map((l, i) => {
+    const r = l.resultado;
+    const atend = r.obrigatorios.filter((o) => o.estado === "atende").length;
+    return [
+      i + 1,
+      l.nome,
+      r.pontuacao,
+      `${atend}/${r.obrigatorios.length}`,
+      r.eliminado ? "sim" : "não",
+      r.motivo_eliminacao,
+      r.a_validar.join(" | "),
+    ]
+      .map(celulaSegura)
+      .join(";");
+  });
+  // BOM para o Excel reconhecer UTF-8.
+  return "﻿" + [cab.map(celulaSegura).join(";"), ...corpo].join("\r\n");
+}

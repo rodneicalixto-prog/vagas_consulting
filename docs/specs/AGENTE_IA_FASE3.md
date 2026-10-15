@@ -1258,3 +1258,21 @@ não pode ser marcado como enviado.
 **Limites:** o texto não é editado na plataforma (copie e ajuste fora ou gere
 outro); a identificação do contato é só o nome (homônimos); não lê o perfil de
 URL, só texto colado.
+
+### Passo 3G-2 construído (15/10/2026): fechamento da triagem
+
+- **Top N** (3, 5 ou 10) e **Todos** no ranking, sem mudar o que foi avaliado.
+- **Planilha CSV** do ranking (`.../triagem/exportar`): posição, candidato,
+  pontuação, obrigatórios x/y, eliminatório, motivo e "a validar"; células
+  protegidas contra fórmula, com BOM para o Excel e auditoria
+  (`triagem_exportada`). Só os campos que a tela já mostra.
+- **Mestre-de-match:** o caminho de um passo é a combinação já existente:
+  em "Critérios da vaga" a IA extrai critérios do recado ou da JD (3O-2) como
+  **proposta**; a pessoa confere e salva; a triagem então roda. A mensagem de
+  bloqueio da triagem aponta esse caminho. Uma tela única que cole JD e
+  currículos de uma vez **não** foi criada, porque os candidatos já estão na
+  vaga e os critérios precisam de confirmação registrada (§14.20).
+
+**Segue pendente do 3G:** ler o PDF do currículo anexado (hoje a triagem usa
+o cadastro estruturado). Exige extração por IA por candidato, com custo e
+tratamento de arquivo ilegível ("não foi possível ler").

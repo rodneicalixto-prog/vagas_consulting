@@ -17,9 +17,17 @@ const COR = {
   nao_evidenciado: "bg-gold-bg text-gold-3",
 } as const;
 
-export default async function TriagemPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TriagemPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ top?: string }>;
+}) {
   const { user, role } = await requireInternalUser("jobs.manage");
   const { id } = await params;
+  const { top } = await searchParams;
+  const topN = [3, 5, 10].includes(Number(top)) ? Number(top) : null;
   if (!UUID.test(id)) notFound();
   const escopo = await obterEscopo(user.id, role);
   await exigirVaga(escopo, id);
@@ -54,6 +62,7 @@ export default async function TriagemPage({ params }: { params: Promise<{ id: st
     })),
   );
   const corte = sugerirCorte(linhas);
+  const exibidas = topN ? linhas.slice(0, topN) : linhas;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -70,7 +79,9 @@ export default async function TriagemPage({ params }: { params: Promise<{ id: st
         {bloqueios.length > 0 ? (
           <div role="alert" className="rounded-xl bg-danger-bg px-4 py-3 text-[12.5px] font-semibold text-danger">
             Triagem bloqueada: {bloqueios.join(" ")}{" "}
-            <Link href={`/admin/vagas/${vaga.id}`} className="underline">Ajustar critérios</Link>
+            <Link href={`/admin/vagas/${vaga.id}`} className="underline">
+              Ajustar critérios (ou extraí-los da descrição com a IA e confirmar)
+            </Link>
           </div>
         ) : (
           <FormTriagem jobId={vaga.id} pendentes={pendentes} />
@@ -83,12 +94,31 @@ export default async function TriagemPage({ params }: { params: Promise<{ id: st
         </p>
 
         {linhas.length > 0 && (
-          <p className="text-[12.5px] text-text">
-            <b>Sugestão de corte:</b> {corte} candidato(s) com pontuação de 70 ou mais e sem eliminatório.
-          </p>
+          <div className="flex flex-wrap items-center gap-3 text-[12.5px] text-text">
+            <span>
+              <b>Sugestão de corte:</b> {corte} candidato(s) com pontuação de 70 ou mais e sem eliminatório.
+            </span>
+            <span className="flex items-center gap-2">
+              Ver:
+              {[null, 3, 5, 10].map((n) => (
+                <Link
+                  key={String(n)}
+                  href={n ? `/admin/vagas/${vaga.id}/triagem?top=${n}` : `/admin/vagas/${vaga.id}/triagem`}
+                  className={`rounded-lg border border-border px-2 py-0.5 text-[11.5px] font-bold ${
+                    topN === n ? "bg-navy text-white" : "bg-surface text-navy"
+                  }`}
+                >
+                  {n ? `Top ${n}` : "Todos"}
+                </Link>
+              ))}
+            </span>
+            <a href={`/admin/vagas/${vaga.id}/triagem/exportar`} className="rounded-lg border border-border bg-surface px-3 py-1 text-[11.5px] font-bold text-navy">
+              Baixar planilha (CSV)
+            </a>
+          </div>
         )}
 
-        {linhas.map((l, i) => {
+        {exibidas.map((l, i) => {
           const r = l.resultado;
           return (
             <details key={l.id} className="rounded-2xl border border-border bg-surface p-4">

@@ -115,3 +115,22 @@ test("ranking põe eliminados no fim e corte é só sugestão", () => {
 test("resposta inválida não gera resultado", () => {
   assert.equal(resultadoDaResposta("lixo", criterios, "x", null, []), null);
 });
+
+import { celulaSegura, ranqueamentoParaCsv } from "../triagem.ts";
+
+test("planilha: protege fórmula, escapa aspas e põe BOM", () => {
+  assert.equal(celulaSegura("=1+1"), "'=1+1");
+  assert.equal(celulaSegura('diz "oi"'), '"diz ""oi"""');
+  const csv = ranqueamentoParaCsv([
+    {
+      nome: "=Ana",
+      resultado: {
+        obrigatorios: [{ criterio: "a", eliminatorio: false, estado: "atende", evidencia: "x" }],
+        desejaveis: [], a_validar: ["p1", "p2"], eliminado: false, motivo_eliminacao: "",
+        pontuacao: 80, resumo: "", anos_registrados: null,
+      },
+    },
+  ]);
+  assert.ok(csv.startsWith("\uFEFF"));
+  assert.ok(csv.includes("'=Ana") && csv.includes("1/1") && csv.includes("p1 | p2"));
+});
