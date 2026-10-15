@@ -1276,3 +1276,16 @@ URL, só texto colado.
 **Segue pendente do 3G:** ler o PDF do currículo anexado (hoje a triagem usa
 o cadastro estruturado). Exige extração por IA por candidato, com custo e
 tratamento de arquivo ilegível ("não foi possível ler").
+
+### Passo 3G-3 construído (15/10/2026): currículo anexado na triagem
+
+Para candidato com **cadastro vazio** e currículo anexado (bucket privado
+`curriculos`), a triagem lê o arquivo (PDF, PNG, JPG ou WEBP de até 5 MB) com a
+extração que já existe no onboarding e usa só **título e experiências**, sem
+motivo de saída. Arquivo ilegível, grande demais ou sem conteúdo vira "não foi
+possível ler" e o candidato fica sem avaliação (sem chute). O texto lido não é
+gravado: só o resultado da triagem. O número de arquivos lidos fica na auditoria.
+
+**Atenção de custo:** essa extração usa o AI Gateway do projeto, não a chave
+do cofre, então **não entra no teto mensal** do agente. Só roda para cadastro
+vazio, uma vez por candidatura (o resultado fica salvo).

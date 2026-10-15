@@ -2229,3 +2229,4 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 129. **3G-2: fechamento da triagem (15/10/2026)**: top N, planilha CSV com
     proteção contra fórmula, caminho do mestre-de-match pela extração do 3O-2
     com confirmação. 136 testes. Pendente: leitura do PDF anexado.
+130. **3G-3: currículo anexado na triagem (15/10/2026)**: fallback para cadastro vazio, só título e experiências, ilegível vira 'não foi possível ler'; fora do teto do agente (AI Gateway).

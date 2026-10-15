@@ -18,7 +18,39 @@ import {
   sinaisDeHistorico,
   type ResultadoTriagem,
 } from "@/lib/triagem";
+import { extrairDadosCurriculo } from "@/lib/ai/curriculo";
+import type { PerfilParaTriagem } from "@/lib/triagem";
 import type { Json } from "@/lib/supabase/types";
+
+const TIPOS_CURRICULO = new Set(["application/pdf", "image/png", "image/jpeg", "image/webp"]);
+const LIMITE_ARQUIVO = 5 * 1024 * 1024;
+
+/**
+ * Fallback para quem tem cadastro vazio e um currículo anexado: lê o arquivo
+ * do bucket privado e usa só título e experiências. Falha vira "ilegível".
+ */
+async function perfilDoArquivo(
+  admin: ReturnType<typeof createAdminClient>,
+  caminho: string,
+): Promise<PerfilParaTriagem | null> {
+  try {
+    const { data, error } = await admin.storage.from("curriculos").download(caminho);
+    if (error || !data) return null;
+    if (data.size === 0 || data.size > LIMITE_ARQUIVO || !TIPOS_CURRICULO.has(data.type)) return null;
+    const extraido = await extrairDadosCurriculo(Buffer.from(await data.arrayBuffer()), data.type);
+    const exps = extraido.experiencias.map((e) => ({
+      empresa: e.empresa,
+      cargo: e.cargo,
+      inicio: e.inicio,
+      fim: e.fim,
+      motivoSaida: "",
+    }));
+    if (!extraido.tituloProfissional && exps.length === 0) return null;
+    return { titulo_profissional: extraido.tituloProfissional, resumo: "", experiencias_profissionais: exps };
+  } catch {
+    return null;
+  }
+}
 
 export type EstadoTriagem = { erro: string | null; avaliados: number; falhas: number; restantes: number };
 
@@ -71,23 +103,40 @@ export async function rodarTriagem(_anterior: EstadoTriagem, formData: FormData)
 
     const { data: perfis } = await admin
       .from("profiles")
-      .select("id, titulo_profissional, resumo, experiencias_profissionais, nunca_trabalhou, blacklisted")
+      .select("id, titulo_profissional, resumo, experiencias_profissionais, nunca_trabalhou, blacklisted, curriculo_url")
       .in("id", rodada.map((a) => a.candidate_id));
     const porId = new Map((perfis ?? []).map((p) => [p.id, p]));
 
     let avaliados = 0;
     let falhas = 0;
+    let arquivosLidos = 0;
     let parou = "";
 
     const avaliarUma = async (a: (typeof rodada)[number]): Promise<void> => {
       const p = porId.get(a.candidate_id);
       if (!p || p.blacklisted) return;
-      const cego = montarCurriculoCego(p);
+      let perfilUsado: PerfilParaTriagem = p;
+      let usouArquivo = false;
+      let ilegivel = false;
+      if (montarCurriculoCego(p).vazio && p.curriculo_url) {
+        const doArquivo = await perfilDoArquivo(admin, p.curriculo_url);
+        if (doArquivo) {
+          perfilUsado = doArquivo;
+          usouArquivo = true;
+        } else {
+          ilegivel = true;
+        }
+      }
+      const cego = montarCurriculoCego(perfilUsado);
       let resultado: ResultadoTriagem;
       if (cego.vazio) {
         resultado = resultadoSemDados(criterios);
+        if (ilegivel) {
+          resultado.a_validar[0] = "Currículo anexado não foi possível ler: peça uma versão em PDF legível ou avalie à mão.";
+        }
       } else {
-        const sinais = sinaisDeHistorico(experienciasDe(p.experiencias_profissionais));
+        if (usouArquivo) arquivosLidos += 1;
+        const sinais = sinaisDeHistorico(experienciasDe(perfilUsado.experiencias_profissionais));
         const { system, user: prompt } = montarPromptTriagem(criterios, cego.texto, sinais.anos);
         const r = await gerarTextoIA({ companyId: vaga.company_id, system, user: prompt, json: true, maxTokens: 900 });
         if (!r.ok) {
@@ -130,7 +179,7 @@ export async function rodarTriagem(_anterior: EstadoTriagem, formData: FormData)
       acao: "vaga_triagem_rodada",
       objeto_tipo: "job",
       objeto_id: jobId,
-      depois: { avaliados, falhas, refazer },
+      depois: { avaliados, falhas, refazer, arquivos_lidos: arquivosLidos },
     });
     revalidatePath(`/admin/vagas/${jobId}/triagem`);
     return {
