@@ -12,3 +12,8 @@
 - Rascunhos do ciclo de R&S: critérios (com áudio), divulgação, entrevista e ficha, testes, laudo, devolutiva, carta-oferta, abordagem e indicadores.
 - Operador: rotina, conversas (fila, número, sugestão, regras de envio), vagas e sigilo. Falta agenda, candidatos, contatos, talentos e convites.
 - Todos os passos marcados `[A VALIDAR]` até rodar o roteiro de teste.
+
+## 0.3 (15/10/2026)
+
+- Operador completo em rascunho: agenda (5 telas), candidatos, contatos, talentos e convites, conferidos no código.
+- Admin da empresa: equipe, números de WhatsApp, black list e chave de IA. Prestações e Estratégico ainda a escrever.

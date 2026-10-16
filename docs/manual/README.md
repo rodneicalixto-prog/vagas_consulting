@@ -1,6 +1,6 @@
 # Manual de uso da plataforma Vagas Consulting
 
-> **Versão do manual:** 0.2 (rascunho do ciclo de R&S) · **App:** v0.1.0 · **Data:** 15/10/2026
+> **Versão do manual:** 0.3 (operador, ciclo de R&S e admin da empresa) · **App:** v0.1.0 · **Data:** 15/10/2026
 > Plano: [`../MANUAL_PLANO.md`](../MANUAL_PLANO.md). Decisões do Rodnei em
 > 15/10/2026: começar pelo **operador e pelo ciclo de R&S**; site de ajuda
 > dentro da plataforma; tom **direto e informal**; marca por empresa
@@ -28,13 +28,13 @@ escrito a partir do código e das specs, ainda não executado passo a passo),
 | Apêndices: regras de ouro, glossário, matriz de permissões | Rascunho |
 | 0 Começar | Esqueleto |
 | 1 Candidato | Esqueleto |
-| 2 Operador | Rascunho parcial (2.1, 2.2, 2.3, 2.5, 2.6; falta 2.4) |
+| 2 Operador | Rascunho |
 | 3 Ciclo de R&S: visão geral | Rascunho |
 | 3.1 Critérios da vaga | Rascunho |
 | 3.2 Divulgação | Rascunho |
 | **3.3 Triagem** | **Rascunho (capítulo-modelo)** |
 | 3.4 Entrevista, 3.5 Testes, 3.6 Laudo, 3.7 Devolutiva, 3.8 Carta-oferta, 3.9 Abordagem, 3.10 Indicadores | Rascunho |
-| 4 Admin da empresa | Esqueleto |
+| 4 Admin da empresa | Rascunho (4.5 e parte de 4.6 a escrever) |
 | 5 Plataforma | Esqueleto |
 | Solução de problemas e perguntas frequentes | Esqueleto |
 

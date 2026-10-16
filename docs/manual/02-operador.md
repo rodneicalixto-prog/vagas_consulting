@@ -1,6 +1,6 @@
 # 2. Operador
 
-> **Estado:** rascunho parcial (15/10/2026). Escrito a partir do código e das
+> **Estado:** rascunho (15/10/2026). Escrito a partir do código e das
 > specs. Os tópicos que dependem de telas que ainda preciso conferir estão
 > marcados **a escrever** e não foram inventados.
 
@@ -73,9 +73,79 @@ em vez de inventar. O que você usa ou edita ajuda a melhorar as notas.
 
 ## 2.4 Agenda, candidatos, contatos, talentos e convites
 
-**a escrever** com conferência das telas (agenda em cascata, entrevistas, por
-etapa, entregas; candidatos e documentos; contatos e o botão **Conversar**;
-talentos; convites e prazos).
+### Agenda
+
+**Para que serve.** Marcar entrevistas e compromissos, ver o que vem pela
+frente e acompanhar prazos de entrega ao cliente.
+**Onde fica.** `Agenda`, com cinco telas.
+
+| Tela | O que mostra |
+|---|---|
+| **Minha agenda** | Seus compromissos, em **Calendário** ou **Lista**, e o formulário **Novo compromisso** |
+| **Entrevistas** | Entrevistas das vagas da sua carteira e as que você marcou (a equipe de plataforma vê todas) |
+| **Por etapa** | Candidatos em cada etapa do quadro, com a data da próxima entrevista; quem está na etapa e ainda **não tem data** aparece em destaque |
+| **Entregas** | Prazo para entregar candidatos ao cliente, por vaga, com **Alterar prazo** e **Salvar** |
+| **Agenda da equipe** | Compromissos da equipe (administrador da empresa, administrador e superadmin) |
+
+**Para marcar um compromisso:**
+
+1. Em **Minha agenda**, preencha **Novo compromisso**: título e tipo
+   (**Compromisso interno** ou **Entrevista com candidato**).
+2. Informe o **início** e, se quiser, o **fim**.
+3. Para entrevista, **vincule a uma candidatura em aberto** (opcional).
+4. Clique para salvar. Depois use **Concluir**, **Cancelar** ou **Excluir**.
+
+**O que a plataforma não faz.** Não envia convite de calendário externo e
+não encaixa a ficha de entrevista automaticamente no compromisso. Vagas com
+prazo vencido são **arquivadas pela rotina diária**.
+
+### Candidatos
+
+**Onde fica.** `Candidatos → Candidatos`.
+
+- A lista é **por empresa e vaga**. Filtros: **Em andamento**, **Contratados**,
+  **Reprovados**, **Desistência e expirados** e **Todos**; busca por candidato
+  ou vaga.
+- **Cadastrados sem candidatura** lista quem se cadastrou e ainda não se
+  candidatou.
+- Ao abrir um candidato, o cadastro está em **modo leitura**. Você pode
+  **atualizar a etapa da candidatura** (escolhendo a etapa, com motivo
+  opcional, e **Salvar**) e usar a **black list**. Nenhuma ação é feita em nome
+  do candidato.
+- **Contato liberado após a candidatura:** telefone, endereço e currículo só
+  aparecem quando há candidatura em andamento na sua carteira. Convite
+  sozinho libera o perfil, não o contato.
+
+### Contatos
+
+**Onde fica.** `Candidatos → Contatos`. Busca por nome ou telefone; mostra
+vaga e etapa. O telefone aparece **enquanto a candidatura estiver em
+andamento**. O botão **Conversar** abre a conversa na plataforma (no número
+da empresa ou no seu número dedicado).
+
+### Talentos
+
+**Onde fica.** `Candidatos → Talentos` (**Banco de talentos**). Candidatos
+aprovados, em resumo; filtros por nome ou cargo e por cidade. O contato
+completo só aparece depois que o candidato se candidata a uma vaga da sua
+carteira. Para convidar, escolha **Convidar para a vaga…** (vagas temporárias
+publicadas) e clique em **Convidar**; a validade padrão é de 72 horas.
+
+### Convites
+
+**Onde fica.** `Candidatos → Convites`. Convite direto para **vagas
+temporárias**: o candidato responde pelo aplicativo e a equipe confirma.
+
+1. Escolha o **candidato** e a **vaga temporária publicada**.
+2. Defina o **prazo para responder** (de 1 a 168 horas; padrão 72).
+3. Clique em **Enviar convite**.
+4. Acompanhe a **situação**. Quando o candidato **aceitar**, use
+   **Confirmar**. Convite ainda aberto pode ser **cancelado**.
+
+**O que a plataforma não faz.** Convite sem resposta no prazo aparece como
+**Expirado** e libera um novo convite; não prorroga sozinho.
+
+`[A VALIDAR]` todas as telas desta seção no roteiro de teste.
 
 ## 2.5 Vagas e vagas sigilosas
 
