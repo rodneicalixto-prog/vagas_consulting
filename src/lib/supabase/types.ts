@@ -384,6 +384,7 @@ export type Database = {
       }
       ai_agents: {
         Row: {
+          ajuda_ativa: boolean
           company_id: string
           created_at: string
           created_by: string | null
@@ -399,6 +400,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ajuda_ativa?: boolean
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -414,6 +416,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ajuda_ativa?: boolean
           company_id?: string
           created_at?: string
           created_by?: string | null
@@ -1048,6 +1051,42 @@ export type Database = {
           operador_id?: string | null
           padrao?: boolean
           updated_at?: string
+        }
+        Relationships: []
+      }
+      help_questions: {
+        Row: {
+          created_at: string
+          id: string
+          papel: string
+          pedacos: Json
+          pergunta: string
+          rota: string
+          sem_resposta: boolean
+          user_id: string
+          util: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          papel: string
+          pedacos?: Json
+          pergunta: string
+          rota?: string
+          sem_resposta?: boolean
+          user_id: string
+          util?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          papel?: string
+          pedacos?: Json
+          pergunta?: string
+          rota?: string
+          sem_resposta?: boolean
+          user_id?: string
+          util?: boolean | null
         }
         Relationships: []
       }

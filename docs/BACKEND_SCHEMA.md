@@ -273,3 +273,9 @@ A `0044` trocou a unicidade por um índice com expressão, que não aceita o
 
 Estado do banco em 15/10/2026: migrations aplicadas até a `0045`. A
 `whatsapp_lines` tem RLS ligada e sem política pública, como as demais.
+
+### Migration 0046 — assistente de ajuda (15/10/2026, aplicada)
+
+`help_questions` (pergunta anonimizada, papel, tela, pedaços usados, sem
+resposta, útil; RLS ligada, sem política pública; retenção de 90 dias) e
+`ai_agents.ajuda_ativa` (padrão ligado).

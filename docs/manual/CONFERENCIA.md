@@ -12,7 +12,7 @@ não está pronta.
 - [ ] Nenhum dado real em exemplo ou captura
 - [ ] `[A VALIDAR]` só permanece onde ainda não houve teste
 - [ ] Versão do manual e `CHANGELOG.md` atualizados
-- [ ] A base do assistente da plataforma foi regenerada (quando existir)
+- [ ] O índice do assistente foi regenerado: `npm run ajuda:indice` (o teste falha se estiver velho)
 
 ## Capítulos tocados nesta entrega
 

@@ -1,7 +1,7 @@
 # Especificação — Assistente da plataforma (ajuda por IA)
 
 > **Projeto:** Vagas Consulting · **Documento:** Spec do assistente v1.0 · **Data:** 15/10/2026
-> **Status:** planejada e aprovada em 15/10/2026 (decisões na seção 11); código aguarda os capítulos do manual. Depende dos capítulos
+> **Status:** fase A construída em 15/10/2026 (decisões na seção 11); aguarda o primeiro uso real. Depende dos capítulos
 > do manual: ver `docs/MANUAL_PLANO.md`.
 
 ## 1. Para que serve
@@ -113,3 +113,32 @@ lógica da cobertura da base de conhecimento do agente.
 2. **Registrar as perguntas anonimizadas** por 90 dias: **aprovado**.
 3. **Nome:** **Ajuda Vagas Consulting**.
 4. **Limite por pessoa:** **30 perguntas por dia**.
+
+## 12. Como ficou a fase A (15/10/2026)
+
+- **Índice do manual:** `npm run ajuda:indice` gera `src/lib/ajuda/indice.json`
+  (148 pedaços) a partir de `docs/manual/**`. Capítulo em esqueleto não entra.
+  Um teste falha se o índice commitado estiver desatualizado: **mudou o manual,
+  rode o comando** antes de publicar.
+- **Painel:** botão **Ajuda** em todas as telas do painel, com sugestões por
+  tela, resposta curta, trechos do manual usados e 👍 e 👎.
+- **Busca:** lexical (título 3, capítulo 2, texto 1, reforço para o capítulo da
+  tela). Exige pelo menos 2 pontos e **não adivinha**: sem casamento, responde
+  "Não encontrei isso no manual" sem chamar o modelo. O glossário não toma o
+  lugar do passo a passo (no máximo 2 entradas por resposta).
+- **Papel:** só pedaços permitidos ao papel entram (o operador não recebe o
+  capítulo do administrador da empresa).
+- **Privacidade:** a pergunta é anonimizada antes da busca, do modelo e do
+  registro; `help_questions` guarda pergunta, papel, tela, pedaços e se foi
+  útil, por **90 dias** (apagado a cada pergunta).
+- **Custo e limite:** 30 perguntas por dia por pessoa (dia de Brasília);
+  usa a chave e o teto de IA da empresa da operação.
+- **Liga e desliga:** caixa "Assistente ligado" em `Plataforma → Agente de IA`.
+- **Estado:** enquanto o capítulo estiver em rascunho, toda resposta traz o
+  aviso de que o manual ainda não foi conferido em uso real.
+
+**Limites:** busca lexical não entende sinônimos (a pergunta com outras
+palavras cai em "não encontrei"); capítulos do candidato e da plataforma ainda
+são esqueleto; a lista de perguntas sem resposta para o superadmin ainda não
+tem tela (os dados já são gravados); o painel não abre o capítulo completo
+(mostra os trechos usados).

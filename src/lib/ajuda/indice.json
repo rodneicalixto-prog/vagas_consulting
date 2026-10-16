@@ -1,0 +1,2071 @@
+{
+ "versao": "aa7aa0b0ec12",
+ "pedacos": [
+  {
+   "id": "02-operador#2-1-sua-rotina-visao-geral-e-precisa-de-acao-agora",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "2.1 Sua rotina: Visão geral e \"Precisa de ação agora\"",
+   "texto": "**Para que serve.** Começar o dia sabendo o que está esperando por você.\n**Onde fica.** `Visão geral`.\n\nO quadro **Precisa de ação agora** mostra cartões com a contagem e um\ndestino clicável:\n\n| Cartão | O que significa |\n|---|---|\n| Conversas na fila | Candidatos esperando alguém assumir |\n| Mensagens não lidas | Nas suas conversas e na fila |\n| Compromissos hoje | Entrevistas e tarefas da sua agenda |\n| Candidaturas paradas 7+ dias | Sem mudança de etapa |\n| Vagas sem candidato há 5+ dias | Publicadas e sem candidatura |\n| Follow-ups de abordagem | Lembretes vencidos para você enviar |\n| Entregas vencendo em 3 dias | Prazo da vaga perto de acabar |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#2-2-conversas",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "2.2 Conversas",
+   "texto": "**Para que serve.** Falar com candidatos pelo WhatsApp, dentro da plataforma.\n**Onde fica.** `Conversas`.\n\n1. Use a busca por nome ou telefone e os filtros **Todas**, **Não lidas** e,\n   se a empresa tiver mais de um número, **Número**.\n2. **Fila:** conversa sem dono, com \"Na fila · sem atendente\". Clique em\n   **Assumir** para atender.\n3. **Responder:** só quem assumiu responde. Digite, anexe arquivo ou grave\n   áudio (envio pelo painel até 4 MB).\n4. **Devolver à fila:** libera a conversa para outra pessoa assumir.\n5. **Citar** uma mensagem para responder a ela.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#o-que-aparece-na-conversa",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "O que aparece na conversa",
+   "texto": "| Elemento | Significado |\n|---|---|\n| \"Você está atendendo\" / \"Em atendimento: nome\" | Quem é o dono |\n| **Número: apelido** | Qual número de WhatsApp da empresa fala com essa pessoa; a resposta sai por ele |\n| Caixa de sugestão | Rascunho do assistente: **usar**, **editar** ou **descartar** |\n| Descadastro | A pessoa pediu para não receber mais mensagens |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#quando-o-envio-e-recusado",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "Quando o envio é recusado",
+   "texto": "A plataforma só envia para quem **respondeu**, tem **candidatura em\nandamento** ou **consentiu**. Também recusa **descadastro** e **black list**.\nA tela mostra o motivo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#numero-dedicado",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "Número dedicado",
+   "texto": "Se o número é só seu, a conversa **nasce com você**, sem passar pela fila, e\nnão pode ser devolvida à fila. Para outra pessoa assumir, a gestão transfere.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#o-que-a-plataforma-nao-faz",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não envia sozinha** (exceto o agente, se o número estiver em \"atende\n  sozinho\" e a plataforma permitir).\n- **Não mostra** conversas de outros operadores.\n- **Não envia** para quem pediu para sair.\n- **Não traz** mensagens enviadas pelo celular fora da plataforma.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#2-3-sugestao-do-assistente",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "2.3 Sugestão do assistente",
+   "texto": "O assistente propõe uma resposta com base nas **notas aprovadas** da empresa e\nna vaga do candidato. Se a pergunta não tiver fonte, ele encaminha para você\nem vez de inventar. O que você usa ou edita ajuda a melhorar as notas.\n**a escrever:** detalhes da tela de aprendizado.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#agenda",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "Agenda",
+   "texto": "**Para que serve.** Marcar entrevistas e compromissos, ver o que vem pela\nfrente e acompanhar prazos de entrega ao cliente.\n**Onde fica.** `Agenda`, com cinco telas.\n\n| Tela | O que mostra |\n|---|---|\n| **Minha agenda** | Seus compromissos, em **Calendário** ou **Lista**, e o formulário **Novo compromisso** |\n| **Entrevistas** | Entrevistas das vagas da sua carteira e as que você marcou (a equipe de plataforma vê todas) |\n| **Por etapa** | Candidatos em cada etapa do quadro, com a data da próxima entrevista; quem está na etapa e ainda **não tem data** aparece em destaque |\n| **Entregas** | Prazo para entregar candidatos ao cliente, por vaga, com **Alterar prazo** e **Salvar** |\n| **Agenda da equipe** | Compromissos da equipe (administrador da empresa, administrador e superadmin) |\n\n**Para marcar um compromisso:**\n\n1. Em **Minha agenda**, preencha **Novo compromisso**: título e tipo\n   (**Compromisso interno** ou **Entrevista com candidato**).\n2. Informe o **início** e, se quiser, o **fim**.\n3. Para entrevista, **vincule a uma candidatura em aberto** (opcional).\n4. Clique para salvar. Depois use **Concluir**, **Cancelar** ou **Excluir**.\n\n**O que a plataforma não faz.** Não envia convite de calendário externo e\nnão encaixa a ficha de entrevista automaticamente no compromisso. Vagas com\nprazo vencido são **arquivadas pela rotina diária**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#candidatos",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "Candidatos",
+   "texto": "**Onde fica.** `Candidatos → Candidatos`.\n\n- A lista é **por empresa e vaga**. Filtros: **Em andamento**, **Contratados**,\n  **Reprovados**, **Desistência e expirados** e **Todos**; busca por candidato\n  ou vaga.\n- **Cadastrados sem candidatura** lista quem se cadastrou e ainda não se\n  candidatou.\n- Ao abrir um candidato, o cadastro está em **modo leitura**. Você pode\n  **atualizar a etapa da candidatura** (escolhendo a etapa, com motivo\n  opcional, e **Salvar**) e usar a **black list**. Nenhuma ação é feita em nome\n  do candidato.\n- **Contato liberado após a candidatura:** telefone, endereço e currículo só\n  aparecem quando há candidatura em andamento na sua carteira. Convite\n  sozinho libera o perfil, não o contato.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#contatos",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "Contatos",
+   "texto": "**Onde fica.** `Candidatos → Contatos`. Busca por nome ou telefone; mostra\nvaga e etapa. O telefone aparece **enquanto a candidatura estiver em\nandamento**. O botão **Conversar** abre a conversa na plataforma (no número\nda empresa ou no seu número dedicado).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#talentos",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "Talentos",
+   "texto": "**Onde fica.** `Candidatos → Talentos` (**Banco de talentos**). Candidatos\naprovados, em resumo; filtros por nome ou cargo e por cidade. O contato\ncompleto só aparece depois que o candidato se candidata a uma vaga da sua\ncarteira. Para convidar, escolha **Convidar para a vaga…** (vagas temporárias\npublicadas) e clique em **Convidar**; a validade padrão é de 72 horas.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#convites",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "Convites",
+   "texto": "**Onde fica.** `Candidatos → Convites`. Convite direto para **vagas\ntemporárias**: o candidato responde pelo aplicativo e a equipe confirma.\n\n1. Escolha o **candidato** e a **vaga temporária publicada**.\n2. Defina o **prazo para responder** (de 1 a 168 horas; padrão 72).\n3. Clique em **Enviar convite**.\n4. Acompanhe a **situação**. Quando o candidato **aceitar**, use\n   **Confirmar**. Convite ainda aberto pode ser **cancelado**.\n\n**O que a plataforma não faz.** Convite sem resposta no prazo aparece como\n**Expirado** e libera um novo convite; não prorroga sozinho.\n\n`[A VALIDAR]` todas as telas desta seção no roteiro de teste.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#2-5-vagas-e-vagas-sigilosas",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "2.5 Vagas e vagas sigilosas",
+   "texto": "**Onde fica.** `Empresas e vagas → Cadastro de vagas`.\n\n- O operador vê as vagas das empresas da sua **carteira**.\n- **Vaga sigilosa:** só aparece com **acesso de confiança**; sem ele, nem a\n  empresa nem a vaga são vistas.\n- **Publicar** a vaga é função do administrador e do superadmin; o operador\n  prepara critérios, divulgação e todo o ciclo (capítulo 3).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "02-operador#2-6-indicadores",
+   "arquivo": "02-operador",
+   "capitulo": "2. Operador",
+   "titulo": "2.6 Indicadores",
+   "texto": "Veja [3.10 Indicadores e plano de ação](03-ciclo-rs/10-indicadores.md).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/00-visao-geral#o-caminho",
+   "arquivo": "03-ciclo-rs/00-visao-geral",
+   "capitulo": "3. O ciclo de R&S: da vaga à contratação",
+   "titulo": "O caminho",
+   "texto": "```\nCritérios → Divulgação → Triagem → Roteiro e ficha → Testes → Laudo → Devolutiva ou Carta-oferta\n                                         ↑\n                              Abordagem ativa (antes da triagem, para quem não se candidatou)\n                                         \nIndicadores medem o ciclo inteiro, por empresa e por mês.\n```\n\nTodas as etapas ficam em `Empresas e vagas → Cadastro de vagas → abrir a vaga`,\ncomo links abaixo do título.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/00-visao-geral#quadro-rapido",
+   "arquivo": "03-ciclo-rs/00-visao-geral",
+   "capitulo": "3. O ciclo de R&S: da vaga à contratação",
+   "titulo": "Quadro rápido",
+   "texto": "| # | Etapa | A IA faz | Você decide | Sai |\n|---|---|---|---|---|\n| 3.1 | Critérios | propõe critérios do recado, da JD ou do áudio | conferir e salvar | critérios da vaga |\n| 3.2 | Divulgação | redige um texto por canal | onde e quando publicar | texto copiado |\n| 3.3 | Triagem | extrai evidência por critério | quem segue | ranking, CSV |\n| 3.4 | Entrevista | gera o roteiro | notas e recomendação | Word, PDF, ficha |\n| 3.5 | Testes | gera prova, case ou dinâmica | aprovar e dar a nota | Word (2 folhas) |\n| 3.6 | Laudo | resume o perfil | a recomendação e assinar | Word, PDF |\n| 3.7 | Devolutiva | nada (modelos aprovados) | texto e envio | texto |\n| 3.8 | Carta-oferta | nada (montada no código) | valores e envio | Word, PDF |\n| 3.9 | Abordagem | redige a mensagem e os follow-ups | enviar e acompanhar | texto |\n| 3.10 | Indicadores | calcula | metas e plano de ação | painel |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/00-visao-geral#tres-ideias-que-atravessam-todo-o-ciclo",
+   "arquivo": "03-ciclo-rs/00-visao-geral",
+   "capitulo": "3. O ciclo de R&S: da vaga à contratação",
+   "titulo": "Três ideias que atravessam todo o ciclo",
+   "texto": "1. **Sempre há uma verificação.** Cada texto gerado passa por uma lista com\n   *OK*, *Aviso* ou *Bloqueia*. Bloqueio impede a ação; aviso deixa passar\n   se você assumir.\n2. **A plataforma prepara, você envia.** Devolutiva, carta e abordagem saem\n   por você, fora da plataforma, e depois você marca como enviada.\n3. **O que falta fica à mostra.** Sem dado, \"não avaliado\" ou `{campo}`; nunca\n   um valor suposto.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/00-visao-geral#exemplo-que-acompanha-os-capitulos",
+   "arquivo": "03-ciclo-rs/00-visao-geral",
+   "capitulo": "3. O ciclo de R&S: da vaga à contratação",
+   "titulo": "Exemplo que acompanha os capítulos",
+   "texto": "Vaga **Analista de Logística** da empresa fictícia **Atlas Logística**,\ncandidatos **Marina Souza**, **Paulo Lima** e **Ana Reis**. [A VALIDAR: exemplo\ncompleto a ser escrito junto com a execução do roteiro.]",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#para-que-serve",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "Para que serve",
+   "texto": "Transformar o pedido do gestor em **campos claros**. É a base de tudo que vem\ndepois: divulgação, triagem, roteiro, testes e laudo leem esses critérios.\nCritério bem escrito evita retrabalho e discriminação sem querer.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#quem-faz",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "Quem faz",
+   "texto": "Operador, administrador da empresa, administrador e superadmin.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#onde-fica",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "Onde fica",
+   "texto": "`Empresas e vagas → Cadastro de vagas → abrir a vaga` (a tela se chama **Critérios da vaga**).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "Antes de começar",
+   "texto": "- Tenha em mãos o recado do gestor (texto ou áudio) ou a descrição da vaga.\n- Se for usar áudio, ele deve ter **até 4 MB** (ogg, mp3, m4a, wav ou webm).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#passo-a-passo",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "Passo a passo",
+   "texto": "1. Abra a vaga e expanda **Gerar critérios com IA**.\n2. Se tiver áudio, escolha o arquivo e clique em **Transcrever áudio**. O texto\n   entra no campo; **leia e corrija** o que vier errado.\n3. Escolha o que fazer: criar a partir do recado, reescrever uma descrição,\n   vaga júnior ou vaga de liderança (informe o tamanho do time).\n4. Clique em **Gerar proposta**.\n5. Confira os campos preenchidos e a lista de **lacunas** (o que perguntar ao\n   gestor). Ajuste à mão o que precisar.\n6. Para marcar um obrigatório como **eliminatório**, comece a linha com `*`.\n7. Clique em **Salvar critérios**. Só então a proposta passa a valer.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| **Proposta da IA** | Os campos foram preenchidos, mas ainda não valem até você salvar |\n| **Lacunas** | O que o texto não trouxe; pergunte ao gestor em vez de supor |\n| **Verificação de qualidade** | Lista com *OK*, *Aviso* ou *Bloqueia* |\n| Aviso de 4 a 7 obrigatórios | Muitos ou poucos obrigatórios deixam a vaga fraca |\n| Aviso de clichê, de gênero ou título criativo | Troque por algo concreto e neutro |\n| **Bloqueia** | Termo que discrimina (idade, sexo, estado civil, \"boa aparência\"): a vaga não publica |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não publica a vaga sozinha** e não confirma a proposta por você.\n- **Não inventa requisito** que o recado não trouxe: ele vira lacuna.\n- **Não guarda o áudio:** só o texto transcrito aparece na tela, e depois vale o\n  que você salvar.\n- Transcrição e geração por IA **contam no teto mensal** de IA.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/01-criterios#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/01-criterios",
+   "capitulo": "3.1 Critérios da vaga",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"Há termo que discrimina\" | Reescreva o critério; a publicação fica bloqueada até lá |\n| \"O áudio passa de 4 MB\" | Corte ou comprima o áudio |\n| \"Não há chave da OpenAI cadastrada\" | Peça ao administrador da empresa ou à plataforma |\n| \"O teto mensal foi atingido\" | Peça à plataforma para ampliar |\n| A proposta saiu fraca | Complete o recado com o que o gestor disse e gere de novo |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/02-divulgacao#para-que-serve",
+   "arquivo": "03-ciclo-rs/02-divulgacao",
+   "capitulo": "3.2 Divulgação da vaga",
+   "titulo": "Para que serve",
+   "texto": "Gerar o **texto pronto de cada canal** a partir dos critérios da vaga, com o\nlink de inscrição que registra **de onde** o candidato veio.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/02-divulgacao#onde-fica",
+   "arquivo": "03-ciclo-rs/02-divulgacao",
+   "capitulo": "3.2 Divulgação da vaga",
+   "titulo": "Onde fica",
+   "texto": "`Cadastro de vagas → abrir a vaga → Gerar divulgação desta vaga`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/02-divulgacao#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/02-divulgacao",
+   "capitulo": "3.2 Divulgação da vaga",
+   "titulo": "Antes de começar",
+   "texto": "- Critérios salvos (veja 3.1). Sem critérios, o texto sai genérico.\n- Publique a vaga para o link funcionar; antes disso a tela avisa.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/02-divulgacao#passo-a-passo",
+   "arquivo": "03-ciclo-rs/02-divulgacao",
+   "capitulo": "3.2 Divulgação da vaga",
+   "titulo": "Passo a passo",
+   "texto": "1. Marque **onde vai publicar** (pode marcar vários): LinkedIn, Instagram,\n   WhatsApp e grupos, portal de vagas, comunidade tech, vaga interna, e-mail\n   ou programa de indicação.\n2. Escolha o **perfil do público** (técnico ou menos técnico) e o **tom da\n   empresa** (descontraído, tradicional ou propósito).\n3. Marque **mostrar a faixa** se a vaga tiver remuneração informada e você\n   quiser citá-la.\n4. Clique em **Gerar divulgação**.\n5. Leia as **verificações** de cada canal e confira o que a IA assumiu.\n6. Use **Copiar texto** (e as opções de gancho) e publique **fora da plataforma**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/02-divulgacao#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/02-divulgacao",
+   "capitulo": "3.2 Divulgação da vaga",
+   "titulo": "O que você vai ver",
+   "texto": "| Canal | O que vem |\n|---|---|\n| LinkedIn | Post em primeira pessoa, 2 ganchos, hashtags, CTA sem link no corpo |\n| Instagram | Legenda, 2 ganchos, hashtags e **briefing da arte** |\n| WhatsApp e grupos | Texto curto e escaneável, com o link |\n| Portal | Texto limpo, **sem markdown**, título como o candidato busca |\n| Comunidade tech | Formato direto (cargo, stack, modelo, faixa) |\n| Vaga interna | Tom institucional e como se candidatar |\n| Indicação | Texto reencaminhável, com assunto |\n\nCada link vem com `?o=canal`: a candidatura recebida por ele fica registrada\ncom essa **origem** e aparece em Indicadores.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/02-divulgacao#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/02-divulgacao",
+   "capitulo": "3.2 Divulgação da vaga",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não publica** em rede social nem em portal: você copia e publica.\n- **Não cita a empresa** se a vaga for sigilosa.\n- **Não mostra a faixa** se você não marcar.\n- Texto com critério discriminatório fica **bloqueado**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/02-divulgacao#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/02-divulgacao",
+   "capitulo": "3.2 Divulgação da vaga",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"Escolha pelo menos um canal\" | Marque ao menos um |\n| Aviso \"A vaga ainda não está publicada\" | Publique antes de divulgar o link |\n| Aviso de tamanho ou gancho longo | Encurte a primeira linha |\n| Portal com asteriscos | Remova o markdown (aviso da verificação) |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#para-que-serve",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "Para que serve",
+   "texto": "Ordenar os candidatos de uma vaga pelos critérios que você definiu, mostrando\n**a frase do cadastro que sustenta cada avaliação**, para você decidir quem\nsegue para a entrevista sem abrir um por um.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#quem-faz",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "Quem faz",
+   "texto": "Operador, administrador da empresa, administrador e superadmin, dentro do que\ncada um enxerga.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#onde-fica",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "Onde fica",
+   "texto": "`Empresas e vagas → Cadastro de vagas → abrir a vaga → Triar candidatos`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "Antes de começar",
+   "texto": "- A vaga precisa de **requisitos obrigatórios** nos critérios.\n- Se os critérios vieram de uma proposta da IA, **confira e salve** antes\n  (proposta não conferida bloqueia a triagem).\n- Os critérios não podem ter termo que discrimina (por exemplo \"apenas jovens\").\n- A vaga precisa ter candidaturas ativas.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#passo-a-passo",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "Passo a passo",
+   "texto": "1. Abra a vaga e clique em **Triar candidatos**.\n2. Clique em **Triar candidatos** de novo na tela da triagem. A plataforma avalia\n   até **30 candidaturas por rodada**.\n3. Se houver mais, clique outra vez: ela continua de onde parou.\n4. Leia o ranking: posição, pontuação de 0 a 100 e obrigatórios atendidos (x/y).\n5. Abra um candidato para ver cada critério com o estado e a **frase de\n   evidência**.\n6. Leia a lista **A validar na entrevista** (lacunas de período, trocas de\n   emprego e competências comportamentais).\n7. Use **Top 3, 5 ou 10** para focar e **Baixar planilha (CSV)** para levar o\n   ranking.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| **Atende** | O cadastro mostra o critério, com a frase de evidência |\n| **Não atende** | O cadastro contradiz o critério, com a frase |\n| **Não evidenciado** | O cadastro não menciona. Não é o mesmo que \"não atende\" |\n| **Não segue (eliminatório)** | Um obrigatório eliminatório não foi atendido; o candidato vai para o fim, com o motivo |\n| **Pontuação** | 70% dos obrigatórios e 30% dos desejáveis, calculada pelo sistema |\n| **Critérios mudaram: refazer** | Você mudou a vaga depois da triagem; marque \"Refazer também os já avaliados\" |\n| **Sugestão de corte** | Quantos têm 70 ou mais e nenhum eliminatório. É só sugestão |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não reprova e não muda a etapa** de ninguém. Você decide e muda a etapa no\n  fluxo de candidaturas.\n- **Não usa nome, idade, gênero, contato, endereço, cidade nem motivo de\n  saída** na avaliação. Esses dados não chegam à IA.\n- **Não reduz a nota por lacuna ou troca de emprego:** isso aparece só em\n  \"a validar\".\n- **Não lê o PDF** do currículo, exceto quando o cadastro do candidato está\n  vazio; nesse caso lê só título e experiências. Arquivo ilegível fica\n  \"não foi possível ler\".\n- **Não avalia competência comportamental:** ela vai para \"a validar\" para a\n  entrevista.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/03-triagem#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/03-triagem",
+   "capitulo": "3.3 Triagem de currículos",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Mensagem ou situação | O que fazer |\n|---|---|\n| \"Triagem bloqueada\" | Ajustar os critérios (obrigatórios, conferir a proposta da IA, remover termo discriminatório) |\n| \"Esta vaga ainda não tem candidaturas\" | Esperar candidaturas ou divulgar a vaga |\n| \"O teto mensal de custo de IA foi atingido\" | Pedir à plataforma para ampliar o teto |\n| Falha em alguns candidatos | Clicar em **Triar candidatos** de novo: só os pendentes rodam |\n| Candidato sem avaliação | Cadastro vazio e sem PDF legível: peça que complete o perfil |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#para-que-serve",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "Para que serve",
+   "texto": "Conduzir a entrevista com **as mesmas perguntas para todos os candidatos** da\nvaga e registrar a avaliação por competência, com evidência, para comparar com\njustiça e alimentar o laudo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#quem-faz",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "Quem faz",
+   "texto": "Operador e acima. Cada entrevistador tem a sua ficha.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#onde-fica",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "Onde fica",
+   "texto": "`Cadastro de vagas → abrir a vaga → Roteiro de entrevista`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "Antes de começar",
+   "texto": "- Critérios da vaga salvos; as competências vêm sugeridas deles.\n- Para perguntas sobre pontos a validar, rode a triagem antes (3.3).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#passo-a-passo",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "Passo a passo",
+   "texto": "1. Escolha a **duração** (30, 45 ou 60 minutos).\n2. Liste as **competências** (uma por linha, de 4 a 6) e, se quiser, os\n   **valores da empresa**.\n3. Clique em **Gerar roteiro**. Mudou algo depois? **Gerar nova versão**.\n4. Leia os **avisos** e as perguntas removidas. Use **Baixar em Word** ou\n   **Imprimir ou salvar em PDF** para levar à entrevista.\n5. Em **Fichas de parecer**, abra o candidato e use **Gerar perguntas dos\n   pontos a validar da triagem**, se houver.\n6. Durante a entrevista, dê a **nota de 1 a 4** em cada competência e valor,\n   com a evidência, e preencha pontos fortes e de atenção.\n7. Escolha a **recomendação** e explique o porquê. **Fechar ficha**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| Nota 1 a 4 | 1 Não atende, 2 Parcial, 3 Atende, 4 Supera |\n| Avisos do roteiro | Competências fora de 4 a 6, só um tipo de pergunta, perguntas demais para o tempo |\n| Perguntas removidas | A lista mostra o motivo (tema proibido, falta de \"o que observar\") |\n| Recomendação | **Avançar**, **Avançar com ressalva** ou **Não avançar** |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não pergunta** sobre filhos, idade, estado civil, religião, saúde, política,\n  origem ou aparência: essas perguntas são removidas.\n- **Não fecha a ficha** com nota faltando, nota 1 ou 4 sem evidência, sem\n  recomendação ou sem o porquê.\n- **Não altera uma ficha fechada.**\n- **Não muda a etapa do candidato:** a recomendação é só desta etapa.\n- **Não encaixa a ficha na Agenda** automaticamente.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/04-entrevista#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/04-entrevista",
+   "capitulo": "3.4 Roteiro de entrevista e ficha de parecer",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"A ficha ainda não pode ser fechada\" | Leia a lista de pendências e complete |\n| Texto da ficha com tema proibido | Descreva só comportamento observado |\n| \"Gere o roteiro da vaga antes\" | Gere o roteiro primeiro |\n| Pontos a validar vazios | A triagem do candidato ainda não rodou |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/05-testes#para-que-serve",
+   "arquivo": "03-ciclo-rs/05-testes",
+   "capitulo": "3.5 Testes e dinâmicas",
+   "titulo": "Para que serve",
+   "texto": "Criar uma prova, um case ou uma dinâmica **ligados a uma competência da vaga**,\ncom a folha do candidato separada da folha do aplicador (que traz gabarito e\nrubrica), e registrar a nota de cada candidato.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/05-testes#onde-fica",
+   "arquivo": "03-ciclo-rs/05-testes",
+   "capitulo": "3.5 Testes e dinâmicas",
+   "titulo": "Onde fica",
+   "texto": "`Cadastro de vagas → abrir a vaga → Testes e dinâmicas`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/05-testes#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/05-testes",
+   "capitulo": "3.5 Testes e dinâmicas",
+   "titulo": "Antes de começar",
+   "texto": "Saiba **qual competência** quer medir. Sem competência-alvo, nada é gerado.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/05-testes#passo-a-passo",
+   "arquivo": "03-ciclo-rs/05-testes",
+   "capitulo": "3.5 Testes e dinâmicas",
+   "titulo": "Passo a passo",
+   "texto": "1. Escolha o **tipo**: prova técnica, de português, raciocínio lógico, case\n   prático (até 2 h) ou dinâmica.\n2. Informe a **competência-alvo** e, se quiser, o **tempo** (vazio usa o padrão\n   do tipo). Em dinâmica de grupo, informe o número de candidatos.\n3. Clique em **Gerar instrumento** e abra o que foi criado.\n4. Revise a **folha do aplicador** (gabarito, rubrica 1 a 4 ou grade de\n   observação) e as adaptações para pessoas com deficiência.\n5. Use **Abrir folha do candidato** (ou **Word: candidato**) para o arquivo sem gabarito.\n6. Clique em **Aprovar para aplicação**.\n7. Depois de aplicar, **registre a nota de 1 a 4** de cada candidato, com\n   evidência nas notas 1 e 4.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/05-testes#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/05-testes",
+   "capitulo": "3.5 Testes e dinâmicas",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| Folha do aplicador | Gabarito, critério de correção, rubrica ou grade |\n| Folha do candidato | Só enunciado e alternativas; nunca gabarito |\n| Avisos | Case que parece trabalho gratuito, formato que expõe o candidato, tempo acima do limite |\n| Bloqueios na aprovação | Sem gabarito ou critério, sem rubrica 1 a 4, grade sem os 4 níveis |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/05-testes#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/05-testes",
+   "capitulo": "3.5 Testes e dinâmicas",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não gera teste psicológico, de personalidade ou de perfil** (é privativo\n  de psicólogo).\n- **Não deixa gabarito na folha do candidato.**\n- **Não aprova** instrumento sem gabarito, rubrica ou grade.\n- **Não pede trabalho gratuito:** o case tem limite de tempo e deve usar cenário fictício.\n- **Não edita o texto gerado** no app: se não servir, gere de novo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/05-testes#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/05-testes",
+   "capitulo": "3.5 Testes e dinâmicas",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"Informe a competência-alvo\" | Preencha o campo |\n| \"Tempo acima do limite\" | Reduza (prova até 45 a 60 min, case até 120) |\n| \"O instrumento ainda não pode ser liberado\" | Leia os bloqueios e gere outro |\n| \"Aprove o instrumento antes de registrar notas\" | Aprove primeiro |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#para-que-serve",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "Para que serve",
+   "texto": "Reunir, em um documento, **o que o cargo exige e o que o candidato mostrou**,\ncompetência por competência, com a fonte e a força de cada evidência, para\nsustentar a decisão.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#quem-faz",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "Quem faz",
+   "texto": "Operador e acima. Só quem criou e a gestão acessam o laudo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#onde-fica",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "Onde fica",
+   "texto": "`Cadastro de vagas → abrir a vaga → Laudos dos candidatos`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "Antes de começar",
+   "texto": "O laudo usa o que já foi salvo: **triagem**, **ficha de entrevista fechada** e\n**notas de teste**. Quanto mais fontes, mais completo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#passo-a-passo",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "Passo a passo",
+   "texto": "1. Em **Laudos dos candidatos**, escolha o tipo ao lado do candidato: **Só\n   fatos** ou **Com recomendação**. Clique em **Gerar laudo**.\n2. Abra o laudo e leia as **limitações** no topo (fontes que faltam).\n3. Confira o **quadro**: cada linha mostra o que o cargo exige, como o\n   candidato se apresenta (com a fonte) e a **aderência de 1 a 4**.\n4. Leia **pontos fortes**, **a validar** e **divergências**.\n5. No modo com recomendação, escolha **Contratar**, **Contratar com ressalva**\n   ou **Não contratar**, marque as **linhas do quadro** que sustentam e\n   explique o porquê.\n6. **Salvar rascunho** ou **Assinar laudo**.\n7. Para comparar, marque dois ou mais e use **Comparar os marcados**. Para o\n   gestor, use **Resumo para o gestor**. **Baixar em Word** ou imprimir.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| **Não avaliado** | Nenhuma fonte trouxe evidência; sugere como avaliar |\n| Força | Quais fontes sustentam a linha, e o que falta (sem entrevista, sem teste) |\n| **Divergências** | Fontes com notas muito diferentes: confira antes de decidir |\n| Resumo do perfil | Texto factual da IA; descartado se tiver adjetivo ou leitura de personalidade |\n| **Assinado** | Não muda mais; para alterar, gere uma nova versão |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não recomenda sozinha:** a recomendação é sempre sua.\n- **Não aceita** recomendação que cite linha inexistente ou **não avaliada**.\n- **Não aceita** \"contratar com ressalva\" sem condições.\n- **Não aceita** justificativa com característica pessoal ou leitura de\n  personalidade.\n- **Não mostra o laudo ao candidato.**\n- **Não altera** um laudo assinado.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/06-laudo#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/06-laudo",
+   "capitulo": "3.6 Laudo do candidato",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"Escolha o tipo de laudo\" | Selecione Só fatos ou Com recomendação |\n| \"A recomendação ainda não pode ser assinada\" | Leia a lista: cite linhas avaliadas e explique |\n| Muitas linhas \"não avaliado\" | Rode triagem, ficha e teste antes |\n| Nome de competência diferente entre vaga e roteiro | Alinhe os nomes: o casamento é por nome |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#para-que-serve",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "Para que serve",
+   "texto": "Preparar o retorno ao candidato, **respeitoso e personalizado**, e registrar\nque foi enviado, sem prometer o que a empresa não vai cumprir.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#quem-faz",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "Quem faz",
+   "texto": "Operador e acima. Só quem criou e a gestão veem os rascunhos.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#onde-fica",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "Onde fica",
+   "texto": "`Cadastro de vagas → abrir a vaga → Devolutivas`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "Antes de começar",
+   "texto": "- Para **feedback**, tenha uma ficha de parecer fechada (ou digite os pontos).\n- Para **aprovação**, tenha o próximo passo e o prazo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#passo-a-passo",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "Passo a passo",
+   "texto": "1. Escolha o **candidato**; a lista sugere o tipo (finalista com ficha sugere\n   feedback e **ligue antes**).\n2. Escolha o **tipo** (aprovação, genérica ou com feedback), o **canal**\n   (WhatsApp, e-mail ou roteiro de ligação) e o **tom**.\n3. Preencha o que o tipo pede: próximo passo e prazo; documentos; pontos fortes\n   e melhoria (vazio pega da ficha).\n4. Marque **banco de talentos** só se for guardar o currículo de verdade.\n5. Clique em **Gerar rascunho** e depois em **Revisar e enviar**.\n6. Leia as **verificações**, edite o texto e **copie**.\n7. Envie pelo canal e clique em **Já enviei (marcar como enviada)**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| Verificações | Nome e vaga no texto, sem campo em branco, sem promessa vazia, sem discriminação |\n| Lote | Vários rascunhos genéricos de uma vez, revisados e enviados um a um |\n| **Enviada** | Registrada; o texto não muda mais |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não envia a mensagem:** você envia e marca.\n- **Não permite promessa** de guardar currículo ou chamar de novo sem\n  \"banco de talentos\".\n- **Não gera feedback** sem pontos fortes e de melhoria vindos da ficha ou digitados.\n- **Não permite uma segunda devolutiva** de encerramento, nem depois de **30 dias** da decisão.\n- **Não gera** para quem pediu descadastro ou está na black list.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/07-devolutiva#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/07-devolutiva",
+   "capitulo": "3.7 Devolutiva ao candidato",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"Sem pontos fortes e de melhoria, só a genérica\" | Digite os pontos ou use a genérica |\n| \"A aprovação exige próximo passo e prazo\" | Preencha os dois |\n| \"Já existe uma devolutiva enviada\" | Não é possível enviar outra |\n| \"A janela de encerramento fechou\" | Passaram mais de 30 dias; fale por outro motivo ou canal |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#para-que-serve",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "Para que serve",
+   "texto": "Montar a **proposta formal** ao candidato aprovado, clara e condicionada, e\nregistrar que foi enviada. Carta-oferta tem peso: uma proposta formal e aceita\npode gerar expectativa e até obrigação para a empresa.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#quem-faz",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "Quem faz",
+   "texto": "Operador e acima. Só quem criou e a gestão veem a carta.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#onde-fica",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "Onde fica",
+   "texto": "`Cadastro de vagas → abrir a vaga → Carta-oferta`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "Antes de começar",
+   "texto": "Tenha os dados da proposta: salário **bruto**, benefícios, data de início,\ncondições e **validade**. Se faltar algo, a carta marca o campo e você\ncompleta depois.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#passo-a-passo",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "Passo a passo",
+   "texto": "1. Ao lado do candidato, clique em **Montar carta** (ou **Nova versão**).\n2. Preencha: empresa, quem assina, cargo, regime, **salário bruto**,\n   pagamento, variável (se houver), benefícios, modelo, jornada, data de\n   início e período de experiência.\n3. Preencha as **condições** (documentos, exame admissional) e a **validade**.\n4. Clique em **Montar a carta** e leia o texto. Campos em branco aparecem\n   como `{CAMPO}` destacados.\n5. **Peça a revisão do DP/RH** (e do jurídico, se possível).\n6. Use **Editar campos** até estar certo, **Copiar carta** ou **Baixar em Word**.\n7. Envie fora da plataforma e clique em **Já enviei a carta**. Depois, registre\n   **Candidato aceitou** ou **Candidato recusou**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| `{SALÁRIO BRUTO}` etc. | Campo que falta; o envio fica bloqueado |\n| Salário | Sempre \"R$ ... bruto mensal\" |\n| Variável | Separado do fixo e dependente de regras e metas |\n| Mensagem curta | Texto para anexar a carta ao comunicar a aprovação |\n| Aviso de revisão | Permanente: peça a revisão do DP/jurídico |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não envia a carta** e não marca a pessoa como contratada.\n- **Não inventa** valor, benefício, período de experiência, carreira, aumento\n  ou promoção: só o que você informou.\n- **Não deixa enviar** com campo em branco, sem validade ou sem condições.\n- **Não muda** uma carta já enviada: mudança vira nova versão.\n- **Não é parecer jurídico.**",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#o-que-acontece-quando-voce-marca-ja-enviei",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "O que acontece quando você marca \"Já enviei\"",
+   "texto": "A candidatura vai para a etapa **Proposta** (se estava em etapa anterior), e\no envio entra no cálculo de **aceitação de oferta** dos indicadores.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/08-carta-oferta#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/08-carta-oferta",
+   "capitulo": "3.8 Carta-oferta",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"A carta ainda não pode ser enviada: Falta preencher\" | Edite e preencha os campos |\n| \"A proposta precisa de validade\" | Defina a data |\n| \"Carta enviada não muda\" | Gere uma nova versão |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#para-que-serve",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "Para que serve",
+   "texto": "Preparar a mensagem para um **candidato passivo** (que não se candidatou), com\ndois follow-ups e lembretes, sem guardar o perfil que você colou.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#quem-faz",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "Quem faz",
+   "texto": "Operador e acima. Cada pessoa vê as próprias abordagens; a gestão vê todas.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#onde-fica",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "Onde fica",
+   "texto": "`Cadastro de vagas → abrir a vaga → Abordagem ativa`",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "Antes de começar",
+   "texto": "Tenha o **perfil profissional público** da pessoa para colar (cargo, empresa,\ntrajetória). Não cole dados pessoais.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#passo-a-passo",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "Passo a passo",
+   "texto": "1. Informe o **nome** e escolha o **canal**: nota de conexão do LinkedIn (até\n   300 caracteres), InMail, e-mail ou roteiro de ligação.\n2. **Cole o perfil** no campo indicado.\n3. Escolha tom, público e assinatura; marque se quer citar a faixa.\n4. Clique em **Gerar abordagem**.\n5. Abra o rascunho, leia o **ângulo** e o trecho do perfil que o sustenta, e as\n   **verificações**.\n6. **Copie a mensagem** (e o assunto), envie fora da plataforma e clique em\n   **Já enviei**.\n7. Quando chegar a hora, use os follow-ups e marque **Já enviei o follow-up**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| Dados pessoais descartados | Frases do perfil com família, endereço, saúde ou contato foram retiradas antes da IA |\n| Follow-up 1 e 2 | Lembretes em cerca de 3 e 7 dias do envio |\n| **Precisa de ação agora** | Card \"Follow-ups de abordagem\" quando vence |\n| **A pessoa respondeu** | Fecha o ciclo da abordagem |\n| **Pediu para não contatar** | Apaga o texto e fecha o contato para esta vaga |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não envia** a mensagem.\n- **Não guarda o perfil colado:** só o texto gerado e um trecho curto, apagados ao encerrar.\n- **Não contata por WhatsApp frio:** o WhatsApp só vale com consentimento ou resposta.\n- **Não deixa abordar de novo** o mesmo nome na mesma vaga depois de encerrado.\n- **Não deixa marcar enviada** se a verificação tiver bloqueio (tema pessoal ou nota de conexão acima de 300 caracteres).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/09-abordagem#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/09-abordagem",
+   "capitulo": "3.9 Abordagem ativa",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| \"Cole o perfil profissional\" | O texto está curto; cole mais linhas |\n| \"Já existe uma abordagem para este contato\" | Use a que existe ou encerre-a |\n| \"Este contato já foi encerrado\" | Não é possível reabrir |\n| Aviso de personalização | Acrescente um detalhe real do perfil |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/10-indicadores#para-que-serve",
+   "arquivo": "03-ciclo-rs/10-indicadores",
+   "capitulo": "3.10 Indicadores e plano de ação",
+   "titulo": "Para que serve",
+   "texto": "Acompanhar o processo seletivo por empresa e por mês: tempo de fechamento,\nfunil, fontes, custo e retenção, e transformar o que está fora da meta em\n**ações com responsável e prazo**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/10-indicadores#quem-faz",
+   "arquivo": "03-ciclo-rs/10-indicadores",
+   "capitulo": "3.10 Indicadores e plano de ação",
+   "titulo": "Quem faz",
+   "texto": "Operador (da carteira), administrador da empresa, administrador e superadmin.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/10-indicadores#antes-de-comecar",
+   "arquivo": "03-ciclo-rs/10-indicadores",
+   "capitulo": "3.10 Indicadores e plano de ação",
+   "titulo": "Antes de começar",
+   "texto": "Alguns números saem do sistema; outros **você informa**. Custo, SLA, NPS,\nturnover e ofertas aparecem como \"sem dado\" até serem preenchidos.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/10-indicadores#passo-a-passo",
+   "arquivo": "03-ciclo-rs/10-indicadores",
+   "capitulo": "3.10 Indicadores e plano de ação",
+   "titulo": "Passo a passo",
+   "texto": "1. Escolha a **empresa** e o **mês** e clique em **Ver**.\n2. Leia os indicadores e o status: **Na meta**, **Atenção**, **Abaixo** ou\n   **Sem dado**.\n3. Leia a **leitura em conjunto** e o **funil** (maior gargalo em destaque).\n4. Em **Números do mês**, informe custo total, SLA, NPS, turnover e ofertas.\n5. Em **Metas da empresa**, ajuste o que vale para a realidade da empresa.\n6. Em **Plano de ação**, crie até **3 ações abertas** por mês, com responsável\n   e prazo.\n7. Ao concluir uma ação, registre **o que funcionou**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/10-indicadores#o-que-voce-vai-ver",
+   "arquivo": "03-ciclo-rs/10-indicadores",
+   "capitulo": "3.10 Indicadores e plano de ação",
+   "titulo": "O que você vai ver",
+   "texto": "| Elemento | Significado |\n|---|---|\n| Tempo médio de fechamento | Da publicação ao fechamento da vaga, no mês |\n| Funil | Candidaturas do mês por etapa, com conversão |\n| Fontes | De onde vieram as candidaturas (marcador do link) e as contratações |\n| Aceitação de oferta | Vem das cartas enviadas e aceitas, se você não digitou |\n| Leitura em conjunto | Cruza pares, por exemplo fechar rápido com turnover alto |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/10-indicadores#o-que-a-plataforma-nao-faz",
+   "arquivo": "03-ciclo-rs/10-indicadores",
+   "capitulo": "3.10 Indicadores e plano de ação",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não transforma \"sem dado\" em zero.**\n- **Não calcula o funil com exatidão:** usa o status atual e os registros de\n  triagem, ficha e teste (aproximado).\n- **Não calcula custo por fonte:** falta o gasto por canal.\n- **Não inclui diversidade:** fica fora até decisão e consentimento próprio.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "03-ciclo-rs/10-indicadores#erros-comuns-e-o-que-fazer",
+   "arquivo": "03-ciclo-rs/10-indicadores",
+   "capitulo": "3.10 Indicadores e plano de ação",
+   "titulo": "Erros comuns e o que fazer",
+   "texto": "| Situação | O que fazer |\n|---|---|\n| Muito \"sem dado\" | Preencha os números do mês |\n| \"Já há 3 ações abertas\" | Conclua ou cancele uma antes |\n| Funil parece baixo | Lembre que candidaturas recusadas sem registro contam só como candidatura |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "04-admin-empresa#4-1-equipe-operadores",
+   "arquivo": "04-admin-empresa",
+   "capitulo": "4. Administrador da empresa",
+   "titulo": "4.1 Equipe (operadores)",
+   "texto": "**Para que serve.** Convidar e organizar os operadores da empresa.\n**Onde fica.** `Empresas e vagas → Operadores`.\n\n1. Informe o **nome** e o **e-mail** da pessoa.\n2. Escolha a **função** (a lista mostra uma dica de cada uma).\n3. Clique em **Enviar convite**. A pessoa recebe um e-mail para definir a senha.\n4. Na lista de **Pessoa, Situação, Acesso de confiança e Ações**, use\n   **Desativar** quando alguém sair da equipe.\n\n| Função | O que faz |\n|---|---|\n| **Operador** | Atende candidatos e conversas da carteira; não vê financeiro nem outras empresas |\n| **Admin da empresa** | Gerencia equipe, black list e integrações da própria empresa |\n\n**Acesso de confiança.** Liberar o acesso de confiança a um operador faz ele\nenxergar as **vagas sigilosas** da empresa. Sem ele, essas vagas e a empresa\nnelas não aparecem.\n\n**Limite de operadores.** A empresa tem um limite (padrão 4). Atingido o\nlimite, o envio do convite fica bloqueado: peça à plataforma para ampliar.\n\n**O que a plataforma não faz.** Não deixa convidar um e-mail que já pertence a\noutra pessoa cadastrada; não permite criar função acima da sua.",
+   "papeis": [
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "04-admin-empresa#4-2-numeros-de-whatsapp",
+   "arquivo": "04-admin-empresa",
+   "capitulo": "4. Administrador da empresa",
+   "titulo": "4.2 Números de WhatsApp",
+   "texto": "**Para que serve.** Conectar um ou mais números da empresa e decidir quem\natende cada um.\n**Onde fica.** `Plataforma → Números de WhatsApp`.\n\n**Dois modelos.** Um número **compartilhado** (as conversas vão para a fila da\nequipe) ou números **dedicados**, um por operador (a conversa nasce com ele e\nnão vai para a fila). Os dois podem existir na mesma empresa.\n\n**Para criar um número:**\n\n1. Em **Novo número de WhatsApp**, dê um **apelido** (ex.: RH Ana).\n2. Escolha o **operador dono** (ou deixe como compartilhado) e o **modo do agente**.\n3. Clique em **Criar número**. A plataforma cria a instância e liga o\n   recebimento sozinha.\n4. No número criado, clique em **Mostrar QR code**.\n5. No celular: WhatsApp → **Aparelhos conectados** → **Conectar um aparelho** e\n   aponte para o código. O estado muda para **Conectada** e o número aparece.\n\n**Modo do agente em cada número:** **Desligado**, **Só sugestão** (a pessoa\nenvia) ou **Atende sozinho** (só se o agente da empresa permitir). Número\ndedicado começa em \"Só sugestão\".\n\n**Outras ações.** **Atualizar estado**, **Desconectar** (será preciso ler o QR\nde novo), **Religar o recebimento** e **Editar número** (apelido, operador,\nagente, ativa). Ao trocar o operador dono, marque a opção para **passar as\nconversas** que já têm dono ao novo operador.\n\n**Limite.** O número de números é limitado pelo plano da empresa; só a\nplataforma amplia.\n\n**O que a plataforma não faz.** Não compartilha o QR code nem o token; não\napaga a instância na Evolution (**Desativar** só para de receber e enviar); não\nmove conversas ao trocar o dono, a menos que você marque a opção.",
+   "papeis": [
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "04-admin-empresa#4-3-black-list-da-empresa",
+   "arquivo": "04-admin-empresa",
+   "capitulo": "4. Administrador da empresa",
+   "titulo": "4.3 Black list da empresa",
+   "texto": "**Para que serve.** Impedir que uma pessoa específica se candidate ou receba\nmensagem da empresa.\n**Onde fica.** `Financeiro e dados → Black list`.\n\n- Cadastre escolhendo a pessoa **na lista** ou informando o **telefone**\n  (vale mesmo antes de a pessoa se cadastrar), com **motivo** obrigatório.\n- Para liberar, remova da lista.\n- O efeito vale **em todos os números** da empresa.\n\n**O que a plataforma não faz.** Não informa ao candidato o motivo nem a\nempresa que o bloqueou.",
+   "papeis": [
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "04-admin-empresa#4-4-chave-de-ia-da-empresa",
+   "arquivo": "04-admin-empresa",
+   "capitulo": "4. Administrador da empresa",
+   "titulo": "4.4 Chave de IA da empresa",
+   "texto": "**Onde fica.** `Plataforma → Integrações`.\n\nA empresa pode usar a **própria chave** de IA (OpenAI, Claude ou Groq). Sem\nchave própria, usa a da plataforma, e o custo é da plataforma. O campo da\nchave é só de escrita: depois de salvo aparece apenas `••••` e os 4 últimos\ncaracteres. **Testar conexão** confere a chave sem enviar mensagem.",
+   "papeis": [
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "04-admin-empresa#4-5-prestacoes",
+   "arquivo": "04-admin-empresa",
+   "capitulo": "4. Administrador da empresa",
+   "titulo": "4.5 Prestações",
+   "texto": "**Onde fica.** `Financeiro e dados → Prestações`. A empresa vê **só as\npróprias**, em leitura. Status: pendente, pago, parcial ou atrasado.\n**a escrever:** detalhes de valores e campos, depois de conferir a tela.",
+   "papeis": [
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "04-admin-empresa#4-6-estrategico-e-indicadores",
+   "arquivo": "04-admin-empresa",
+   "capitulo": "4. Administrador da empresa",
+   "titulo": "4.6 Estratégico e indicadores",
+   "texto": "- **Estratégico:** visão da empresa dentro da carteira, sem valores.\n  **a escrever** depois de conferir a tela.\n- **Indicadores de R&S:** veja [3.10](03-ciclo-rs/10-indicadores.md). Aqui você\n  também ajusta **metas** e acompanha o **plano de ação**.",
+   "papeis": [
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#administrador-da-empresa",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Administrador da empresa",
+   "texto": "Administrador da empresa: Gestor do cliente: cuida da própria equipe, dos números de WhatsApp e da black list da empresa.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#agente-de-ia-assistente",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Agente de IA (assistente)",
+   "texto": "Agente de IA (assistente): Assistente que sugere ou envia respostas no WhatsApp com base nas notas aprovadas da base de conhecimento. Tem três modos por número: desligado, só sugestão ou atende sozinho.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#aderencia",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Aderência",
+   "texto": "Aderência: Nota de 1 a 4 de uma competência no laudo: média das notas disponíveis (currículo, entrevista, teste).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#aprovada-nota",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Aprovada (nota)",
+   "texto": "Aprovada (nota): Nota da base de conhecimento liberada para o agente usar. Só nota aprovada e em vigor entra no agente.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#black-list",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Black list",
+   "texto": "Black list: Lista de pessoas bloqueadas por empresa (ou da plataforma). Quem está nela não recebe mensagem nem candidata-se.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#candidatura",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Candidatura",
+   "texto": "Candidatura: A inscrição de uma pessoa em uma vaga. Tem etapa: recebida, triagem, entrevista, teste, proposta, contratado, rejeitada, desistente ou expirada.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#carta-oferta",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Carta-oferta",
+   "texto": "Carta-oferta: Documento com a proposta ao candidato aprovado. Montado só com o que você informar; o que falta aparece como `{campo}`.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#carteira",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Carteira",
+   "texto": "Carteira: Conjunto de empresas atribuídas a um operador. Define o que ele enxerga.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#conflito-base-de-conhecimento",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Conflito (base de conhecimento)",
+   "texto": "Conflito (base de conhecimento): Duas notas aprovadas que parecem dizer coisas diferentes sobre o mesmo assunto. É um aviso para você decidir qual vale.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#conversa",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Conversa",
+   "texto": "Conversa: Troca de mensagens de WhatsApp com uma pessoa **por número**: a mesma pessoa em dois números gera duas conversas.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#criterios-da-vaga",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Critérios da vaga",
+   "texto": "Critérios da vaga: A vaga em campos: rotina, obrigatórios, eliminatórios, desejáveis, comportamentais, senioridade e diferencial. Alimenta divulgação, triagem, roteiro, testes e laudo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#descadastro",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Descadastro",
+   "texto": "Descadastro: Pedido da pessoa para não receber mais mensagens. Vale em todos os números da empresa.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#devolutiva",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Devolutiva",
+   "texto": "Devolutiva: Retorno ao candidato: aprovação, reprovação genérica ou com feedback. Uma por candidatura, em até 30 dias da decisão.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#dono-da-conversa-atendente",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Dono da conversa (atendente)",
+   "texto": "Dono da conversa (atendente): Quem está atendendo. Só ele responde; a gestão pode assumir ou transferir.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#dono-da-nota",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Dono da nota",
+   "texto": "Dono da nota: Pessoa responsável por manter uma nota da base atualizada.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#dedicado-numero",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Dedicado (número)",
+   "texto": "Dedicado (número): Número de WhatsApp de um operador específico: a conversa nasce com ele e não vai para a fila.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#eliminatorio",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Eliminatório",
+   "texto": "Eliminatório: Requisito obrigatório que, se claramente não atendido, leva o candidato para o fim do ranking, com o motivo.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#evidencia",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Evidência",
+   "texto": "Evidência: Frase do currículo, da entrevista ou do teste que sustenta uma avaliação. Sem evidência, o critério fica **não evidenciado**.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#fila",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Fila",
+   "texto": "Fila: Conversas de candidatos sem dono, esperando alguém assumir.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#ficha-de-parecer",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Ficha de parecer",
+   "texto": "Ficha de parecer: Registro da entrevista: nota de 1 a 4 por competência e valor, evidência, pontos fortes, atenção e recomendação (avançar, com ressalva ou não avançar).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#funil",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Funil",
+   "texto": "Funil: Etapas do processo com a quantidade de pessoas em cada uma e a conversão entre elas.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#instancia",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Instância",
+   "texto": "Instância: O número de WhatsApp dentro da Evolution (o serviço que conecta a plataforma ao WhatsApp). Você não precisa mexer nela: a tela de números cuida.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#laudo",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Laudo",
+   "texto": "Laudo: Documento que cruza o que o cargo exige com o que o candidato mostrou, por competência, com fonte e força de evidência. Assinado, não muda.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#linha-numero",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Linha (número)",
+   "texto": "Linha (número): Um número de WhatsApp da empresa.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#nao-avaliado",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Não avaliado",
+   "texto": "Não avaliado: Competência sem nenhuma evidência. Não é nota baixa.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#nao-evidenciado",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Não evidenciado",
+   "texto": "Não evidenciado: Critério que o currículo não menciona. Não é o mesmo que \"não atende\".",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#nota-base-de-conhecimento",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Nota (base de conhecimento)",
+   "texto": "Nota (base de conhecimento): Texto que o agente pode usar: política, roteiro, pergunta frequente, vaga ou lição.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#numero-compartilhado",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Número compartilhado",
+   "texto": "Número compartilhado: Número de WhatsApp da empresa sem dono: as conversas vão para a fila da equipe.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#operador",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Operador",
+   "texto": "Operador: Recrutador da empresa cliente que usa o painel no dia a dia.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#origem",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Origem",
+   "texto": "Origem: De onde a candidatura veio (LinkedIn, portal, WhatsApp etc.), medida pelo marcador do link da divulgação.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#proposta-etapa",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Proposta (etapa)",
+   "texto": "Proposta (etapa): Etapa da candidatura em que a carta-oferta foi enviada.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#qr-code",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "QR code",
+   "texto": "QR code: Imagem que você lê no WhatsApp do celular para conectar um número à plataforma.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#roteiro-de-entrevista",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Roteiro de entrevista",
+   "texto": "Roteiro de entrevista: Perguntas por competência e valor, com \"o que observar\" e espaço para nota. O mesmo roteiro vale para todos da vaga.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#sigilosa-vaga",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Sigilosa (vaga)",
+   "texto": "Sigilosa (vaga): Vaga cuja empresa não aparece para quem não tem acesso de confiança.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#sugestao",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Sugestão",
+   "texto": "Sugestão: Rascunho de resposta do agente que a pessoa usa, edita ou descarta.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#teto-ia",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Teto (IA)",
+   "texto": "Teto (IA): Limite mensal de custo de IA. Atingido, a IA para.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#triagem-as-cegas",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Triagem às cegas",
+   "texto": "Triagem às cegas: Avaliação do currículo sem nome, idade, contato, endereço e motivo de saída.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/glossario#validade-nota",
+   "arquivo": "apendices/glossario",
+   "capitulo": "Glossário",
+   "titulo": "Validade (nota)",
+   "texto": "Validade (nota): Data até a qual uma nota vale. Nota vencida sai do agente.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/matriz-permissoes#os-quatro-papeis-internos",
+   "arquivo": "apendices/matriz-permissoes",
+   "capitulo": "Matriz de permissões",
+   "titulo": "Os quatro papéis internos",
+   "texto": "| Papel | Quem é | Alcance |\n|---|---|---|\n| **Superadmin** | A plataforma (dono do negócio) | Todas as empresas e todos os dados |\n| **Administrador** | Equipe de operação da plataforma | Todas as empresas, sem a gestão de acesso e integrações da plataforma |\n| **Administrador da empresa** | Gestor do cliente | Só a própria empresa e os próprios operadores |\n| **Operador** | Recrutador do cliente | Só as empresas da sua **carteira**; vagas sigilosas só com acesso de confiança |\n\nO **candidato** usa a parte pública e o aplicativo do candidato; não entra no\npainel.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/matriz-permissoes#alcance-dos-dados-escopo",
+   "arquivo": "apendices/matriz-permissoes",
+   "capitulo": "Matriz de permissões",
+   "titulo": "Alcance dos dados (escopo)",
+   "texto": "| Papel | Vê |\n|---|---|\n| Superadmin e Administrador | tudo |\n| Administrador da empresa | a própria empresa, inclusive vagas sigilosas dela |\n| Operador | empresas da carteira; vagas sigilosas só se tiver acesso de confiança; só as próprias conversas e a fila de candidatos |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/matriz-permissoes#menu-por-papel",
+   "arquivo": "apendices/matriz-permissoes",
+   "capitulo": "Matriz de permissões",
+   "titulo": "Menu por papel",
+   "texto": "Legenda: ● vê · — não vê.\n\n| Menu | Operador | Admin da empresa | Administrador | Superadmin |\n|---|---|---|---|---|\n| Visão geral | ● | ● | ● | ● |\n| Conversas | ● | ● | ● | ● |\n| Agenda: minha agenda, entrevistas, por etapa, entregas | ● | ● | ● | ● |\n| Agenda da equipe | — | ● | ● | ● |\n| Candidatos, contatos, talentos, convites | ● | ● | ● | ● |\n| Ranking | — | — | ● | ● |\n| Empresas e cadastro de vagas | ● | ● | ● | ● |\n| Operadores | — | ● | ● | ● |\n| Prestações | — | ● (a da empresa, leitura) | ● | ● |\n| Leads | — | — | ● | ● |\n| Black list | — | ● (a da empresa) | ● | ● |\n| Denúncias, LGPD, Auditoria | — | — | ● | ● |\n| Integrações | — | ● (chave de IA da empresa) | — | ● |\n| Números de WhatsApp | — | ● (os da empresa) | — | ● |\n| Agente de IA e base de conhecimento | — | — | — | ● |\n| Carteira, Acesso | — | — | — | ● |\n| Estratégico | ● (da carteira) | ● (da empresa) | — | ● |\n| Indicadores de R&S | ● | ● | ● | ● |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/matriz-permissoes#o-que-cada-papel-faz-no-ciclo-de-r-s",
+   "arquivo": "apendices/matriz-permissoes",
+   "capitulo": "Matriz de permissões",
+   "titulo": "O que cada papel faz no ciclo de R&S",
+   "texto": "Todas as telas dentro da vaga (critérios, divulgação, triagem, entrevista,\ntestes, laudo, devolutiva, abordagem e carta-oferta) exigem a permissão de\ngerir vagas, que os quatro papéis têm, **sempre limitada ao escopo acima**.\n\n| Ação | Operador | Admin da empresa | Administrador | Superadmin |\n|---|---|---|---|---|\n| Gerar critérios, divulgação, triagem, roteiro, testes, laudo, devolutiva, carta, abordagem | ● | ● | ● | ● |\n| **Publicar vaga** | — | — | ● | ● |\n| Aprovar empresa | — | — | ● | ● |\n| Ver o laudo, a ficha ou a carta de outra pessoa | — (só os que criou) | ● | ● | ● |\n| Criar número de WhatsApp | — | ● (até o limite) | — | ● (sem limite) |\n| Ajustar o limite de números | — | — | — | ● |\n| Aprovar notas do agente de IA | — | — | — | ● |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/matriz-permissoes#o-que-ninguem-ve",
+   "arquivo": "apendices/matriz-permissoes",
+   "capitulo": "Matriz de permissões",
+   "titulo": "O que ninguém vê",
+   "texto": "- **Candidato** nunca vê laudo, ficha de parecer, notas de teste, triagem nem carta em rascunho.\n- **Operador** não exporta contatos nem vê telefone ou e-mail fora da conversa aberta.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/regras-de-ouro#o-que-a-plataforma-nunca-faz",
+   "arquivo": "apendices/regras-de-ouro",
+   "capitulo": "Regras de ouro",
+   "titulo": "O que a plataforma nunca faz",
+   "texto": "1. **Não envia devolutiva, carta-oferta nem abordagem.** Ela prepara o texto;\n   você envia pelo canal e depois marca como enviada.\n2. **Não reprova nem muda a etapa de ninguém sozinha.** A triagem, o laudo e o\n   agente indicam; quem decide é a pessoa.\n3. **Não inventa.** O que falta aparece como **não avaliado** ou como\n   `{campo}` em branco, nunca como zero ou como valor suposto.\n4. **Não usa idade, gênero, estado civil, foto, origem ou nome** para avaliar\n   candidato. Esses dados nem chegam à IA na triagem.\n5. **Não mostra o laudo, a ficha ou as notas de teste ao candidato.**\n6. **Não guarda o perfil colado na abordagem nem o áudio do gestor.**\n7. **Não faz teste psicológico ou de personalidade** (é atividade privativa de\n   psicólogo).\n8. **Não manda mensagem para quem pediu para sair** (descadastro) **nem para\n   quem está na black list**, em nenhum número.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/regras-de-ouro#o-que-sempre-vale",
+   "arquivo": "apendices/regras-de-ouro",
+   "capitulo": "Regras de ouro",
+   "titulo": "O que sempre vale",
+   "texto": "9. **Só sai mensagem para quem respondeu, tem candidatura em andamento ou deu\n   consentimento.** Fora disso, o envio é recusado e o motivo aparece.\n10. **Quem pede para parar é respeitado na hora**, sem exceção.\n11. **Uma devolutiva de encerramento por candidatura**, em até 30 dias da\n    decisão.\n12. **Texto com critério discriminatório é bloqueado**, em vaga, divulgação,\n    triagem, devolutiva e carta.\n13. **Tudo importante fica registrado** (auditoria): quem gerou, aprovou,\n    assinou, enviou ou exportou, sem guardar o texto da mensagem.\n14. **A IA tem teto mensal de custo.** Atingido o teto, ela para até o mês\n    seguinte ou até a plataforma ampliar.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "apendices/regras-de-ouro#o-que-a-ia-faz-e-o-que-a-pessoa-decide",
+   "arquivo": "apendices/regras-de-ouro",
+   "capitulo": "Regras de ouro",
+   "titulo": "O que a IA faz e o que a pessoa decide",
+   "texto": "| A IA faz | A pessoa decide |\n|---|---|\n| Redige texto, extrai critérios, sugere resposta | Se o texto serve, se vale enviar, se a vaga muda |\n| Propõe critérios a partir do recado ou da JD | Confirmar e salvar os critérios |\n| Aponta evidência em cada critério da triagem | Quem segue para entrevista |\n| Monta o quadro do laudo | A recomendação e a assinatura |\n| Sugere a resposta no WhatsApp | Enviar, editar ou descartar |",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  }
+ ]
+}

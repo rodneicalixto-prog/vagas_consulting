@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BrandMark, Wordmark } from "@/components/brand-mark";
+import { AjudaPainel } from "@/components/ajuda-painel";
 import { adminSignOut } from "@/app/admin/actions";
 import type { InternalRole } from "@/lib/auth/internal";
 
@@ -278,6 +279,7 @@ export function AdminShell({
           </a>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+        <AjudaPainel />
       </main>
     </div>
   );

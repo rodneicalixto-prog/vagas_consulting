@@ -16,6 +16,7 @@ import {
   type NotaBase,
 } from "@/lib/base-conhecimento";
 import { aprovarLicoes, criarAgente, mudarStatusNota, salvarAgente, salvarNota } from "./actions";
+import { definirAjudaAtiva } from "../ajuda/actions";
 
 // Fora do componente: o lint de pureza não aceita Date.now() no render.
 function agoraMs(): number {
@@ -281,6 +282,26 @@ export default async function AgentePage({ searchParams }: { searchParams: Promi
               </form>
             </span>
           </div>
+        )}
+
+        {/* Assistente de ajuda da plataforma */}
+        {agente && (
+          <section className="mb-6 rounded-2xl border border-border bg-surface p-5">
+            <h2 className="text-sm font-extrabold text-text">Ajuda Vagas Consulting (assistente da plataforma)</h2>
+            <p className="mt-1 text-[12px] text-text-2">
+              Tira dúvidas de funcionamento da equipe com base no manual. Usa a chave e o teto de IA da plataforma, com
+              limite de 30 perguntas por dia por pessoa. As perguntas são guardadas anonimizadas por 90 dias.
+            </p>
+            <form action={definirAjudaAtiva} className="mt-3 flex flex-wrap items-center gap-3">
+              <label className="flex items-center gap-2 text-[12.5px] font-bold text-text">
+                <input type="checkbox" name="ativa" value="sim" defaultChecked={agente.ajuda_ativa !== false} />
+                Assistente ligado
+              </label>
+              <SubmitButton pendingLabel="Salvando..." className="rounded-xl border border-border bg-surface px-3 py-1.5 text-[12px] font-bold text-navy">
+                Salvar
+              </SubmitButton>
+            </form>
+          </section>
         )}
 
         {/* Confiabilidade da base */}
