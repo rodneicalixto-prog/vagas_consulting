@@ -1,7 +1,7 @@
 # Especificação — Assistente da plataforma (ajuda por IA)
 
 > **Projeto:** Vagas Consulting · **Documento:** Spec do assistente v1.0 · **Data:** 15/10/2026
-> **Status:** planejada (ideia do Rodnei em 15/10/2026). Depende dos capítulos
+> **Status:** planejada e aprovada em 15/10/2026 (decisões na seção 11); código aguarda os capítulos do manual. Depende dos capítulos
 > do manual: ver `docs/MANUAL_PLANO.md`.
 
 ## 1. Para que serve
@@ -106,10 +106,10 @@ lógica da cobertura da base de conhecimento do agente.
 | Vazamento entre papéis | filtro por papel antes da recuperação, teste automatizado |
 | Pergunta com dado de candidato | anonimização e aviso na tela |
 
-## 11. Decisões pendentes do Rodnei
+## 11. Decisões do Rodnei (15/10/2026)
 
-1. **Quem usa primeiro?** Recomendo a equipe (operador, admin da empresa e
-   plataforma) e o candidato depois.
-2. **Pode registrar as perguntas anonimizadas** por 90 dias para melhorar o manual?
-3. **Nome do assistente** (sugestão: "Ajuda da Vagas Consulting").
-4. **Limite por pessoa**: 30 por dia está bom?
+1. **Quem usa primeiro:** a equipe (operador, admin da empresa e plataforma);
+   o candidato depois.
+2. **Registrar as perguntas anonimizadas** por 90 dias: **aprovado**.
+3. **Nome:** **Ajuda Vagas Consulting**.
+4. **Limite por pessoa:** **30 perguntas por dia**.
