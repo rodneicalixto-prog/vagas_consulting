@@ -45,8 +45,10 @@ construir algo que toque o banco, reconfirmar o schema real de produção
 | `specs/COMUNICACAO_OMNICANAL.md` | WhatsApp, e-mail, SMS, Telegram, agentes de IA, inbox |
 | `specs/INTEGRACOES.md` | Cofre de chaves e teste de conexão |
 | `specs/LINHAS_WHATSAPP.md` | Números de WhatsApp por empresa e por operador, QR code e agente por número |
+| `specs/ASSISTENTE_PLATAFORMA.md` | Assistente de ajuda por IA, baseado no manual (planejado) |
 | `specs/AGENTE_IA_FASE3.md` | Agente de IA, base de conhecimento e pacote de R&S (3A a 3P, entregue) |
 | `specs/VITRINE_PUBLICA.md` | Vitrine pública e modo visitante |
 | `ROTEIRO_TESTE_ADMIN_EMPRESA.md` | Teste de 20 minutos do isolamento |
 | `ROTEIRO_TESTE_CICLO_RS.md` | Teste do ciclo completo de R&S, 12 passos |
 | `MANUAL_PLANO.md` | Plano do manual de uso (público, estrutura, produção e manutenção) |
+| `manual/README.md` | Manual de uso (fase 1: estrutura, permissões, glossário, regras de ouro, triagem) |

@@ -2243,3 +2243,5 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 141. **Troca do operador dono do número (15/10/2026)**: opção de transferir também as conversas que já têm dono ao mudar o operador da linha, com contagem e auditoria.
 142. **Consolidação v1.8 (15/10/2026)**: índice, PRD, TRD, plano e roteiro de teste atualizados com os números de WhatsApp por empresa e por operador (migrations 0044 e 0045), spec LINHAS_WHATSAPP e passo 13 do roteiro. 164 testes.
 143. **Plano do manual de uso (15/10/2026)**: docs/MANUAL_PLANO.md com públicos, estrutura em volumes, capítulo do ciclo de R&S, molde de tópico, método sem inventar, manutenção, formatos e 5 decisões pendentes do Rodnei. Nenhum capítulo escrito ainda.
+144. **Manual, fase 1 (15/10/2026)**: docs/manual/ com estrutura completa, matriz de permissões extraída do código, glossário, regras de ouro, visão geral e capítulo-modelo de Triagem, esqueletos dos demais, changelog e conferência por entrega.
+145. **Assistente da plataforma, spec (15/10/2026)**: docs/specs/ASSISTENTE_PLATAFORMA.md, ajuda por IA com o manual como fonte única; planejado, aguarda 4 decisões do Rodnei.

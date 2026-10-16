@@ -1,0 +1,8 @@
+# Changelog do manual
+
+## 0.1 (15/10/2026)
+
+- Estrutura completa em volumes e apêndices.
+- Rascunhos: regras de ouro, glossário, matriz de permissões, visão geral do ciclo de R&S e o capítulo-modelo de Triagem (3.3).
+- Demais capítulos em esqueleto, com tópicos e fontes.
+- Decisões: operador e ciclo de R&S primeiro; site de ajuda dentro da plataforma; tom direto e informal; marca por empresa preparada; vídeos depois do texto aprovado.

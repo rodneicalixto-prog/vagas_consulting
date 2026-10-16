@@ -1,8 +1,8 @@
 # Plano do manual de uso da plataforma
 
 > **Projeto:** Vagas Consulting · **Documento:** Plano do manual v1.0 · **Data:** 15/10/2026
-> **Status:** planejamento, aguardando as decisões da seção 10. Nenhum capítulo
-> foi escrito ainda.
+> **Status:** aprovado em 15/10/2026. Fase 1 entregue em `docs/manual/` (estrutura,
+> permissões, glossário, regras de ouro e o capítulo-modelo de Triagem).
 
 ## 1. Objetivo
 
@@ -132,3 +132,13 @@ nome da empresa na capa e nos arquivos entregues, sem alterar o conteúdo.
 | Dado pessoal em captura | somente conta e dados fictícios, revisão antes de publicar |
 | Manual grande demais para ler | por papel, por tarefa, com busca e guia de 1 página |
 | Prometer o que o produto não faz | seção "o que a plataforma não faz" obrigatória em cada tópico |
+
+## 13. Decisões aprovadas (15/10/2026) e assistente da plataforma
+
+- Começar pelo **operador e pelo ciclo de R&S**; **site de ajuda dentro da
+  plataforma**; tom **direto e informal**; **marca por empresa** preparada na
+  capa, conteúdo igual; **vídeos** depois do texto aprovado.
+- **Assistente da plataforma (ideia do Rodnei):** agente de IA que tira dúvidas
+  de funcionamento usando o manual como fonte única. Spec:
+  `docs/specs/ASSISTENTE_PLATAFORMA.md`. Entra na fase 5, depois dos capítulos
+  do operador e do ciclo de R&S estarem em rascunho.
