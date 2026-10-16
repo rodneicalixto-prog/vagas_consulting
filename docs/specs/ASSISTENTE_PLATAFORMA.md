@@ -142,3 +142,7 @@ palavras cai em "não encontrei"); capítulos do candidato e da plataforma ainda
 são esqueleto; a lista de perguntas sem resposta para o superadmin ainda não
 tem tela (os dados já são gravados); o painel não abre o capítulo completo
 (mostra os trechos usados).
+
+## 13. Tela de lacunas (15/10/2026)
+
+`/admin/ajuda`, só superadmin (menu **Lacunas da Ajuda**). Lê `help_questions` dos últimos 90 dias e mostra totais, temas repetidos nos problemas, problemas por capítulo de origem e as 40 perguntas com problema mais recentes. Nada é enviado nem alterado; serve para decidir o que escrever no manual. Depois de editar o manual, rode `npm run ajuda:indice`.

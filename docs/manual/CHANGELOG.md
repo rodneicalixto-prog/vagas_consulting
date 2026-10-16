@@ -17,3 +17,8 @@
 
 - Operador completo em rascunho: agenda (5 telas), candidatos, contatos, talentos e convites, conferidos no código.
 - Admin da empresa: equipe, números de WhatsApp, black list e chave de IA. Prestações e Estratégico ainda a escrever.
+
+## 0.4 (15/10/2026)
+
+- Candidato e Plataforma em rascunho (entrar, termos, perfil, vagas, candidatura, processos, convites; empresas, carteira, acesso, integrações, agente e base, LGPD, denúncias, auditoria).
+- Assistente Ajuda Vagas Consulting: a Plataforma descreve o liga e desliga e a tela de lacunas.

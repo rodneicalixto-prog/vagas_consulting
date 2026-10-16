@@ -1,6 +1,132 @@
 {
- "versao": "aa7aa0b0ec12",
+ "versao": "f0bc78596d8a",
  "pedacos": [
+  {
+   "id": "01-candidato#1-1-entrar",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.1 Entrar",
+   "texto": "Na tela de entrada o candidato informa **E-mail** e **Senha**. Quem ainda não\ntem conta cria uma.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#1-2-termos-e-privacidade",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.2 Termos e privacidade",
+   "texto": "No primeiro acesso aparece **Termos e privacidade**. O candidato precisa\n**aceitar os Termos de Uso** e **estar ciente do Aviso de Privacidade**. Os\ncanais de comunicação (por exemplo WhatsApp) são escolhas **dele**: nada vem\npré-marcado, e \"Aceitar todos os canais\" só vale se ele clicar.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#1-3-completar-o-perfil",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.3 Completar o perfil",
+   "texto": "Tela **Complete seu perfil**. Campos obrigatórios (com asterisco):\n**Nome completo**, **Cidade**, **Telefone** e **Endereço completo**.\n\nTambém pede **Modelo de trabalho**, **Modalidades desejadas**,\n**Disponibilidade** e o histórico profissional (empresa, cargo, período, líder\ndireto opcional). **Currículo** é opcional.\n\nDepois, em **Perfil**, o candidato edita: **Dados pessoais**, **Currículo e\nexperiências**, **Preferências de vaga** e **Documentos**.\n\n**Dica para o operador:** quanto mais completo o cadastro, melhor a triagem. A\ntriagem usa título, resumo e experiências do cadastro.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#1-4-encontrar-vagas-e-se-candidatar",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.4 Encontrar vagas e se candidatar",
+   "texto": "1. Em **Vagas**, use a busca por **cargo, empresa ou palavra-chave**.\n2. Abra a vaga e leia os detalhes (a empresa só aparece se a vaga não for sigilosa).\n3. Toque em **Candidatar-se**. Quem não está logado é levado para entrar e volta\n   para a vaga.\n4. Responda as **duas perguntas rápidas**: se já atuou na área e se tem\n   disponibilidade para o modelo de trabalho da vaga.\n5. Confirme. Aparece **Candidatura enviada**.\n\nPara se candidatar, o perfil precisa ter **telefone e endereço**, ou um\n**currículo** anexado.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#1-5-acompanhar-o-processo",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.5 Acompanhar o processo",
+   "texto": "Em **Meus processos**, cada candidatura mostra uma **linha do tempo** até\n**Aprovado** ou **Não aprovado**, com a **Etapa atual** destacada.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#1-6-convites",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.6 Convites",
+   "texto": "Convites diretos para vagas temporárias ficam em **Meus convites**, com local,\nremuneração e **Responder até**. O candidato aceita ou recusa (pode escolher\n**Prefiro não informar** no motivo).",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#1-7-mensagens",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.7 Mensagens",
+   "texto": "Em **Mensagens** o candidato vê o que a empresa enviou pela plataforma.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#1-8-privacidade-e-descadastro",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "1.8 Privacidade e descadastro",
+   "texto": "- A qualquer momento o candidato pode **pedir para sair**: respondendo \"SAIR\"\n  ou \"PARAR\" no WhatsApp, o pedido é registrado na hora e vale em todos os\n  números da empresa.\n- Pedidos de **acesso, correção, exportação, eliminação** e **revisão de\n  decisão automatizada** seguem a LGPD e chegam ao painel em **LGPD**.\n- Se aparecer \"Não foi possível enviar sua candidatura para esta vaga\", a\n  mensagem é genérica de propósito; oriente a procurar o suporte.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "01-candidato#o-que-a-plataforma-nao-faz",
+   "arquivo": "01-candidato",
+   "capitulo": "1. Candidato",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não mostra** ao candidato laudo, ficha de parecer, notas de teste nem\n  triagem.\n- **Não envia mensagem** a quem pediu para sair.\n- **Não usa idade, gênero, foto ou origem** para ranquear.",
+   "papeis": [
+    "operador",
+    "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
   {
    "id": "02-operador#2-1-sua-rotina-visao-geral-e-precisa-de-acao-agora",
    "arquivo": "02-operador",
@@ -1418,6 +1544,114 @@
    "texto": "- **Estratégico:** visão da empresa dentro da carteira, sem valores.\n  **a escrever** depois de conferir a tela.\n- **Indicadores de R&S:** veja [3.10](03-ciclo-rs/10-indicadores.md). Aqui você\n  também ajusta **metas** e acompanha o **plano de ação**.",
    "papeis": [
     "admin_empresa",
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-1-empresas",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.1 Empresas",
+   "texto": "**Onde fica.** `Empresas e vagas → Empresas`.\nLista os clientes e contratantes. A empresa passa por estados: **rascunho**,\n**em análise**, **ajustes**, **aprovada**, **suspensa** e **bloqueada**. Só o\nadministrador e o superadmin **aprovam** empresa.\n\nCadastro: razão social, fantasia, CNPJ, telefone, e-mail, endereço completo\n(o CEP preenche logradouro, bairro, cidade e UF) e o **responsável** (nome\nobrigatório). **a escrever:** rótulos exatos dos botões de aprovação.",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-2-carteira-por-atendente",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.2 Carteira por atendente",
+   "texto": "**Onde fica.** `Plataforma → Carteira`.\n\nDefine **quais empresas cada operador enxerga**. Operador sem empresa\natribuída **não vê nada**. A coluna **Confidenciais** libera o acesso de\nconfiança às vagas sigilosas. O administrador da empresa aparece destacado.\nPara incluir uma pessoa, convide-a em **Acesso** com o perfil Operador.",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-3-acesso-e-permissoes",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.3 Acesso e permissões",
+   "texto": "**Onde fica.** `Plataforma → Acesso`. Perfis, permissões, autenticação forte,\nsessões e segregação de funções. Veja a\n[matriz de permissões](apendices/matriz-permissoes.md). **a escrever:** passo a\npasso de convite e troca de perfil.",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-4-integracoes-e-cofre-de-chaves",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.4 Integrações e cofre de chaves",
+   "texto": "**Onde fica.** `Plataforma → Integrações`.\n\n| Provedor | Para quê |\n|---|---|\n| OpenAI, Claude, Groq | Agente de IA, geração de textos e transcrição de áudio |\n| Evolution API | WhatsApp: URL e chave na plataforma, uma instância por número |\n| Resend | E-mail |\n| SMS, Telegram | Lembretes e alertas |\n\n- As chaves ficam **cifradas** no cofre; depois de salvas aparecem só como\n  `••••` e os 4 últimos caracteres.\n- **Testar conexão** confere a chave sem enviar mensagem.\n- Sem a **chave-mestra** configurada no servidor, nada é gravado nem lido.\n- Cada empresa pode usar a **própria chave de IA**; sem ela, usa a da\n  plataforma (e o custo é da plataforma).",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-5-agente-de-ia-e-base-de-conhecimento",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.5 Agente de IA e base de conhecimento",
+   "texto": "**Onde fica.** `Plataforma → Agente de IA` (só superadmin).\n\n**O agente:** liga e desliga, nome, tom (formal ou próximo), provedor e modelo,\n**roteiro** e **teto mensal de custo** (padrão US$ 100). Autonomia: apenas\nsugestão, ou atende sozinho. Cada **número de WhatsApp** ainda tem o seu modo\n(desligado, só sugestão ou automático).\n\n**A base:** notas de tipo **política**, **roteiro**, **pergunta frequente**,\n**vaga** e **lição**, com estado **rascunho**, **aprovada** ou **arquivada**.\nSó nota **aprovada e em vigor** entra no agente.\n\n| Controle | O que faz |\n|---|---|\n| **Vale até** | Nota vencida sai do agente e não se aprova sem renovar a data |\n| **Dono** | Responsável por manter a nota |\n| Painel **Confiabilidade da base** | Vencidas, a revisar, **conflitos** e **cobertura** |\n| **Lições** | O agente aprende com o que a equipe edita ou responde; você aprova em lote |\n| Qualidade por nota | Em quantas respostas a nota foi enviada e a taxa de \"usada sem edição\" (é correlação) |\n| **Exportar para o Obsidian (.zip)** | Cópia das notas aprovadas |\n\n**Ajuda Vagas Consulting.** Na mesma tela, a caixa **Assistente ligado** liga\ne desliga a ajuda de funcionamento da equipe. **Lacunas da Ajuda** mostra o\nque a equipe perguntou e o assistente não resolveu, para virar tópico do manual.",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-6-numeros-de-whatsapp-e-limites",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.6 Números de WhatsApp e limites",
+   "texto": "O passo a passo está em [4.2](04-admin-empresa.md). Como plataforma, você\ntambém **ajusta o limite de números** de cada empresa (modelo de aluguel) e\ncria números sem esse limite.",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-7-lgpd-denuncias-e-auditoria",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.7 LGPD, denúncias e auditoria",
+   "texto": "| Tela | O que faz |\n|---|---|\n| **LGPD** | Solicitações dos titulares: acesso, correção, exportação, revogação, eliminação e revisão de decisão automatizada |\n| **Denúncias** | Cobrança indevida, discriminação, assédio, dado falso e outras |\n| **Auditoria** | Quem alterou o quê e quando, com exportação |\n\n**a escrever:** prazos e fluxo de resposta de cada solicitação.",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#5-8-leads-e-ranking",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "5.8 Leads e ranking",
+   "texto": "- **Leads:** cadastro mínimo capturado na instalação do aplicativo.\n- **Ranking:** quem mais se candidata, vagas mais disputadas e volume por\n  empresa (o mesmo candidato pode concorrer a várias vagas).",
+   "papeis": [
+    "admin",
+    "superadmin"
+   ],
+   "estado": "rascunho"
+  },
+  {
+   "id": "05-plataforma#o-que-a-plataforma-nao-faz",
+   "arquivo": "05-plataforma",
+   "capitulo": "5. Plataforma (superadmin e administrador)",
+   "titulo": "O que a plataforma não faz",
+   "texto": "- **Não mostra segredo** depois de salvo e não o registra em log.\n- **Não aprova nota** do agente sozinha.\n- **Não deixa** o administrador da empresa ou o operador alterar a plataforma.",
+   "papeis": [
     "admin",
     "superadmin"
    ],

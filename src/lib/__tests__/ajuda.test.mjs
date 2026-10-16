@@ -28,7 +28,9 @@ test("o índice commitado está em dia com o manual (rode npm run ajuda:indice)"
 
 test("esqueleto não entra no índice e cada pedaço tem papel e estado", () => {
   assert.ok(indice.pedacos.length > 50);
-  assert.ok(!indice.pedacos.some((p) => p.arquivo === "05-plataforma" || p.arquivo === "01-candidato"));
+  // Candidato e Plataforma viraram rascunho no manual 0.4: agora fazem parte do índice.
+  assert.ok(indice.pedacos.some((p) => p.arquivo === "05-plataforma"));
+  assert.ok(indice.pedacos.some((p) => p.arquivo === "01-candidato"));
   for (const p of indice.pedacos) {
     assert.ok(p.papeis.length > 0 && ["rascunho", "validado"].includes(p.estado));
     assert.ok(p.texto.length >= 20 && p.texto.length <= 1900);
