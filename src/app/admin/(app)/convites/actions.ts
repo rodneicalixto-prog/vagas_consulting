@@ -18,8 +18,12 @@ import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 
 export async function criarConvite(formData: FormData) {
   const { user, role } = await requireInternalUser("pipeline.manage");
-  const { candidate_id: candidateId, job_id: jobId, validade_horas: horas } =
-    validateFormData<CreateInviteInput>(CreateInviteSchema, formData);
+  const {
+    candidate_id: candidateId,
+    job_id: jobId,
+    validade_horas: horas,
+    mensagem: mensagemEquipe,
+  } = validateFormData<CreateInviteInput>(CreateInviteSchema, formData);
 
   // Carteira: a vaga precisa estar no escopo. O candidato vem do banco de
   // talentos (aprovado); o operador não recebe contato, só o convite.
@@ -30,7 +34,7 @@ export async function criarConvite(formData: FormData) {
 
   const [{ data: candidato }, { data: vaga }] = await Promise.all([
     admin.from("profiles").select("id, blacklisted, status_validacao, telefone").eq("id", candidateId).maybeSingle(),
-    admin.from("jobs").select("id, status, modalidade, company_id").eq("id", jobId).maybeSingle(),
+    admin.from("jobs").select("id, titulo, status, modalidade, company_id").eq("id", jobId).maybeSingle(),
   ]);
 
   if (!candidato) throw new Error("Candidato não encontrado.");
@@ -91,12 +95,25 @@ export async function criarConvite(formData: FormData) {
   }
   if (error || !convite) throw new Error("Não foi possível criar o convite.");
 
+  // O convite vira uma mensagem na aba Mensagens do candidato. O texto da
+  // equipe (se houver) é o conteúdo; senão, um texto padrão apontando para Convites.
+  const conteudo =
+    mensagemEquipe ||
+    `Você recebeu um convite para a vaga ${vaga.titulo}. Abra Convites para aceitar ou recusar.`;
+  const { error: erroMensagem } = await admin.from("messages").insert({
+    invite_id: convite.id,
+    remetente_id: user.id,
+    destinatario_id: candidateId,
+    conteudo,
+  });
+  if (erroMensagem) throw new Error("Convite criado, mas a mensagem não foi enviada. Tente de novo.");
+
   await logAudit({
     ator_id: user.id,
     acao: "convite_criado",
     objeto_tipo: "invite",
     objeto_id: convite.id,
-    depois: { candidate_id: candidateId, job_id: jobId, validade },
+    depois: { candidate_id: candidateId, job_id: jobId, validade, mensagem: Boolean(mensagemEquipe) },
   });
 
   revalidatePath("/admin/convites");

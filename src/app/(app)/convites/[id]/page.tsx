@@ -58,6 +58,14 @@ export default async function ConviteDetalhePage({
 
   if (!convite) notFound();
 
+  // Texto que a equipe escreveu ao convidar (a mensagem do convite, enviada pela equipe).
+  const { data: textoEquipe } = await supabase
+    .from("messages")
+    .select("conteudo, created_at")
+    .eq("invite_id", convite.id)
+    .eq("destinatario_id", user!.id)
+    .order("created_at", { ascending: true });
+
   // Primeira abertura: ofertado -> visualizado (só o dono, e só nesse estado).
   let status = convite.status;
   if (status === "ofertado") {
@@ -129,6 +137,17 @@ export default async function ConviteDetalhePage({
             <p className="whitespace-pre-line text-[12.5px] text-text-2">{convite.jobs.descricao}</p>
           )}
         </Card>
+
+        {(textoEquipe ?? []).length > 0 && (
+          <Card>
+            <h3 className="text-[12.5px] font-extrabold text-navy">Mensagem da equipe</h3>
+            {(textoEquipe ?? []).map((m, i) => (
+              <p key={i} className="mt-2 whitespace-pre-line text-[13px] text-text">
+                {m.conteudo}
+              </p>
+            ))}
+          </Card>
+        )}
 
         {podeResponder ? (
           <form action={responderConvite} className="flex flex-col gap-3">

@@ -134,6 +134,20 @@ export const CreateInviteSchema = z.object({
   candidate_id: z.string().uuid("Candidato inválido"),
   job_id: z.string().uuid("Vaga inválida"),
   validade_horas: z.coerce.number().int().min(1, "Mínimo 1 hora").max(168, "Máximo 7 dias").default(24),
+  mensagem: z.string().trim().max(1000, "A mensagem pode ter até 1000 caracteres.").optional(),
+});
+
+export const AgendarEntrevistaOnlineSchema = z.object({
+  application_id: z.string().uuid("Candidatura inválida"),
+  candidate_id: z.string().uuid("Candidato inválido"),
+  data_hora: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "Informe a data e a hora da entrevista."),
+  link: z
+    .string()
+    .trim()
+    .max(500, "Link muito longo.")
+    .refine((v) => v.startsWith("https://"), "O link da reunião precisa começar com https://"),
 });
 
 export const DecideInviteSchema = z.object({
@@ -165,4 +179,5 @@ export type InviteAdminInput = z.infer<typeof InviteAdminSchema>;
 export type AuditLogQueryInput = z.infer<typeof AuditLogQuerySchema>;
 export type RespondInviteInput = z.infer<typeof RespondInviteSchema>;
 export type CreateInviteInput = z.infer<typeof CreateInviteSchema>;
+export type AgendarEntrevistaOnlineInput = z.infer<typeof AgendarEntrevistaOnlineSchema>;
 export type DecideInviteInput = z.infer<typeof DecideInviteSchema>;

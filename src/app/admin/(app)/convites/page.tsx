@@ -104,6 +104,16 @@ export default async function ConvitesAdminPage({
               className="rounded-lg border border-border px-3 py-2 text-[13px] font-normal"
             />
           </label>
+          <label className="flex flex-col gap-1 text-[12px] font-extrabold text-text-2 md:col-span-4">
+            Mensagem para o candidato (opcional)
+            <textarea
+              name="mensagem"
+              maxLength={1000}
+              rows={3}
+              placeholder="Ex.: Temos uma vaga temporária para carga de caminhão de segunda a sábado. Confirme se tem disponibilidade."
+              className="rounded-lg border border-border px-3 py-2 text-[13px] font-normal"
+            />
+          </label>
           <div className="flex items-end">
             <SubmitButton
               type="submit"

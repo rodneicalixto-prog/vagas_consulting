@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { nomeEmpresa } from "@/lib/sigilo";
 import { createClient } from "@/lib/supabase/server";
 
@@ -19,7 +20,7 @@ export default async function MensagensPage() {
   const { data: mensagens } = await supabase
     .from("messages")
     .select(
-      "id, conteudo, created_at, lida, remetente_id, application_id, applications(status, jobs(titulo, confidencial, companies(nome_fantasia, razao_social)))",
+      "id, conteudo, created_at, lida, remetente_id, application_id, invite_id, applications(status, jobs(titulo, confidencial, companies(nome_fantasia, razao_social))), invites(status, jobs(titulo, confidencial, companies(nome_fantasia, razao_social)))",
     )
     .or(`remetente_id.eq.${user!.id},destinatario_id.eq.${user!.id}`)
     .order("created_at", { ascending: false });
@@ -31,15 +32,18 @@ export default async function MensagensPage() {
       {mensagens && mensagens.length > 0 ? (
         <div className="flex flex-col px-5 md:px-8">
           {mensagens.map((m, i) => {
+            const vinculo = m.application_id ? m.applications : m.invites;
             const empresa = nomeEmpresa(
-              m.applications?.jobs?.companies,
-              m.applications?.jobs?.confidencial,
-              m.applications?.status,
+              vinculo?.jobs?.companies,
+              vinculo?.jobs?.confidencial,
+              m.application_id ? m.applications?.status : null,
               "Empresa",
             );
+            const destino = m.invite_id ? `/convites/${m.invite_id}` : `/processos/${m.application_id}`;
             return (
-              <div
+              <Link
                 key={m.id}
+                href={destino}
                 className={`flex items-center gap-3 py-3 ${
                   i !== mensagens.length - 1 ? "border-b border-border" : ""
                 }`}
@@ -52,7 +56,7 @@ export default async function MensagensPage() {
                     <h4 className="truncate text-[13.5px] font-extrabold">{empresa}</h4>
                   </div>
                   <div className="mt-0.5 truncate text-[11px] font-bold text-gold-3">
-                    {m.applications?.jobs?.titulo}
+                    {vinculo?.jobs?.titulo}
                   </div>
                   <div
                     className={`mt-0.5 truncate text-xs ${
@@ -63,7 +67,7 @@ export default async function MensagensPage() {
                     {m.conteudo}
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

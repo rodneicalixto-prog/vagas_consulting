@@ -9,7 +9,7 @@ import { SubmitButton } from "@/components/form-buttons";
 import { statusLabel, statusPillClass, safeHttpUrl, STATUS_CANDIDATURA_EM_ABERTO } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/types";
 import type { ExperienciaProfissional } from "@/app/experiencias/actions";
-import { atualizarStatusCandidatura } from "./actions";
+import { agendarEntrevistaOnline, atualizarStatusCandidatura } from "./actions";
 import { bloquearNaEmpresa } from "../../blacklist/actions";
 import { formatarTelefoneBR, linkWhatsApp } from "@/lib/whatsapp";
 import { alterarBlacklist } from "../actions";
@@ -192,6 +192,7 @@ export default async function CandidatoDetalhePage({
       ),
       data: <span className="text-text-2">{new Date(row.created_at).toLocaleDateString("pt-BR")}</span>,
       acao: (
+        <>
         <form action={atualizarStatusCandidatura} className="flex flex-wrap items-center gap-1.5">
           <input type="hidden" name="application_id" value={row.id} />
           <input type="hidden" name="candidate_id" value={id} />
@@ -218,6 +219,32 @@ export default async function CandidatoDetalhePage({
             Salvar
           </SubmitButton>
         </form>
+        {row.status === "entrevista" && (
+          <form action={agendarEntrevistaOnline} className="mt-2 flex flex-wrap items-center gap-1.5">
+            <input type="hidden" name="application_id" value={row.id} />
+            <input type="hidden" name="candidate_id" value={id} />
+            <input
+              name="data_hora"
+              type="datetime-local"
+              required
+              className="rounded-lg border border-border bg-bg px-2 py-1.5 text-[11px]"
+            />
+            <input
+              name="link"
+              type="url"
+              required
+              placeholder="https://meet.google.com/..."
+              className="w-56 rounded-lg border border-border bg-bg px-2 py-1.5 text-[11px]"
+            />
+            <SubmitButton
+              pendingLabel="..."
+              className="rounded-lg bg-gold px-2.5 py-1.5 text-[11px] font-extrabold text-[#1c1508]"
+            >
+              Marcar entrevista online
+            </SubmitButton>
+          </form>
+        )}
+        </>
       ),
     },
   }));

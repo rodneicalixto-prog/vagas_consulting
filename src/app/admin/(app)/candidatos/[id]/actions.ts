@@ -5,6 +5,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import type { Enums } from "@/lib/supabase/types";
+import { validateFormData } from "@/lib/validation/validate-form";
+import {
+  AgendarEntrevistaOnlineSchema,
+  type AgendarEntrevistaOnlineInput,
+} from "@/lib/validation/schemas";
 
 const STATUS_VALIDOS: Enums<"status_candidatura">[] = [
   "recebida",
@@ -68,4 +73,53 @@ export async function atualizarStatusCandidatura(formData: FormData) {
 
   revalidatePath(`/admin/candidatos/${candidateId}`);
   revalidatePath("/admin/estrategico");
+}
+
+/** Marca a entrevista online: manda data e link ao candidato (aba Mensagens) e registra na candidatura. */
+export async function agendarEntrevistaOnline(formData: FormData) {
+  const { user, role } = await requireInternalUser("pipeline.manage");
+  const { application_id: applicationId, candidate_id: candidateId, data_hora: dataHora, link } =
+    validateFormData<AgendarEntrevistaOnlineInput>(AgendarEntrevistaOnlineSchema, formData);
+  const escopo = await obterEscopo(user.id, role);
+
+  const admin = createAdminClient();
+  const { data: candidatura } = await admin
+    .from("applications")
+    .select("id, job_id, status, candidate_id")
+    .eq("id", applicationId)
+    .maybeSingle();
+  if (!candidatura || candidatura.candidate_id !== candidateId) throw new Error("Candidatura não encontrada.");
+  await exigirVaga(escopo, candidatura.job_id);
+  if (candidatura.status !== "entrevista") {
+    throw new Error("Agende a entrevista depois de mover a candidatura para Entrevista.");
+  }
+
+  // Data e hora vêm do campo datetime-local e são mantidas como digitadas (sem fuso do servidor).
+  const [dia, hora] = dataHora.split("T");
+  const [ano, mes, diaMes] = dia.split("-");
+  const quando = `${diaMes}/${mes}/${ano} às ${hora}`;
+
+  const { error } = await admin.from("messages").insert({
+    application_id: applicationId,
+    remetente_id: user.id,
+    destinatario_id: candidateId,
+    conteudo: `Entrevista online marcada para ${quando}. Entre pelo link da reunião: ${link}`,
+  });
+  if (error) throw new Error("Não foi possível enviar a mensagem ao candidato.");
+
+  await admin.from("application_notes").insert({
+    application_id: applicationId,
+    autor_id: user.id,
+    nota: `Entrevista online agendada para ${quando}: ${link}`,
+  });
+
+  await admin.from("audit_log").insert({
+    ator_id: user.id,
+    acao: "entrevista_online_agendada",
+    objeto_tipo: "application",
+    objeto_id: applicationId,
+    depois: { data_hora: dataHora, link },
+  });
+
+  revalidatePath(`/admin/candidatos/${candidateId}`);
 }
