@@ -5,6 +5,26 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { nomeEmpresa, revelaEmpresa } from "@/lib/sigilo";
 import { statusLabel } from "@/lib/format";
 import { Card } from "@/components/ui";
+import { SubmitButton } from "@/components/form-buttons";
+import { responderEntrevistaOnline } from "./entrevista-actions";
+
+const AVISOS_ENTREVISTA: Record<string, string> = {
+  confirmada: "Entrevista confirmada. O link da reunião está abaixo.",
+  recusada: "Você recusou a entrevista. A equipe vai propor outro horário.",
+  "ja-respondida": "Esta entrevista já foi respondida.",
+  indisponivel: "Não foi possível responder esta entrevista.",
+};
+
+function formatarBrasilia(iso: string): string {
+  return new Date(iso).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 type Passo = { status: string; quando: string | null };
 
@@ -22,8 +42,15 @@ function formatar(iso: string | null): string {
   });
 }
 
-export default async function LinhaDoTempoPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function LinhaDoTempoPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ entrevista?: string }>;
+}) {
   const { id } = await params;
+  const { entrevista: avisoEntrevista } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -37,6 +64,14 @@ export default async function LinhaDoTempoPage({ params }: { params: Promise<{ i
     .eq("candidate_id", user!.id)
     .maybeSingle();
   if (!candidatura) notFound();
+
+  // Entrevista online ativa (proposta ou confirmada). A RLS deixa o candidato ler só as dele.
+  const { data: entrevistaAtiva } = await supabase
+    .from("entrevistas_online")
+    .select("id, data_hora, link, status")
+    .eq("application_id", id)
+    .in("status", ["proposta", "confirmada"])
+    .maybeSingle();
 
   // Histórico de etapas: o candidato não lê o audit_log, então a leitura é
   // feita no servidor, só depois de confirmada a posse da candidatura acima.
@@ -82,6 +117,63 @@ export default async function LinhaDoTempoPage({ params }: { params: Promise<{ i
         <h1 className="text-[19px] font-extrabold text-navy">{candidatura.jobs?.titulo}</h1>
         <div className="text-[12px] text-text-2">{empresa}</div>
       </div>
+
+      {avisoEntrevista && AVISOS_ENTREVISTA[avisoEntrevista] && (
+        <p className="rounded-xl bg-navy-bg px-4 py-3 text-[12.5px] font-bold text-navy">
+          {AVISOS_ENTREVISTA[avisoEntrevista]}
+        </p>
+      )}
+
+      {entrevistaAtiva?.status === "proposta" && (
+        <Card className="flex flex-col gap-3">
+          <h2 className="text-[14px] font-extrabold text-navy">Entrevista online proposta</h2>
+          <p className="text-[13px] text-text">
+            {formatarBrasilia(entrevistaAtiva.data_hora)} (horário de Brasília)
+          </p>
+          <p className="text-[12px] text-text-2">
+            Confirme se você consegue participar. O link da reunião aparece aqui depois da confirmação.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <form action={responderEntrevistaOnline}>
+              <input type="hidden" name="entrevista_id" value={entrevistaAtiva.id} />
+              <input type="hidden" name="application_id" value={id} />
+              <input type="hidden" name="acao" value="confirmar" />
+              <SubmitButton
+                pendingLabel="Enviando…"
+                className="rounded-xl bg-gold px-4 py-2.5 text-[13px] font-extrabold text-[#1c1508]"
+              >
+                Confirmar entrevista
+              </SubmitButton>
+            </form>
+            <form action={responderEntrevistaOnline}>
+              <input type="hidden" name="entrevista_id" value={entrevistaAtiva.id} />
+              <input type="hidden" name="application_id" value={id} />
+              <input type="hidden" name="acao" value="recusar" />
+              <SubmitButton
+                pendingLabel="Enviando…"
+                className="rounded-xl border border-border bg-surface px-4 py-2.5 text-[13px] font-bold text-navy"
+              >
+                Não consigo participar
+              </SubmitButton>
+            </form>
+          </div>
+        </Card>
+      )}
+
+      {entrevistaAtiva?.status === "confirmada" && (
+        <Card className="flex flex-col gap-2">
+          <h2 className="text-[14px] font-extrabold text-navy">Entrevista online confirmada</h2>
+          <p className="text-[13px] text-text">{formatarBrasilia(entrevistaAtiva.data_hora)} (horário de Brasília)</p>
+          <a
+            href={entrevistaAtiva.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[13px] font-bold text-navy underline break-all"
+          >
+            Entrar na reunião
+          </a>
+        </Card>
+      )}
 
       <Card className="flex flex-col gap-0">
         <ol className="flex flex-col">

@@ -150,6 +150,12 @@ export const AgendarEntrevistaOnlineSchema = z.object({
     .refine((v) => v.startsWith("https://"), "O link da reunião precisa começar com https://"),
 });
 
+export const RespostaEntrevistaSchema = z.object({
+  entrevista_id: z.string().uuid("Entrevista inválida"),
+  application_id: z.string().uuid("Candidatura inválida"),
+  acao: z.enum(["confirmar", "recusar"], { error: "Ação deve ser confirmar ou recusar" }),
+});
+
 export const DecideInviteSchema = z.object({
   invite_id: z.string().uuid("ID do convite inválido"),
   acao: z.enum(["confirmar", "cancelar"], { error: "Ação deve ser confirmar ou cancelar" }),
@@ -180,4 +186,5 @@ export type AuditLogQueryInput = z.infer<typeof AuditLogQuerySchema>;
 export type RespondInviteInput = z.infer<typeof RespondInviteSchema>;
 export type CreateInviteInput = z.infer<typeof CreateInviteSchema>;
 export type AgendarEntrevistaOnlineInput = z.infer<typeof AgendarEntrevistaOnlineSchema>;
+export type RespostaEntrevistaInput = z.infer<typeof RespostaEntrevistaSchema>;
 export type DecideInviteInput = z.infer<typeof DecideInviteSchema>;

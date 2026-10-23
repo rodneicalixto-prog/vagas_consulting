@@ -100,6 +100,50 @@ export type Database = {
           },
         ]
       }
+      entrevistas_online: {
+        Row: {
+          application_id: string
+          created_at: string
+          criada_por: string
+          data_hora: string
+          id: string
+          link: string
+          respondida_em: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          criada_por: string
+          data_hora: string
+          id?: string
+          link: string
+          respondida_em?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          criada_por?: string
+          data_hora?: string
+          id?: string
+          link?: string
+          respondida_em?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entrevistas_online_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           candidate_id: string

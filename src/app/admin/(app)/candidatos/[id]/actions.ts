@@ -94,31 +94,48 @@ export async function agendarEntrevistaOnline(formData: FormData) {
     throw new Error("Agende a entrevista depois de mover a candidatura para Entrevista.");
   }
 
-  // Data e hora vêm do campo datetime-local e são mantidas como digitadas (sem fuso do servidor).
+  // A equipe digita no horário de Brasília; grava com o fuso explícito (-03:00).
   const [dia, hora] = dataHora.split("T");
   const [ano, mes, diaMes] = dia.split("-");
   const quando = `${diaMes}/${mes}/${ano} às ${hora}`;
+  const dataIso = `${dia}T${hora}:00-03:00`;
 
-  const { error } = await admin.from("messages").insert({
+  // Proposta nova substitui a anterior ativa (proposta ou confirmada).
+  await admin
+    .from("entrevistas_online")
+    .update({ status: "substituida", updated_at: new Date().toISOString() })
+    .eq("application_id", applicationId)
+    .in("status", ["proposta", "confirmada"]);
+
+  const { error } = await admin.from("entrevistas_online").insert({
+    application_id: applicationId,
+    data_hora: dataIso,
+    link,
+    status: "proposta",
+    criada_por: user.id,
+  });
+  if (error) throw new Error("Não foi possível registrar a entrevista. Tente de novo.");
+
+  // Aviso ao candidato: a entrevista só vale depois da confirmação dele, em Processos.
+  await admin.from("messages").insert({
     application_id: applicationId,
     remetente_id: user.id,
     destinatario_id: candidateId,
-    conteudo: `Entrevista online marcada para ${quando}. Entre pelo link da reunião: ${link}`,
+    conteudo: `Entrevista online proposta para ${quando} (horário de Brasília). Confirme ou recuse em Processos.`,
   });
-  if (error) throw new Error("Não foi possível enviar a mensagem ao candidato.");
 
   await admin.from("application_notes").insert({
     application_id: applicationId,
     autor_id: user.id,
-    nota: `Entrevista online agendada para ${quando}: ${link}`,
+    nota: `Entrevista online proposta para ${quando}, aguardando confirmação do candidato: ${link}`,
   });
 
   await admin.from("audit_log").insert({
     ator_id: user.id,
-    acao: "entrevista_online_agendada",
+    acao: "entrevista_online_proposta",
     objeto_tipo: "application",
     objeto_id: applicationId,
-    depois: { data_hora: dataHora, link },
+    depois: { data_hora: dataIso, link },
   });
 
   revalidatePath(`/admin/candidatos/${candidateId}`);
