@@ -44,8 +44,7 @@ export default async function TalentosPage({
   let consultaVagas = admin
     .from("jobs")
     .select("id, titulo, companies(nome_fantasia, razao_social)")
-    .eq("status", "publicada")
-    .eq("modalidade", "temporaria");
+    .eq("status", "publicada");
   if (!escopo.todos) {
     consultaVagas = consultaVagas.in("company_id", empresasParaFiltro(escopo)).or(filtroConfidencialJobs(escopo));
   }

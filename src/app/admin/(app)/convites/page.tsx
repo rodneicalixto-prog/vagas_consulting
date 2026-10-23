@@ -30,8 +30,7 @@ export default async function ConvitesAdminPage({
   let consultaVagas = admin
     .from("jobs")
     .select("id, titulo, companies(nome_fantasia, razao_social)")
-    .eq("status", "publicada")
-    .eq("modalidade", "temporaria");
+    .eq("status", "publicada");
   // Carteira: operador só vê convites/vagas da carteira; o seletor lista
   // candidatos aprovados (banco de talentos, sem contato).
   if (vagasIds) consultaConvites = consultaConvites.in("job_id", vagasIds);
@@ -60,7 +59,7 @@ export default async function ConvitesAdminPage({
       <div className="shrink-0 px-4 pt-7 md:px-9">
         <h1 className="text-xl font-extrabold text-text">Convites</h1>
         <p className="mt-1 text-xs text-text-2">
-          Convite direto para vagas temporárias. O candidato responde pelo app; a equipe confirma.
+          Convite direto para vagas publicadas (temporária, PJ ou efetiva). O candidato responde pelo app; a equipe confirma.
         </p>
       </div>
 
@@ -83,7 +82,7 @@ export default async function ConvitesAdminPage({
             </select>
           </label>
           <label className="flex flex-col gap-1 text-[12px] font-extrabold text-text-2">
-            Vaga temporária publicada
+            Vaga publicada
             <select name="job_id" required className="rounded-lg border border-border px-3 py-2 text-[13px] font-normal">
               <option value="">Selecione…</option>
               {(vagas ?? []).map((v) => (
@@ -127,7 +126,7 @@ export default async function ConvitesAdminPage({
 
         {(vagas ?? []).length === 0 && (
           <p className="mb-4 text-xs text-text-2">
-            Nenhuma vaga temporária publicada. Publique uma em Cadastro de vagas para poder convidar.
+            Nenhuma vaga publicada. Publique uma em Cadastro de vagas para poder convidar.
           </p>
         )}
 

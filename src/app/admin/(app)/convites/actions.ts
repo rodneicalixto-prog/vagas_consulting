@@ -46,7 +46,6 @@ export async function criarConvite(formData: FormData) {
     throw new Error("Só é possível convidar candidatos aprovados.");
   }
   if (!vaga || vaga.status !== "publicada") throw new Error("A vaga precisa estar publicada.");
-  if (vaga.modalidade !== "temporaria") throw new Error("Convite direto vale apenas para vaga temporária.");
 
   // limit(1) em vez de maybeSingle: com 2+ linhas o maybeSingle erra e a guarda
   // deixaria de valer. A garantia definitiva é o índice único parcial
