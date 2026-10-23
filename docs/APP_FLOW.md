@@ -53,7 +53,7 @@
 | `/admin/denuncias` | Moderação de denúncias |
 | `/admin/lgpd` | Solicitações LGPD do titular |
 | `/admin/estrategico` | Painel estratégico: KPIs de empresas cadastradas, instalações do app, leads, candidatos e contratações fechadas; séries dos últimos 70 dias (leads/candidatos), distribuição de candidaturas, vagas por modalidade e financeiro de prestações (confirmado em `src/app/admin/(app)/estrategico/page.tsx`, 14/10/2026) |
-| `/admin/convites` | Criar, confirmar e cancelar convites para vaga temporária | `invites`, `audit_log` |
+| `/admin/convites` | Criar, confirmar e cancelar convites para vaga publicada (temporária, PJ ou efetiva), com texto opcional da equipe | `invites`, `messages`, `audit_log` |
 | `/admin/acesso` | Convite e gestão de contas administrativas |
 | `/admin/acesso-negado` | Tela de acesso negado por papel |
 
@@ -100,9 +100,8 @@ cadastro.
 
 ## Jornadas alternativas
 
-- Candidato recebe convite direto pra temporário (`invites`) sem passar
-  pelo fluxo de candidatura — aceita/recusa/confirma pelo próprio fluxo de
-  `/processos` ou mensagens. **Decisão (Rodnei, 14/10/2026): o aceite de convite tem tela própria** — `/convites/[id]`, construída em 14/10/2026 (ver `docs/specs/CONVITE_ACEITE.md`).
+- Candidato recebe convite direto (`invites`) para vaga publicada de qualquer modalidade (temporária, PJ ou efetiva), sem passar pelo fluxo de candidatura. O convite aparece em `/convites` e como mensagem em Mensagens (vinculada ao convite). **Decisão (Rodnei, 14/10/2026): o aceite de convite tem tela própria** — `/convites/[id]`, com o texto da equipe antes dos botões (ver `docs/specs/CONVITE_ACEITE.md`, atualização de 23/10/2026).
+- Entrevista online: a equipe propõe data e link; o candidato confirma ou recusa em `/processos/[id]`; o link aparece só após a confirmação; a confirmação cria o compromisso na agenda.
 - Candidato reprovado (`status = reprovado_cliente`) ou desistente —
   estado terminal, sem retomada automática.
 - Admin corrige vaga em vez de publicar/encerrar (`acao: "corrigir"` em

@@ -1,6 +1,37 @@
 # Especificação — Tela própria de aceite de convite
 
-> **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec funcional v1.0 · **Data:** 14/10/2026 · **Status:** implementado localmente com as sugestões abaixo como padrão (Rodnei: "vamos fazer as suas tarefas de ponta a ponta"); P1–P5 seguem abertas para ajuste; não publicado
+> **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec funcional v1.0 · **Data:** 14/10/2026 · **Status:** implementado e publicado; decisões P1–P5 registradas na atualização de 23/10/2026 abaixo
+
+## Atualização de 23/10/2026 (estado implementado e publicado)
+
+Esta seção registra o comportamento real do código em `main` (até o commit `42a0665`). Onde ela diverge do texto original acima, vale esta seção.
+
+| Tema | Como ficou | Commit |
+|---|---|---|
+| Modalidade da vaga | Convite vale para **qualquer vaga publicada**: temporária, PJ ou efetiva. Antes era só temporária. Decisão do Rodnei em 23/10/2026. | `51a5783` |
+| P1 (quem cria) | Admin, em `/admin/convites`, com criar, confirmar e cancelar. Também pelo banco de talentos. | — |
+| P2 (prazo) | O formulário da equipe usa **72 horas** por padrão (máximo 7 dias). O valor padrão do schema continua em 24 horas, mas o formulário sempre envia o seu. | `schemas.ts` |
+| P3 (motivo da recusa) | Opcional, como previsto. | — |
+| P4 (confirmação) | Aceito → `confirmado` pela equipe, como previsto. | — |
+| P5 (como o candidato fica sabendo) | **Nos dois lugares**: dentro do app (aba Convites) e como mensagem na aba Mensagens, vinculada ao convite (`messages.invite_id`). WhatsApp segue para a fase de IA. | `3d44889` |
+| Texto da equipe | Campo opcional ao convidar, até 1000 caracteres. Aparece no bloco "Mensagem da equipe" da tela do convite, antes de aceitar ou recusar. Sem texto, a mensagem é um padrão apontando para Convites. | `3d44889` |
+| Aviso ao enviar | Sucesso (verde), falha com motivo (vermelho) ou convite já ativo para o mesmo candidato e vaga. O resultado volta pela URL, não por erro lançado. | `42a0665` |
+
+### Entrevista online (fase posterior ao aceite)
+
+Depois do aceite e da confirmação, a equipe pode marcar uma entrevista online:
+
+1. Com a candidatura em **Entrevista**, a equipe propõe data, hora e link `https` da reunião no cadastro do candidato (`/admin/candidatos/[id]`). A plataforma não cria a reunião; o link vem de Meet, Zoom ou Teams.
+2. O candidato recebe uma mensagem em Mensagens (sem o link) e confirma ou recusa em `/processos/[id]`.
+3. **Confirmada:** o link aparece para o candidato e a plataforma cria um compromisso do tipo entrevista na agenda (`/admin/agenda/entrevistas`), de 1 hora, com o link na descrição.
+4. **Recusada:** registra nota na candidatura e não cria compromisso. A equipe propõe outro horário.
+5. Nova proposta substitui a anterior ativa e cancela o compromisso anterior.
+
+Tabela `entrevistas_online` (migrations `0047` e `0048`): uma entrevista ativa por candidatura (índice único parcial); o candidato só lê as próprias; a escrita é feita pelo servidor.
+
+Critérios de aceite da entrevista online: proposta visível ao candidato sem link; link visível só após confirmação; compromisso criado somente na confirmação; nova proposta cancela o compromisso anterior; recusa não cria compromisso.
+
+**Pendente:** teste ponta a ponta em produção (convidar com texto, aceitar, confirmar, propor, confirmar e recusar). Até lá, o estado é implementado, mas não testado em produção.
 
 ## Por que existe
 

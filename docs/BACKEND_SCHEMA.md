@@ -20,7 +20,8 @@
 | `companies` | Empresa cliente |
 | `compromissos` | Agenda da equipe (entrevistas, compromissos) |
 | `consents` | Consentimento LGPD por finalidade/canal |
-| `invites` | Convite direto pra vaga temporária |
+| `entrevistas_online` | Entrevista online proposta pela equipe (data, link https, status proposta/confirmada/recusada/substituida), com o compromisso da agenda ligado (`compromisso_id`). Migrations 0047 e 0048. |
+| `invites` | Convite direto para vaga publicada (temporária, PJ ou efetiva) |
 | `jobs` | Vaga (efetiva/PJ/temporária) |
 | `leads` | Lead captado (Meta Ads ou app baixado) |
 | `messages` | Mensagem candidato↔operação, vinculada a `application` OU `invite` (XOR) |
@@ -279,3 +280,9 @@ Estado do banco em 15/10/2026: migrations aplicadas até a `0045`. A
 `help_questions` (pergunta anonimizada, papel, tela, pedaços usados, sem
 resposta, útil; RLS ligada, sem política pública; retenção de 90 dias) e
 `ai_agents.ajuda_ativa` (padrão ligado).
+
+### Migrations 0047 e 0048 — entrevista online (23/10/2026, aplicadas)
+
+`entrevistas_online`: proposta da equipe (data_hora com fuso de Brasília, link https, status `proposta`, `confirmada`, `recusada` ou `substituida`, `criada_por`, `respondida_em`, `compromisso_id`). Índice único parcial: uma entrevista ativa (proposta ou confirmada) por candidatura. RLS ligada: o candidato só lê as entrevistas das próprias candidaturas; a escrita é feita pelo servidor (service role). A migration 0048 adiciona `compromisso_id`, ligando a entrevista ao compromisso da agenda criado na confirmação.
+
+Estado do banco em 23/10/2026: migrations aplicadas até a `0048`.
