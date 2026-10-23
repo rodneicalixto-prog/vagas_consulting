@@ -51,9 +51,15 @@ export default function ExperienciasPage() {
             motivoSaida: e.motivoSaida,
           })),
         );
+      } else if (resultado.curriculoUrl && !resultado.error) {
+        setErro(
+          "Currículo salvo, mas não encontrei experiências nele. Preencha abaixo ou marque 'Nunca trabalhei antes'.",
+        );
       }
       // Reflete o resultado desta tentativa, não acumula de anexos anteriores.
       setCurriculoPreenchido(experienciasExtraidas.length > 0);
+    } catch {
+      setErro("Não foi possível analisar o currículo. Tente de novo ou preencha manualmente.");
     } finally {
       setAnalisandoCurriculo(false);
     }
@@ -61,6 +67,13 @@ export default function ExperienciasPage() {
 
   const onSubmit = () => {
     setErro(null);
+    // Mesma regra do servidor, checada antes: erro lançado no servidor chega ao
+    // navegador sem mensagem em produção (aparece como "React error #441").
+    const temExperiencia = experiencias.some((e) => e.empresa.trim() && e.cargo.trim());
+    if (!nuncaTrabalhou && !temExperiencia) {
+      setErro("Informe pelo menos uma experiência (empresa e cargo) ou marque 'Nunca trabalhei antes'.");
+      return;
+    }
     startTransition(async () => {
       try {
         await salvarExperiencias(nuncaTrabalhou, experiencias, curriculoPath);
