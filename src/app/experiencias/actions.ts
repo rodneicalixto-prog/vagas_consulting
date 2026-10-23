@@ -55,7 +55,15 @@ export async function processarCurriculo(file: File): Promise<ProcessarCurriculo
     }),
     extrairDadosCurriculo(buffer, file.type)
       .then((sugestao) => ({ sugestao, erro: false as const }))
-      .catch(() => ({ sugestao: undefined, erro: true as const })),
+      .catch((e: unknown) => {
+        // Sem este log a falha da IA some: o candidato só vê a mensagem genérica.
+        console.error("[curriculo] extração por IA falhou", {
+          tipo: file.type,
+          bytes: file.size,
+          motivo: e instanceof Error ? e.message : String(e),
+        });
+        return { sugestao: undefined, erro: true as const };
+      }),
   ]);
 
   if (uploadError) {
