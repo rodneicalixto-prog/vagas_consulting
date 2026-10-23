@@ -111,7 +111,7 @@ export async function criarConviteFormulario(formData: FormData) {
     await criarConvite(formData);
   } catch (e) {
     if (e instanceof Error && e.message.includes("já tem um convite ativo")) {
-      redirect("/admin/convites");
+      redirect("/admin/convites?aviso=ja-convidado");
     }
     throw e;
   }

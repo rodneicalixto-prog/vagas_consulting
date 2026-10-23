@@ -11,7 +11,12 @@ import { SubmitButton } from "@/components/form-buttons";
 import { CONVITES_CANCELAVEIS, conviteExpirado, conviteLabel, formatPrazo } from "@/lib/convites";
 import { criarConviteFormulario, decidirConvite } from "./actions";
 
-export default async function ConvitesAdminPage() {
+export default async function ConvitesAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ aviso?: string }>;
+}) {
+  const { aviso } = await searchParams;
   const { user, role } = await requireInternalUser("pipeline.manage");
   const admin = createAdminClient();
   const escopo = await obterEscopo(user.id, role);
@@ -60,6 +65,11 @@ export default async function ConvitesAdminPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6 md:px-9">
+        {aviso === "ja-convidado" && (
+          <p className="mb-4 rounded-xl bg-navy-bg px-4 py-3 text-[12.5px] font-bold text-navy">
+            Este candidato já tem um convite ativo para esta vaga. Ele aparece na lista abaixo.
+          </p>
+        )}
         <form action={criarConviteFormulario} className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-4 md:grid-cols-4">
           <label className="flex flex-col gap-1 text-[12px] font-extrabold text-text-2">
             Candidato
