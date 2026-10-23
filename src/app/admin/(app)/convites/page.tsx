@@ -14,9 +14,9 @@ import { criarConviteFormulario, decidirConvite } from "./actions";
 export default async function ConvitesAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ aviso?: string }>;
+  searchParams: Promise<{ aviso?: string; erro?: string }>;
 }) {
-  const { aviso } = await searchParams;
+  const { aviso, erro } = await searchParams;
   const { user, role } = await requireInternalUser("pipeline.manage");
   const admin = createAdminClient();
   const escopo = await obterEscopo(user.id, role);
@@ -64,6 +64,16 @@ export default async function ConvitesAdminPage({
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6 md:px-9">
+        {aviso === "enviado" && (
+          <p className="mb-4 rounded-xl bg-success-bg px-4 py-3 text-[12.5px] font-bold text-success">
+            Convite enviado com sucesso. Ele aparece na lista abaixo e a mensagem já está em Mensagens do candidato.
+          </p>
+        )}
+        {erro && (
+          <p className="mb-4 rounded-xl bg-danger-bg px-4 py-3 text-[12.5px] font-bold text-danger">
+            Não foi possível enviar o convite: {erro}
+          </p>
+        )}
         {aviso === "ja-convidado" && (
           <p className="mb-4 rounded-xl bg-navy-bg px-4 py-3 text-[12.5px] font-bold text-navy">
             Este candidato já tem um convite ativo para esta vaga. Ele aparece na lista abaixo.

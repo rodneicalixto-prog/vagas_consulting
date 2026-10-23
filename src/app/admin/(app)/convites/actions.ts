@@ -119,18 +119,22 @@ export async function criarConvite(formData: FormData) {
 }
 
 /**
- * Formulário da tela de convites. Convite repetido (já ativo) não derruba a
- * página: o convite existente já aparece na lista, então volta para ela.
+ * Formulário da tela de convites. O resultado volta por querystring (aviso de
+ * sucesso, convite repetido ou erro): erro lançado no servidor chega ao
+ * navegador sem texto em produção, então não é relançado.
  */
 export async function criarConviteFormulario(formData: FormData) {
   try {
     await criarConvite(formData);
   } catch (e) {
-    if (e instanceof Error && e.message.includes("já tem um convite ativo")) {
+    const mensagem = e instanceof Error ? e.message : "";
+    if (mensagem.includes("já tem um convite ativo")) {
       redirect("/admin/convites?aviso=ja-convidado");
     }
-    throw e;
+    const motivo = (mensagem || "tente de novo.").slice(0, 200);
+    redirect(`/admin/convites?erro=${encodeURIComponent(motivo)}`);
   }
+  redirect("/admin/convites?aviso=enviado");
 }
 
 export async function decidirConvite(formData: FormData) {
