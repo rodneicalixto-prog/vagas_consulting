@@ -9,7 +9,7 @@ import {
 } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 import { CONVITES_CANCELAVEIS, conviteExpirado, conviteLabel, formatPrazo } from "@/lib/convites";
-import { criarConvite, decidirConvite } from "./actions";
+import { criarConviteFormulario, decidirConvite } from "./actions";
 
 export default async function ConvitesAdminPage() {
   const { user, role } = await requireInternalUser("pipeline.manage");
@@ -60,7 +60,7 @@ export default async function ConvitesAdminPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6 md:px-9">
-        <form action={criarConvite} className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-4 md:grid-cols-4">
+        <form action={criarConviteFormulario} className="mb-6 grid gap-3 rounded-2xl border border-border bg-surface p-4 md:grid-cols-4">
           <label className="flex flex-col gap-1 text-[12px] font-extrabold text-text-2">
             Candidato
             <select name="candidate_id" required className="rounded-lg border border-border px-3 py-2 text-[13px] font-normal">

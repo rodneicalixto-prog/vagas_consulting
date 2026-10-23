@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
@@ -99,6 +100,21 @@ export async function criarConvite(formData: FormData) {
   });
 
   revalidatePath("/admin/convites");
+}
+
+/**
+ * Formulário da tela de convites. Convite repetido (já ativo) não derruba a
+ * página: o convite existente já aparece na lista, então volta para ela.
+ */
+export async function criarConviteFormulario(formData: FormData) {
+  try {
+    await criarConvite(formData);
+  } catch (e) {
+    if (e instanceof Error && e.message.includes("já tem um convite ativo")) {
+      redirect("/admin/convites");
+    }
+    throw e;
+  }
 }
 
 export async function decidirConvite(formData: FormData) {
