@@ -2257,3 +2257,4 @@ Toda entrega que modificar documentação deve informar uma destas situações:
 
 **Testes:** 173 automatizados passando em todas as entregas acima (tsc e eslint também).
 **Pendências do Rodnei:** teste manual da leitura do currículo com PDF real; Auth URL do Supabase (link de "esqueci a senha"); trocar a chave Groq exposta e revisar a chave OpenAI; confirmar que a notificação de convite chega ao candidato.
+155. **Verificação pós-deploy da leitura do currículo (23/10/2026, noite)**: deploy de produção dpl_GBd4wYdW... (commit 9774157) está READY. Nos logs da Vercel desde esse deploy não há erro de extração. Último anexo no bucket `curriculos` é de 19:41, anterior ao deploy, então a leitura nova ainda não foi exercitada. Teste de ponta a ponta (anexar PDF em /experiencias e ver os campos preenchidos) segue pendente. Um teste local que decifrava a chave da OpenAI do cofre foi bloqueado pelo classificador de segurança e não foi refeito.
