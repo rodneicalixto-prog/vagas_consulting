@@ -101,11 +101,22 @@ export async function agendarEntrevistaOnline(formData: FormData) {
   const dataIso = `${dia}T${hora}:00-03:00`;
 
   // Proposta nova substitui a anterior ativa (proposta ou confirmada).
+  const { data: anteriores } = await admin
+    .from("entrevistas_online")
+    .select("compromisso_id")
+    .eq("application_id", applicationId)
+    .in("status", ["proposta", "confirmada"]);
   await admin
     .from("entrevistas_online")
     .update({ status: "substituida", updated_at: new Date().toISOString() })
     .eq("application_id", applicationId)
     .in("status", ["proposta", "confirmada"]);
+  const compromissosAnteriores = (anteriores ?? [])
+    .map((a) => a.compromisso_id)
+    .filter((v): v is string => !!v);
+  if (compromissosAnteriores.length > 0) {
+    await admin.from("compromissos").update({ status: "cancelado" }).in("id", compromissosAnteriores);
+  }
 
   const { error } = await admin.from("entrevistas_online").insert({
     application_id: applicationId,

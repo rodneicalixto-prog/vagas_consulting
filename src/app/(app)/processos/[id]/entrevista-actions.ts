@@ -25,14 +25,14 @@ export async function responderEntrevistaOnline(formData: FormData) {
   const admin = createAdminClient();
   const { data: candidatura } = await admin
     .from("applications")
-    .select("id, candidate_id")
+    .select("id, candidate_id, jobs(titulo)")
     .eq("id", applicationId)
     .maybeSingle();
   if (!candidatura || candidatura.candidate_id !== user.id) redirect(`/processos/${applicationId}?entrevista=indisponivel`);
 
   const { data: entrevista } = await admin
     .from("entrevistas_online")
-    .select("id, status")
+    .select("id, status, data_hora, link, criada_por")
     .eq("id", entrevistaId)
     .eq("application_id", applicationId)
     .maybeSingle();
@@ -41,9 +41,38 @@ export async function responderEntrevistaOnline(formData: FormData) {
 
   const confirmou = acao === "confirmar";
   const agora = new Date().toISOString();
+
+  // Confirmada: cria o compromisso na agenda da equipe (1 hora, responsável quem propôs).
+  let compromissoId: string | null = null;
+  if (confirmou) {
+    const inicio = new Date(entrevista.data_hora);
+    const { data: compromisso, error: erroCompromisso } = await admin
+      .from("compromissos")
+      .insert({
+        tipo: "entrevista",
+        titulo: `Entrevista online: ${candidatura.jobs?.titulo ?? "vaga"}`,
+        descricao: entrevista.link,
+        application_id: applicationId,
+        responsavel_id: entrevista.criada_por,
+        criado_por: entrevista.criada_por,
+        inicio: inicio.toISOString(),
+        fim: new Date(inicio.getTime() + 3600_000).toISOString(),
+        status: "agendado",
+      })
+      .select("id")
+      .single();
+    if (erroCompromisso || !compromisso) redirect(`/processos/${applicationId}?entrevista=indisponivel`);
+    compromissoId = compromisso.id;
+  }
+
   const { data: atualizado } = await admin
     .from("entrevistas_online")
-    .update({ status: confirmou ? "confirmada" : "recusada", respondida_em: agora, updated_at: agora })
+    .update({
+      status: confirmou ? "confirmada" : "recusada",
+      respondida_em: agora,
+      updated_at: agora,
+      compromisso_id: compromissoId,
+    })
     .eq("id", entrevistaId)
     .eq("status", "proposta")
     .select("id");

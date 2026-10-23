@@ -103,6 +103,7 @@ export type Database = {
       entrevistas_online: {
         Row: {
           application_id: string
+          compromisso_id: string | null
           created_at: string
           criada_por: string
           data_hora: string
@@ -114,6 +115,7 @@ export type Database = {
         }
         Insert: {
           application_id: string
+          compromisso_id?: string | null
           created_at?: string
           criada_por: string
           data_hora: string
@@ -125,6 +127,7 @@ export type Database = {
         }
         Update: {
           application_id?: string
+          compromisso_id?: string | null
           created_at?: string
           criada_por?: string
           data_hora?: string
