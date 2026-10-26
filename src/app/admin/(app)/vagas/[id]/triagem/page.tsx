@@ -1,3 +1,4 @@
+import { BotaoPdf } from "@/components/botao-pdf";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -115,6 +116,7 @@ export default async function TriagemPage({
             <a href={`/admin/vagas/${vaga.id}/triagem/exportar`} className="rounded-lg border border-border bg-surface px-3 py-1 text-[11.5px] font-bold text-navy">
               Baixar planilha (CSV)
             </a>
+            <BotaoPdf nomeDoArquivo={`Triagem - ${vaga.titulo}`} />
           </div>
         )}
 

@@ -11,6 +11,9 @@ const MODOS: { valor: string; rotulo: string; dica: string }[] = [
   { valor: "reescrever", rotulo: "Reescrever uma JD", dica: "Cole a JD atual: a IA corta exigência inflada e clichê." },
   { valor: "junior", rotulo: "Vaga júnior, sem experiência", dica: "Foco em potencial; sem exigir experiência prévia." },
   { valor: "lideranca", rotulo: "Vaga de liderança", dica: "Inclui escopo de gestão e competências de liderança." },
+  { valor: "pcd", rotulo: "Vaga afirmativa para pessoas com deficiência (PcD)", dica: "Descreve a função por competências, sem exigir laudo no anúncio, e pergunta pela acessibilidade que a empresa oferece." },
+  { valor: "estagio", rotulo: "Vaga de estágio", dica: "Sem exigir experiência; foco em curso, aprendizado, bolsa e carga horária (Lei 11.788/2008)." },
+  { valor: "melhor_idade", rotulo: "Vaga com foco em profissionais 60+ (melhor idade)", dica: "Valoriza experiência e mentoria, sem limite de idade nem estereótipos." },
 ];
 
 /** Proposta da IA: preenche os critérios para a pessoa conferir e salvar. Nada é publicado. */

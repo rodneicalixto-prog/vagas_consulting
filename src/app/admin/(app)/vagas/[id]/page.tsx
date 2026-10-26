@@ -4,6 +4,7 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { calcularEtapas, caminhoEtapa, proximoPasso, type EstadoEtapa } from "@/lib/ciclo-vaga";
 import { carregarCicloDaVaga } from "@/lib/ciclo-vaga-servidor";
+import { BotaoPdf, CabecalhoImpressao } from "@/components/botao-pdf";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -44,10 +45,14 @@ export default async function CentralDaVagaPage({ params }: { params: Promise<{ 
 
   return (
     <div className="h-full overflow-y-auto px-4 md:px-9 py-6">
+      <CabecalhoImpressao titulo={`Situação da vaga: ${vaga.titulo}`} subtitulo={vaga.empresa} />
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-xl font-extrabold text-text">{vaga.titulo}</h1>
         <span className="rounded-full bg-navy-bg px-3 py-1 text-[11px] font-extrabold text-navy">
           {ROTULO_STATUS[vaga.status] ?? vaga.status}
+        </span>
+        <span className="ml-auto">
+          <BotaoPdf nomeDoArquivo={`Situação da vaga - ${vaga.titulo}`} />
         </span>
       </div>
       <p className="mt-1 text-xs text-text-2">
@@ -108,6 +113,9 @@ export default async function CentralDaVagaPage({ params }: { params: Promise<{ 
       <div className="mt-8 flex flex-wrap gap-4 text-[12px]">
         <Link href="/admin/vagas" className="font-bold text-navy underline">
           ← Todas as vagas
+        </Link>
+        <Link href={`/admin/vagas/${id}/ficha`} className="font-bold text-navy underline">
+          Ficha da vaga (PDF)
         </Link>
         <Link href={`/vagas/${id}`} className="font-bold text-navy underline" target="_blank">
           Ver como o candidato vê ↗

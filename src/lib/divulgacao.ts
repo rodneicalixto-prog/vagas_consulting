@@ -3,7 +3,7 @@
  * por canal. Puro: sem banco nem rede.
  * Spec: docs/specs/AGENTE_IA_FASE3.md §14.1 (3N) e §14.12.
  */
-import { termosDiscriminatorios, type Verificacao } from "./vaga-estruturada";
+import { instrucoesDoPerfil, termosDiscriminatorios, type PerfilVaga, type Verificacao } from "./vaga-estruturada";
 
 export const CANAIS = [
   { id: "linkedin", rotulo: "LinkedIn (post)", limite: 1500, hashtags: true, ganchos: true, markdown: true },
@@ -46,6 +46,8 @@ export type EntradaDivulgacao = {
     descricao: string | null;
   };
   criterios: {
+    /** Perfil da vaga (PcD, estágio, 60+): muda as regras do texto. */
+    perfil: PerfilVaga;
     rotina: string;
     obrigatorios: string[];
     desejaveis: string[];
@@ -89,6 +91,7 @@ export function montarPromptDivulgacao(e: EntradaDivulgacao): { system: string; 
       ? "- Perfil técnico: seja objetivo e transparente (cargo, modelo, regime, faixa), destaque stack e o tipo de problema."
       : "- Perfil menos técnico: linguagem simples e concreta, sem inglês desnecessário; mostre a rotina e o que costuma importar (estabilidade, benefícios, ambiente, local, horário).",
     `- Tom da empresa: ${tom[e.tom]}.`,
+    ...instrucoesDoPerfil(e.criterios.perfil).map((l) => `- ${l}`),
     e.confidencial
       ? "- Esta vaga é CONFIDENCIAL: não cite o nome da empresa nem dados que a identifiquem; diga que os detalhes saem na conversa."
       : `- Empresa: ${e.empresa}.`,

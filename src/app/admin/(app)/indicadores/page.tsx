@@ -1,3 +1,4 @@
+import { BotaoPdf } from "@/components/botao-pdf";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireInternalUser } from "@/lib/auth/internal";
@@ -129,7 +130,12 @@ export default async function IndicadoresPage({
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-4 md:px-9 pt-7">
-        <h1 className="text-xl font-extrabold text-text">Indicadores de R&amp;S</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-xl font-extrabold text-text">Indicadores de R&amp;S</h1>
+          <span className="ml-auto">
+            <BotaoPdf nomeDoArquivo={`Indicadores de R&S - ${escolhida.nome_fantasia || escolhida.razao_social}`} />
+          </span>
+        </div>
         <p className="mt-1 text-xs text-text-2">
           {escolhida.nome_fantasia || escolhida.razao_social} · {per.rotulo}. Números do banco e do que você informa.
         </p>

@@ -39,6 +39,7 @@ const NAV: NavEntry[] = [
       { href: "/admin/contatos", label: "Contatos" },
       { href: "/admin/validacoes", label: "Validações" },
       { href: "/admin/talentos", label: "Talentos" },
+      { href: "/admin/origens", label: "Origens" },
       { href: "/admin/convites", label: "Convites" },
       { href: "/admin/ranking", label: "Ranking", roles: ["superadmin", "admin"] },
     ],
@@ -212,7 +213,7 @@ export function AdminShell({
   return (
     <div className="flex min-h-dvh flex-col bg-bg md:h-dvh md:flex-row md:overflow-hidden">
       {/* Sidebar — desktop/tablet */}
-      <aside className="hidden md:flex md:h-dvh md:w-60 md:shrink-0 md:flex-col bg-[#0c1526] p-4.5 text-white">
+      <aside className="hidden md:flex md:h-dvh md:w-60 md:shrink-0 md:flex-col bg-[#0c1526] p-4.5 text-white print:hidden">
         <div className="flex items-center gap-2.5 px-2 pb-1">
           <BrandMark size={24} />
           <Wordmark light />
@@ -252,7 +253,7 @@ export function AdminShell({
       )}
 
       <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border px-4 md:px-9">
+        <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border px-4 md:px-9 print:hidden">
           <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setDrawerOpen(true)}
@@ -281,7 +282,9 @@ export function AdminShell({
           </a>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
-        <AjudaPainel />
+        <div className="print:hidden">
+          <AjudaPainel />
+        </div>
       </main>
     </div>
   );

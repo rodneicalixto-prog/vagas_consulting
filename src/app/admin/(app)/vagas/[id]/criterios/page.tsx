@@ -5,6 +5,8 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { SubmitButton } from "@/components/form-buttons";
 import {
+  PERFIS_VAGA,
+  ROTULO_PERFIL_VAGA,
   ROTULO_SENIORIDADE,
   SENIORIDADES,
   normalizarCriterios,
@@ -159,6 +161,16 @@ export default async function CriteriosDaVagaPage({
           </label>
 
           <div className="flex flex-col gap-3">
+            <label className="flex flex-col gap-1">
+              <span className="text-[10.5px] font-bold text-text-2">Tipo de vaga (regras próprias de PcD, estágio e 60+)</span>
+              <select name="perfil" defaultValue={criterios.perfil} className={CAMPO}>
+                {PERFIS_VAGA.map((p) => (
+                  <option key={p} value={p}>
+                    {ROTULO_PERFIL_VAGA[p]}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="flex flex-col gap-1">
               <span className="text-[10.5px] font-bold text-text-2">Senioridade</span>
               <select name="senioridade" defaultValue={criterios.senioridade} className={CAMPO}>

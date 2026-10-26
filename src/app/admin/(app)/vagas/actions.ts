@@ -23,6 +23,7 @@ import { normalizarRegras, regrasDoFormulario, verificarRegras } from "@/lib/reg
 import {
   criteriosDaResposta,
   modoValido,
+  perfilDoModo,
   montarPromptCriterios,
   listaDeTexto,
   normalizarCriterios,
@@ -223,6 +224,7 @@ export async function salvarCriterios(formData: FormData) {
   const { obrigatorios, eliminatorios } = obrigatoriosDeTexto(String(formData.get("obrigatorios") ?? ""));
   const anos = String(formData.get("anos_experiencia") ?? "").trim();
   const bruto: Record<string, unknown> = {
+    perfil: String(formData.get("perfil") ?? ""),
     rotina: String(formData.get("rotina") ?? ""),
     obrigatorios,
     eliminatorios,
@@ -312,6 +314,9 @@ export async function gerarCriteriosComIA(_anterior: EstadoGeracao, formData: Fo
 
     const proposta = criteriosDaResposta(r.texto);
     if (!proposta) return { erro: "Não consegui ler a resposta da IA. Tente de novo.", ok: false };
+    // Os modos PcD, estágio e 60+ gravam o perfil na vaga (as verificações e a divulgação passam a respeitá-lo);
+    // os demais modos mantêm o perfil que a vaga já tinha.
+    proposta.perfil = perfilDoModo(modo) ?? normalizarCriterios(vaga.criterios).perfil;
 
     const { error } = await admin
       .from("jobs")
@@ -412,6 +417,7 @@ export async function gerarDivulgacao(_anterior: EstadoDivulgacao, formData: For
         descricao: vaga.descricao,
       },
       criterios: {
+        perfil: criterios.perfil,
         rotina: criterios.rotina,
         obrigatorios: criterios.obrigatorios,
         desejaveis: criterios.desejaveis,

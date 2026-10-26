@@ -1926,6 +1926,9 @@ export type Database = {
       }
       profiles: {
         Row: {
+          origem_canal: string | null
+          origem_detalhe: string
+          origem_em: string | null
           blacklist_em: string | null
           blacklist_motivo: string | null
           blacklist_por: string | null
@@ -1953,6 +1956,9 @@ export type Database = {
           validado_por: string | null
         }
         Insert: {
+          origem_canal?: string | null
+          origem_detalhe?: string
+          origem_em?: string | null
           blacklist_em?: string | null
           blacklist_motivo?: string | null
           blacklist_por?: string | null
@@ -1980,6 +1986,9 @@ export type Database = {
           validado_por?: string | null
         }
         Update: {
+          origem_canal?: string | null
+          origem_detalhe?: string
+          origem_em?: string | null
           blacklist_em?: string | null
           blacklist_motivo?: string | null
           blacklist_por?: string | null

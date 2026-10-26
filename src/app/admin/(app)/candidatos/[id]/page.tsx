@@ -13,6 +13,7 @@ import { agendarEntrevistaOnline, atualizarStatusCandidatura } from "./actions";
 import { bloquearNaEmpresa } from "../../blacklist/actions";
 import { formatarTelefoneBR, linkWhatsApp } from "@/lib/whatsapp";
 import { alterarBlacklist } from "../actions";
+import { interpretarOrigemCandidatura, rotuloOrigem, type CanalOrigem } from "@/lib/origem";
 
 const STATUS_OPCOES: Enums<"status_candidatura">[] = [
   "recebida",
@@ -38,6 +39,7 @@ type CandidaturaRow = {
   status: Enums<"status_candidatura">;
   created_at: string;
   jobTitulo: string;
+  origem: string | null;
   jobModalidade: string;
   empresa: string;
 };
@@ -46,7 +48,7 @@ async function buscarPerfilComCurriculoAssinado(client: ReturnType<typeof create
   const result = await client
     .from("profiles")
     .select(
-      "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou, idade",
+      "id, nome_completo, cidade, telefone, endereco, titulo_profissional, resumo, disponibilidade, modalidades_desejadas, modelo_trabalho, status_validacao, curriculo_url, perfil_completo_pct, created_at, blacklisted, blacklist_motivo, experiencias_profissionais, nunca_trabalhou, idade, origem_canal, origem_detalhe, origem_em",
     )
     .eq("id", id)
     .maybeSingle();
@@ -119,7 +121,7 @@ export default async function CandidatoDetalhePage({
       (() => {
         let q = client
           .from("applications")
-          .select("id, status, created_at, jobs(titulo, modalidade, companies(nome_fantasia, razao_social))")
+          .select("id, status, created_at, origem, jobs(titulo, modalidade, companies(nome_fantasia, razao_social))")
           .eq("candidate_id", id);
         if (vagasIds) q = q.in("job_id", vagasIds);
         return q.order("created_at", { ascending: false });
@@ -159,6 +161,7 @@ export default async function CandidatoDetalhePage({
       status: a.status,
       created_at: a.created_at,
       jobTitulo: job?.titulo ?? "Vaga removida",
+      origem: a.origem ?? null,
       jobModalidade: job?.modalidade ?? "—",
       empresa: company?.nome_fantasia ?? company?.razao_social ?? "—",
     };
@@ -168,6 +171,7 @@ export default async function CandidatoDetalhePage({
     { key: "vaga", label: "Vaga", sortable: true },
     { key: "empresa", label: "Empresa", sortable: true },
     { key: "modalidade", label: "Modalidade" },
+    { key: "origem", label: "Chegou por" },
     { key: "status", label: "Status", sortable: true },
     { key: "data", label: "Data", sortable: true },
     { key: "acao", label: "Mudar status" },
@@ -185,6 +189,7 @@ export default async function CandidatoDetalhePage({
       vaga: <span className="font-bold text-text">{row.jobTitulo}</span>,
       empresa: <span className="text-text-2">{row.empresa}</span>,
       modalidade: <span className="text-text-2 uppercase">{row.jobModalidade}</span>,
+      origem: <span className="text-text-2">{rotuloOrigem(interpretarOrigemCandidatura(row.origem))}</span>,
       status: (
         <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${statusPillClass[row.status]}`}>
           {statusLabel[row.status]}
@@ -274,6 +279,13 @@ export default async function CandidatoDetalhePage({
             </span>
           )}
         </div>
+        <p className="mt-1 text-[11.5px] text-text-2" data-testid="origem-candidato">
+          Chegou ao app por:{" "}
+          <b className="text-text">
+            {rotuloOrigem({ canal: (profile.origem_canal as CanalOrigem | null) ?? "nao_informado", detalhe: profile.origem_detalhe ?? "" })}
+          </b>
+          {profile.origem_em ? ` em ${new Date(profile.origem_em).toLocaleDateString("pt-BR")}` : ""}
+        </p>
         <p className="mt-1 text-xs text-text-2">
           {contatoRestrito ? (
             "Contato liberado após a candidatura"

@@ -1,5 +1,6 @@
 "use server";
 
+import { origemParaCadastro } from "@/lib/origem-servidor";
 import { redirect } from "next/navigation";
 import { consumirDestino } from "@/lib/destino-cookie";
 import { createClient } from "@/lib/supabase/server";
@@ -51,8 +52,15 @@ export async function saveProfile(input: SaveProfileInput) {
     disponibilidade: input.disponibilidade,
   }).pct;
 
+  // Primeiro toque: grava só se o perfil ainda não tem origem (nunca sobrescreve).
+  const { data: atual } = await supabase.from("profiles").select("origem_canal").eq("id", user.id).maybeSingle();
+  const origemCampos = atual?.origem_canal
+    ? {}
+    : await origemParaCadastro().then((o) => ({ origem_canal: o.canal, origem_detalhe: o.detalhe, origem_em: new Date().toISOString() }));
+
   await supabase.from("profiles").upsert({
     id: user.id,
+    ...origemCampos,
     nome_completo: input.nomeCompleto,
     idade: input.idade ? Number(input.idade) : null,
     cidade: input.cidade,

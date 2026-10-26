@@ -63,3 +63,34 @@ body {
   to   { opacity: 1; backdrop-filter: blur(6px); }
 }
 .modal-overlay { animation: modalOverlay 0.25s ease both; }
+
+/* Impressão e PDF ("Salvar como PDF" na janela de impressão): o painel usa colunas com rolagem
+   interna, que no papel sairiam cortadas. Aqui tudo corre em uma coluna só e o menu some. */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+  body div:not(.recharts-responsive-container):not(.recharts-wrapper),
+  body main,
+  body section {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  aside,
+  [data-no-print] {
+    display: none !important;
+  }
+  tr,
+  li,
+  article {
+    break-inside: avoid;
+  }
+}

@@ -27,7 +27,7 @@ export function TrilhaCiclo({ jobId, titulo, empresa, etapas }: { jobId: string;
   const atual = etapaDaRota(jobId, pathname);
 
   return (
-    <div className="shrink-0 border-b border-border bg-surface px-4 md:px-9 pt-3 pb-2">
+    <div className="shrink-0 border-b border-border bg-surface px-4 md:px-9 pt-3 pb-2 print:hidden">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Link href="/admin/vagas" className="text-[11px] font-bold text-text-3 hover:text-navy">
           Vagas

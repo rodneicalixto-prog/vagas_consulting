@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/supabase/types";
+import { COOKIE_ORIGEM, DIAS_COOKIE_ORIGEM, codificarOrigem, origemDoLink } from "@/lib/origem";
 
 const PUBLIC_PATHS = [
   "/login",
@@ -66,6 +67,21 @@ export async function updateSession(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = "/inicio";
       return NextResponse.redirect(url);
+    }
+  }
+
+  // Primeiro toque: guarda por qual canal a pessoa chegou (?o= da divulgação ou ?utm_source=).
+  // Só grava se ainda não houver; o cadastro lê este cookie e grava no perfil.
+  if (request.method === "GET" && !request.cookies.get(COOKIE_ORIGEM)) {
+    const o = origemDoLink(request.nextUrl.searchParams);
+    if (o) {
+      supabaseResponse.cookies.set(COOKIE_ORIGEM, codificarOrigem(o), {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+        maxAge: 60 * 60 * 24 * DIAS_COOKIE_ORIGEM,
+        path: "/",
+      });
     }
   }
 

@@ -16,7 +16,24 @@ export const ROTULO_SENIORIDADE: Record<Senioridade, string> = {
   lideranca: "Liderança",
 };
 
+/** Perfil de vaga com regras próprias: afirmativa para PcD, estágio ou foco em profissionais 60+. */
+export const PERFIS_VAGA = ["", "pcd", "estagio", "melhor_idade"] as const;
+export type PerfilVaga = (typeof PERFIS_VAGA)[number];
+
+export const ROTULO_PERFIL_VAGA: Record<PerfilVaga, string> = {
+  "": "Vaga comum",
+  pcd: "Afirmativa para pessoas com deficiência (PcD)",
+  estagio: "Estágio",
+  melhor_idade: "Foco em profissionais 60+ (melhor idade)",
+};
+
+export function perfilVagaValido(v: unknown): v is PerfilVaga {
+  return typeof v === "string" && (PERFIS_VAGA as readonly string[]).includes(v);
+}
+
 export type Criterios = {
+  /** Perfil com regras próprias (PcD, estágio, 60+). Vazio = vaga comum. */
+  perfil: PerfilVaga;
   /** O que a pessoa vai fazer no dia a dia. */
   rotina: string;
   obrigatorios: string[];
@@ -37,6 +54,7 @@ export type Criterios = {
 
 export function criteriosVazios(): Criterios {
   return {
+    perfil: "",
     rotina: "",
     obrigatorios: [],
     eliminatorios: [],
@@ -87,6 +105,7 @@ export function normalizarCriterios(raw: unknown): Criterios {
   const anosBruto = typeof r.anos_experiencia === "number" ? r.anos_experiencia : Number(r.anos_experiencia);
   const anos = Number.isFinite(anosBruto) && anosBruto >= 0 && anosBruto <= 40 ? Math.round(anosBruto) : null;
   return {
+    perfil: perfilVagaValido(r.perfil) ? r.perfil : "",
     rotina: textoLimpo(r.rotina),
     obrigatorios,
     eliminatorios,
@@ -262,6 +281,125 @@ export function verificarVaga(v: EntradaVerificacao): Verificacao[] {
   if (!c.diferencial) out.push({ id: "diferencial", nivel: "aviso", mensagem: "Diga por que alguém iria querer esta vaga." });
   else out.push({ id: "diferencial", nivel: "ok", mensagem: "Diferencial informado." });
 
+  out.push(...verificarPerfilVaga(c, tudo, v.remuneracao_texto));
+  return out;
+}
+
+/**
+ * Instruções para a IA por perfil de vaga (criação dos critérios e divulgação).
+ * Base legal resumida: Lei 8.213/91 art. 93 e Lei 13.146/2015 (PcD), Lei 11.788/2008 (estágio) e
+ * Lei 10.741/2003 art. 27 (sem limite máximo de idade). Revisão jurídica final é da empresa.
+ */
+export function instrucoesDoPerfil(p: PerfilVaga): string[] {
+  switch (p) {
+    case "pcd":
+      return [
+        "A vaga é AFIRMATIVA para pessoas com deficiência (PcD). Descreva a função por atividades e competências, nunca por limitações.",
+        "Não exija laudo, CID nem tipo específico de deficiência no anúncio: laudo só na admissão.",
+        "Use 'pessoa com deficiência'; nunca 'portador' nem 'deficiente'. Não exija 'boa saúde' nem condição física que a função não usa.",
+        "Coloque em lacunas o que a empresa oferece de acessibilidade e adaptação (ambiente, tecnologia assistiva, jornada), porque a pessoa precisa saber antes de se candidatar.",
+      ];
+    case "estagio":
+      return [
+        "A vaga é de ESTÁGIO (Lei 11.788/2008): senioridade 'estagio', anos_experiencia 0 e NENHUM requisito de experiência prévia.",
+        "Obrigatórios: estar matriculado e com frequência regular no curso (ou ensino) informado no texto, e disponibilidade de horário compatível com as aulas.",
+        "A rotina descreve atividades de aprendizado ligadas ao curso, com acompanhamento de um supervisor.",
+        "Bolsa-auxílio, carga horária (até 6 horas diárias), duração, curso e supervisor só entram se vierem no texto; o que faltar vai em lacunas.",
+      ];
+    case "melhor_idade":
+      return [
+        "A vaga valoriza profissionais com 60 anos ou mais (ação afirmativa), SEM fixar idade máxima e sem estereótipos.",
+        "Destaque experiência, repertório, mentoria e autonomia como competências, não como idade. Idade nunca é critério eliminatório.",
+        "Não suponha limitação física, ritmo mais lento nem dificuldade com tecnologia. Não escreva 'jovem', 'energia' nem 'dinâmico'.",
+        "Se o texto trouxer treinamento ou flexibilidade reais, destaque; senão, coloque em lacunas.",
+      ];
+    default:
+      return [];
+  }
+}
+
+/** Frase fixa de rodapé do anúncio por perfil (só afirmações que a lei e a prática sustentam). */
+export function fraseDoPerfil(p: PerfilVaga): string {
+  switch (p) {
+    case "pcd":
+      return "Vaga afirmativa para pessoas com deficiência. Se precisar de alguma adaptação durante o processo, conte para a gente.";
+    case "estagio":
+      return "Vaga de estágio, conforme a Lei nº 11.788/2008: é necessário estar matriculado e com frequência regular em instituição de ensino.";
+    case "melhor_idade":
+      return "Vaga com foco em profissionais com 60 anos ou mais. Não há limite máximo de idade.";
+    default:
+      return "";
+  }
+}
+
+const TEM_ACESSIBILIDADE = /(acessibilidade|adaptac|tecnologia assistiva|inclusiv|libras)/;
+const PEDE_LAUDO = /\b(laudo|cid[- ]?\d*|atestado medico|cid-10)\b/;
+const TERMO_ULTRAPASSADO = /\b(portador(a|es|as)? de deficiencia|deficiente(s)?|portador(a)?)\b/;
+const PEDE_CONDICAO_FISICA = /(boa saude|boa condicao fisica|saude perfeita|sem limitacoes)/;
+const EXIGE_EXPERIENCIA = /(anos de experiencia|experiencia previa|experiencia comprovada|experiencia anterior)/;
+const MENCIONA_CURSO = /(cursando|curso de|graduacao|matricul|ensino (medio|tecnico|superior)|universit|faculdade|semestre)/;
+const MENCIONA_BOLSA = /(bolsa)/;
+const HORAS_DIARIAS = /(\d{1,2})\s*(h|horas)\s*(diarias|por dia|\/dia|ao dia)/g;
+const ESTEREOTIPO_IDADE = /\b(jovem|jovens|energia|energico|energica|dinamic[oa]|ritmo|nativo digital|maturidade)\b/;
+const SO_PARA_IDADE = /\b(somente|apenas|exclusivamente)\b[^.\n]{0,40}\b(acima de|maiores de|com mais de) \d{2}\b/;
+
+/** Regras próprias de PcD, estágio e 60+: Bloqueia o que a lei proíbe, avisa o que costuma dar problema. */
+export function verificarPerfilVaga(c: Criterios, textoDaVaga: string, remuneracao: string | null): Verificacao[] {
+  const out: Verificacao[] = [];
+  if (!c.perfil) return out;
+  const t = semAcento(`${textoDaVaga}\n${remuneracao ?? ""}`);
+
+  if (c.perfil === "pcd") {
+    if (PEDE_LAUDO.test(t)) {
+      out.push({ id: "pcd_laudo", nivel: "bloqueio", mensagem: "O anúncio pede laudo ou CID. Isso só pode ser pedido na admissão, não na divulgação." });
+    }
+    if (TERMO_ULTRAPASSADO.test(t)) {
+      out.push({ id: "pcd_termo", nivel: "aviso", mensagem: "Use 'pessoa com deficiência', nunca 'portador' ou 'deficiente'." });
+    }
+    if (PEDE_CONDICAO_FISICA.test(t)) {
+      out.push({ id: "pcd_saude", nivel: "aviso", mensagem: "Evite exigir 'boa saúde' ou condição física que a função não usa." });
+    }
+    out.push(
+      TEM_ACESSIBILIDADE.test(t)
+        ? { id: "pcd_acessibilidade", nivel: "ok", mensagem: "Informa acessibilidade ou adaptações." }
+        : { id: "pcd_acessibilidade", nivel: "aviso", mensagem: "Diga que acessibilidade e adaptações a empresa oferece: a pessoa precisa saber antes de se candidatar." },
+    );
+  }
+
+  if (c.perfil === "estagio") {
+    if (c.senioridade !== "" && c.senioridade !== "estagio") {
+      out.push({ id: "estagio_nivel", nivel: "aviso", mensagem: "Estágio deve ter senioridade 'Estágio'." });
+    }
+    if ((c.anos_experiencia ?? 0) > 0 || EXIGE_EXPERIENCIA.test(semAcento(c.obrigatorios.join("\n")))) {
+      out.push({ id: "estagio_experiencia", nivel: "aviso", mensagem: "Estágio não deve exigir experiência prévia: o objetivo é aprender." });
+    }
+    out.push(
+      MENCIONA_CURSO.test(t)
+        ? { id: "estagio_curso", nivel: "ok", mensagem: "Informa o curso ou nível de ensino." }
+        : { id: "estagio_curso", nivel: "aviso", mensagem: "Diga qual curso, semestre ou nível de ensino é aceito (a matrícula é obrigatória por lei)." },
+    );
+    out.push(
+      MENCIONA_BOLSA.test(t)
+        ? { id: "estagio_bolsa", nivel: "ok", mensagem: "Informa a bolsa-auxílio." }
+        : { id: "estagio_bolsa", nivel: "aviso", mensagem: "Informe a bolsa-auxílio e a carga horária." },
+    );
+    const longas = [...t.matchAll(HORAS_DIARIAS)].map((m) => Number(m[1])).filter((n) => n > 6 && n <= 24);
+    if (longas.length > 0) {
+      out.push({ id: "estagio_carga", nivel: "bloqueio", mensagem: "Carga acima de 6 horas diárias. O estágio tem limite legal; confira a Lei 11.788/2008." });
+    }
+  }
+
+  if (c.perfil === "melhor_idade") {
+    if (ESTEREOTIPO_IDADE.test(t)) {
+      out.push({ id: "idade_estereotipo", nivel: "aviso", mensagem: "Evite palavras como 'jovem', 'energia' ou 'dinâmico': reforçam estereótipo de idade." });
+    }
+    if (SO_PARA_IDADE.test(t)) {
+      out.push({ id: "idade_exclusiva", nivel: "aviso", mensagem: "Prefira 'valorizamos profissionais 60+' a 'somente acima de X anos'. Peça revisão jurídica." });
+    }
+    if (c.eliminatorios.some((e) => /\d{2}\s*anos|idade/.test(semAcento(e)))) {
+      out.push({ id: "idade_eliminatorio", nivel: "bloqueio", mensagem: "Idade não pode ser critério eliminatório." });
+    }
+  }
   return out;
 }
 
@@ -273,17 +411,25 @@ export function temBloqueio(vs: Verificacao[]): boolean {
 // 3O-2: geração dos critérios pela IA (o prompt e a leitura são puros)
 // ---------------------------------------------------------------------------
 
-export type ModoGeracao = "criar" | "reescrever" | "junior" | "lideranca";
+export type ModoGeracao = "criar" | "reescrever" | "junior" | "lideranca" | "pcd" | "estagio" | "melhor_idade";
 
 export const ROTULO_MODO: Record<ModoGeracao, string> = {
   criar: "Criar a partir do recado do gestor",
   reescrever: "Reescrever uma JD (atrair mais e cortar exigência inflada)",
   junior: "Vaga júnior, sem experiência prévia (foco em potencial)",
   lideranca: "Vaga de liderança (escopo de gestão)",
+  pcd: "Vaga afirmativa para pessoas com deficiência (PcD)",
+  estagio: "Vaga de estágio",
+  melhor_idade: "Vaga com foco em profissionais 60+ (melhor idade)",
 };
 
+/** Perfil que o modo de geração grava na vaga (os demais modos não mudam o perfil). */
+export function perfilDoModo(m: ModoGeracao): PerfilVaga | null {
+  return m === "pcd" || m === "estagio" || m === "melhor_idade" ? m : null;
+}
+
 export function modoValido(v: unknown): v is ModoGeracao {
-  return v === "criar" || v === "reescrever" || v === "junior" || v === "lideranca";
+  return v === "criar" || v === "reescrever" || v === "junior" || v === "lideranca" || v === "pcd" || v === "estagio" || v === "melhor_idade";
 }
 
 export type EntradaGeracao = {
@@ -302,6 +448,9 @@ export function montarPromptCriterios(e: EntradaGeracao): { system: string; user
       "A vaga é júnior e não deve exigir experiência prévia: foque em potencial, aprendizagem e requisitos básicos. Senioridade junior ou estagio; anos de experiência 0.",
     lideranca:
       "A vaga é de liderança: inclua o escopo de gestão (tamanho do time, responsabilidades de resultado) na rotina e competências de liderança nas comportamentais.",
+    pcd: instrucoesDoPerfil("pcd").join(" "),
+    estagio: instrucoesDoPerfil("estagio").join(" "),
+    melhor_idade: instrucoesDoPerfil("melhor_idade").join(" "),
   };
   const system = [
     "Você estrutura vagas de emprego para uma plataforma de recrutamento no Brasil. Responda SOMENTE com um objeto JSON válido, sem texto fora dele.",

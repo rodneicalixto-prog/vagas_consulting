@@ -8,6 +8,8 @@ import { bloqueadoNaEmpresa } from "@/lib/blacklist-empresa";
 import { ApplyJobSchema, type ApplyJobInput } from "@/lib/validation/schemas";
 import { canalValido } from "@/lib/divulgacao";
 import { TOKEN_RE, origemDaCandidatura, type FonteHunter } from "@/lib/hunter";
+import { origemDoCookie } from "@/lib/origem-servidor";
+import { textoDaCandidatura } from "@/lib/origem";
 
 export async function enviarCandidatura(jobId: string, respostas: Record<string, boolean>, origem?: string) {
   // Validar com Zod
@@ -64,6 +66,11 @@ export async function enviarCandidatura(jobId: string, respostas: Record<string,
         origemFinal = origemDaCandidatura(pr.fonte as FonteHunter);
         prospectId = pr.id;
       }
+    }
+    // Sem marcador no link nem hunter: usa o canal do primeiro toque (cookie), se houver.
+    if (origemFinal === "app_candidato") {
+      const ct = await origemDoCookie();
+      if (ct) origemFinal = textoDaCandidatura(ct);
     }
   } catch {
     // A origem é só rastro: nunca impede a candidatura.
