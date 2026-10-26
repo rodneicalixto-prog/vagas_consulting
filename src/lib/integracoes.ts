@@ -3,9 +3,19 @@
  * Sem acesso a banco aqui: funções puras e chamadas HTTP com tempo limite.
  */
 
-export type Provedor = "openai" | "anthropic" | "groq" | "resend" | "sms" | "telegram" | "evolution";
+export type Provedor =
+  | "openai"
+  | "anthropic"
+  | "groq"
+  | "resend"
+  | "sms"
+  | "telegram"
+  | "evolution"
+  | "vagascom"
+  | "infojobs"
+  | "linkedin";
 
-export type GrupoProvedor = "ia" | "whatsapp" | "email" | "sms" | "telegram";
+export type GrupoProvedor = "ia" | "whatsapp" | "email" | "sms" | "telegram" | "emprego";
 
 export const PROVEDORES: {
   id: Provedor;
@@ -22,7 +32,68 @@ export const PROVEDORES: {
   { id: "resend", rotulo: "E-mail (Resend)", grupo: "email", byokEmpresa: false, dica: "Começa com re_" },
   { id: "sms", rotulo: "SMS", grupo: "sms", byokEmpresa: false, dica: "Chave do provedor de SMS (a definir)" },
   { id: "telegram", rotulo: "Telegram (bot)", grupo: "telegram", byokEmpresa: false, dica: "Token do bot, do @BotFather" },
+  { id: "vagascom", rotulo: "Vagas.com (Vagas For Business)", grupo: "emprego", byokEmpresa: false, dica: "Senha da conta da empresa, ou chave de API se o plano tiver" },
+  { id: "infojobs", rotulo: "InfoJobs", grupo: "emprego", byokEmpresa: false, dica: "Senha da conta da empresa, ou chave de API se o plano tiver" },
+  { id: "linkedin", rotulo: "LinkedIn (Recruiter)", grupo: "emprego", byokEmpresa: false, dica: "Token de API de parceiro, se existir. Uso automático por login não é oferecido" },
 ];
+
+// ---------------------------------------------------------------------------
+// Plataformas de emprego (agente hunter). docs/specs/HUNTER_PREPARACAO.md.
+// O acesso fica no cofre cifrado; só o servidor decifra e o valor nunca volta para a tela.
+// ---------------------------------------------------------------------------
+
+export const PROVEDORES_EMPREGO: Provedor[] = ["vagascom", "infojobs", "linkedin"];
+export const TIPOS_ACESSO = ["api", "login"] as const;
+export type TipoAcesso = (typeof TIPOS_ACESSO)[number];
+
+export function ehPlataformaDeEmprego(p: unknown): p is "vagascom" | "infojobs" | "linkedin" {
+  return typeof p === "string" && (PROVEDORES_EMPREGO as string[]).includes(p);
+}
+
+export function tipoAcessoValido(v: unknown): v is TipoAcesso {
+  return v === "api" || v === "login";
+}
+
+/**
+ * Validação do acesso a uma plataforma de emprego. Devolve a mensagem de erro, ou `null` se está ok.
+ * `segredo` vazio é aceito quando já existe um guardado (mantém o atual).
+ */
+export function validarAcessoEmprego(e: {
+  provedor: string;
+  tipo: string;
+  usuario: string;
+  segredo: string;
+  jaTemSegredo: boolean;
+}): string | null {
+  if (!ehPlataformaDeEmprego(e.provedor)) return "Plataforma inválida.";
+  if (!tipoAcessoValido(e.tipo)) return "Escolha o tipo de acesso: chave de API ou usuário e senha.";
+  // LinkedIn: os termos proíbem automação por login; só token de API de parceiro.
+  if (e.provedor === "linkedin" && e.tipo === "login") {
+    return "No LinkedIn não guardamos usuário e senha: os termos proíbem acesso automatizado e a conta pode ser banida. Use token de API de parceiro.";
+  }
+  if (e.tipo === "login") {
+    const u = e.usuario.trim();
+    if (u.length < 3 || u.length > 120) return "Informe o usuário (e-mail ou login) da conta, de 3 a 120 caracteres.";
+  }
+  if (!e.segredo && !e.jaTemSegredo) return e.tipo === "login" ? "Informe a senha para salvar." : "Cole a chave de API para salvar.";
+  if (e.segredo && (e.segredo.length < 4 || e.segredo.length > 400)) return "O valor informado parece inválido (de 4 a 400 caracteres).";
+  return null;
+}
+
+/**
+ * O hunter só pode usar a plataforma de forma automática se (a) não for o LinkedIn por login e
+ * (b) a pessoa marcou explicitamente, depois de confirmar com a plataforma que os termos permitem.
+ */
+export function automacaoPermitida(provedor: string, config: { tipo_acesso?: string; automacao?: string } | null): boolean {
+  if (!ehPlataformaDeEmprego(provedor)) return false;
+  if (provedor === "linkedin" && config?.tipo_acesso === "login") return false;
+  return config?.automacao === "sim";
+}
+
+/** Só estes provedores têm teste de conexão automático hoje. */
+export function testeAutomaticoDisponivel(p: string): boolean {
+  return !ehPlataformaDeEmprego(p) && p !== "sms";
+}
 
 export function provedorValido(v: unknown): v is Provedor {
   return typeof v === "string" && PROVEDORES.some((p) => p.id === v);
@@ -131,6 +202,10 @@ export async function testarConexao(
       }
       case "sms":
         return { ok: false, mensagem: "SMS: teste automático indisponível até o provedor ser definido." };
+      case "vagascom":
+      case "infojobs":
+      case "linkedin":
+        return { ok: false, mensagem: `${rotulo}: o conector do hunter ainda não existe; o acesso está guardado e será testado quando ele for criado.` };
     }
   } catch (e) {
     const abortou = e instanceof Error && e.name === "AbortError";

@@ -6,10 +6,13 @@ import { can, requireInternalUser } from "@/lib/auth/internal";
 import { ChaveMestraAusente, cifrar, decifrar, ultimos4 } from "@/lib/crypto-segredos";
 import {
   PROVEDORES,
+  ehPlataformaDeEmprego,
   instanciaValida,
   provedorValido,
   testarConexao,
+  testeAutomaticoDisponivel,
   urlEvolutionSegura,
+  validarAcessoEmprego,
   type Provedor,
 } from "@/lib/integracoes";
 import { empresaDaOperacao } from "@/lib/evolution";
@@ -80,7 +83,9 @@ export async function salvarCredencial(formData: FormData) {
   const provedor = exigirProvedorPermitido(formData.get("provedor"), ctx, ctx.ehSuper);
 
   const segredo = String(formData.get("segredo") ?? "").trim();
-  if (segredo.length > 0 && (segredo.length < 8 || segredo.length > 400)) {
+  const ehEmprego = ehPlataformaDeEmprego(provedor);
+  // Plataformas de emprego têm validação própria (senha pode ter menos de 8 caracteres).
+  if (!ehEmprego && segredo.length > 0 && (segredo.length < 8 || segredo.length > 400)) {
     throw new Error("A chave informada parece inválida.");
   }
 
@@ -125,6 +130,19 @@ export async function salvarCredencial(formData: FormData) {
   const { data: atuais } = await q.limit(1);
   const atual = atuais?.[0];
 
+  // Plataformas de emprego (hunter): usuário, senha ou chave de API, tudo cifrado e sem volta para a tela.
+  if (ehEmprego) {
+    const tipo = String(formData.get("tipo_acesso") ?? "");
+    const usuario = String(formData.get("usuario") ?? "").trim();
+    const erro = validarAcessoEmprego({ provedor, tipo, usuario, segredo, jaTemSegredo: !!atual?.segredo_cifrado });
+    if (erro) throw new Error(erro);
+    config.tipo_acesso = tipo;
+    config.usuario = tipo === "login" ? usuario : "";
+    config.plano = String(formData.get("plano") ?? "").trim().slice(0, 80);
+    // Uso automático só liga com marca explícita, depois de a plataforma confirmar que os termos permitem.
+    config.automacao = formData.get("automacao") === "sim" ? "sim" : "nao";
+  }
+
   const exigeSegredo = !(provedor === "evolution" && ctx.escopo === "empresa");
   if (!atual && exigeSegredo && !segredo) throw new Error("Cole a chave para salvar.");
 
@@ -136,13 +154,14 @@ export async function salvarCredencial(formData: FormData) {
     } catch (e) {
       mensagemFalhaCofre(e);
     }
-    finais = ultimos4(segredo);
+    // Senha nunca mostra nem os últimos caracteres: só chave de API tem "••••1234".
+    finais = ehEmprego && config.tipo_acesso === "login" ? undefined : ultimos4(segredo);
   }
 
   const campos = {
     config: { ...((atual?.config as Record<string, string> | null) ?? {}), ...config },
     teto_mensal_usd: teto,
-    ...(segredoCifrado ? { segredo_cifrado: segredoCifrado, ultimos4: finais } : {}),
+    ...(segredoCifrado ? { segredo_cifrado: segredoCifrado, ultimos4: finais ?? null } : {}),
     // Mudou a chave ou a configuração: o teste anterior deixa de valer.
     status: "nao_testada" as const,
     status_msg: null,
@@ -209,6 +228,7 @@ export async function salvarCredencial(formData: FormData) {
       chave_alterada: !!segredo,
       ultimos4: finais ?? null,
       teto_mensal_usd: teto,
+      ...(ehEmprego ? { tipo_acesso: config.tipo_acesso, automacao: config.automacao } : {}),
     },
   });
   revalidatePath("/admin/integracoes");
@@ -228,6 +248,20 @@ export async function testarCredencial(formData: FormData) {
   if (!cred) throw new Error("Credencial não encontrada.");
   // Admin da empresa só testa as da própria empresa.
   if (!ctx.ehSuper && cred.company_id !== ctx.companyId) throw new Error("Credencial não encontrada.");
+
+  // Sem conector, não há o que testar: não marca "erro" no que só ainda não tem teste.
+  if (!testeAutomaticoDisponivel(cred.provedor)) {
+    await ctx.admin
+      .from("integration_credentials")
+      .update({
+        status: "nao_testada",
+        status_msg: "Acesso guardado. O teste automático chega com o conector do hunter.",
+        testado_em: null,
+      })
+      .eq("id", cred.id);
+    revalidatePath("/admin/integracoes");
+    return;
+  }
 
   const config = (cred.config as { base_url?: string; instance?: string } | null) ?? {};
   let segredo: string | null = null;

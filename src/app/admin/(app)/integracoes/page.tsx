@@ -15,6 +15,7 @@ const GRUPOS: { id: GrupoProvedor; rotulo: string }[] = [
   { id: "email", rotulo: "E-mail" },
   { id: "sms", rotulo: "SMS" },
   { id: "telegram", rotulo: "Telegram" },
+  { id: "emprego", rotulo: "Plataformas de emprego (hunter)" },
 ];
 
 const STATUS: Record<string, { rotulo: string; classe: string }> = {
@@ -161,12 +162,31 @@ export default async function IntegracoesPage({
           return (
             <section key={g.id} className="mb-5">
               <h2 className="mb-2 text-[11px] font-extrabold uppercase tracking-wide text-text-3">{g.rotulo}</h2>
+              {g.id === "emprego" && (
+                <p className="mb-2 rounded-xl bg-gold-bg px-4 py-3 text-[11.5px] leading-relaxed text-text-2">
+                  <b className="text-gold-3">Antes de guardar:</b> prefira chave de API quando o plano tiver. Se usar usuário e senha, use uma{" "}
+                  <b>conta dedicada ao hunter</b>, não a principal: plataformas podem bloquear acesso automatizado. O hunter não passa por
+                  verificação em duas etapas nem por CAPTCHA (isso exige uma pessoa). No LinkedIn só se guarda token de API de parceiro. O
+                  valor fica cifrado e <b>nunca volta para esta tela</b>; para trocar, cole um novo. O uso automático fica desligado até você marcar.
+                </p>
+              )}
               <div className="overflow-hidden rounded-2xl border border-border bg-surface">
                 {itens.map((p) => {
                   const c = porProvedor.get(p.id);
                   const s = c ? (STATUS[c.status] ?? STATUS.nao_testada) : null;
                   const herda = !c && companyId ? herdadas.get(p.id) : undefined;
-                  const config = (c?.config as { base_url?: string; instance?: string; remetente?: string; provedor?: string } | null) ?? {};
+                  const config =
+                    (c?.config as {
+                      base_url?: string;
+                      instance?: string;
+                      remetente?: string;
+                      provedor?: string;
+                      tipo_acesso?: string;
+                      usuario?: string;
+                      plano?: string;
+                      automacao?: string;
+                    } | null) ?? {};
+                  const ehEmprego = p.grupo === "emprego";
                   const ehInstancia = p.id === "evolution" && !!companyId;
                   return (
                     <details
@@ -198,7 +218,7 @@ export default async function IntegracoesPage({
                       </summary>
 
                       <div className="border-t border-border bg-bg/60 px-5 py-4">
-                        {c && c.status === "nao_testada" && (
+                        {c && c.status === "nao_testada" && !ehEmprego && (
                           <p className="mb-3 rounded-lg bg-gold-bg px-3 py-2 text-[11.5px] font-bold text-gold-3">
                             Chave salva. Clique em &ldquo;Testar conexão&rdquo; (botão verde abaixo) para validar.
                           </p>
@@ -213,7 +233,63 @@ export default async function IntegracoesPage({
                           {companyId && ehSuper && <input type="hidden" name="company_id" value={companyId} />}
                           <input type="hidden" name="provedor" value={p.id} />
 
-                          {!ehInstancia && (
+                          {ehEmprego && (
+                            <>
+                              <label className="flex flex-col gap-1">
+                                <span className="text-[10.5px] font-bold text-text-2">Tipo de acesso</span>
+                                <select
+                                  name="tipo_acesso"
+                                  defaultValue={config.tipo_acesso ?? (p.id === "linkedin" ? "api" : "login")}
+                                  className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm"
+                                >
+                                  <option value="login" disabled={p.id === "linkedin"}>
+                                    Usuário e senha{p.id === "linkedin" ? " (não oferecido no LinkedIn)" : ""}
+                                  </option>
+                                  <option value="api">Chave de API ou token</option>
+                                </select>
+                              </label>
+                              <label className="flex flex-col gap-1">
+                                <span className="text-[10.5px] font-bold text-text-2">Usuário (e-mail ou login), só para acesso por senha</span>
+                                <input
+                                  name="usuario"
+                                  defaultValue={config.usuario ?? ""}
+                                  autoComplete="off"
+                                  placeholder="rh@suaempresa.com.br"
+                                  className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm"
+                                />
+                              </label>
+                              <label className="flex flex-col gap-1 md:col-span-2">
+                                <span className="text-[10.5px] font-bold text-text-2">
+                                  {c ? "Nova senha ou chave (deixe vazio para manter a atual)" : "Senha ou chave de API"} · {p.dica}
+                                </span>
+                                <input
+                                  name="segredo"
+                                  type="password"
+                                  autoComplete="new-password"
+                                  placeholder={c ? "Já guardada, cifrada. Não aparece mais." : "Cole aqui"}
+                                  className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm"
+                                />
+                              </label>
+                              <label className="flex flex-col gap-1">
+                                <span className="text-[10.5px] font-bold text-text-2">Plano contratado (para registro)</span>
+                                <input
+                                  name="plano"
+                                  defaultValue={config.plano ?? ""}
+                                  placeholder="Vagas For Business, InfoJobs Premium..."
+                                  className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm"
+                                />
+                              </label>
+                              <label className="flex items-start gap-2 md:col-span-2">
+                                <input type="checkbox" name="automacao" value="sim" defaultChecked={config.automacao === "sim"} className="mt-0.5" />
+                                <span className="text-[11.5px] text-text-2">
+                                  Permitir uso automático pelo hunter. Marque só depois de confirmar com a plataforma que os termos permitem
+                                  automação e IA sobre os currículos.
+                                </span>
+                              </label>
+                            </>
+                          )}
+
+                          {!ehInstancia && !ehEmprego && (
                             <label className="flex flex-col gap-1 md:col-span-2">
                               <span className="text-[10.5px] font-bold text-text-2">
                                 {c ? "Nova chave (deixe vazio para manter a atual)" : "Chave"} · {p.dica}
@@ -317,16 +393,18 @@ export default async function IntegracoesPage({
 
                         {c && (
                           <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3">
-                            <form action={testarCredencial}>
-                              {companyId && ehSuper && <input type="hidden" name="company_id" value={companyId} />}
-                              <input type="hidden" name="id" value={c.id} />
-                              <SubmitButton
-                                pendingLabel="Testando..."
-                                className="rounded-lg bg-success px-3 py-2 text-[11.5px] font-extrabold text-white"
-                              >
-                                Testar conexão
-                              </SubmitButton>
-                            </form>
+                            {!ehEmprego && (
+                              <form action={testarCredencial}>
+                                {companyId && ehSuper && <input type="hidden" name="company_id" value={companyId} />}
+                                <input type="hidden" name="id" value={c.id} />
+                                <SubmitButton
+                                  pendingLabel="Testando..."
+                                  className="rounded-lg bg-success px-3 py-2 text-[11.5px] font-extrabold text-white"
+                                >
+                                  Testar conexão
+                                </SubmitButton>
+                              </form>
+                            )}
                             <form action={removerCredencial}>
                               {companyId && ehSuper && <input type="hidden" name="company_id" value={companyId} />}
                               <input type="hidden" name="id" value={c.id} />

@@ -298,3 +298,7 @@ Spec: `docs/specs/AVALIACAO_IA_GANCHOS.md` §3A e §3B. Aditiva; RLS ligada e se
 | `validacoes_reprovacao` | Caso em que a IA apontou "não segue": `etapa` (`triagem`/`entrevista_ia`/`competencias`), `status` (`aguardando`/`confirmada`/`revertida`/`aguardando_dados`), `motivo` (jsonb: critério, eliminatório, evidência, notas, confiança, o que mudaria, análise, justificativa incompleta, hash dos critérios), `prazo_em` (72 h), decisão, observação, versão das regras. Índice único parcial: um caso ativo por candidatura e etapa |
 
 **Ordem de publicação:** aplicar a migration **antes** do deploy do código. Sem a tabela, a triagem não consegue abrir o caso e desfaz a triagem daquele candidato (nunca deixa reprovado sem validação).
+
+## Migration 0050 — plataformas de emprego no cofre (26/10/2026, NÃO aplicada)
+
+Spec: `docs/specs/HUNTER_PREPARACAO.md` §0. Aditiva: amplia o check de `integration_credentials.provedor` com `vagascom`, `infojobs` e `linkedin`. Usuário, tipo de acesso, plano e a marca de uso automático ficam em `config` (não secreto); a senha ou chave de API fica em `segredo_cifrado` (AES-256-GCM). Para senha, `ultimos4` fica nulo. Sem tabela nova.
