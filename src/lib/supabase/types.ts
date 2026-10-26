@@ -1400,6 +1400,56 @@ export type Database = {
           },
         ]
       }
+      company_values: {
+        Row: {
+          ativo: boolean
+          company_id: string
+          comportamentos: Json
+          corte: number
+          created_at: string
+          descricao: string
+          id: string
+          nome: string
+          perguntas: Json
+          peso: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          company_id: string
+          comportamentos?: Json
+          corte?: number
+          created_at?: string
+          descricao?: string
+          id?: string
+          nome: string
+          perguntas?: Json
+          peso?: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          company_id?: string
+          comportamentos?: Json
+          corte?: number
+          created_at?: string
+          descricao?: string
+          id?: string
+          nome?: string
+          perguntas?: Json
+          peso?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_values_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compromissos: {
         Row: {
           application_id: string | null
@@ -1535,6 +1585,7 @@ export type Database = {
       }
       jobs: {
         Row: {
+          regras_ia: Json
           criterios: Json
           company_id: string
           confidencial: boolean
@@ -1558,6 +1609,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          regras_ia?: Json
           criterios?: Json
           company_id: string
           confidencial?: boolean
@@ -1583,6 +1635,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          regras_ia?: Json
           criterios?: Json
           company_id?: string
           confidencial?: boolean
@@ -2018,6 +2071,75 @@ export type Database = {
             columns: ["invite_id"]
             isOneToOne: false
             referencedRelation: "invites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      validacoes_reprovacao: {
+        Row: {
+          alertada_em: string | null
+          application_id: string
+          candidate_id: string
+          created_at: string
+          decidido_em: string | null
+          decidido_por: string | null
+          etapa: string
+          id: string
+          job_id: string
+          motivo: Json
+          observacao: string
+          prazo_em: string
+          regras_versao: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          alertada_em?: string | null
+          application_id: string
+          candidate_id: string
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          etapa: string
+          id?: string
+          job_id: string
+          motivo: Json
+          observacao?: string
+          prazo_em: string
+          regras_versao?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          alertada_em?: string | null
+          application_id?: string
+          candidate_id?: string
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          etapa?: string
+          id?: string
+          job_id?: string
+          motivo?: Json
+          observacao?: string
+          prazo_em?: string
+          regras_versao?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "validacoes_reprovacao_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "validacoes_reprovacao_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
         ]

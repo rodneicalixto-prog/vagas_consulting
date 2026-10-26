@@ -286,3 +286,15 @@ resposta, útil; RLS ligada, sem política pública; retenção de 90 dias) e
 `entrevistas_online`: proposta da equipe (data_hora com fuso de Brasília, link https, status `proposta`, `confirmada`, `recusada` ou `substituida`, `criada_por`, `respondida_em`, `compromisso_id`). Índice único parcial: uma entrevista ativa (proposta ou confirmada) por candidatura. RLS ligada: o candidato só lê as entrevistas das próprias candidaturas; a escrita é feita pelo servidor (service role). A migration 0048 adiciona `compromisso_id`, ligando a entrevista ao compromisso da agenda criado na confirmação.
 
 Estado do banco em 23/10/2026: migrations aplicadas até a `0048`.
+
+## Migration 0049 — valores, regras por vaga e fila de validação (26/10/2026, NÃO aplicada)
+
+Spec: `docs/specs/AVALIACAO_IA_GANCHOS.md` §3A e §3B. Aditiva; RLS ligada e sem política pública (acesso só pelo servidor).
+
+| Objeto | O que guarda |
+|---|---|
+| `jobs.regras_ia` (jsonb, padrão `{}`) | Regras da IA na vaga: modo (`texto`/`voz`/`humano`), cortes, pesos, perguntas, gatilhos de escalada, horário, tom, instruções, `versao`, `confirmado_em` |
+| `company_values` | Valores da empresa para o fit cultural: nome, descrição, comportamentos e perguntas (jsonb), peso 1–5, corte 0–100, ativo. Única por (empresa, nome) |
+| `validacoes_reprovacao` | Caso em que a IA apontou "não segue": `etapa` (`triagem`/`entrevista_ia`/`competencias`), `status` (`aguardando`/`confirmada`/`revertida`/`aguardando_dados`), `motivo` (jsonb: critério, eliminatório, evidência, notas, confiança, o que mudaria, análise, justificativa incompleta, hash dos critérios), `prazo_em` (72 h), decisão, observação, versão das regras. Índice único parcial: um caso ativo por candidatura e etapa |
+
+**Ordem de publicação:** aplicar a migration **antes** do deploy do código. Sem a tabela, a triagem não consegue abrir o caso e desfaz a triagem daquele candidato (nunca deixa reprovado sem validação).
