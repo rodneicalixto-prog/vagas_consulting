@@ -15,13 +15,14 @@ const base = {
   devolutivasEnviadas: 0,
   ofertas: 0,
   abordagens: 0,
+  prospects: 0,
 };
 const estado = (etapas, chave) => etapas.find((e) => e.chave === chave).estado;
 
 test("vaga nova: critérios é o próximo passo e o resto aponta para ele", () => {
   const et = calcularEtapas(base);
   assert.equal(proximoPasso(et, base).chave, "criterios");
-  for (const k of ["divulgacao", "triagem", "abordagem"]) {
+  for (const k of ["divulgacao", "triagem", "abordagem", "hunter"]) {
     assert.equal(estado(et, k), "bloqueada");
     assert.equal(et.find((e) => e.chave === k).resolverEm, "criterios");
     assert.ok(et.find((e) => e.chave === k).motivo);
@@ -41,10 +42,10 @@ test("critérios com bloqueio de qualidade continuam pendentes", () => {
   assert.equal(estado(et, "triagem"), "bloqueada");
 });
 
-test("publicada sem candidatos: próximo passo é buscar candidatos, não triar", () => {
+test("publicada sem candidatos: próximo passo é buscar candidatos pelo hunter, não triar", () => {
   const c = { ...base, criteriosConfirmados: true, statusVaga: "publicada" };
   const p = proximoPasso(calcularEtapas(c), c);
-  assert.equal(p.chave, "abordagem");
+  assert.equal(p.chave, "hunter");
   assert.equal(p.acao, "Buscar candidatos");
 });
 
@@ -93,6 +94,7 @@ test("vizinhas seguem a ordem linear e ignoram a abordagem", () => {
   assert.deepEqual(vizinhas("ofertas"), { anterior: "devolutivas", proxima: null });
   assert.deepEqual(vizinhas(null), { anterior: null, proxima: "criterios" });
   assert.deepEqual(vizinhas("abordagem"), { anterior: "divulgacao", proxima: "triagem" });
+  assert.deepEqual(vizinhas("hunter"), { anterior: "divulgacao", proxima: "triagem" });
 });
 
 test("etapaDaRota reconhece etapa, subpágina e Central", () => {

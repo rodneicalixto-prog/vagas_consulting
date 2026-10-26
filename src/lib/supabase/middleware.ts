@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   "/admin/acesso-negado",
   "/admin/definir-senha",
   "/api/webhooks",
+  "/h/",
 ];
 
 // Vitrine pública: /vagas e /vagas/<id> (nunca /vagas/<id>/candidatura).

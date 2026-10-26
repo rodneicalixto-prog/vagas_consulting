@@ -1,3 +1,4 @@
+import { registrarRespostaDoProspect } from "@/lib/hunter-servidor";
 import { timingSafeEqual } from "node:crypto";
 import { after, NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -201,6 +202,9 @@ async function tratarMensagem(admin: Admin, companyId: string, item: Record<stri
     });
     if (errOpt && errOpt.code !== "23505") throw errOpt;
   }
+
+  // Número abordado pelo hunter: marca "respondeu" ou, se pediu SAIR, apaga os dados e bloqueia.
+  await registrarRespostaDoProspect(telefone, pediuSaida);
 
   const provedorId = typeof key.id === "string" && key.id ? key.id.slice(0, 200) : null;
   const { data: nova, error: errMsg } = await admin

@@ -30,7 +30,7 @@ export const carregarCicloDaVaga = cache(async (jobId: string): Promise<VagaDoCi
   const cont = (tabela: "applications" | "job_screenings" | "assessments" | "offer_letters" | "outreach_drafts") =>
     admin.from(tabela).select("id", { count: "exact", head: true }).eq("job_id", jobId);
 
-  const [cand, triados, fichas, testes, laudos, devol, ofertas, abord, validacoes] = await Promise.all([
+  const [cand, triados, fichas, testes, laudos, devol, ofertas, abord, validacoes, prospects] = await Promise.all([
     cont("applications"),
     cont("job_screenings"),
     admin.from("interview_scorecards").select("id", { count: "exact", head: true }).eq("job_id", jobId).eq("status", "fechada"),
@@ -44,6 +44,7 @@ export const carregarCicloDaVaga = cache(async (jobId: string): Promise<VagaDoCi
       .select("id", { count: "exact", head: true })
       .eq("job_id", jobId)
       .in("status", ["aguardando", "aguardando_dados"]),
+    admin.from("hunter_prospects").select("id", { count: "exact", head: true }).eq("job_id", jobId).is("anonimizado_em", null),
   ]);
 
   const criterios = normalizarCriterios(vaga.criterios);
@@ -77,6 +78,7 @@ export const carregarCicloDaVaga = cache(async (jobId: string): Promise<VagaDoCi
       devolutivasEnviadas: devol.count ?? 0,
       ofertas: ofertas.count ?? 0,
       abordagens: abord.count ?? 0,
+      prospects: prospects.count ?? 0,
     },
   };
 });

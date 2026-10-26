@@ -7,6 +7,7 @@ export type ChaveEtapa =
   | "criterios"
   | "divulgacao"
   | "abordagem"
+  | "hunter"
   | "triagem"
   | "validacoes"
   | "entrevista"
@@ -32,6 +33,8 @@ export type ContagensVaga = {
   devolutivasEnviadas: number;
   ofertas: number;
   abordagens: number;
+  /** Prospects captados pelo hunter (sem os já apagados). */
+  prospects: number;
 };
 
 export type DefinicaoEtapa = {
@@ -47,6 +50,7 @@ export const ETAPAS: DefinicaoEtapa[] = [
   { chave: "criterios", rotulo: "Critérios", sufixo: "/criterios", descricao: "Define o que a vaga exige. Alimenta todas as outras etapas." },
   { chave: "divulgacao", rotulo: "Divulgação", sufixo: "/divulgacao", descricao: "Texto da vaga para cada canal." },
   { chave: "abordagem", rotulo: "Abordagem", sufixo: "/abordagem", descricao: "Mensagem para quem ainda não se candidatou." },
+  { chave: "hunter", rotulo: "Hunter", sufixo: "/hunter", descricao: "Traz candidatos de fora da plataforma, avalia o perfil às cegas e prepara a mensagem." },
   { chave: "triagem", rotulo: "Triagem", sufixo: "/triagem", descricao: "Ranking de currículos com evidência por critério." },
   { chave: "validacoes", rotulo: "Validações", sufixo: "/validacoes", descricao: "Reprovações apontadas pela IA que esperam a sua decisão. O candidato só recebe resposta depois." },
   { chave: "entrevista", rotulo: "Entrevista", sufixo: "/entrevista", descricao: "Roteiro e ficha de cada candidato." },
@@ -109,6 +113,12 @@ export function calcularEtapas(c: ContagensVaga): EtapaCalculada[] {
       ? e("abordagem", "opcional", plural(c.abordagens, "abordagem", "abordagens"), "Ver abordagens")
       : e("abordagem", "opcional", "Use se faltar candidato.", "Criar abordagem");
 
+  const hunter = !criteriosOk
+    ? e("hunter", "bloqueada", "Depende dos critérios.", "Ir para critérios", { motivo: falta.criterios, resolverEm: "criterios" })
+    : c.prospects > 0
+      ? e("hunter", "opcional", plural(c.prospects, "prospect", "prospects"), "Abrir hunter")
+      : e("hunter", "opcional", "Traga candidatos de fora da plataforma.", "Abrir hunter");
+
   const triagem = !criteriosOk
     ? e("triagem", "bloqueada", "Depende dos critérios.", "Ir para critérios", { motivo: falta.criterios, resolverEm: "criterios" })
     : c.candidaturas === 0
@@ -155,7 +165,7 @@ export function calcularEtapas(c: ContagensVaga): EtapaCalculada[] {
       ? e("ofertas", "opcional", plural(c.ofertas, "carta", "cartas"), "Ver cartas")
       : e("ofertas", "opcional", "Para quem foi aprovado.", "Montar carta");
 
-  return [criterios, divulgacao, abordagem, triagem, validacoes, entrevista, testes, laudos, devolutivas, ofertas];
+  return [criterios, divulgacao, abordagem, hunter, triagem, validacoes, entrevista, testes, laudos, devolutivas, ofertas];
 }
 
 /** Primeira etapa do caminho principal que ainda pede ação. `null` quando o ciclo está completo. */
@@ -168,8 +178,8 @@ export function proximoPasso(etapas: EtapaCalculada[], c?: Pick<ContagensVaga, "
     if (!et || (et.estado !== "pendente" && et.estado !== "andamento")) continue;
     // Triagem sem ninguém para triar: o que move o ciclo é atrair candidatos.
     if (chave === "triagem" && c && c.candidaturas === 0) {
-      const ab = por("abordagem");
-      return ab ? { ...ab, resumo: "Sem candidatos ainda: busque pessoas para a vaga.", acao: "Buscar candidatos" } : et;
+      const alvo = por("hunter") ?? por("abordagem");
+      return alvo ? { ...alvo, resumo: "Sem candidatos ainda: traga pessoas pelo hunter ou crie uma abordagem.", acao: "Buscar candidatos" } : et;
     }
     return et;
   }
@@ -184,10 +194,10 @@ export function caminhoEtapa(jobId: string, chave: ChaveEtapa): string {
 
 /** Vizinhas na ordem do ciclo (a abordagem fica de fora da sequência linear). */
 export function vizinhas(chaveAtual: ChaveEtapa | null): { anterior: ChaveEtapa | null; proxima: ChaveEtapa | null } {
-  const linear = ETAPAS.filter((x) => x.chave !== "abordagem").map((x) => x.chave);
+  const linear = ETAPAS.filter((x) => x.chave !== "abordagem" && x.chave !== "hunter").map((x) => x.chave);
   if (chaveAtual === null) return { anterior: null, proxima: linear[0] };
   const i = linear.indexOf(chaveAtual);
-  // A abordagem roda entre a divulgação e a triagem.
+  // A abordagem e o hunter rodam entre a divulgação e a triagem.
   if (i === -1) return { anterior: "divulgacao", proxima: "triagem" };
   return { anterior: i > 0 ? linear[i - 1] : null, proxima: i < linear.length - 1 ? linear[i + 1] : null };
 }

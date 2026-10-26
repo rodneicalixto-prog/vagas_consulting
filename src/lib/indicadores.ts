@@ -175,7 +175,7 @@ export function calcular(p: {
   }
 
   // Fontes: origem da candidatura.
-  const rotuloFonte = (o: string | null) => (o && o.startsWith("divulgacao_") ? o.replace("divulgacao_", "") : o === "app_candidato" || !o ? "app (sem marcador)" : o);
+  const rotuloFonte = (o: string | null) => (o && o.startsWith("divulgacao_") ? o.replace("divulgacao_", "") : o && o.startsWith("hunter_") ? o.replace("hunter_", "hunter ") : o === "app_candidato" || !o ? "app (sem marcador)" : o);
   const mapa = new Map<string, { c: number; h: number }>();
   for (const c of coorte) {
     const k = rotuloFonte(c.origem);

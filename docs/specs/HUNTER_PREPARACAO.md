@@ -114,6 +114,28 @@ iniciada pela empresa; mensagem sem isso derruba a qualidade do número e pode b
 | H2 | Conector MCP de busca em fontes permitidas | Respostas da seção 3 e parecer jurídico |
 | H3 | Envio automático por e-mail com opt-out | Taxa de resposta e de reclamação medidas na H1/H2 |
 
+## 7A. H1 construída localmente (26/10/2026; migration `0051` NÃO aplicada)
+
+Tela **Hunter** na vaga (`/admin/vagas/[id]/hunter`, etapa nova na trilha) com três passos:
+
+1. **Trazer prospects:** planilha CSV colada (`;`, `,` ou tab; até 200 linhas; cabeçalho com telefone e/ou e-mail) ou uma pessoa por vez.
+   O telefone e o e-mail são normalizados; do perfil saem família, endereço, telefone e e-mail. Quem pediu para sair (em qualquer vaga, por hash)
+   e quem já está na vaga são pulados.
+2. **Avaliar às cegas** contra os critérios da vaga (mesmo método da triagem, sem nome, idade ou contato). Só avalia: não contata ninguém.
+   Encaixe alto, médio ou baixo. **Gerar mensagens** (WhatsApp ou e-mail) só para alto encaixe, ou alto e médio. Modelo **fixo e identificado**:
+   quem somos, de onde veio o dado, link rastreado e "responda SAIR". Vaga sigilosa não cita a empresa.
+3. **Aprovar e enviar:** cada mensagem passa por verificação (OK / Aviso / Bloqueia: link, saída, identificação, sigilo, termo discriminatório,
+   promessa). A aprovação em lote respeita o **teto diário** (padrão 20, variável `HUNTER_TETO_DIARIO`) contando o que já foi enviado e o que
+   já está aprovado. O envio é **manual**: botão "Abrir no WhatsApp" (`wa.me`) ou e-mail, pelo número dedicado, e depois "Marcar como enviado"
+   (que confere opt-out, janela de horário da vaga e teto). **Nada sai sozinho nesta fase.**
+
+**Rastreio:** link `/h/<token>` (sem dado pessoal na URL; prévia de link de WhatsApp não conta como clique) → cookie → candidatura grava a origem
+`hunter_<fonte>` e marca o prospect como "candidatou-se". **SAIR** no WhatsApp (webhook) e "pediu para sair" na tela apagam os dados e bloqueiam o
+contato para sempre. **Retenção:** rotina diária (`/api/cron/hunter-retencao`, 03:00) apaga em 30 dias nome, contato, perfil, avaliação e mensagem de
+quem não interagiu; ficam só os hashes. Quem clicou, respondeu ou se candidatou não é apagado.
+
+**Não faz ainda:** coleta automática nas plataformas (H2), envio automático (H3), InMail, e usar o acesso guardado no cofre (o conector não existe).
+
 ## 8. Decisões assumidas (padrão; corrija se discordar) [A VALIDAR]
 
 - Aprovação humana no envio na primeira fase.

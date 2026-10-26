@@ -302,3 +302,7 @@ Spec: `docs/specs/AVALIACAO_IA_GANCHOS.md` §3A e §3B. Aditiva; RLS ligada e se
 ## Migration 0050 — plataformas de emprego no cofre (26/10/2026, NÃO aplicada)
 
 Spec: `docs/specs/HUNTER_PREPARACAO.md` §0. Aditiva: amplia o check de `integration_credentials.provedor` com `vagascom`, `infojobs` e `linkedin`. Usuário, tipo de acesso, plano e a marca de uso automático ficam em `config` (não secreto); a senha ou chave de API fica em `segredo_cifrado` (AES-256-GCM). Para senha, `ultimos4` fica nulo. Sem tabela nova.
+
+## Migration 0051 — prospects do hunter (26/10/2026, NÃO aplicada)
+
+Spec: `docs/specs/HUNTER_PREPARACAO.md`. Aditiva; RLS ligada e sem política pública. Tabela `hunter_prospects`: prospect por vaga, com `fonte`, `estado`, `fit`, `pontuacao`, `resultado` (avaliação às cegas), `canal`, `texto` (mensagem), `token` (link rastreado `/h/<token>`), carimbos de aprovação, envio, clique e candidatura, `retencao_ate` (30 dias) e `anonimizado_em`. Telefone e e-mail ficam em texto até a anonimização; os hashes `chave_tel` e `chave_email` **permanecem** para nunca reimportar nem reabordar. Índices únicos por vaga e telefone ou e-mail.

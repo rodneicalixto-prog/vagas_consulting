@@ -367,6 +367,107 @@ export type Database = {
           },
         ]
       }
+      hunter_prospects: {
+        Row: {
+          anonimizado_em: string | null
+          aprovado_em: string | null
+          aprovado_por: string | null
+          candidate_id: string | null
+          candidatou_em: string | null
+          canal: string | null
+          chave_email: string | null
+          chave_tel: string | null
+          cidade: string
+          clicou_em: string | null
+          created_at: string
+          criado_por: string | null
+          email: string | null
+          enviada_em: string | null
+          estado: string
+          fit: string
+          fonte: string
+          id: string
+          job_id: string
+          nome: string
+          perfil: string
+          pontuacao: number | null
+          resultado: Json | null
+          retencao_ate: string
+          telefone: string | null
+          texto: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          anonimizado_em?: string | null
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          candidate_id?: string | null
+          candidatou_em?: string | null
+          canal?: string | null
+          chave_email?: string | null
+          chave_tel?: string | null
+          cidade?: string
+          clicou_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          email?: string | null
+          enviada_em?: string | null
+          estado?: string
+          fit?: string
+          fonte: string
+          id?: string
+          job_id: string
+          nome?: string
+          perfil?: string
+          pontuacao?: number | null
+          resultado?: Json | null
+          retencao_ate: string
+          telefone?: string | null
+          texto?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          anonimizado_em?: string | null
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          candidate_id?: string | null
+          candidatou_em?: string | null
+          canal?: string | null
+          chave_email?: string | null
+          chave_tel?: string | null
+          cidade?: string
+          clicou_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          email?: string | null
+          enviada_em?: string | null
+          estado?: string
+          fit?: string
+          fonte?: string
+          id?: string
+          job_id?: string
+          nome?: string
+          perfil?: string
+          pontuacao?: number | null
+          resultado?: Json | null
+          retencao_ate?: string
+          telefone?: string | null
+          texto?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hunter_prospects_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integration_credentials: {
         Row: {
           ativo: boolean
