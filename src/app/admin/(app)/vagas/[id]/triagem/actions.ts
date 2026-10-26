@@ -18,6 +18,7 @@ import {
   sinaisDeHistorico,
   type ResultadoTriagem,
 } from "@/lib/triagem";
+import { sincronizarReprovacaoDaTriagem } from "@/lib/validacao-servidor";
 import { extrairDadosCurriculo } from "@/lib/ai/curriculo";
 import type { PerfilParaTriagem } from "@/lib/triagem";
 import type { Json } from "@/lib/supabase/types";
@@ -165,8 +166,27 @@ export async function rodarTriagem(_anterior: EstadoTriagem, formData: FormData)
         },
         { onConflict: "job_id,application_id" },
       );
-      if (error) falhas += 1;
-      else avaliados += 1;
+      if (error) {
+        falhas += 1;
+        return;
+      }
+      // Toda eliminação da IA vai para a fila de validação humana: a candidatura
+      // não muda e o candidato não recebe resposta até uma pessoa decidir.
+      try {
+        await sincronizarReprovacaoDaTriagem({
+          jobId,
+          applicationId: a.id,
+          candidateId: a.candidate_id,
+          resultado,
+          criteriosHash: hash,
+        });
+        avaliados += 1;
+      } catch {
+        // Sem caso na fila, o eliminado sumiria. Desfaz a triagem desta pessoa para
+        // que a próxima rodada tente de novo, em vez de deixá-la reprovada sem validação.
+        await admin.from("job_screenings").delete().eq("job_id", jobId).eq("application_id", a.id);
+        falhas += 1;
+      }
     };
 
     // Em blocos de 5 para caber no tempo e respeitar o teto entre os blocos.

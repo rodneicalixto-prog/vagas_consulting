@@ -38,7 +38,7 @@ export default async function OfertasPage({ params }: { params: Promise<{ id: st
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-4 md:px-9 pt-7">
-        <Link href={`/admin/vagas/${vaga.id}`} className="text-[11.5px] font-bold text-navy underline">← Critérios da vaga</Link>
+        <Link href={`/admin/vagas/${vaga.id}`} className="text-[11.5px] font-bold text-navy underline">← Central da vaga</Link>
         <h1 className="mt-2 text-xl font-extrabold text-text">Carta-oferta</h1>
         <p className="mt-1 text-xs text-text-2">
           {vaga.titulo}. Documento montado só com o que você informar. Peça revisão do DP/jurídico antes de enviar.

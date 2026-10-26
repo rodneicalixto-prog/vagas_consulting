@@ -37,6 +37,7 @@ const NAV: NavEntry[] = [
     children: [
       { href: "/admin/candidatos", label: "Candidatos" },
       { href: "/admin/contatos", label: "Contatos" },
+      { href: "/admin/validacoes", label: "Validações" },
       { href: "/admin/talentos", label: "Talentos" },
       { href: "/admin/convites", label: "Convites" },
       { href: "/admin/ranking", label: "Ranking", roles: ["superadmin", "admin"] },

@@ -315,7 +315,7 @@ export default async function CadastroDeVagasPage({
                                 </a>
                               )}
                               <Link href={`/admin/vagas/${job.id}`} className="font-bold text-navy underline">
-                                Critérios e qualidade →
+                                Abrir vaga →
                               </Link>
                               <Link
                                 href={`/admin?empresa=${job.company_id}&detalhe=candidatos`}

@@ -13,8 +13,10 @@ import {
   verificarVaga,
   type NivelVerificacao,
 } from "@/lib/vaga-estruturada";
-import { salvarCriterios } from "../actions";
-import { GerarComIA } from "./gerar-com-ia";
+import { salvarCriterios } from "../../actions";
+import { GerarComIA } from "../gerar-com-ia";
+import { normalizarRegras } from "@/lib/regras-vaga";
+import { RegrasIAForm } from "./regras-ia-form";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -27,9 +29,16 @@ const COR: Record<NivelVerificacao, string> = {
 };
 const ROTULO: Record<NivelVerificacao, string> = { ok: "OK", aviso: "Aviso", bloqueio: "Bloqueia" };
 
-export default async function CriteriosDaVagaPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function CriteriosDaVagaPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ regras?: string; regras_erro?: string }>;
+}) {
   const { user, role } = await requireInternalUser("jobs.manage");
   const { id } = await params;
+  const { regras: regrasOk, regras_erro: regrasErro } = await searchParams;
   if (!UUID.test(id)) notFound();
 
   const escopo = await obterEscopo(user.id, role);
@@ -38,7 +47,7 @@ export default async function CriteriosDaVagaPage({ params }: { params: Promise<
   const admin = createAdminClient();
   const { data: vaga } = await admin
     .from("jobs")
-    .select("id, titulo, status, local, modelo_trabalho, remuneracao_texto, descricao, requisitos, criterios, companies(nome_fantasia, razao_social)")
+    .select("id, titulo, status, local, modelo_trabalho, remuneracao_texto, descricao, requisitos, criterios, confidencial, regras_ia, companies(nome_fantasia, razao_social)")
     .eq("id", id)
     .maybeSingle();
   if (!vaga) redirect("/admin/vagas");
@@ -59,35 +68,11 @@ export default async function CriteriosDaVagaPage({ params }: { params: Promise<
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="shrink-0 px-4 md:px-9 pt-7">
-        <Link href="/admin/vagas" className="text-[11.5px] font-bold text-navy underline">
-          ← Cadastro de vagas
+      <div className="shrink-0 px-4 md:px-9 pt-6">
+        <Link href={`/admin/vagas/${id}`} className="text-[11.5px] font-bold text-navy underline">
+          ← Central da vaga
         </Link>
         <h1 className="mt-2 text-xl font-extrabold text-text">Critérios da vaga</h1>
-        <Link href={`/admin/vagas/${id}/divulgacao`} className="mt-1 inline-block text-[11.5px] font-bold text-navy underline">
-          Gerar divulgação desta vaga →
-        </Link>
-        <Link href={`/admin/vagas/${id}/triagem`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
-          Triar candidatos →
-        </Link>
-        <Link href={`/admin/vagas/${id}/entrevista`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
-          Roteiro de entrevista →
-        </Link>
-        <Link href={`/admin/vagas/${id}/testes`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
-          Testes e dinâmicas →
-        </Link>
-        <Link href={`/admin/vagas/${id}/laudos`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
-          Laudos dos candidatos →
-        </Link>
-        <Link href={`/admin/vagas/${id}/devolutivas`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
-          Devolutivas →
-        </Link>
-        <Link href={`/admin/vagas/${id}/abordagem`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
-          Abordagem ativa →
-        </Link>
-        <Link href={`/admin/vagas/${id}/ofertas`} className="mt-1 ml-4 inline-block text-[11.5px] font-bold text-navy underline">
-          Carta-oferta →
-        </Link>
         <p className="mt-1 text-xs text-text-2">
           {vaga.titulo} · {nomeEmpresa}. Estes campos alimentam divulgação, triagem, roteiro de entrevista, testes e laudo.
         </p>
@@ -213,6 +198,24 @@ export default async function CriteriosDaVagaPage({ params }: { params: Promise<
             </span>
           </div>
         </form>
+
+        {regrasOk === "ok" && (
+          <p role="status" className="mt-6 rounded-xl bg-success-bg px-4 py-3 text-[12.5px] font-bold text-success">
+            Regras da IA salvas.
+          </p>
+        )}
+        {regrasErro && (
+          <p role="alert" className="mt-6 rounded-xl bg-danger-bg px-4 py-3 text-[12.5px] font-bold text-danger">
+            Regras não salvas: {regrasErro}
+          </p>
+        )}
+        <RegrasIAForm
+          jobId={vaga.id}
+          regras={normalizarRegras(vaga.regras_ia)}
+          senioridade={criterios.senioridade}
+          temObrigatorios={criterios.obrigatorios.length > 0}
+          confidencial={!!vaga.confidencial}
+        />
       </div>
     </div>
   );

@@ -68,7 +68,7 @@ export default async function TriagemPage({
     <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-4 md:px-9 pt-7">
         <Link href={`/admin/vagas/${vaga.id}`} className="text-[11.5px] font-bold text-navy underline">
-          ← Critérios da vaga
+          ← Central da vaga
         </Link>
         <h1 className="mt-2 text-xl font-extrabold text-text">Triagem de currículos</h1>
         <p className="mt-1 text-xs text-text-2">
@@ -79,7 +79,7 @@ export default async function TriagemPage({
         {bloqueios.length > 0 ? (
           <div role="alert" className="rounded-xl bg-danger-bg px-4 py-3 text-[12.5px] font-semibold text-danger">
             Triagem bloqueada: {bloqueios.join(" ")}{" "}
-            <Link href={`/admin/vagas/${vaga.id}`} className="underline">
+            <Link href={`/admin/vagas/${vaga.id}/criterios`} className="underline">
               Ajustar critérios (ou extraí-los da descrição com a IA e confirmar)
             </Link>
           </div>

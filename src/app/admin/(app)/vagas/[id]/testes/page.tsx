@@ -32,7 +32,7 @@ export default async function TestesPage({ params }: { params: Promise<{ id: str
     <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-4 md:px-9 pt-7">
         <Link href={`/admin/vagas/${vaga.id}`} className="text-[11.5px] font-bold text-navy underline">
-          ← Critérios da vaga
+          ← Central da vaga
         </Link>
         <h1 className="mt-2 text-xl font-extrabold text-text">Testes e dinâmicas</h1>
         <p className="mt-1 text-xs text-text-2">

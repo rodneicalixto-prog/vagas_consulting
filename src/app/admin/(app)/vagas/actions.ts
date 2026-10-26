@@ -19,6 +19,7 @@ import {
   type CanalId,
 } from "@/lib/divulgacao";
 import type { Verificacao } from "@/lib/vaga-estruturada";
+import { normalizarRegras, regrasDoFormulario, verificarRegras } from "@/lib/regras-vaga";
 import {
   criteriosDaResposta,
   modoValido,
@@ -260,6 +261,7 @@ export async function salvarCriterios(formData: FormData) {
   });
 
   revalidatePath(`/admin/vagas/${jobId}`);
+  revalidatePath(`/admin/vagas/${jobId}/criterios`);
   revalidatePath("/admin/vagas");
 }
 
@@ -325,6 +327,7 @@ export async function gerarCriteriosComIA(_anterior: EstadoGeracao, formData: Fo
       depois: { modo, provedor: r.provedor, modelo: r.modelo, obrigatorios: proposta.obrigatorios.length },
     });
     revalidatePath(`/admin/vagas/${jobId}`);
+    revalidatePath(`/admin/vagas/${jobId}/criterios`);
     return { erro: null, ok: true };
   } catch (e) {
     const digest = (e as { digest?: unknown } | null)?.digest;
@@ -512,4 +515,50 @@ export async function transcreverRecado(_anterior: EstadoTranscricao, formData: 
     if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw e;
     return falha("Não foi possível transcrever agora. Tente de novo.");
   }
+}
+
+/**
+ * Salva as regras que a IA segue nesta vaga (modo de entrevista, cortes, perguntas,
+ * gatilhos). Regra que contraria um guardrail (reprovar sem validação, perguntar atributo
+ * protegido, citar a empresa numa vaga sigilosa) NÃO é salva. O resultado volta pela URL.
+ */
+export async function salvarRegrasIA(formData: FormData) {
+  const { user, role } = await requireInternalUser("jobs.manage");
+  const jobId = String(formData.get("job_id") ?? "");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobId)) throw new Error("Vaga inválida.");
+  const escopo = await obterEscopo(user.id, role);
+  await exigirVaga(escopo, jobId);
+
+  const destino = `/admin/vagas/${jobId}/criterios`;
+  const admin = createAdminClient();
+  const { data: vaga } = await admin.from("jobs").select("id, confidencial, criterios, regras_ia").eq("id", jobId).maybeSingle();
+  if (!vaga) redirect(`${destino}?regras_erro=${encodeURIComponent("Vaga não encontrada.")}`);
+
+  const atual = normalizarRegras(vaga.regras_ia);
+  const regras = regrasDoFormulario((k) => String(formData.get(k) ?? ""), atual.versao);
+  const criterios = normalizarCriterios(vaga.criterios);
+  const verificacoes = verificarRegras(regras, { temObrigatorios: criterios.obrigatorios.length > 0, confidencial: !!vaga.confidencial });
+
+  const bloqueios = verificacoes.filter((v) => v.nivel === "bloqueio");
+  if (bloqueios.length > 0) {
+    redirect(`${destino}?regras_erro=${encodeURIComponent(bloqueios.map((b) => b.mensagem).join(" "))}`);
+  }
+
+  const { error } = await admin
+    .from("jobs")
+    .update({ regras_ia: regras as unknown as import("@/lib/supabase/types").Json, updated_at: new Date().toISOString() })
+    .eq("id", jobId);
+  if (error) redirect(`${destino}?regras_erro=${encodeURIComponent("Não foi possível salvar as regras.")}`);
+
+  await admin.from("audit_log").insert({
+    ator_id: user.id,
+    acao: "vaga_regras_ia_atualizadas",
+    objeto_tipo: "job",
+    objeto_id: jobId,
+    depois: { versao: regras.versao, modo: regras.modo, corte_triagem: regras.corte_triagem, gatilhos: regras.gatilhos_escalada.length },
+  });
+
+  revalidatePath(`/admin/vagas/${jobId}`);
+  revalidatePath(destino);
+  redirect(`${destino}?regras=ok`);
 }

@@ -62,7 +62,7 @@ export default async function DevolutivasPage({ params }: { params: Promise<{ id
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="shrink-0 px-4 md:px-9 pt-7">
-        <Link href={`/admin/vagas/${vaga.id}`} className="text-[11.5px] font-bold text-navy underline">← Critérios da vaga</Link>
+        <Link href={`/admin/vagas/${vaga.id}`} className="text-[11.5px] font-bold text-navy underline">← Central da vaga</Link>
         <h1 className="mt-2 text-xl font-extrabold text-text">Devolutivas</h1>
         <p className="mt-1 text-xs text-text-2">
           {vaga.titulo}. Rascunho respeitoso, personalizado e baseado em evidência. Você revisa e envia.
