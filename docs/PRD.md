@@ -241,4 +241,4 @@ Quem tem um número só não precisa fazer nada (virou a linha padrão).
 
 **Fora do escopo:** página por empresa, domínio próprio, formulário direto na página, alertas pela página.
 
-**Em aberto (precisam do Rodnei):** (1) a interpretação "página pública de divulgação" está certa; (2) vaga confidencial: indexar com "Vagas Consulting" como organização ou `noindex`; (3) candidatura continua exigindo conta (recomendado); (4) domínio atual ou endereço separado.
+**Em aberto (precisam do Rodnei):** (1) a interpretação "página pública de divulgação" está certa; (2) ~~vaga confidencial: indexar ou `noindex`~~ **decidido em 27/10/2026: indexar com "Vagas Consulting" como organização e a empresa mascarada**; (3) candidatura continua exigindo conta (recomendado); (4) domínio atual ou endereço separado.

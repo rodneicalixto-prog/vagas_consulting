@@ -246,7 +246,7 @@ Spec: `docs/specs/PAGINA_PUBLICA_VAGAS.md`. Nenhum código nem migration nesta a
 | Metadados | `generateMetadata` por vaga: título, descrição, canonical sem `?o=`, Open Graph |
 | Mapa do site | `src/app/sitemap.ts` com as vagas publicadas e no prazo; `src/app/robots.ts` bloqueando `/admin`, `/api`, `/h/` e `/vagas/*/candidatura` |
 | Dados estruturados | JSON-LD `JobPosting` montado no servidor; `efetiva`→`FULL_TIME`, `pj`→`CONTRACTOR`, `temporaria`→`TEMPORARY`; `baseSalary` só com faixa numérica |
-| Sigilo | A mesma função `nomeEmpresa` de `src/lib/sigilo.ts`, aplicada ao HTML e ao JSON-LD; vaga confidencial usa "Vagas Consulting" como organização (decisão em aberto) |
+| Sigilo | A mesma função `nomeEmpresa` de `src/lib/sigilo.ts`, aplicada ao HTML e ao JSON-LD; vaga confidencial usa "Vagas Consulting" como organização (**decidido em 27/10/2026**) e continua indexável |
 | Leitura | `createAdminClient` no servidor com colunas fixas, status `publicada` e `expira_em` (como hoje); id fora do UUID dá 404 |
 | Busca (P2) | Parâmetros `q`, `modalidade`, `cidade`, `pagina`; limite de 20 por página; sem migration |
 | URL absoluta | `NEXT_PUBLIC_SITE_URL` com padrão `https://sosvagas.sosmkt.com.br` (igual a `hunter-servidor.ts`) |

@@ -64,9 +64,9 @@ Medidas, usando o que já existe (origem por canal, relatório `/admin/origens`)
 
 - **Não marcar como `JobPosting`** vaga fora do prazo ou sem descrição.
 
-## 6. Decisão em aberto: vaga confidencial e Google
+## 6. Decisão: vaga confidencial e Google (Rodnei, 27/10/2026)
 
-O Google exige `hiringOrganization`. Para vaga confidencial a proposta é usar **Vagas Consulting** como organização (a plataforma opera a vaga) e manter "Empresa confidencial" no texto. **Precisa da sua confirmação.** Alternativa: não indexar vagas confidenciais (`noindex`), perdendo alcance no Google.
+O Google exige `hiringOrganization`. **Decidido:** vaga confidencial **é indexada**, com **Vagas Consulting** como organização (a plataforma opera a vaga) e "Empresa confidencial" no texto. Não usar `noindex` nessas vagas. A empresa real não aparece no HTML, no `JobPosting` nem no título e na descrição dos metadados.
 
 Risco já registrado: o texto livre da descrição pode citar o nome da empresa. Há verificação no cadastro (`regras-vaga.ts`, termo de identificação da empresa) que avisa antes de publicar; a página pública **não** reescreve o texto.
 
@@ -103,6 +103,6 @@ Risco já registrado: o texto livre da descrição pode citar o nome da empresa.
 ## 11. Perguntas em aberto
 
 1. A interpretação do §1 está certa (página pública de divulgação, e não outro cadastro de vaga)?
-2. Vaga confidencial: indexar com "Vagas Consulting" como organização, ou `noindex`? (§6)
+2. ~~Vaga confidencial: indexar ou `noindex`?~~ **Decidido em 27/10/2026:** indexar com "Vagas Consulting" como organização e a empresa mascarada (§6).
 3. A candidatura continua exigindo conta no app, ou haverá formulário rápido na página? **Recomendação:** manter a conta, porque endereço obrigatório e consentimento ficam em um lugar só.
 4. Domínio: ficar no domínio atual, ou separar um endereço só para vagas?
