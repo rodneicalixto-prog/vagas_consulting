@@ -181,7 +181,7 @@ reprovação pode existir, então ela é pré-requisito de todo o resto.
 | # | Pergunta | Recomendação |
 |---|---|---|
 | D1 | Quais **valores** a SOS Vagas e cada cliente usam para fit cultural? | Cadastrar por empresa; começar pela SOS Vagas |
-| D2 | **Questionário comportamental:** instrumento próprio ou licenciado? | **Decidido em 27/10/2026: instrumento licenciado.** Falta escolher o instrumento e o profissional habilitado que aplica e interpreta; a IA só organiza o resultado, não o interpreta |
+| D2 | **Questionário comportamental:** instrumento próprio ou licenciado? | **Decidido em 27/10/2026: instrumento profissional licenciado do tipo DISC, aplicado pelo agente.** O agente **só entrega o link**, recebe o teste realizado e **anexa ao processo do candidato**; **uma pessoa segue com a aprovação do teste**. O agente não interpreta, não faz diagnóstico e **o DISC nunca é eliminatório para o agente**: é apenas parte do processo de seleção. Falta escolher o fornecedor. A empresa já tem psicólogo(a) no quadro, que confirmará depois o enquadramento do instrumento (decisão do Rodnei: não bloqueia o resto). Fluxo: o DISC entra depois das aprovações do agente e antes da entrevista humana |
 | D3 | Teto de custo por avaliação | **Decidido:** mantém o teto atual de US$ 100/mês por empresa |
 | D4 | ~~Voz entra quando?~~ **Decidido:** texto primeiro; voz opcional só em cargos marcados | **Cargos da voz: chefia e liderança** (26/10/2026); demais cargos seguem para entrevista com humano |
 

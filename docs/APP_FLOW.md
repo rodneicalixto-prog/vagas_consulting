@@ -200,3 +200,11 @@ O endereço completo é obrigatório em três pontos do fluxo do candidato. Hoje
 3. **Candidatura (`/vagas/[id]/candidatura`):** **sem currículo anexado**, a candidatura só segue se o perfil tiver telefone e endereço; senão volta o erro "Complete seu perfil (telefone e endereço)". **Com currículo anexado a candidatura passa sem endereço**, porque o currículo substitui a ficha. Na prática o onboarding e os dados pessoais já exigem o endereço antes disso.
 
 Conta criada por convite ou de administrador, sem endereço, cai no `/onboarding` ao abrir qualquer tela do candidato. O endereço é um dos 9 itens da completude do perfil. Navegação visitante (`/vagas`) segue sem exigir cadastro; o endereço só é cobrado ao agir.
+
+### Fluxo de qualificação (decidido em 27/10/2026, ainda não construído por inteiro)
+
+1. Triagem às cegas pelo agente (já existe, sem avanço automático).
+2. Entrevista do agente em texto (1C, a construir).
+3. Questionário comportamental DISC licenciado (fornecedor a escolher): o agente **só entrega o link**, recebe o teste realizado e o anexa ao processo do candidato. **Uma pessoa segue com a aprovação do teste.** O agente não interpreta nem elimina por ele; o DISC é apenas parte do processo de seleção.
+4. A cada etapa, quem é aprovado avança; **quem seria reprovado cai na fila de validação humana de 72 h** e o agente não responde ao candidato até uma pessoa decidir.
+5. Depois de todas as aprovações, **entrevista com uma pessoa**, que recebe o histórico completo (triagem, entrevista do agente, resultado do DISC, laudo).

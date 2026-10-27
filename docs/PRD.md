@@ -223,4 +223,6 @@ Quem tem um número só não precisa fazer nada (virou a linha padrão).
 
 **Critérios de aceite:** cadastro novo não conclui sem endereço; candidatura sem currículo anexado não envia sem telefone e endereço; a triagem às cegas não carrega o endereço; o aviso de privacidade explica a finalidade (**ainda não explica**, ver abaixo).
 
+**Fluxo de qualificação decidido em 27/10/2026:** o agente faz toda a qualificação; quem passa avança; toda reprovação vai para a fila de validação humana de 72 h; depois de todas as aprovações o candidato segue para a entrevista com uma pessoa, já com o histórico completo. Na parte comportamental o agente aplica um instrumento profissional licenciado do tipo DISC (fornecedor ainda a escolher); o agente só entrega o link, recebe o teste realizado e o anexa ao processo do candidato; uma pessoa segue com a aprovação do teste. O DISC nunca é eliminatório para o agente: é apenas parte do processo de seleção.
+
 **Em aberto:** (1) texto da finalidade no aviso de privacidade (`/termos`), com revisão jurídica; (2) prazo de retenção do endereço de quem não se candidata ou pede eliminação; (3) estruturar o campo (CEP, logradouro, bairro, cidade, UF) como já existe no cadastro de empresas, ou manter texto livre.
