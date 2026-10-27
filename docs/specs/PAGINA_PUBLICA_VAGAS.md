@@ -1,7 +1,7 @@
 # Especificação — Página pública de vagas (v0.1)
 
 > **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec da página pública de vagas v0.1 · **Data:** 27/10/2026
-> **Status:** especificação aprovada em 27/10/2026. **P1 construída localmente (273+ testes e build ok), ainda não commitada nem publicada; P2 e P3 não construídas.** Estende `VITRINE_PUBLICA.md` (14/10/2026). Pela regra dos seis documentos, nenhum código antes da aprovação do Rodnei.
+> **Status:** especificação aprovada em 27/10/2026. **P1 e P3 publicadas em 27/10/2026; P2 não construída.** Estende `VITRINE_PUBLICA.md` (14/10/2026). Pela regra dos seis documentos, nenhum código antes da aprovação do Rodnei.
 
 ## 1. Problema
 
@@ -79,7 +79,7 @@ Risco já registrado: o texto livre da descrição pode citar o nome da empresa.
 
 ## 8. Compartilhar e admin (P3)
 
-- **Compartilhar:** copiar link e abrir WhatsApp com texto e link já prontos. O link compartilhado leva a origem `site` (canal novo no marcador, a definir com `canalValido`).
+- **Compartilhar:** copiar link e abrir WhatsApp com texto e link já prontos. O link copiado leva `?utm_source=site` e o do WhatsApp leva `?o=whatsapp` (canal já existente); não foi criado canal novo, para não mexer na lista de canais da divulgação nem nos relatórios de origem.
 - **Central da vaga:** botão "Ver página pública" e o estado da vaga (publicada, indexável, confidencial) em uma linha.
 
 ## 9. Critérios de aceite
