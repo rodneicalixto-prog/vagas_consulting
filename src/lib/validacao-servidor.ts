@@ -43,7 +43,9 @@ export async function sincronizarReprovacaoDaTriagem(p: {
         decidido_em: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
-      .eq("id", ativo.id);
+      .eq("id", ativo.id)
+      // Se uma pessoa decidiu entre a leitura e esta escrita, a decisão dela prevalece.
+      .in("status", ["aguardando", "aguardando_dados"]);
     return "retirada";
   }
 
@@ -52,13 +54,23 @@ export async function sincronizarReprovacaoDaTriagem(p: {
       e.status === "revertida" &&
       (e.motivo as { criterios_hash?: string | null } | null)?.criterios_hash === p.criteriosHash,
   );
-  if (jaRevertido && !ativo) return "ignorada_revertida";
+  if (jaRevertido && !ativo) {
+    // A pessoa já decidiu manter este candidato no processo para estes critérios. A triagem
+    // acabou de gravar `eliminado=true` por cima; devolve a decisão humana, sem alarde.
+    await admin
+      .from("job_screenings")
+      .update({ eliminado: false, updated_at: new Date().toISOString() })
+      .eq("job_id", p.jobId)
+      .eq("application_id", p.applicationId);
+    return "ignorada_revertida";
+  }
 
   if (ativo) {
     await admin
       .from("validacoes_reprovacao")
       .update({ motivo: motivo as unknown as Json, updated_at: new Date().toISOString() })
-      .eq("id", ativo.id);
+      .eq("id", ativo.id)
+      .in("status", ["aguardando", "aguardando_dados"]);
     return "atualizada";
   }
 

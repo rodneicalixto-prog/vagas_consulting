@@ -34,7 +34,9 @@ export async function GET(request: NextRequest, ctx: { params: Promise<{ token: 
       await admin
         .from("hunter_prospects")
         .update({ clicou_em: agora, ...(avanca ? { estado: "clicou" } : {}), updated_at: agora })
-        .eq("id", p.id);
+        .eq("id", p.id)
+        // Se o estado mudou entre a leitura e a escrita (candidatou, respondeu), não rebaixa.
+        .eq("estado", p.estado);
     }
     resposta.cookies.set("hunter_token", token, {
       httpOnly: true,

@@ -2,6 +2,7 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { TETO_DIARIO_PADRAO, hashContato, inicioDoDiaSaoPaulo, restanteDoDia } from "@/lib/hunter";
+import { variantesTelefoneBR } from "@/lib/whatsapp";
 
 /** Teto diário de WhatsApp frio: variável de ambiente `HUNTER_TETO_DIARIO` ou o padrão. */
 export function tetoDiario(): number {
@@ -26,6 +27,9 @@ export async function restanteHoje(agora: Date = new Date()): Promise<{ teto: nu
   return { teto, enviados, restante: restanteDoDia(enviados, teto) };
 }
 
+/** Quem pediu saída ou já teve os dados apagados pela retenção não é importado nem abordado de novo. */
+const ESTADOS_QUE_BLOQUEIAM = ["nao_contactar", "expirado"];
+
 /**
  * Esta pessoa pediu para não ser contactada, ou já foi abordada? Confere o opt-out do WhatsApp (qualquer empresa)
  * e os hashes de prospects em "não contactar". Conservador: na dúvida, bloqueia.
@@ -33,13 +37,16 @@ export async function restanteHoje(agora: Date = new Date()): Promise<{ teto: nu
 export async function contatoBloqueado(c: { telefone: string | null; email: string | null }): Promise<boolean> {
   const admin = createAdminClient();
   if (c.telefone) {
-    const { data } = await admin.from("channel_opt_outs").select("id").eq("telefone_normalizado", c.telefone).limit(1);
+    // Com e sem o nono dígito: o WhatsApp devolve o mesmo número de formas diferentes.
+    const formas = variantesTelefoneBR(c.telefone);
+    const lista = formas.length > 0 ? formas : [c.telefone];
+    const { data } = await admin.from("channel_opt_outs").select("id").in("telefone_normalizado", lista).limit(1);
     if (data && data.length > 0) return true;
     const { data: h } = await admin
       .from("hunter_prospects")
       .select("id")
-      .eq("chave_tel", hashContato(c.telefone))
-      .eq("estado", "nao_contactar")
+      .in("chave_tel", lista.map(hashContato))
+      .in("estado", ESTADOS_QUE_BLOQUEIAM)
       .limit(1);
     if (h && h.length > 0) return true;
   }
@@ -48,7 +55,7 @@ export async function contatoBloqueado(c: { telefone: string | null; email: stri
       .from("hunter_prospects")
       .select("id")
       .eq("chave_email", hashContato(c.email))
-      .eq("estado", "nao_contactar")
+      .in("estado", ESTADOS_QUE_BLOQUEIAM)
       .limit(1);
     if (h && h.length > 0) return true;
   }
@@ -89,20 +96,24 @@ export async function registrarRespostaDoProspect(telefone: string, pediuSaida: 
   try {
     const admin = createAdminClient();
     const agora = new Date().toISOString();
+    const formas = variantesTelefoneBR(telefone);
+    const lista = formas.length > 0 ? formas : [telefone];
     if (pediuSaida) {
-      await admin
+      const { error } = await admin
         .from("hunter_prospects")
         .update({ ...CAMPOS_ANONIMIZADOS, estado: "nao_contactar", anonimizado_em: agora, updated_at: agora })
-        .eq("telefone", telefone)
+        .in("telefone", lista)
         .is("anonimizado_em", null);
+      // O opt-out já foi gravado antes e continua bloqueando o contato; a falha fica no log, sem dado pessoal.
+      if (error) console.error("[HUNTER] falha ao anonimizar após SAIR");
       return;
     }
     await admin
       .from("hunter_prospects")
       .update({ estado: "respondeu", updated_at: agora })
-      .eq("telefone", telefone)
+      .in("telefone", lista)
       .in("estado", ["enviado", "clicou"]);
   } catch {
-    /* o rastro do hunter não pode derrubar o webhook */
+    console.error("[HUNTER] falha ao registrar resposta do prospect");
   }
 }

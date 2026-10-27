@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { cronAutorizado } from '@/lib/cron-auth';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -15,9 +16,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   // Validar Vercel's Cron secret. Sem segredo configurado a rota fica fechada
   // (antes, "Bearer undefined" passava quando a variável não existia).
-  const secret = process.env.CRON_SECRET;
-  const authHeader = request.headers.get('authorization') || '';
-  if (!secret || authHeader !== `Bearer ${secret}`) {
+  if (!cronAutorizado(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -28,7 +27,7 @@ export async function GET(request: Request) {
     if (error) {
       console.error('[CRON] erro ao arquivar vagas:', error);
       return NextResponse.json(
-        { error: 'Erro ao executar arquivo automático', details: error },
+        { error: 'Erro ao executar arquivo automático' },
         { status: 500 }
       );
     }
@@ -61,10 +60,3 @@ export async function GET(request: Request) {
     );
   }
 }
-
-// Configurar Cron na Vercel
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};

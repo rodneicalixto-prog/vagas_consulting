@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { normalizarTelefoneBR, linkWhatsApp, formatarTelefoneBR } from "../whatsapp.ts";
+import { normalizarTelefoneBR, linkWhatsApp, formatarTelefoneBR, variantesTelefoneBR } from "../whatsapp.ts";
 
 test("normaliza formatos comuns de telefone brasileiro", () => {
   assert.equal(normalizarTelefoneBR("(11) 99999-9999"), "5511999999999");
@@ -30,4 +30,11 @@ test("formatação de leitura", () => {
   assert.equal(formatarTelefoneBR("1133334444"), "+55 (11) 3333-4444");
   assert.equal(formatarTelefoneBR("xyz"), "xyz");
   assert.equal(formatarTelefoneBR(null), "—");
+});
+
+test("variantes do celular: com e sem o nono dígito casam entre si", () => {
+  assert.deepEqual(variantesTelefoneBR("(11) 98765-4321"), ["5511987654321", "551187654321"]);
+  assert.deepEqual(variantesTelefoneBR("551187654321"), ["551187654321", "5511987654321"]);
+  assert.deepEqual(variantesTelefoneBR("1133334444"), ["551133334444"]);
+  assert.deepEqual(variantesTelefoneBR("abc"), []);
 });

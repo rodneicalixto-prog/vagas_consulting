@@ -19,6 +19,20 @@ export function normalizarTelefoneBR(bruto: string | null | undefined): string |
   return d;
 }
 
+/**
+ * Formas equivalentes do mesmo número: com e sem o nono dígito do celular. O WhatsApp devolve
+ * ora uma, ora outra; para opt-out e bloqueio, as duas precisam casar.
+ */
+export function variantesTelefoneBR(bruto: string | null | undefined): string[] {
+  const n = normalizarTelefoneBR(bruto);
+  if (!n) return [];
+  const ddd = n.slice(2, 4);
+  const resto = n.slice(4);
+  if (resto.length === 9) return [n, `55${ddd}${resto.slice(1)}`];
+  if (resto.length === 8 && /^[6-9]/.test(resto)) return [n, `55${ddd}9${resto}`];
+  return [n];
+}
+
 /** Link `wa.me` que abre a conversa (com mensagem opcional). `null` se inválido. */
 export function linkWhatsApp(bruto: string | null | undefined, texto?: string): string | null {
   const n = normalizarTelefoneBR(bruto);

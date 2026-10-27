@@ -63,20 +63,44 @@ export async function decidirValidacao(formData: FormData) {
     .select("id");
   if (error || !atualizados || atualizados.length === 0) return falha("Este caso já foi decidido por outra pessoa.");
 
+  // Se um passo seguinte falhar, devolve o caso à fila: nunca fica "decidido" sem efeito.
+  const desfazer = async () => {
+    await admin
+      .from("validacoes_reprovacao")
+      .update({ status: caso.status, decidido_por: null, decidido_em: null, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .eq("status", t.novoStatus);
+  };
+
   // A IA continua a partir daqui.
   if (cont.statusCandidatura) {
-    await admin
+    // Só encerra candidaturas ainda em andamento: proposta, contratado, desistente ou expirada não são sobrescritas.
+    const { data: encerradas, error: erroApp } = await admin
       .from("applications")
       .update({ status: cont.statusCandidatura, updated_at: new Date().toISOString() })
-      .eq("id", caso.application_id);
+      .eq("id", caso.application_id)
+      .in("status", ["recebida", "triagem", "entrevista", "teste"])
+      .select("id");
+    if (erroApp) {
+      await desfazer();
+      return falha("Não foi possível registrar a decisão. Tente de novo.");
+    }
+    if (!encerradas || encerradas.length === 0) {
+      await desfazer();
+      return falha("Esta candidatura já saiu do processo (proposta, contratação, desistência ou expiração). Nada foi alterado.");
+    }
   }
   if (cont.retomarProcesso) {
     // A triagem volta a considerar a pessoa; o registro original da IA fica no caso.
-    await admin
+    const { error: erroTriagem } = await admin
       .from("job_screenings")
       .update({ eliminado: false, updated_at: new Date().toISOString() })
       .eq("job_id", caso.job_id)
       .eq("application_id", caso.application_id);
+    if (erroTriagem) {
+      await desfazer();
+      return falha("Não foi possível reverter a reprovação. Tente de novo.");
+    }
   }
 
   // A decisão já valeu; falha de auditoria não a desfaz (e fica no log do servidor).

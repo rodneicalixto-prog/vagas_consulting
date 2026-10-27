@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/hunter-retencao",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/validacao-prazo",
+      "schedule": "0 11 * * *"
     }
   ]
 }

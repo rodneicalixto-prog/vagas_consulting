@@ -186,7 +186,8 @@ export async function avaliarProspects(formData: FormData) {
       .update({
         estado: "avaliado",
         fit: cego.vazio ? "nao_avaliado" : fitDaTriagem(resultado),
-        pontuacao: resultado.pontuacao,
+        // Sem dado nunca vira zero: perfil vazio fica sem nota.
+        pontuacao: cego.vazio ? null : resultado.pontuacao,
         resultado: resultado as unknown as Json,
         updated_at: new Date().toISOString(),
       })
@@ -294,6 +295,7 @@ export async function aprovarMensagens(formData: FormData) {
   let aprovadas = 0;
   let barradas = 0;
   let foraDoTeto = 0;
+  const aprovadasWhats: string[] = [];
   for (const p of lista ?? []) {
     const canal = (p.canal === "email" ? "email" : "whatsapp") as CanalHunter;
     const vs = verificarMensagem(p.texto, { canal, vagaSigilosa: !!vaga.confidencial, nomeEmpresa, link: linkRastreado(p.token) });
@@ -313,7 +315,31 @@ export async function aprovarMensagens(formData: FormData) {
       .update({ estado: "aprovado", aprovado_por: user.id, aprovado_em: new Date().toISOString(), updated_at: new Date().toISOString() })
       .eq("id", p.id)
       .eq("estado", "mensagem_pronta");
-    if (!error) aprovadas++;
+    if (!error) {
+      aprovadas++;
+      if (canal === "whatsapp") aprovadasWhats.push(p.id);
+    }
+  }
+
+  // Corrida entre duas aprovações simultâneas: confere de novo depois de gravar e devolve o excesso.
+  if (aprovadasWhats.length > 0) {
+    const { teto, enviados } = await restanteHoje();
+    const { count: totalAprovados } = await admin
+      .from("hunter_prospects")
+      .select("id", { count: "exact", head: true })
+      .eq("canal", "whatsapp")
+      .eq("estado", "aprovado");
+    const excesso = enviados + (totalAprovados ?? 0) - teto;
+    if (excesso > 0) {
+      const devolver = aprovadasWhats.slice(-Math.min(excesso, aprovadasWhats.length));
+      await admin
+        .from("hunter_prospects")
+        .update({ estado: "mensagem_pronta", aprovado_por: null, aprovado_em: null, updated_at: new Date().toISOString() })
+        .in("id", devolver)
+        .eq("estado", "aprovado");
+      aprovadas -= devolver.length;
+      foraDoTeto += devolver.length;
+    }
   }
 
   await auditar(admin, user.id, "hunter_mensagens_aprovadas", jobId, { aprovadas, barradas, foraDoTeto });
@@ -346,12 +372,20 @@ export async function marcarEnviado(formData: FormData) {
     if (restante <= 0) redirect(volta(jobId, { erro: "O teto diário de WhatsApp do hunter foi atingido. Continue amanhã." }));
   }
 
+  // Sem contato (já anonimizado ou apagado) não há o que enviar.
+  if (!(p.canal === "email" ? p.email : p.telefone)) {
+    redirect(volta(jobId, { erro: "Este prospect já não tem contato para enviar." }));
+  }
+
   const agora = new Date();
-  await admin
+  const { data: marcados } = await admin
     .from("hunter_prospects")
     .update({ estado: "enviado", enviada_em: agora.toISOString(), retencao_ate: retencaoAte(agora).toISOString(), updated_at: agora.toISOString() })
     .eq("id", id)
-    .eq("estado", "aprovado");
+    .eq("estado", "aprovado")
+    .select("id");
+  // Duplo clique ou outra pessoa marcou antes: nada a registrar nem auditar.
+  if (!marcados || marcados.length === 0) redirect(volta(jobId, { erro: "Este envio já foi registrado." }));
 
   await auditar(admin, user.id, "hunter_envio_registrado", jobId, { prospect_id: id, canal: p.canal });
   revalidatePath(`/admin/vagas/${jobId}/hunter`);
