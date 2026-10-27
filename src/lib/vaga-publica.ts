@@ -161,3 +161,28 @@ export function mencionaEmpresa(v: Pick<VagaPublica, "titulo" | "descricao" | "c
     return nome.length >= 3 && texto.includes(nome);
   });
 }
+
+/** Links de compartilhamento: cópia usa `utm_source=site`; WhatsApp usa o canal `whatsapp` da divulgação. */
+export function linksCompartilhar(siteUrl: string, id: string, titulo: string) {
+  const base = `${siteUrl}/vagas/${id}`;
+  const linkWhatsapp = `${base}?o=whatsapp`;
+  return {
+    copiar: `${base}?utm_source=site`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`Vaga: ${titulo}\n${linkWhatsapp}`)}`,
+  };
+}
+
+/** Situação da página pública de uma vaga, em uma linha, para a Central da vaga. */
+export function estadoPaginaPublica(
+  v: { status: string; confidencial: boolean; expira_em: string | null },
+  agora = new Date(),
+): { noAr: boolean; texto: string } {
+  if (v.status !== "publicada") return { noAr: false, texto: "Fora do ar: a vaga não está publicada." };
+  if (!dentroDoPrazo(v.expira_em, agora)) return { noAr: false, texto: "Fora do ar: o prazo da vaga venceu." };
+  return {
+    noAr: true,
+    texto: v.confidencial
+      ? "No ar e indexável pelo Google, com a empresa em sigilo (Vagas Consulting como organização)."
+      : "No ar e indexável pelo Google.",
+  };
+}

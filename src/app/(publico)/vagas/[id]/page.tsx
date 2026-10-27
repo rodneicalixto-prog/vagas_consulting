@@ -10,6 +10,7 @@ import { modalidadeLabel, modalidadeTagClass } from "@/lib/format";
 import {
   MARCA,
   jsonLdSeguro,
+  linksCompartilhar,
   montarJobPosting,
   nomeParaExibir,
   resumoDescricao,
@@ -18,6 +19,7 @@ import {
 import { buscarVagaPublica } from "@/lib/vagas-publicas";
 import { Tag } from "@/components/ui";
 import { IconChevronLeft } from "@/components/icons";
+import { Compartilhar } from "./compartilhar";
 import { VagaTabs, type Regras } from "./vaga-tabs";
 
 type Props = {
@@ -79,6 +81,7 @@ export default async function VagaDetalhePage({ params, searchParams }: Props) {
     : { data: null };
 
   const jobPosting = montarJobPosting(vaga, siteUrl());
+  const links = linksCompartilhar(siteUrl(), vaga.id, vaga.titulo);
 
   return (
     <div className="flex flex-col pb-6">
@@ -105,6 +108,10 @@ export default async function VagaDetalhePage({ params, searchParams }: Props) {
         <div className="text-[12.5px] font-semibold text-text-2">
           {nomeParaExibir(vaga)} · {vaga.local}
         </div>
+      </div>
+
+      <div className="px-5 pt-3 md:px-8">
+        <Compartilhar linkCopiar={links.copiar} linkWhatsapp={links.whatsapp} />
       </div>
 
       <div className="mt-3.5">

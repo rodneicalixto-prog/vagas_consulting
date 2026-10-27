@@ -4,6 +4,8 @@ import { requireInternalUser } from "@/lib/auth/internal";
 import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { calcularEtapas, caminhoEtapa, proximoPasso, type EstadoEtapa } from "@/lib/ciclo-vaga";
 import { carregarCicloDaVaga } from "@/lib/ciclo-vaga-servidor";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { estadoPaginaPublica } from "@/lib/vaga-publica";
 import { BotaoPdf, CabecalhoImpressao } from "@/components/botao-pdf";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -39,6 +41,13 @@ export default async function CentralDaVagaPage({ params }: { params: Promise<{ 
   const vaga = await carregarCicloDaVaga(id);
   if (!vaga) redirect("/admin/vagas");
 
+  const { data: publica } = await createAdminClient()
+    .from("jobs")
+    .select("status, confidencial, expira_em")
+    .eq("id", id)
+    .maybeSingle();
+  const paginaPublica = publica ? estadoPaginaPublica(publica) : null;
+
   const etapas = calcularEtapas(vaga.contagens);
   const passo = proximoPasso(etapas, vaga.contagens);
   const c = vaga.contagens;
@@ -59,6 +68,18 @@ export default async function CentralDaVagaPage({ params }: { params: Promise<{ 
         {vaga.empresa}
         {vaga.local ? ` · ${vaga.local}` : ""} · {c.candidaturas} {c.candidaturas === 1 ? "candidato" : "candidatos"}
       </p>
+
+      {paginaPublica && (
+        <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-text-2">
+          <span className="font-bold text-text">Página pública:</span>
+          <span>{paginaPublica.texto}</span>
+          {paginaPublica.noAr && (
+            <Link href={`/vagas/${id}`} target="_blank" className="font-bold text-navy underline">
+              Ver página pública ↗
+            </Link>
+          )}
+        </p>
+      )}
 
       {passo ? (
         <section className="mt-5 rounded-2xl border border-navy/30 bg-navy-bg p-5" aria-labelledby="proximo-passo">

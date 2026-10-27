@@ -1,7 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  estadoPaginaPublica,
   jsonLdSeguro,
+  linksCompartilhar,
   mencionaEmpresa,
   montarJobPosting,
   resumoDescricao,
@@ -116,4 +118,20 @@ test("vaga confidencial que cita a empresa no texto não gera JobPosting", () =>
 test("UF só vale se existir", () => {
   assert.deepEqual(separarLocal("Zona Sul/ZN"), { cidade: "Zona Sul/ZN" });
   assert.deepEqual(separarLocal("Recife - PE"), { cidade: "Recife", uf: "PE" });
+});
+
+test("links de compartilhar usam a origem certa e escapam o texto", () => {
+  const l = linksCompartilhar(SITE, base.id, "Auxiliar & Cia");
+  assert.equal(l.copiar, `${SITE}/vagas/${base.id}?utm_source=site`);
+  assert.ok(l.whatsapp.startsWith("https://wa.me/?text="));
+  assert.ok(l.whatsapp.includes(encodeURIComponent(`${SITE}/vagas/${base.id}?o=whatsapp`)));
+  assert.ok(!l.whatsapp.includes("Auxiliar & Cia"));
+});
+
+test("estado da página pública na Central da vaga", () => {
+  const ok = { status: "publicada", confidencial: false, expira_em: null };
+  assert.equal(estadoPaginaPublica(ok, agora).noAr, true);
+  assert.match(estadoPaginaPublica({ ...ok, confidencial: true }, agora).texto, /sigilo/);
+  assert.equal(estadoPaginaPublica({ ...ok, status: "pausada" }, agora).noAr, false);
+  assert.equal(estadoPaginaPublica({ ...ok, expira_em: "2026-10-01T00:00:00Z" }, agora).noAr, false);
 });
