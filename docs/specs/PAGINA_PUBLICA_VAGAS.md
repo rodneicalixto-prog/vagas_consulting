@@ -1,7 +1,7 @@
 # Especificação — Página pública de vagas (v0.1)
 
 > **Projeto:** Vagas Consulting · **App:** v0.1.0 · **Documento:** Spec da página pública de vagas v0.1 · **Data:** 27/10/2026
-> **Status:** especificação. **Nada construído.** Estende `VITRINE_PUBLICA.md` (14/10/2026). Pela regra dos seis documentos, nenhum código antes da aprovação do Rodnei.
+> **Status:** especificação aprovada em 27/10/2026. **P1 construída localmente (273+ testes e build ok), ainda não commitada nem publicada; P2 e P3 não construídas.** Estende `VITRINE_PUBLICA.md` (14/10/2026). Pela regra dos seis documentos, nenhum código antes da aprovação do Rodnei.
 
 ## 1. Problema
 
