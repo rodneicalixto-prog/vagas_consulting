@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ListaValidacoes } from "../../../validacoes/lista-validacoes";
 import { AvisosValidacao } from "../../../validacoes/avisos";
@@ -12,8 +13,9 @@ export default async function ValidacoesDaVagaPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ aviso?: string; erro?: string; todos?: string }>;
 }) {
-  await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   const { id } = await params;
+  await exigirVaga(await obterEscopo(user.id, role), id);
   const { aviso, erro, todos } = await searchParams;
   const incluir = todos === "1";
 

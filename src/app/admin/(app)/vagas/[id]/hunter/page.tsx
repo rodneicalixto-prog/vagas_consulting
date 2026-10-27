@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SubmitButton } from "@/components/form-buttons";
 import { normalizarCriterios } from "@/lib/vaga-estruturada";
@@ -77,9 +78,10 @@ function Avisos({ q }: { q: Q }) {
 
 /** Hunter: prospects da vaga. A IA avalia às cegas; a pessoa aprova e envia pelo número dedicado. */
 export default async function HunterPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Q> }) {
-  await requireInternalUser("pipeline.manage");
+  const { user, role } = await requireInternalUser("pipeline.manage");
   const { id } = await params;
   if (!UUID.test(id)) notFound();
+  await exigirVaga(await obterEscopo(user.id, role), id);
   const q = await searchParams;
 
   const admin = createAdminClient();

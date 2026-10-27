@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireInternalUser } from "@/lib/auth/internal";
+import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BotaoPdf, CabecalhoImpressao } from "@/components/botao-pdf";
 import { siteUrl } from "@/lib/hunter-servidor";
@@ -34,9 +35,10 @@ export default async function FichaDaVagaPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ faixa?: string; empresa?: string }>;
 }) {
-  await requireInternalUser("jobs.manage");
+  const { user, role } = await requireInternalUser("jobs.manage");
   const { id } = await params;
   if (!UUID.test(id)) notFound();
+  await exigirVaga(await obterEscopo(user.id, role), id);
   const { faixa, empresa: mostrarEmpresaQs } = await searchParams;
 
   const { data: vaga } = await createAdminClient()
