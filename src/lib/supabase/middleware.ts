@@ -16,6 +16,8 @@ const PUBLIC_PATHS = [
   "/api/cron",
   "/sitemap.xml",
   "/robots.txt",
+  // Verificação de propriedade do Google Search Console (arquivo em public/).
+  "/google00785171cdee9084.html",
   "/h/",
 ];
 
