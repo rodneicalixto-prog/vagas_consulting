@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { intervaloDaPagina, type BuscaVagas } from "@/lib/busca-vagas";
 import { mencionaEmpresa, type VagaPublica } from "@/lib/vaga-publica";
 
 const COLUNAS =
@@ -27,6 +28,33 @@ export const buscarVagaPublica = cache(async (id: string): Promise<VagaPublica |
     .maybeSingle();
   return data ? protegerSigilo(data as VagaPublica) : null;
 });
+
+/**
+ * Página da lista pública, com busca e filtros no servidor.
+ * A palavra procura no título e, só em vaga não confidencial, na descrição:
+ * em vaga confidencial o texto pode citar a empresa e a busca revelaria o nome.
+ */
+export async function buscarVagasPublicas(busca: BuscaVagas): Promise<{ vagas: VagaPublica[]; total: number }> {
+  let q = createAdminClient()
+    .from("jobs")
+    .select(COLUNAS, { count: "exact" })
+    .eq("status", "publicada")
+    .or(`expira_em.is.null,expira_em.gt.${new Date().toISOString()}`);
+  if (busca.q) {
+    q = q.or(`titulo.ilike.%${busca.q}%,and(confidencial.eq.false,descricao.ilike.%${busca.q}%)`);
+  }
+  if (busca.modalidade) q = q.eq("modalidade", busca.modalidade);
+  if (busca.cidade) q = q.ilike("local", `%${busca.cidade}%`);
+  const { from, to } = intervaloDaPagina(busca.pagina);
+  const { data, error, count } = await q.order("publicada_em", { ascending: false }).range(from, to);
+  // Página além do fim (PGRST103): a página manda para a última; aqui só devolve a contagem.
+  if (error?.code === "PGRST103") {
+    const { count: total } = await q.range(0, 0);
+    return { vagas: [], total: total ?? 0 };
+  }
+  if (error) throw new Error(`buscarVagasPublicas: ${error.message}`);
+  return { vagas: ((data as VagaPublica[] | null) ?? []).map(protegerSigilo), total: count ?? 0 };
+}
 
 export async function listarVagasPublicas(limite = 200): Promise<VagaPublica[]> {
   const { data, error } = await createAdminClient()
