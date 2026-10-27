@@ -14,6 +14,8 @@ const PUBLIC_PATHS = [
   // Cron da Vercel: chega sem sessão, com `Authorization: Bearer <CRON_SECRET>`. Cada rota confere o segredo
   // e fecha (401) se ele não existir; sem esta linha o proxy desviava a chamada para o login.
   "/api/cron",
+  "/sitemap.xml",
+  "/robots.txt",
   "/h/",
 ];
 

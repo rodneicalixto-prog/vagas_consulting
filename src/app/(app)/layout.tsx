@@ -12,7 +12,8 @@ export default async function AppGroupLayout({ children }: { children: React.Rea
   // Modo visitante: home e vagas ficam abertas mesmo com o cadastro
   // incompleto; o cadastro só é cobrado ao agir (candidatar, mensagens...).
   const rota = (await headers()).get("x-pathname") ?? "";
-  const visitante = rota === "/inicio" || rota === "/vagas" || /^\/vagas\/[^/]+$/.test(rota);
+  // As vagas públicas (/vagas e /vagas/<id>) moram no grupo (publico).
+  const visitante = rota === "/inicio";
   const continuar = (etapa: string) =>
     `/api/cadastro/continuar?etapa=${etapa}&to=${encodeURIComponent(rota)}`;
 
