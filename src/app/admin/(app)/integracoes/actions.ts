@@ -11,6 +11,7 @@ import {
   provedorValido,
   testarConexao,
   testeAutomaticoDisponivel,
+  hostResolveParaPublico,
   urlEvolutionSegura,
   validarAcessoEmprego,
   type Provedor,
@@ -101,6 +102,7 @@ export async function salvarCredencial(formData: FormData) {
       }
       const base = urlEvolutionSegura(String(formData.get("base_url") ?? ""));
       if (!base) throw new Error("Informe a URL https pública da Evolution (sem IP interno).");
+      if (!(await hostResolveParaPublico(base))) throw new Error("Este endereço resolve para a rede interna ou não foi encontrado.");
       config.base_url = base;
     } else {
       const inst = String(formData.get("instance") ?? "").trim();

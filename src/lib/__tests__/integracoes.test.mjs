@@ -2,6 +2,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   urlEvolutionSegura,
+  ipv4Interno,
+  ipInterno,
+  hostDnsCuringa,
+  hostResolveParaPublico,
   instanciaValida,
   provedorValido,
   validarAcessoEmprego,
@@ -100,4 +104,34 @@ test("uso automático: só com marca explícita, e nunca no LinkedIn por login",
 test("teste de conexão automático não existe para plataformas de emprego", () => {
   assert.equal(testeAutomaticoDisponivel("vagascom"), false);
   assert.equal(testeAutomaticoDisponivel("openai"), true);
+});
+
+test("faixas internas: privado, CGNAT, link-local, teste, multicast e IPv6 local", () => {
+  for (const ip of ["10.0.0.1", "127.0.0.1", "0.0.0.0", "100.64.0.1", "100.127.255.1", "169.254.169.254", "172.16.0.1", "172.31.9.9", "192.0.0.5", "192.168.1.1", "198.18.0.1", "224.0.0.1", "255.255.255.255"]) {
+    assert.equal(ipv4Interno(ip), true, ip);
+  }
+  for (const ip of ["8.8.8.8", "100.63.0.1", "100.128.0.1", "172.32.0.1", "198.20.0.1", "187.77.3.213"]) {
+    assert.equal(ipv4Interno(ip), false, ip);
+  }
+  for (const ip of ["::1", "::", "fd00::1", "fc00::1", "fe80::1", "ff02::1", "::ffff:10.0.0.1"]) {
+    assert.equal(ipInterno(ip), true, ip);
+  }
+  assert.equal(ipInterno("2606:4700:4700::1111"), false);
+  assert.equal(ipInterno("::ffff:8.8.8.8"), false);
+});
+
+test("DNS curinga e IP interno literal são recusados na URL da Evolution", () => {
+  assert.equal(hostDnsCuringa("10-0-0-1.nip.io"), true);
+  assert.equal(hostDnsCuringa("app.sslip.io"), true);
+  assert.equal(hostDnsCuringa("evolution.exemplo.com.br"), false);
+  assert.equal(urlEvolutionSegura("https://10-0-0-1.nip.io"), null);
+  assert.equal(urlEvolutionSegura("https://100.64.0.9"), null);
+  assert.equal(urlEvolutionSegura("https://192.0.0.8"), null);
+  assert.equal(urlEvolutionSegura("https://evolution.exemplo.com.br/qualquer"), "https://evolution.exemplo.com.br");
+});
+
+test("resolução: IP literal público passa, interno não, host inválido falha fechado", async () => {
+  assert.equal(await hostResolveParaPublico("https://8.8.8.8"), true);
+  assert.equal(await hostResolveParaPublico("https://10.1.2.3"), false);
+  assert.equal(await hostResolveParaPublico("não é url"), false);
 });

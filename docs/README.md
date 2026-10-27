@@ -1,6 +1,6 @@
 # Documentação do Vagas Consulting
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Índice:** v1.8 · **Data:** 15/10/2026
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Índice:** v1.9 · **Data:** 26/10/2026
 
 Regra permanente (Rodnei, 14/10/2026): nenhum app é construído sem os seis
 documentos abaixo, versionados, vinculados ao projeto e à versão do app, e
@@ -12,7 +12,7 @@ documentos afetados, antes do código.
 | # | Documento | Arquivo | Versão | App |
 |---|---|---|---|---|
 | 1 | PRD | [PRD.md](PRD.md) | 1.8 | v0.1.0 |
-| 2 | TRD | [TRD.md](TRD.md) | 1.8 | v0.1.0 |
+| 2 | TRD | [TRD.md](TRD.md) | 1.9 | v0.1.0 |
 | 3 | Fluxo do app | [APP_FLOW.md](APP_FLOW.md) | 1.8 | v0.1.0 |
 | 4 | Briefing de UI/UX | [UI_UX_BRIEFING.md](UI_UX_BRIEFING.md) | 1.8 | v0.1.0 |
 | 5 | Schema do backend | [BACKEND_SCHEMA.md](BACKEND_SCHEMA.md) | 1.8 | v0.1.0 |
@@ -31,7 +31,7 @@ Todos os documentos são rascunhos retroativos gerados a partir do código.
 Campos sem resposta estão marcados `[A PREENCHER]` e dependem de decisão do
 Rodnei (busque por `A PREENCHER` em `docs/`).
 
-Atenção: `BACKEND_SCHEMA.md` reflete o banco em 15/10/2026 (migrations até a `0045`). Antes de
+Atenção: `BACKEND_SCHEMA.md` descreve as migrations até a `0052` (26/10/2026), registradas como aplicadas em produção pelo projeto e **não revalidadas** em 26/10 (o MCP do Supabase pediu reautenticação). Antes de
 construir algo que toque o banco, reconfirmar o schema real de produção
 (`tfipbxjslpxbaybpxsql`) e se a migration `0018` foi aplicada.
 
@@ -46,6 +46,10 @@ construir algo que toque o banco, reconfirmar o schema real de produção
 | `specs/INTEGRACOES.md` | Cofre de chaves e teste de conexão |
 | `specs/LINHAS_WHATSAPP.md` | Números de WhatsApp por empresa e por operador, QR code e agente por número |
 | `specs/ASSISTENTE_PLATAFORMA.md` | Assistente de ajuda por IA, baseado no manual (planejado) |
+| `specs/CENTRAL_DA_VAGA.md` | Central da vaga e trilha do ciclo |
+| `specs/AVALIACAO_IA_GANCHOS.md` | Avaliação por IA, regras por vaga e fila de validação humana (72 h) |
+| `specs/HUNTER_PREPARACAO.md` | Hunter: prospects, avaliação às cegas, mensagem identificada, SAIR e retenção |
+| `specs/ORIGEM_PDF_E_VAGAS_INCLUSIVAS.md` | Origem do candidato, exportar PDF e vagas para PcD, estágio e 60+ |
 | `specs/AGENTE_IA_FASE3.md` | Agente de IA, base de conhecimento e pacote de R&S (3A a 3P, entregue) |
 | `specs/VITRINE_PUBLICA.md` | Vitrine pública e modo visitante |
 | `ROTEIRO_TESTE_ADMIN_EMPRESA.md` | Teste de 20 minutos do isolamento |

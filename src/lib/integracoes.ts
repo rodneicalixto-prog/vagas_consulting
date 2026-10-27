@@ -99,6 +99,45 @@ export function provedorValido(v: unknown): v is Provedor {
   return typeof v === "string" && PROVEDORES.some((p) => p.id === v);
 }
 
+/** Serviços de DNS curinga que apontam um nome público para qualquer IP (inclusive interno). */
+const DNS_CURINGA = ["nip.io", "sslip.io", "xip.io", "traefik.me", "localtest.me", "lvh.me", "vcap.me"];
+
+/** IPv4 que nunca deve receber a apikey: privado, loopback, link-local, CGNAT, teste e multicast/reservado. */
+export function ipv4Interno(ip: string): boolean {
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(ip);
+  if (!m) return false;
+  const [a, b, c] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  return (
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 100 && b >= 64 && b <= 127) ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 0 && c === 0) ||
+    (a === 192 && b === 168) ||
+    (a === 198 && (b === 18 || b === 19)) ||
+    a >= 224
+  );
+}
+
+/** IP (v4 ou v6) interno? IPv6 só é aceito se for global; loopback, ULA, link-local e v4 mapeado são recusados. */
+export function ipInterno(ip: string): boolean {
+  const v = ip.toLowerCase();
+  if (v.includes(":")) {
+    const mapeado = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(v);
+    if (mapeado) return ipv4Interno(mapeado[1]);
+    return v === "::" || v === "::1" || v.startsWith("fc") || v.startsWith("fd") || v.startsWith("fe8") || v.startsWith("fe9") || v.startsWith("fea") || v.startsWith("feb") || v.startsWith("ff");
+  }
+  return ipv4Interno(v);
+}
+
+/** O nome do host é um serviço de DNS curinga? */
+export function hostDnsCuringa(host: string): boolean {
+  const h = host.toLowerCase();
+  return DNS_CURINGA.some((d) => h === d || h.endsWith(`.${d}`));
+}
+
 /**
  * URL da Evolution: https obrigatório e sem destinos internos, para que um
  * cadastro não vire acesso a serviços da rede interna (SSRF).
@@ -115,14 +154,26 @@ export function urlEvolutionSegura(bruta: string): string | null {
   const h = u.hostname.toLowerCase();
   if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".internal") || h.endsWith(".local")) return null;
   // IPv4 privado/loopback/link-local e IPv6 literal.
-  if (/^\d+\.\d+\.\d+\.\d+$/.test(h)) {
-    const [a, b] = h.split(".").map(Number);
-    if (a === 10 || a === 127 || a === 0 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) {
-      return null;
-    }
-  }
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(h) && ipv4Interno(h)) return null;
+  if (hostDnsCuringa(h)) return null;
   if (h.includes(":") || h.startsWith("[")) return null;
   return `${u.protocol}//${u.host}`;
+}
+
+/**
+ * Resolve o DNS do host e confirma que NENHUM endereço é interno. Só no servidor (usa node:dns).
+ * Barra nomes públicos que apontam para a rede interna. Falha de DNS conta como não seguro.
+ */
+export async function hostResolveParaPublico(urlBase: string): Promise<boolean> {
+  try {
+    const host = new URL(urlBase).hostname;
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) return !ipv4Interno(host);
+    const dns = await import("node:dns/promises");
+    const enderecos = await dns.lookup(host, { all: true });
+    return enderecos.length > 0 && enderecos.every((e) => !ipInterno(e.address));
+  } catch {
+    return false;
+  }
 }
 
 /** Nome de instância aceito (letras, números, _ e -). */
@@ -188,6 +239,9 @@ export async function testarConexao(
       case "evolution": {
         const base = config.base_url ? urlEvolutionSegura(config.base_url) : null;
         if (!base) return { ok: false, mensagem: `${rotulo}: informe a URL https da Evolution.` };
+        if (!(await hostResolveParaPublico(base))) {
+          return { ok: false, mensagem: `${rotulo}: o endereço resolve para a rede interna ou não foi encontrado; a chave não foi enviada.` };
+        }
         const rota = config.instance
           ? `/instance/connectionState/${encodeURIComponent(config.instance)}`
           : "/instance/fetchInstances";

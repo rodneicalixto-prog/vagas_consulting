@@ -131,8 +131,10 @@ Tela **Hunter** na vaga (`/admin/vagas/[id]/hunter`, etapa nova na trilha) com t
 
 **Rastreio:** link `/h/<token>` (sem dado pessoal na URL; prévia de link de WhatsApp não conta como clique) → cookie → candidatura grava a origem
 `hunter_<fonte>` e marca o prospect como "candidatou-se". **SAIR** no WhatsApp (webhook) e "pediu para sair" na tela apagam os dados e bloqueiam o
-contato para sempre. **Retenção:** rotina diária (`/api/cron/hunter-retencao`, 03:00) apaga em 30 dias nome, contato, perfil, avaliação e mensagem de
-quem não interagiu; ficam só os hashes. Quem clicou, respondeu ou se candidatou não é apagado.
+contato para sempre. **Retenção:** rotina diária (`/api/cron/hunter-retencao`, 03:00 UTC) apaga em 30 dias nome, contato, perfil, avaliação e mensagem de
+quem não se candidatou nem respondeu (**inclui quem só clicou**); quem se candidatou ou respondeu tem os dados de prospecção apagados após
+180 dias sem movimento. Cada grupo é uma única escrita. Ficam só os hashes, e `nao_contactar` e `expirado` bloqueiam reimportação.
+O SAIR e o bloqueio comparam o celular com e sem o nono dígito. Perfil vazio fica **sem nota** (nunca zero). Revisão de 26/10/2026.
 
 **Não faz ainda:** coleta automática nas plataformas (H2), envio automático (H3), InMail, e usar o acesso guardado no cofre (o conector não existe).
 

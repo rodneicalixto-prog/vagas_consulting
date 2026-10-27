@@ -287,7 +287,7 @@ resposta, útil; RLS ligada, sem política pública; retenção de 90 dias) e
 
 Estado do banco em 23/10/2026: migrations aplicadas até a `0048`.
 
-## Migration 0049 — valores, regras por vaga e fila de validação (26/10/2026, NÃO aplicada)
+## Migration 0049 — valores, regras por vaga e fila de validação (26/10/2026, aplicada em produção segundo o registro do projeto; não revalidada em 26/10)
 
 Spec: `docs/specs/AVALIACAO_IA_GANCHOS.md` §3A e §3B. Aditiva; RLS ligada e sem política pública (acesso só pelo servidor).
 
@@ -299,14 +299,14 @@ Spec: `docs/specs/AVALIACAO_IA_GANCHOS.md` §3A e §3B. Aditiva; RLS ligada e se
 
 **Ordem de publicação:** aplicar a migration **antes** do deploy do código. Sem a tabela, a triagem não consegue abrir o caso e desfaz a triagem daquele candidato (nunca deixa reprovado sem validação).
 
-## Migration 0050 — plataformas de emprego no cofre (26/10/2026, NÃO aplicada)
+## Migration 0050 — plataformas de emprego no cofre (26/10/2026, aplicada em produção segundo o registro do projeto; não revalidada em 26/10)
 
 Spec: `docs/specs/HUNTER_PREPARACAO.md` §0. Aditiva: amplia o check de `integration_credentials.provedor` com `vagascom`, `infojobs` e `linkedin`. Usuário, tipo de acesso, plano e a marca de uso automático ficam em `config` (não secreto); a senha ou chave de API fica em `segredo_cifrado` (AES-256-GCM). Para senha, `ultimos4` fica nulo. Sem tabela nova.
 
-## Migration 0051 — prospects do hunter (26/10/2026, NÃO aplicada)
+## Migration 0051 — prospects do hunter (26/10/2026, aplicada em produção segundo o registro do projeto; não revalidada em 26/10)
 
 Spec: `docs/specs/HUNTER_PREPARACAO.md`. Aditiva; RLS ligada e sem política pública. Tabela `hunter_prospects`: prospect por vaga, com `fonte`, `estado`, `fit`, `pontuacao`, `resultado` (avaliação às cegas), `canal`, `texto` (mensagem), `token` (link rastreado `/h/<token>`), carimbos de aprovação, envio, clique e candidatura, `retencao_ate` (30 dias) e `anonimizado_em`. Telefone e e-mail ficam em texto até a anonimização; os hashes `chave_tel` e `chave_email` **permanecem** para nunca reimportar nem reabordar. Índices únicos por vaga e telefone ou e-mail.
 
-## Migration 0052 — origem do candidato (26/10/2026, NÃO aplicada)
+## Migration 0052 — origem do candidato (26/10/2026, aplicada em produção segundo o registro do projeto; não revalidada em 26/10)
 
 Spec: `docs/specs/ORIGEM_PDF_E_VAGAS_INCLUSIVAS.md`. Aditiva: `profiles.origem_canal`, `origem_detalhe` e `origem_em` (primeiro toque). Perfis antigos ficam nulos ("não informado"). **Ordem de publicação:** aplicar `0051` e `0052` **antes** do deploy do código.

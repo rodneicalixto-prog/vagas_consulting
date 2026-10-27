@@ -218,3 +218,5 @@ revisão acima) e `review-gate` do kit (gate antes de dar por pronto).
    (ver `PROJETO.md`).
 3. **Próximo passo claro:** aprovar a migration 0049, testar a fila com candidatos reais
    e seguir para o avanço automático da triagem e a entrevista por IA em texto (1C).
+
+> **Implementação do prazo de 72 h (26/10/2026):** o cron `validacao-prazo` marca `alertada_em` uma única vez e audita `validacao_prazo_vencido` por vaga; a tela de validações já destaca o atraso. **Ainda não existe** o aviso neutro ao candidato nem o alerta por e-mail ou Telegram para a equipe: ficam para a próxima etapa.

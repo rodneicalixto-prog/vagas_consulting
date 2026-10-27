@@ -1,6 +1,6 @@
 # Documento de Requisitos Técnicos (TRD)
 
-> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.8 · **Data:** 15/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
+> **Projeto:** Vagas Consulting (`rodneicalixto-prog/vagas_consulting`) · **App:** v0.1.0 · **Documento:** TRD v1.9 · **Data:** 26/10/2026 · **Status:** rascunho retroativo, lido antes de construir (ver `docs/README.md`)
 
 
 > Rascunho gerado a partir do `package.json`, `next.config.ts`, código-fonte
@@ -47,7 +47,7 @@ Web responsiva, instalável como PWA (`manifest.ts`, `sw.js`,
 |---|---|---|
 | Supabase | Banco, Auth, Storage (currículos) | Ativo |
 | Vercel | Hospedagem, deploy, cron | Ativo |
-| Vercel Cron | Arquivamento diário de vagas expiradas (`/api/cron/archive-jobs`) | Ativo — corrigido em 28/09/2026 |
+| Vercel Cron | Três rotinas diárias: `archive-jobs` (02:00 UTC), `hunter-retencao` (03:00 UTC) e `validacao-prazo` (11:00 UTC) | Rotas no ar e fechadas (401 sem segredo). **Não executam enquanto `CRON_SECRET` não existir na Vercel** (verificado em 26/10/2026) |
 | Meta Graph API (Lead Ads) | Webhook de leads via anúncios | Endpoint pronto, **inerte** até `META_LEADS_VERIFY_TOKEN`/`META_APP_SECRET`/`META_PAGE_ACCESS_TOKEN` serem configurados |
 | Agente de IA para currículo | Extrai dados de PDF/imagem anexado | Ativo (`src/lib/ai/curriculo.ts`, via pacote `ai`) — modelo `anthropic/claude-sonnet-5` via `generateObject` do pacote `ai` (AI Gateway), confirmado em `src/lib/ai/curriculo.ts` em 14/10/2026 |
 | Evolution API + n8n (WhatsApp) | Canal de triagem/vídeo-entrevista | Planejado, não iniciado |
@@ -203,3 +203,19 @@ schema foi de fato aplicado em produção.
 | Permissões | superadmin e admin da empresa; limite por empresa em `companies.max_linhas_whatsapp` |
 | Migração | cada instância cadastrada virou a linha padrão da empresa (sos_vagas, 4 conversas) |
 | Risco aberto | criação de instância, QR e webhook ainda sem teste contra a Evolution real |
+
+## Atualização v1.9 (26/10/2026) — revisão em paralelo e endurecimento
+
+| Tema | Decisão técnica |
+|---|---|
+| Autorização | `layout.tsx` não é fronteira de segurança: toda `page.tsx` de `/admin/vagas/[id]` chama `exigirVaga(await obterEscopo(...), id)`. Teste-guarda `guardas.test.mjs` falha se uma página nova esquecer |
+| Cron | `lib/cron-auth.ts` (`cronAutorizado`): `Authorization: Bearer <CRON_SECRET>`, comparação em tempo constante, fecha sem segredo. Respostas sem detalhe de erro. O teste-guarda exige o uso em toda rota `/api/cron` e confere o `vercel.json` |
+| `validacao-prazo` | Marca `alertada_em` uma única vez nos casos ativos vencidos (72 h) e audita `validacao_prazo_vencido` por vaga. Não decide e não fala com o candidato. Ainda sem e-mail ou Telegram |
+| Fila de validação | Updates condicionais por status (retirada, atualização e decisão). Confirmar só encerra candidatura em andamento (`recebida`, `triagem`, `entrevista`, `teste`); se um passo falha, o caso volta ao status anterior. Reverter prevalece sobre uma triagem posterior com os mesmos critérios (`ignorada_revertida` devolve `eliminado=false`) |
+| Hunter | Sem dado = `pontuacao null`. Teto diário reconferido depois de gravar a aprovação (devolve o excesso). Envio só audita se a linha foi gravada. Clique condicionado ao estado lido. SAIR e bloqueio comparam as duas formas do celular (`variantesTelefoneBR`). `expirado` e `nao_contactar` bloqueiam reimportação |
+| Retenção | Uma escrita por grupo (sem estado intermediário). Prazo de 30 dias vale também para quem só clicou; quem se candidatou ou respondeu expira em 180 dias sem movimento. Ficam só os hashes |
+| SSRF da Evolution | `ipv4Interno`/`ipInterno` (privado, CGNAT, link-local, teste, multicast, IPv6 local), bloqueio de DNS curinga (nip.io, sslip.io e similares) e `hostResolveParaPublico` (resolve o DNS ao salvar e ao testar; falha de DNS não passa). Risco residual: DNS rebinding entre a checagem e o uso, mitigado por só o superadmin configurar a URL |
+| Abordagem | E-mail e InMail exigem "responda SAIR" (bloqueio) e a origem do contato no prompt |
+| Testes | 261 (`npm test`), incluindo guardas de código-fonte |
+
+**Risco aberto (registrado, não corrigido):** hash de contato sem sal (SHA-256 de telefone é reversível por força bruta; usar HMAC com segredo de servidor); cofre sem AAD e sem identificador de chave (exige recifrar os segredos existentes); teto diário sem trava transacional (RPC com `advisory lock` exigiria migration).
