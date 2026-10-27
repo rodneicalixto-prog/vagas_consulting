@@ -97,6 +97,10 @@ export function montarPromptAbordagem(e: EntradaAbordagem): { system: string; us
     "- Comece pela pessoa: a primeira frase referencia algo do perfil, antes de citar o cargo.",
     "- 'angulo' é a razão pela qual a vaga pode interessar a essa pessoa; 'trecho_perfil' é um trecho LITERAL do perfil que o sustenta (até 200 caracteres).",
     "- Use um detalhe real do perfil. Não invente nada que não esteja nele.",
+    "- Diga quem você é e de onde veio o contato (ex.: 'vi o seu perfil público no LinkedIn'). Não pareça vigilância.",
+    ...(e.canal === "email" || e.canal === "linkedin_inmail"
+      ? ['- Termine o texto com a saída clara: "Se preferir não receber mais mensagens, responda SAIR."']
+      : []),
     "- Cite cargo e modelo de trabalho. " + (e.vaga.faixa ? "Informe a faixa fornecida." : "Não cite valores."),
     "- Um único convite de baixo atrito: uma conversa curta. Não peça currículo.",
     "- Use APENAS informação profissional do perfil. Nunca mencione família, endereço, saúde ou qualquer dado pessoal.",
@@ -230,6 +234,15 @@ export function verificarAbordagem(
       ? { id: "personalizada", nivel: "ok", mensagem: "Usa um detalhe real do perfil." }
       : { id: "personalizada", nivel: "aviso", mensagem: "Falta um detalhe do perfil no texto: parece disparo em massa." },
   );
+
+  // Saída clara (LGPD): e-mail e InMail precisam oferecer o "responda SAIR". Nota de conexão e ligação não cabem.
+  if (ctx.canal === "email" || ctx.canal === "linkedin_inmail") {
+    out.push(
+      /\bsair\b/.test(t)
+        ? { id: "saida", nivel: "ok", mensagem: "Oferece a saída (responda SAIR)." }
+        : { id: "saida", nivel: "bloqueio", mensagem: 'Falta a saída clara: termine com "Se preferir não receber mais mensagens, responda SAIR."' },
+    );
+  }
 
   // Transparência.
   const falta: string[] = [];

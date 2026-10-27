@@ -133,8 +133,8 @@ export function montarCarta(d: DadosOferta, hoje = new Date()): string {
     ? `Esta proposta está condicionada a: ${d.condicoes.trim()}.`
     : `Esta proposta está condicionada a ${PH("CONDIÇÕES (documentos, exame admissional etc.)")}.`;
   const validade = d.validade.trim()
-    ? `A proposta é válida até ${dataBr(d.validade)}. Após esse prazo, poderá ser revista.`
-    : `A proposta é válida até ${PH("DATA DE VALIDADE")}. Após esse prazo, poderá ser revista.`;
+    ? `A proposta é válida até ${dataBr(d.validade)}. Se precisar de mais tempo para decidir, avise-nos antes dessa data.`
+    : `A proposta é válida até ${PH("DATA DE VALIDADE")}. Se precisar de mais tempo para decidir, avise-nos antes dessa data.`;
 
   const assinatura = [ou(d.assinante_nome, "QUEM ASSINA"), ou(d.assinante_cargo, "CARGO DE QUEM ASSINA"), empresa].join(" — ");
 

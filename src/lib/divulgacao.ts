@@ -85,7 +85,7 @@ export function montarPromptDivulgacao(e: EntradaDivulgacao): { system: string; 
     "",
     "Regras:",
     "- Use apenas os dados da vaga abaixo. Não invente benefício, salário, prazo nem requisito.",
-    "- Nunca use critério discriminatório (idade, sexo, estado civil, filhos, aparência, origem, religião) nem linguagem com marca de gênero.",
+    "- Nunca use critério discriminatório (idade, sexo, estado civil, filhos, aparência, origem, religião) nem linguagem com marca de gênero. Evite também termos que sugerem idade ou capacidade (jovem, nativo digital, boa saúde, boa aparência). Em vaga para PcD ou 60+, use linguagem acolhedora, sem estereótipos, e fale em adaptações.",
     "- Comece pela pessoa que vai ler, não pela empresa. Um único CTA, de baixo atrito.",
     e.perfilTecnico
       ? "- Perfil técnico: seja objetivo e transparente (cargo, modelo, regime, faixa), destaque stack e o tipo de problema."

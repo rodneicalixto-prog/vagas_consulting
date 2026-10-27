@@ -56,7 +56,7 @@ const boa = {
   trecho_perfil: "Reduziu o tempo de expedição em 22% com a implantação de WMS",
   assuntos: ["Sua experiência com WMS", "Uma conversa sobre logística"],
   texto:
-    "Ana, vi que você reduziu o tempo de expedição em 22% com a implantação de WMS. Estou com uma vaga de Gerente de Logística, em modelo híbrido, em São Paulo. Topa uma conversa de 15 minutos?",
+    "Ana, vi que você reduziu o tempo de expedição em 22% com a implantação de WMS. Estou com uma vaga de Gerente de Logística, em modelo híbrido, em São Paulo. Topa uma conversa de 15 minutos? Se preferir não receber mais mensagens, responda SAIR.",
   followups: [
     "Ana, só subindo minha mensagem. Se tiver curiosidade, te conto em 15 minutos.",
     "Ana, vou encerrar por aqui. Sem problema se não fizer sentido; minha porta fica aberta e, se conhecer alguém, agradeço a indicação!",
@@ -76,7 +76,7 @@ test("tema pessoal e nota longa bloqueiam; currículo e trecho inventado avisam"
   assert.equal(temBloqueio(verificarAbordagem(pessoal, ctx())), true);
   const longa = { ...boa, texto: "Ana, " + "x".repeat(320) };
   assert.equal(temBloqueio(verificarAbordagem(longa, ctx({ canal: "linkedin_nota" }))), true);
-  assert.equal(temBloqueio(verificarAbordagem(longa, ctx({ canal: "email" }))), false);
+  assert.equal(temBloqueio(verificarAbordagem({ ...longa, texto: longa.texto + " Responda SAIR para não receber mais." }, ctx({ canal: "email" }))), false);
   const inv = { ...boa, trecho_perfil: "Premiada como melhor gerente do ano", texto: boa.texto + " Me envie seu currículo." };
   const vs = verificarAbordagem(inv, ctx());
   assert.equal(vs.find((v) => v.id === "angulo").nivel, "aviso");
@@ -96,4 +96,14 @@ test("contato encerrado ou 'não contatar' não reabre", () => {
   assert.equal(contatoFechado("encerrada"), true);
   assert.equal(contatoFechado("nao_contactar"), true);
   assert.equal(contatoFechado("enviada"), false);
+});
+
+test("e-mail e InMail exigem a saída clara; nota de conexão e ligação não", () => {
+  const sem = { ...boa, texto: boa.texto.replace(" Se preferir não receber mais mensagens, responda SAIR.", "") };
+  const v = (canal) => verificarAbordagem(sem, ctx({ canal }));
+  assert.equal(temBloqueio(v("email")), true);
+  assert.equal(temBloqueio(v("linkedin_inmail")), true);
+  assert.equal(temBloqueio(v("linkedin_nota")), false);
+  assert.equal(temBloqueio(v("ligacao")), false);
+  assert.equal(temBloqueio(verificarAbordagem(boa, ctx({ canal: "email" }))), false);
 });

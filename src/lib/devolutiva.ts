@@ -72,27 +72,27 @@ function listaFrase(itens: string[]): string {
 export function textoBase(tipo: TipoDevolutiva, canal: CanalDevolutiva, d: DadosDevolutiva): string {
   if (canal === "ligacao") return roteiroLigacao(tipo, d);
   const fim = d.banco_talentos
-    ? ` Se estiver de acordo, vamos manter seu currículo em nosso banco de talentos para novas oportunidades.`
+    ? ` Se quiser, podemos guardar seu currículo em nosso banco de talentos para novas vagas. Responda SIM para autorizar; você pode pedir a exclusão a qualquer momento respondendo SAIR.`
     : "";
   if (tipo === "aprovacao") {
     const docs = d.documentos.length > 0 ? ` Para avançarmos, preciso de: ${listaFrase(d.documentos)}.` : "";
     return [
-      `${saudacao(d)} tenho uma ótima notícia: você foi aprovado(a) no processo para ${d.cargo}.`,
-      `Próximo passo: ${d.proximo_passo}. Prazo: ${d.prazo}.${docs}`,
+      `${saudacao(d)} tenho boas notícias: seu perfil foi aprovado no processo para ${d.cargo}.`,
+      `O próximo passo é: ${d.proximo_passo} (prazo: ${d.prazo}).${docs}`,
       `Qualquer dúvida, é só responder. ${d.recrutador}.`,
     ].join("\n");
   }
   if (tipo === "generica") {
     return [
-      `${saudacao(d)} obrigado(a) por participar do processo para ${d.cargo}.`,
-      `Desta vez seguimos com outro perfil, mas foi um prazer te conhecer. Desejo sucesso e espero te reencontrar em uma próxima oportunidade.${fim}`,
+      `${saudacao(d)} agradeço por participar do processo para ${d.cargo}.`,
+      `Nesta vaga, seguimos com candidatos cuja experiência ficou mais próxima do que ela pede agora. Foi um prazer te conhecer e desejo muito sucesso na sua busca.${fim}`,
       `Abraço, ${d.recrutador}.`,
     ].join("\n");
   }
   return [
-    `${saudacao(d)} obrigado(a) pelo tempo dedicado ao processo para ${d.cargo}. Não seguiremos desta vez.`,
-    `Como pontos fortes, destaco ${d.fortes}. Como próximo passo de desenvolvimento, ${d.melhoria} ampliaria bastante seu leque.`,
-    `Isso não invalida seu potencial: foi o fit com esta vaga específica.${fim}`,
+    `${saudacao(d)} agradeço o tempo dedicado ao processo para ${d.cargo}. Quero ser transparente: para esta vaga, não vamos seguir com a sua candidatura.`,
+    `Como pontos fortes, destaco ${d.fortes}. Para vagas como esta, um ponto de desenvolvimento seria: ${d.melhoria}.`,
+    `Essa decisão diz respeito apenas a esta vaga, não ao seu valor como profissional.${fim}`,
     `Fico à disposição. ${d.recrutador}.`,
   ].join("\n");
 }
@@ -129,7 +129,7 @@ function semAcento(s: string): string {
   return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
-const PROMESSA = /\b(guardar|guardaremos|manteremos|vamos manter|vamos te chamar|entraremos em contato|banco de talentos|proxima vaga|proximas oportunidades garantidas)\b/;
+const PROMESSA = /\b(guardar|guardaremos|manteremos|vamos manter|vamos te chamar|entraremos em contato|banco de talentos|reencontrar|proxima oportunidade|proxima vaga|proximas oportunidades garantidas)\b/;
 const MOTIVO_PESSOAL =
   /\b(mais jov|muito jov|jovem demais|velh|idos[oa]|por ser (mulher|homem)|gravid|filhos|casad[oa]|solteir)\w*/;
 const DEPRECIATIVO = /\b(incompetent|despreparad|fraco|preguic|burr|ruim|pouco inteligente|nao serve|falta de capacidade|sem potencial|amador)\w*/;
