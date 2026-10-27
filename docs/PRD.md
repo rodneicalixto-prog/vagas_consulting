@@ -207,3 +207,20 @@ com 6 números de RH).
 | Troca de dono | opção de passar também as conversas já atribuídas |
 
 Quem tem um número só não precisa fazer nada (virou a linha padrão).
+
+## Atualização v1.10 (27/10/2026) — endereço completo do candidato
+
+**Decisão do Rodnei (27/10/2026):** o endereço completo do candidato é **obrigatório** no cadastro. Foi escolhido no lugar de pedir só cidade e estado (opção mais enxuta, que o projeto recomendava) e no lugar de deixar opcional.
+
+**Estado real:** isso já era assim no código desde a migration 0010. O campo "Endereço completo *" é texto livre e bloqueia o onboarding, a edição de dados pessoais e a candidatura. Esta atualização registra a decisão e a sua finalidade; não muda o comportamento.
+
+| Item | Registro |
+|---|---|
+| Finalidade | Dar à empresa e à equipe um contato completo do candidato na candidatura, servir de ficha quando não há currículo anexado e apoiar vagas por região |
+| Quem vê | O próprio candidato e a equipe interna dentro do escopo (carteira); o painel oculta o endereço quando o contato é restrito. A triagem às cegas não recebe o endereço |
+| Base legal | **A validar com assessoria jurídica.** Este documento não afirma uma base legal |
+| Alternativas descartadas | Só cidade e estado; campo opcional |
+
+**Critérios de aceite:** cadastro novo não conclui sem endereço; candidatura sem currículo anexado não envia sem telefone e endereço; a triagem às cegas não carrega o endereço; o aviso de privacidade explica a finalidade (**ainda não explica**, ver abaixo).
+
+**Em aberto:** (1) texto da finalidade no aviso de privacidade (`/termos`), com revisão jurídica; (2) prazo de retenção do endereço de quem não se candidata ou pede eliminação; (3) estruturar o campo (CEP, logradouro, bairro, cidade, UF) como já existe no cadastro de empresas, ou manter texto livre.

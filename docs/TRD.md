@@ -219,3 +219,19 @@ schema foi de fato aplicado em produção.
 | Testes | 261 (`npm test`), incluindo guardas de código-fonte |
 
 **Risco aberto (registrado, não corrigido):** hash de contato sem sal (SHA-256 de telefone é reversível por força bruta; usar HMAC com segredo de servidor); cofre sem AAD e sem identificador de chave (exige recifrar os segredos existentes); teto diário sem trava transacional (RPC com `advisory lock` exigiria migration).
+
+## Atualização v1.10 (27/10/2026) — endereço completo do candidato
+
+Decisão de produto registrada no PRD v1.10: endereço completo obrigatório. Nenhuma mudança de código.
+
+| Ponto | Regra técnica |
+|---|---|
+| Onde fica | `profiles.endereco` (texto livre, nulo em contas antigas ou criadas por convite) |
+| Onde é exigido | Em ações de servidor: `onboarding/actions.ts`, `perfil/dados-pessoais/actions.ts` e `vagas/[id]/candidatura/actions.ts`. **Não há restrição `NOT NULL` no banco** |
+| O que não o recebe | Triagem às cegas (já exclui endereço, §Triagem). Outros usos de IA com dado do candidato não foram revistos nesta atualização |
+| Hunter | Endereço do perfil colado é descartado na importação |
+| Acesso do painel | Em `/admin/candidatos/[id]` o endereço é zerado junto com telefone e currículo quando o contato é restrito (`contatoRestrito`) |
+| Candidatura | `candidatura/actions.ts` só exige telefone e endereço quando **não há currículo anexado**; com currículo, passa sem endereço |
+| Registro | O valor do endereço não deve entrar em log nem em trilha de auditoria |
+
+**Risco registrado:** a obrigatoriedade só existe na aplicação; um cliente que escreva direto no banco pode gravar nulo. Aceito, pois a escrita passa por ações de servidor.

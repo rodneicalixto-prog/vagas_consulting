@@ -209,3 +209,10 @@ quando usados sobre seus fundos `-bg`.
 - **Saída:** botões "Imprimir ou salvar em PDF" e "Baixar em Word" no mesmo
   lugar em todos os documentos; impressão esconde o que não é do documento.
 - **Privacidade:** o que não é guardado (perfil colado, áudio) é dito na tela.
+
+## Atualização v1.10 (27/10/2026) — endereço completo do candidato
+
+- **Rótulo atual:** "Endereço completo *", campo de texto no onboarding e em dados pessoais, com a mensagem de que telefone e endereço são o que a empresa recebe da candidatura.
+- **Proposto, não construído:** uma linha curta junto ao campo dizendo para que o endereço é usado e quem o vê, com link para o aviso de privacidade. O texto exato depende de revisão jurídica.
+- **Erro:** campo vazio indica qual campo falta, em vez de uma mensagem genérica.
+- **Em aberto:** campo estruturado com CEP preenchendo logradouro, bairro, cidade e UF, como no cadastro de empresas. Só se o Rodnei decidir; não é necessário para a regra de obrigatoriedade.

@@ -178,3 +178,17 @@ testes verdes; o lote soma 158 testes automatizados.
 | Rodízio entre números, Meta Cloud API | 📋 backlog |
 
 Primeiro teste a fazer: criar um número novo, ler o QR e trocar mensagens.
+
+## Acréscimo (27/10/2026) — endereço completo do candidato
+
+Decisão: obrigatório. O código já exige; falta o que cerca a decisão. **Nenhuma linha de código nesta etapa.**
+
+| Passo | Dono | Estado |
+|---|---|---|
+| Seis documentos atualizados (PRD, TRD, fluxo, UI/UX, schema, plano) | Claude | ✅ 27/10/2026 |
+| Texto de finalidade no aviso de privacidade (`/termos`) | Rodnei + assessoria jurídica | ⬜ pendente |
+| Base legal e prazo de retenção do endereço | assessoria jurídica | ⬜ pendente |
+| Linha de finalidade junto ao campo no onboarding e em dados pessoais | Claude, depois do texto aprovado | ⬜ pendente |
+| Campo estruturado com CEP | decisão do Rodnei | ⬜ opcional, não decidido |
+
+Regra: só construir o que ficou marcado como pendente depois do texto jurídico aprovado.

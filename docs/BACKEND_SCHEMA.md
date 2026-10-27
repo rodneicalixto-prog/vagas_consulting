@@ -310,3 +310,9 @@ Spec: `docs/specs/HUNTER_PREPARACAO.md`. Aditiva; RLS ligada e sem política pú
 ## Migration 0052 — origem do candidato (26/10/2026, aplicada em produção segundo o registro do projeto; não revalidada em 26/10)
 
 Spec: `docs/specs/ORIGEM_PDF_E_VAGAS_INCLUSIVAS.md`. Aditiva: `profiles.origem_canal`, `origem_detalhe` e `origem_em` (primeiro toque). Perfis antigos ficam nulos ("não informado"). **Ordem de publicação:** aplicar `0051` e `0052` **antes** do deploy do código.
+
+## Atualização v1.10 (27/10/2026) — endereço completo do candidato (sem migration)
+
+`profiles.endereco text null` permanece como está (migration 0010). A obrigatoriedade decidida em 27/10/2026 vale na aplicação, não no banco: contas antigas e contas criadas por convite ficam com nulo até o candidato completar o cadastro. As migrations 0049 a 0052 foram revalidadas no banco em 27/10/2026 (52 migrations; última `0052_origem_candidato`).
+
+**Finalidade do campo:** contato completo na candidatura e ficha quando não há currículo. **Retenção:** sem prazo definido para o endereço (ver política geral em "Retenção e exclusão", que segue adiada). **Se o campo for estruturado:** nova migration aditiva com colunas separadas (CEP, logradouro, número, bairro, cidade, UF), cidade já existente em `profiles.cidade`; **não decidido e não criado**.

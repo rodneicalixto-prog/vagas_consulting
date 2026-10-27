@@ -181,7 +181,7 @@ reprovação pode existir, então ela é pré-requisito de todo o resto.
 | # | Pergunta | Recomendação |
 |---|---|---|
 | D1 | Quais **valores** a SOS Vagas e cada cliente usam para fit cultural? | Cadastrar por empresa; começar pela SOS Vagas |
-| D2 | **Questionário comportamental:** instrumento próprio ou licenciado? | Questionário próprio curto, sem rótulo de teste psicológico |
+| D2 | **Questionário comportamental:** instrumento próprio ou licenciado? | **Decidido em 27/10/2026: instrumento licenciado.** Falta escolher o instrumento e o profissional habilitado que aplica e interpreta; a IA só organiza o resultado, não o interpreta |
 | D3 | Teto de custo por avaliação | **Decidido:** mantém o teto atual de US$ 100/mês por empresa |
 | D4 | ~~Voz entra quando?~~ **Decidido:** texto primeiro; voz opcional só em cargos marcados | **Cargos da voz: chefia e liderança** (26/10/2026); demais cargos seguem para entrevista com humano |
 

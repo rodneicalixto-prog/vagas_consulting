@@ -190,3 +190,13 @@ funil: marcar a carta como enviada move a candidatura para Proposta.
 | Rota | Quem | Função |
 |---|---|---|
 | `/admin/linhas` | Superadmin; admin da empresa (a dele) | Criar número, QR code, estado, desconectar, editar, limite (só plataforma) |
+
+## Atualização v1.10 (27/10/2026) — endereço completo do candidato
+
+O endereço completo é obrigatório em três pontos do fluxo do candidato. Hoje já funciona assim; a decisão foi registrada em 27/10/2026.
+
+1. **Onboarding (`/onboarding`):** nome, cidade, telefone e endereço completo; o botão continuar só libera com os quatro.
+2. **Dados pessoais (`/perfil/dados-pessoais`):** os mesmos quatro campos; salvar sem endereço devolve erro.
+3. **Candidatura (`/vagas/[id]/candidatura`):** **sem currículo anexado**, a candidatura só segue se o perfil tiver telefone e endereço; senão volta o erro "Complete seu perfil (telefone e endereço)". **Com currículo anexado a candidatura passa sem endereço**, porque o currículo substitui a ficha. Na prática o onboarding e os dados pessoais já exigem o endereço antes disso.
+
+Conta criada por convite ou de administrador, sem endereço, cai no `/onboarding` ao abrir qualquer tela do candidato. O endereço é um dos 9 itens da completude do perfil. Navegação visitante (`/vagas`) segue sem exigir cadastro; o endereço só é cobrado ao agir.
