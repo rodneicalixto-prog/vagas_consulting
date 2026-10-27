@@ -104,5 +104,5 @@ Risco já registrado: o texto livre da descrição pode citar o nome da empresa.
 
 1. A interpretação do §1 está certa (página pública de divulgação, e não outro cadastro de vaga)?
 2. ~~Vaga confidencial: indexar ou `noindex`?~~ **Decidido em 27/10/2026:** indexar com "Vagas Consulting" como organização e a empresa mascarada (§6).
-3. A candidatura continua exigindo conta no app, ou haverá formulário rápido na página? **Recomendação:** manter a conta, porque endereço obrigatório e consentimento ficam em um lugar só.
+3. ~~A candidatura continua exigindo conta no app, ou haverá formulário rápido na página?~~ **Decidido em 27/10/2026 (Rodnei):** a candidatura continua exigindo conta, porque endereço obrigatório e consentimento ficam em um lugar só. Sem formulário rápido na página.
 4. Domínio: ficar no domínio atual, ou separar um endereço só para vagas?
