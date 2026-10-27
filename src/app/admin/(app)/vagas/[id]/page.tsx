@@ -5,7 +5,7 @@ import { exigirVaga, obterEscopo } from "@/lib/auth/escopo";
 import { calcularEtapas, caminhoEtapa, proximoPasso, type EstadoEtapa } from "@/lib/ciclo-vaga";
 import { carregarCicloDaVaga } from "@/lib/ciclo-vaga-servidor";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { estadoPaginaPublica } from "@/lib/vaga-publica";
+import { estadoPaginaPublica, mencionaEmpresa } from "@/lib/vaga-publica";
 import { BotaoPdf, CabecalhoImpressao } from "@/components/botao-pdf";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -38,15 +38,30 @@ export default async function CentralDaVagaPage({ params }: { params: Promise<{ 
   const escopo = await obterEscopo(user.id, role);
   await exigirVaga(escopo, id);
 
-  const vaga = await carregarCicloDaVaga(id);
+  const [vaga, { data: publica }] = await Promise.all([
+    carregarCicloDaVaga(id),
+    createAdminClient()
+      .from("jobs")
+      .select("status, confidencial, expira_em, titulo, descricao, companies(nome_fantasia, razao_social)")
+      .eq("id", id)
+      .maybeSingle(),
+  ]);
   if (!vaga) redirect("/admin/vagas");
-
-  const { data: publica } = await createAdminClient()
-    .from("jobs")
-    .select("status, confidencial, expira_em")
-    .eq("id", id)
-    .maybeSingle();
-  const paginaPublica = publica ? estadoPaginaPublica(publica) : null;
+  const empresaPublica = Array.isArray(publica?.companies) ? (publica.companies[0] ?? null) : (publica?.companies ?? null);
+  const paginaPublica = publica
+    ? estadoPaginaPublica({
+        status: publica.status,
+        confidencial: publica.confidencial,
+        expira_em: publica.expira_em,
+        descricao: publica.descricao,
+        menciona_empresa: mencionaEmpresa({
+          titulo: publica.titulo,
+          descricao: publica.descricao,
+          confidencial: publica.confidencial,
+          companies: empresaPublica,
+        }),
+      })
+    : null;
 
   const etapas = calcularEtapas(vaga.contagens);
   const passo = proximoPasso(etapas, vaga.contagens);
@@ -72,7 +87,7 @@ export default async function CentralDaVagaPage({ params }: { params: Promise<{ 
       {paginaPublica && (
         <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-text-2">
           <span className="font-bold text-text">Página pública:</span>
-          <span>{paginaPublica.texto}</span>
+          <span className={paginaPublica.alerta ? "font-semibold text-danger" : undefined}>{paginaPublica.texto}</span>
           {paginaPublica.noAr && (
             <Link href={`/vagas/${id}`} target="_blank" className="font-bold text-navy underline">
               Ver página pública ↗

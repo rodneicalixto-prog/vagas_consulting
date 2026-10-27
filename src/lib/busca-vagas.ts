@@ -61,3 +61,39 @@ export function queryDaBusca(b: BuscaVagas, pagina = b.pagina): string {
   const s = p.toString();
   return s ? `?${s}` : "";
 }
+
+const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+type VagaFiltravel = {
+  titulo: string;
+  local: string | null;
+  modalidade: string;
+  confidencial: boolean;
+  descricao: string | null;
+};
+
+/**
+ * Filtra sem diferenciar acento nem maiúscula ("Olimpia" acha "Olímpia").
+ * A palavra procura no título e, só em vaga não confidencial, na descrição:
+ * em vaga confidencial o texto pode citar a empresa e a busca revelaria o nome.
+ */
+export function filtrarVagas<T extends VagaFiltravel>(vagas: T[], b: BuscaVagas): T[] {
+  const q = semAcento(b.q);
+  const cidade = semAcento(b.cidade);
+  return vagas.filter((v) => {
+    if (b.modalidade && v.modalidade !== b.modalidade) return false;
+    if (cidade && !semAcento(v.local ?? "").includes(cidade)) return false;
+    if (q) {
+      const noTitulo = semAcento(v.titulo).includes(q);
+      const naDescricao = !v.confidencial && semAcento(v.descricao ?? "").includes(q);
+      if (!noTitulo && !naDescricao) return false;
+    }
+    return true;
+  });
+}
+
+/** Fatia a página pedida de uma lista já filtrada. */
+export function paginar<T>(itens: T[], pagina: number, porPagina = POR_PAGINA): T[] {
+  const { from, to } = intervaloDaPagina(pagina, porPagina);
+  return itens.slice(from, to + 1);
+}

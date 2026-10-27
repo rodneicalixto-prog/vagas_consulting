@@ -33,3 +33,37 @@ test("query string omite o vazio e a página 1", () => {
   assert.equal(queryDaBusca(b, 1), "?q=a+b&modalidade=efetiva");
   assert.equal(queryDaBusca(lerBusca({})), "");
 });
+
+import { filtrarVagas, paginar } from "../busca-vagas.ts";
+
+const v = (o) => ({ titulo: "X", local: null, modalidade: "efetiva", confidencial: false, descricao: null, ...o });
+
+test("filtro ignora acento e maiúscula", () => {
+  const lista = [v({ titulo: "Auxiliar de Logística", local: "Olímpia - SP" }), v({ titulo: "Motorista", local: "Bauru - SP" })];
+  assert.equal(filtrarVagas(lista, lerBusca({ cidade: "olimpia" })).length, 1);
+  assert.equal(filtrarVagas(lista, lerBusca({ q: "logistica" })).length, 1);
+  assert.equal(filtrarVagas(lista, lerBusca({ q: "LOGÍSTICA", cidade: "sp" })).length, 1);
+});
+
+test("filtro por modalidade", () => {
+  const lista = [v({ modalidade: "pj" }), v({ modalidade: "efetiva" })];
+  assert.equal(filtrarVagas(lista, lerBusca({ modalidade: "pj" })).length, 1);
+  assert.equal(filtrarVagas(lista, lerBusca({})).length, 2);
+});
+
+test("busca na descrição não vale para vaga confidencial", () => {
+  const lista = [
+    v({ titulo: "Analista", descricao: "Trabalho na Acme Foods", confidencial: true }),
+    v({ titulo: "Auxiliar", descricao: "Trabalho na Acme Foods", confidencial: false }),
+  ];
+  const r = filtrarVagas(lista, lerBusca({ q: "acme" }));
+  assert.equal(r.length, 1);
+  assert.equal(r[0].titulo, "Auxiliar");
+});
+
+test("paginar fatia a página certa", () => {
+  const itens = Array.from({ length: 45 }, (_, i) => i);
+  assert.equal(paginar(itens, 1).length, 20);
+  assert.equal(paginar(itens, 3).length, 5);
+  assert.equal(paginar(itens, 4).length, 0);
+});

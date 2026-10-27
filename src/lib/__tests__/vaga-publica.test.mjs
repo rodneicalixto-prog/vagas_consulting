@@ -135,3 +135,12 @@ test("estado da página pública na Central da vaga", () => {
   assert.equal(estadoPaginaPublica({ ...ok, status: "pausada" }, agora).noAr, false);
   assert.equal(estadoPaginaPublica({ ...ok, expira_em: "2026-10-01T00:00:00Z" }, agora).noAr, false);
 });
+
+test("estado da página alerta quando o texto cita a empresa ou falta descrição", () => {
+  const ok = { status: "publicada", confidencial: true, expira_em: null };
+  const e = estadoPaginaPublica({ ...ok, menciona_empresa: true }, agora);
+  assert.equal(e.alerta, true);
+  assert.doesNotMatch(e.texto, /em sigilo \(/);
+  assert.equal(estadoPaginaPublica({ ...ok, descricao: "  " }, agora).alerta, true);
+  assert.equal(estadoPaginaPublica({ ...ok, descricao: "Texto" }, agora).alerta, undefined);
+});

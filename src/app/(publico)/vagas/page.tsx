@@ -12,13 +12,13 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const busca = lerBusca(await searchParams);
+  const variacao = temFiltro(busca) || busca.pagina > 1;
   return {
     title: "Vagas abertas | Vagas Consulting",
     description:
       "Vagas efetivas, PJ e temporárias publicadas pela Vagas Consulting. Veja os detalhes e candidate-se.",
-    alternates: { canonical: "/vagas" },
-    // Resultado de busca não deve ser indexado: as vagas entram pelo sitemap.
-    ...(temFiltro(busca) || busca.pagina > 1 ? { robots: { index: false, follow: true } } : {}),
+    // Resultado de busca não é indexado (as vagas entram pelo sitemap); canonical só na lista principal.
+    ...(variacao ? { robots: { index: false, follow: true } } : { alternates: { canonical: "/vagas" } }),
   };
 }
 

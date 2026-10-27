@@ -174,11 +174,22 @@ export function linksCompartilhar(siteUrl: string, id: string, titulo: string) {
 
 /** Situação da página pública de uma vaga, em uma linha, para a Central da vaga. */
 export function estadoPaginaPublica(
-  v: { status: string; confidencial: boolean; expira_em: string | null },
+  v: { status: string; confidencial: boolean; expira_em: string | null; descricao?: string | null; menciona_empresa?: boolean },
   agora = new Date(),
-): { noAr: boolean; texto: string } {
+): { noAr: boolean; texto: string; alerta?: boolean } {
   if (v.status !== "publicada") return { noAr: false, texto: "Fora do ar: a vaga não está publicada." };
   if (!dentroDoPrazo(v.expira_em, agora)) return { noAr: false, texto: "Fora do ar: o prazo da vaga venceu." };
+  if (v.confidencial && v.menciona_empresa) {
+    return {
+      noAr: true,
+      alerta: true,
+      texto:
+        "No ar, mas o título ou a descrição cita a empresa: a página mostra esse texto. Revise antes de divulgar (o Google não recebe os dados estruturados).",
+    };
+  }
+  if (v.descricao !== undefined && !(v.descricao ?? "").trim()) {
+    return { noAr: true, alerta: true, texto: "No ar, mas sem descrição: o Google não recebe os dados estruturados da vaga." };
+  }
   return {
     noAr: true,
     texto: v.confidencial
