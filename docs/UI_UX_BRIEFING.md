@@ -216,3 +216,14 @@ quando usados sobre seus fundos `-bg`.
 - **Proposto, não construído:** uma linha curta junto ao campo dizendo para que o endereço é usado e quem o vê, com link para o aviso de privacidade. O texto exato depende de revisão jurídica.
 - **Erro:** campo vazio indica qual campo falta, em vez de uma mensagem genérica.
 - **Em aberto:** campo estruturado com CEP preenchendo logradouro, bairro, cidade e UF, como no cadastro de empresas. Só se o Rodnei decidir; não é necessário para a regra de obrigatoriedade.
+
+## Atualização v1.11 (27/10/2026) — página pública de vagas (proposta)
+
+- **Estrutura:** cabeçalho simples com a marca e o link "Entrar"; sem menu inferior e sem corações do app; rodapé com termos e privacidade. Mesma paleta e tipografia do app.
+- **Lista (`/vagas`):** busca por cargo, filtros de modalidade e cidade, vagas em linhas densas (cargo, cidade, modalidade, há quanto tempo), paginação numerada. Estado vazio: "Nenhuma vaga encontrada" com botão para limpar os filtros.
+- **Detalhe (`/vagas/[id]`):** título, etiqueta de modalidade, local, remuneração (quando houver), descrição e regras da vaga; botão **Candidatar-se** sempre visível, fixo no rodapé no celular; botões Copiar link e WhatsApp.
+- **Vaga confidencial:** "Empresa confidencial" no lugar do nome, igual ao app.
+- **Vaga indisponível:** página "Esta vaga não está mais aberta", com link para as vagas abertas (a resposta HTTP continua 404 para o Google).
+- **Prévia de link:** imagem e texto de Open Graph com a marca, o cargo e a cidade.
+- **Acessibilidade:** mesmo critério AA do Anexo B; foco visível; botão com texto, nunca só ícone.
+- **Em aberto:** visual definitivo da página (tela de referência), a validar com o Rodnei antes de construir.

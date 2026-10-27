@@ -53,3 +53,6 @@ Visitante → /vagas → /vagas/<id> → "Entrar para se candidatar"
 - Sem busca no servidor (o campo de busca da lista ainda é visual).
 - Vitrine pública torna as vagas indexáveis; os metadados (título, descrição
   curta, dados estruturados de vaga) ainda não foram trabalhados para SEO.
+  **Atualização 27/10/2026:** SEO, busca no servidor, paginação e layout
+  público próprio estão especificados em `PAGINA_PUBLICA_VAGAS.md` (não
+  construídos).

@@ -235,3 +235,21 @@ Decisão de produto registrada no PRD v1.10: endereço completo obrigatório. Ne
 | Registro | O valor do endereço não deve entrar em log nem em trilha de auditoria |
 
 **Risco registrado:** a obrigatoriedade só existe na aplicação; um cliente que escreva direto no banco pode gravar nulo. Aceito, pois a escrita passa por ações de servidor.
+
+## Atualização v1.11 (27/10/2026) — página pública de vagas (proposta)
+
+Spec: `docs/specs/PAGINA_PUBLICA_VAGAS.md`. Nenhum código nem migration nesta atualização.
+
+| Ponto | Proposta técnica |
+|---|---|
+| Rotas | Mesmos endereços (`/vagas`, `/vagas/[id]`), movidas para um grupo de rotas público fora de `(app)`. O regex `VAGA_PUBLICA` do `middleware.ts` e o modo visitante de `(app)/layout.tsx` passam a ser desnecessários para essas rotas, mas ficam até a troca ser testada |
+| Metadados | `generateMetadata` por vaga: título, descrição, canonical sem `?o=`, Open Graph |
+| Mapa do site | `src/app/sitemap.ts` com as vagas publicadas e no prazo; `src/app/robots.ts` bloqueando `/admin`, `/api`, `/h/` e `/vagas/*/candidatura` |
+| Dados estruturados | JSON-LD `JobPosting` montado no servidor; `efetiva`→`FULL_TIME`, `pj`→`CONTRACTOR`, `temporaria`→`TEMPORARY`; `baseSalary` só com faixa numérica |
+| Sigilo | A mesma função `nomeEmpresa` de `src/lib/sigilo.ts`, aplicada ao HTML e ao JSON-LD; vaga confidencial usa "Vagas Consulting" como organização (decisão em aberto) |
+| Leitura | `createAdminClient` no servidor com colunas fixas, status `publicada` e `expira_em` (como hoje); id fora do UUID dá 404 |
+| Busca (P2) | Parâmetros `q`, `modalidade`, `cidade`, `pagina`; limite de 20 por página; sem migration |
+| URL absoluta | `NEXT_PUBLIC_SITE_URL` com padrão `https://sosvagas.sosmkt.com.br` (igual a `hunter-servidor.ts`) |
+| Cache | Página pública pode usar revalidação curta (ex.: 60 s) para aguentar tráfego de divulgação; vaga pausada precisa sair rápido, então não usar cache longo |
+
+**Risco:** descrição em texto livre pode citar a empresa de vaga confidencial. A verificação de `regras-vaga.ts` avisa antes de publicar; a página não reescreve o texto.

@@ -316,3 +316,9 @@ Spec: `docs/specs/ORIGEM_PDF_E_VAGAS_INCLUSIVAS.md`. Aditiva: `profiles.origem_c
 `profiles.endereco text null` permanece como está (migration 0010). A obrigatoriedade decidida em 27/10/2026 vale na aplicação, não no banco: contas antigas e contas criadas por convite ficam com nulo até o candidato completar o cadastro. As migrations 0049 a 0052 foram revalidadas no banco em 27/10/2026 (52 migrations; última `0052_origem_candidato`).
 
 **Finalidade do campo:** contato completo na candidatura e ficha quando não há currículo. **Retenção:** sem prazo definido para o endereço (ver política geral em "Retenção e exclusão", que segue adiada). **Se o campo for estruturado:** nova migration aditiva com colunas separadas (CEP, logradouro, número, bairro, cidade, UF), cidade já existente em `profiles.cidade`; **não decidido e não criado**.
+
+## Atualização v1.11 (27/10/2026) — página pública de vagas (sem migration)
+
+Spec: `docs/specs/PAGINA_PUBLICA_VAGAS.md`. A página usa só colunas que já existem em `jobs` (`id`, `titulo`, `local`, `modalidade`, `modelo_trabalho`, `remuneracao_texto`, `descricao`, `regras`, `publicada_em`, `expira_em`, `status`, `confidencial`) e `companies` (`nome_fantasia`, `razao_social`), lidas no servidor. Nenhuma tabela, coluna ou política nova.
+
+**Se vier depois (não criado, fora desta etapa):** `jobs.slug` para URL amigável (migration aditiva, índice único); índice de busca de texto do Postgres se a busca ficar lenta; faixa salarial numérica (`salario_min`, `salario_max`) se for preciso `baseSalary` nos dados estruturados, pois hoje só existe `remuneracao_texto`.

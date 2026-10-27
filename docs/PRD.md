@@ -226,3 +226,19 @@ Quem tem um número só não precisa fazer nada (virou a linha padrão).
 **Fluxo de qualificação decidido em 27/10/2026:** o agente faz toda a qualificação; quem passa avança; toda reprovação vai para a fila de validação humana de 72 h; depois de todas as aprovações o candidato segue para a entrevista com uma pessoa, já com o histórico completo. Na parte comportamental o agente aplica um instrumento profissional licenciado do tipo DISC (fornecedor ainda a escolher); o agente só entrega o link, recebe o teste realizado e o anexa ao processo do candidato; uma pessoa segue com a aprovação do teste. O DISC nunca é eliminatório para o agente: é apenas parte do processo de seleção.
 
 **Em aberto:** (1) texto da finalidade no aviso de privacidade (`/termos`), com revisão jurídica; (2) prazo de retenção do endereço de quem não se candidata ou pede eliminação; (3) estruturar o campo (CEP, logradouro, bairro, cidade, UF) como já existe no cadastro de empresas, ou manter texto livre.
+
+## Atualização v1.11 (27/10/2026) — página pública de vagas (especificada, não construída)
+
+**Pedido do Rodnei:** falta a página de publicação das vagas; hoje existem a página do admin e a do candidato. **Conferido:** `/vagas` e `/vagas/[id]` já são abertas a visitante, mas moram dentro do app do candidato, e não há `sitemap`, `robots`, metadados por vaga nem dados estruturados de vaga. Spec: `docs/specs/PAGINA_PUBLICA_VAGAS.md`.
+
+| Fase | Entrega |
+|---|---|
+| P1 | Layout público próprio (mesmos endereços), metadados por vaga, `sitemap.xml`, `robots.txt` e `JobPosting` |
+| P2 | Busca, filtros e paginação no servidor |
+| P3 | Compartilhar de verdade e atalho "Ver página pública" na Central da vaga |
+
+**Critérios de aceite:** vaga publicada abre sem menu do app; vaga pausada, encerrada ou vencida dá 404 e sai do `sitemap`; vaga confidencial nunca mostra a empresa, nem nos dados estruturados; o marcador de origem `?o=` continua gravando a origem; candidatura continua exigindo conta.
+
+**Fora do escopo:** página por empresa, domínio próprio, formulário direto na página, alertas pela página.
+
+**Em aberto (precisam do Rodnei):** (1) a interpretação "página pública de divulgação" está certa; (2) vaga confidencial: indexar com "Vagas Consulting" como organização ou `noindex`; (3) candidatura continua exigindo conta (recomendado); (4) domínio atual ou endereço separado.

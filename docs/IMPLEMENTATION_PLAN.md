@@ -192,3 +192,18 @@ Decisão: obrigatório. O código já exige; falta o que cerca a decisão. **Nen
 | Campo estruturado com CEP | decisão do Rodnei | ⬜ opcional, não decidido |
 
 Regra: só construir o que ficou marcado como pendente depois do texto jurídico aprovado.
+
+## Acréscimo (27/10/2026) — página pública de vagas
+
+Spec: `docs/specs/PAGINA_PUBLICA_VAGAS.md`. **Nenhuma linha de código nesta etapa.**
+
+| Passo | Dono | Estado |
+|---|---|---|
+| Spec e seis documentos atualizados | Claude | ✅ 27/10/2026 |
+| Respostas às 4 perguntas em aberto da spec (§11) | Rodnei | ⬜ pendente |
+| P1: layout público, metadados, `sitemap`, `robots`, `JobPosting` | Claude, depois do OK | ⬜ não iniciado |
+| Teste do `JobPosting` na ferramenta do Google (efetiva, PJ, temporária) | Rodnei ou Claude | ⬜ depende do P1 |
+| P2: busca, filtros e paginação | Claude | ⬜ depois do P1 |
+| P3: compartilhar e atalho na Central da vaga | Claude | ⬜ depois do P2 |
+
+Ordem de publicação: cada fase com `tsc`, `eslint`, testes e `build`; teste de fumaça das rotas públicas e protegidas; push só com OK do Rodnei (código).

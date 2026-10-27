@@ -52,6 +52,7 @@ construir algo que toque o banco, reconfirmar o schema real de produção
 | `specs/ORIGEM_PDF_E_VAGAS_INCLUSIVAS.md` | Origem do candidato, exportar PDF e vagas para PcD, estágio e 60+ |
 | `specs/AGENTE_IA_FASE3.md` | Agente de IA, base de conhecimento e pacote de R&S (3A a 3P, entregue) |
 | `specs/VITRINE_PUBLICA.md` | Vitrine pública e modo visitante |
+| `specs/PAGINA_PUBLICA_VAGAS.md` | Página pública de vagas fora do app: SEO, `JobPosting`, busca e compartilhar (especificada, não construída) |
 | `ROTEIRO_TESTE_ADMIN_EMPRESA.md` | Teste de 20 minutos do isolamento |
 | `ROTEIRO_TESTE_CICLO_RS.md` | Teste do ciclo completo de R&S, 12 passos |
 | `MANUAL_PLANO.md` | Plano do manual de uso (público, estrutura, produção e manutenção) |

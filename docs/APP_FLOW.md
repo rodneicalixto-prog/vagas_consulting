@@ -208,3 +208,15 @@ Conta criada por convite ou de administrador, sem endereço, cai no `/onboarding
 3. Questionário comportamental DISC licenciado (fornecedor a escolher): o agente **só entrega o link**, recebe o teste realizado e o anexa ao processo do candidato. **Uma pessoa segue com a aprovação do teste.** O agente não interpreta nem elimina por ele; o DISC é apenas parte do processo de seleção.
 4. A cada etapa, quem é aprovado avança; **quem seria reprovado cai na fila de validação humana de 72 h** e o agente não responde ao candidato até uma pessoa decidir.
 5. Depois de todas as aprovações, **entrevista com uma pessoa**, que recebe o histórico completo (triagem, entrevista do agente, resultado do DISC, laudo).
+
+## Atualização v1.11 (27/10/2026) — fluxo da página pública de vagas (proposto)
+
+```
+Divulgação (Instagram, WhatsApp, LinkedIn, Google)
+   → /vagas/<id>?o=<canal>   (página pública, fora do app)
+   → "Candidatar-se" → /vagas/<id>/candidatura
+   → sem conta: /login?next=… → cadastro (termos, perfil, endereço, experiências)
+   → volta à candidatura da mesma vaga
+```
+
+Quem publica: a equipe cadastra e publica no admin (`/admin/vagas`); a Central da vaga mostra o atalho "Ver página pública" (P3). Vaga pausada, encerrada ou vencida deixa de abrir (404) e sai do `sitemap`. Vaga confidencial mostra "Empresa confidencial" na página. Lista pública (`/vagas`): busca por cargo, modalidade e cidade, com 20 vagas por página (P2).
